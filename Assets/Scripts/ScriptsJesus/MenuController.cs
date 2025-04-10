@@ -20,6 +20,6 @@ public class MenuController : MonoBehaviour
 
     public void ShowCredits()
     {
-        SceneManager.LoadScene("Creditos");  // Cambia esto al nombre exacto de tu escena de créditos
+        SceneManager.LoadScene("CreditosJesus");  // Cambia esto al nombre exacto de tu escena de créditos
     }
 }
