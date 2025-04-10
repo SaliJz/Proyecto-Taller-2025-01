@@ -8,7 +8,7 @@ public class MenuController : MonoBehaviour
     // Este método se llama cuando el jugador presiona "Inicio"
     public void StartGame()
     {
-        SceneManager.LoadScene("GameScene");  // Cambia "GameScene" al nombre de tu escena de juego
+        SceneManager.LoadScene("Jesus");  // Cambia "GameScene" al nombre de tu escena de juego
     }
 
     // Este método se llama cuando el jugador presiona "Salir"
