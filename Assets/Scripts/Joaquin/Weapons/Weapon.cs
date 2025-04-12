@@ -35,6 +35,10 @@ public class Weapon : MonoBehaviour
 
     [SerializeField] private WeaponStats stats;
 
+    [Header("Animation")]
+    [HideInInspector] public Vector3 originalLocalPosition;
+    [SerializeField] public Transform weaponModelTransform;
+
     public WeaponStats Stats => stats;
 
     public enum ShootingMode
@@ -57,6 +61,7 @@ public class Weapon : MonoBehaviour
         currentAmmo = stats.maxAmmoPerClip;
         totalAmmo = stats.totalAmmo;
         HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
+        originalLocalPosition = weaponModelTransform.localPosition; // Guarda posición inicial
     }
 
     private void Update()
@@ -76,11 +81,9 @@ public class Weapon : MonoBehaviour
             return;
         }
 
-        if (isReadyToShoot && isShooting)
+        if (isReadyToShoot && isShooting && !isReloading && currentAmmo > 0)
         {
             burstBulletLeft = bulletPerBurst;
-
-            if (isReloading || currentAmmo <= 0) return;
             Shoot();
         }
     }
@@ -127,17 +130,35 @@ public class Weapon : MonoBehaviour
 
     private IEnumerator Reload()
     {
+        PlayReloadAnimation();
         isReloading = true;
-        yield return new WaitForSeconds(reloadTime);
 
-        int neededAmmo = maxAmmoPerClip - currentAmmo;
-        int ammoToReload = Mathf.Min(neededAmmo, totalAmmo);
+        if (currentShootingMode == ShootingMode.Burst && reloadTime > 0f)
+        {
+            // Recarga una a una
+            while (currentAmmo < maxAmmoPerClip && totalAmmo > 0)
+            {
+                yield return new WaitForSeconds(reloadTime);
 
-        currentAmmo += ammoToReload;
-        totalAmmo -= ammoToReload;
+                currentAmmo++;
+                totalAmmo--;
+                HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
+            }
+        }
+        else
+        {
+            // Recarga completa normal
+            yield return new WaitForSeconds(reloadTime);
+
+            int neededAmmo = maxAmmoPerClip - currentAmmo;
+            int ammoToReload = Mathf.Min(neededAmmo, totalAmmo);
+
+            currentAmmo += ammoToReload;
+            totalAmmo -= ammoToReload;
+            HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
+        }
 
         isReloading = false;
-        HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
     }
 
     private Vector3 CalculateDirectionAndSpread()
@@ -162,5 +183,39 @@ public class Weapon : MonoBehaviour
 
         // Retorna la dirección con la propagación aplicada
         return direction + new Vector3(x, Y, 0);
+    }
+
+    public void PlayReloadAnimation()
+    {
+        StartCoroutine(AnimateReload());
+    }
+
+    private IEnumerator AnimateReload()
+    {
+        Vector3 startPos = originalLocalPosition;
+        Vector3 downPos = originalLocalPosition + new Vector3(0, -0.2f, 0);
+        float speed = 10f;
+
+        // Baja el arma
+        float t = 0;
+        while (t < 1)
+        {
+            weaponModelTransform.localPosition = Vector3.Lerp(startPos, downPos, t);
+            t += Time.deltaTime * speed;
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(0.1f); // pausa abajo
+
+        // Sube el arma
+        t = 0;
+        while (t < 1)
+        {
+            weaponModelTransform.localPosition = Vector3.Lerp(downPos, startPos, t);
+            t += Time.deltaTime * speed;
+            yield return null;
+        }
+
+        weaponModelTransform.localPosition = startPos;
     }
 }
