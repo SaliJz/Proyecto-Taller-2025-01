@@ -8,9 +8,7 @@ public class Weapon : MonoBehaviour
 
     [Header("Shoot")]
     [SerializeField] bool isShooting;
-    [SerializeField] bool isReadyToShoot;
-    bool allowReset = true;
-    [SerializeField] private float shootingDelay;
+    [SerializeField] private float lastShotTime = 0f;
 
     [Header("Ammo")]
     [SerializeField] private int maxAmmoPerClip = 30;
@@ -18,11 +16,10 @@ public class Weapon : MonoBehaviour
     public int totalAmmo = 90;
     [SerializeField] private float reloadTime = 1.5f;
 
-    private bool isReloading = false;
+    public bool isReloading = false;
 
-    [Header("Burst")]
+    [Header("Shotgun")]
     [SerializeField] private int bulletPerBurst = 3;
-    [SerializeField] private int burstBulletLeft;
 
     [Header("Spread")]
     [SerializeField] private float spreadIntensity;
@@ -38,117 +35,128 @@ public class Weapon : MonoBehaviour
     [Header("Animation")]
     [HideInInspector] public Vector3 originalLocalPosition;
     [SerializeField] public Transform weaponModelTransform;
+    private Coroutine reloadCoroutine;
 
     public WeaponStats Stats => stats;
 
     public enum ShootingMode
     {
-        Single,
-        Burst,
-        Auto
+        Single, // Pistola
+        SemiAuto, // Escopeta
+        Auto // Rifle
     }
 
     public ShootingMode currentShootingMode;
 
+    // Inicializa el arma al activarse
     private void Awake()
     {
-        isReadyToShoot = true;
-        burstBulletLeft = bulletPerBurst;
+        originalLocalPosition = weaponModelTransform.localPosition;
     }
 
+    // Inicializa el arma
     private void Start()
     {
         currentAmmo = stats.maxAmmoPerClip;
         totalAmmo = stats.totalAmmo;
+        reloadTime = stats.reloadTime;
         HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
-        originalLocalPosition = weaponModelTransform.localPosition; // Guarda posición inicial
     }
 
+    // Actualiza el estado del arma
     private void Update()
     {
+        // Entrada de disparo
         if (currentShootingMode == ShootingMode.Auto)
         {
-            isShooting = Input.GetKey(KeyCode.Mouse0); // Disparo al mantener el botón
+            isShooting = Input.GetKey(KeyCode.Mouse0);
         }
-        else if (currentShootingMode == ShootingMode.Single || currentShootingMode == ShootingMode.Burst)
+        else
         {
-            isShooting = Input.GetKeyDown(KeyCode.Mouse0); // Disparo al presionar el botón
+            isShooting = Input.GetKeyDown(KeyCode.Mouse0);
         }
 
+        // Recarga
         if (Input.GetKeyDown(KeyCode.R) && !isReloading && currentAmmo < maxAmmoPerClip && totalAmmo > 0)
         {
-            StartCoroutine(Reload());
+            reloadCoroutine = StartCoroutine(Reload());
             return;
         }
 
-        if (isReadyToShoot && isShooting && !isReloading && currentAmmo > 0)
+        // Disparo
+        if (isShooting && CanShoot())
         {
-            burstBulletLeft = bulletPerBurst;
+            lastShotTime = Time.time;
             Shoot();
         }
     }
 
+    // Dispara el arma
     private void Shoot()
     {
         currentAmmo--;
         HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
 
-        isReadyToShoot = false;
-
-        // Obtiene la dirección de disparo
-        Vector3 shootDirection = CalculateDirectionAndSpread().normalized;
-
-        // Instancia la bala
-        GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(shootDirection));
-
-        bullet.transform.forward = shootDirection; // Asegura que la bala apunte en la dirección correcta
-
-        // Obtiene el Rigidbody de la bala y le aplica una fuerza
-        bullet.GetComponent<Rigidbody>().AddForce(shootDirection * bulletSpeed, ForceMode.Impulse);
-
-        // Destruye la bala después de un tiempo
-        Destroy(bullet, bulletLifetime);
-
-        if (allowReset)
+        switch (currentShootingMode)
         {
-            Invoke("ResetShoot", shootingDelay);
-            allowReset = false;
-        }
-
-        if (currentShootingMode == ShootingMode.Burst && burstBulletLeft > 1)
-        {
-            burstBulletLeft--;
-            Invoke("Shoot", shootingDelay);
+            case ShootingMode.SemiAuto:
+                ShootShotgun();
+                break;
+            default:
+                ShootSingle();
+                break;
         }
     }
 
-    private void ResetShoot()
+    // Dispara en modo "Single" o "Auto"
+    private void ShootSingle()
     {
-        isReadyToShoot = true;
-        allowReset = true;
+        Vector3 direction = CalculateDirectionAndSpread().normalized;
+        GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(direction));
+        bullet.GetComponent<Rigidbody>().AddForce(direction * bulletSpeed, ForceMode.Impulse);
+        Destroy(bullet, bulletLifetime);
     }
 
+    // Dispara en modo "Shotgun"
+    private void ShootShotgun()
+    {
+        for (int i = 0; i < bulletPerBurst; i++)
+        {
+            Vector3 direction = CalculateDirectionAndSpread().normalized;
+            GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(direction));
+            bullet.GetComponent<Rigidbody>().AddForce(direction * bulletSpeed, ForceMode.Impulse);
+            Destroy(bullet, bulletLifetime);
+        }
+    }
+
+    // Verifica si el arma puede disparar
+    private bool CanShoot() =>
+    !isReloading && currentAmmo > 0 && Time.time >= lastShotTime + 1f / stats.fireRate;
+
+    // Recarga el arma
     private IEnumerator Reload()
     {
-        PlayReloadAnimation();
         isReloading = true;
 
-        if (currentShootingMode == ShootingMode.Burst && reloadTime > 0f)
+        if (currentShootingMode == ShootingMode.SemiAuto && reloadTime > 0f)
         {
-            // Recarga una a una
-            while (currentAmmo < maxAmmoPerClip && totalAmmo > 0)
-            {
-                yield return new WaitForSeconds(reloadTime);
+            PlayReloadAnimation();
 
+            int neededAmmo = maxAmmoPerClip - currentAmmo;
+            int ammoToReload = Mathf.Min(neededAmmo, totalAmmo);
+
+            for (int i = 0; i < ammoToReload; i++)
+            {
                 currentAmmo++;
                 totalAmmo--;
                 HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
+
+                yield return new WaitForSeconds(reloadTime);
             }
         }
         else
         {
-            // Recarga completa normal
-            yield return new WaitForSeconds(reloadTime);
+            yield return StartCoroutine(AnimateReload(reloadTime));
 
             int neededAmmo = maxAmmoPerClip - currentAmmo;
             int ammoToReload = Mathf.Min(neededAmmo, totalAmmo);
@@ -161,58 +169,60 @@ public class Weapon : MonoBehaviour
         isReloading = false;
     }
 
+    public void CancelReload()
+    {
+        if (isReloading && reloadCoroutine != null)
+        {
+            StopCoroutine(reloadCoroutine);
+            isReloading = false;
+        }
+    }
+
+    // Calcula la dirección y la propagación de la bala
     private Vector3 CalculateDirectionAndSpread()
     {
-        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0)); // Centro de la pantalla
+        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
-
-        Vector3 targetPoint;
-        if (Physics.Raycast(ray, out hit))
-        {
-            targetPoint = hit.point;
-        }
-        else
-        {
-            targetPoint = ray.GetPoint(100); // Si no hay colisión, apunta a 100 unidades de distancia
-        }
-
+        Vector3 targetPoint = Physics.Raycast(ray, out hit) ? hit.point : ray.GetPoint(100);
         Vector3 direction = targetPoint - bulletSpawnPoint.position;
 
-        float x = UnityEngine.Random.Range(-spreadIntensity, spreadIntensity);
-        float Y = UnityEngine.Random.Range(-spreadIntensity, spreadIntensity);
+        float x = Random.Range(-spreadIntensity, spreadIntensity);
+        float y = Random.Range(-spreadIntensity, spreadIntensity);
 
-        // Retorna la dirección con la propagación aplicada
-        return direction + new Vector3(x, Y, 0);
+        return direction + new Vector3(x, y, 0);
     }
 
+    // Reproduce la animación de recarga
     public void PlayReloadAnimation()
     {
-        StartCoroutine(AnimateReload());
+        if (reloadCoroutine != null)
+        {
+            StopCoroutine(reloadCoroutine);
+        }
+
+        reloadCoroutine = StartCoroutine(AnimateReload(reloadTime));
     }
 
-    private IEnumerator AnimateReload()
+    // Animación de recarga
+    private IEnumerator AnimateReload(float totalTime)
     {
         Vector3 startPos = originalLocalPosition;
         Vector3 downPos = originalLocalPosition + new Vector3(0, -0.2f, 0);
-        float speed = 10f;
+        float halfTime = totalTime / 2f;
 
-        // Baja el arma
-        float t = 0;
-        while (t < 1)
+        float t = 0f;
+        while (t < 1f)
         {
             weaponModelTransform.localPosition = Vector3.Lerp(startPos, downPos, t);
-            t += Time.deltaTime * speed;
+            t += Time.deltaTime / halfTime;
             yield return null;
         }
 
-        yield return new WaitForSeconds(0.1f); // pausa abajo
-
-        // Sube el arma
-        t = 0;
-        while (t < 1)
+        t = 0f;
+        while (t < 1f)
         {
             weaponModelTransform.localPosition = Vector3.Lerp(downPos, startPos, t);
-            t += Time.deltaTime * speed;
+            t += Time.deltaTime / halfTime;
             yield return null;
         }
 

@@ -11,13 +11,13 @@ public class WeaponManager : MonoBehaviour
 
     private int currentIndex = 0;
 
-    void Start()
+    private void Start()
     {
         int savedIndex = PlayerPrefs.GetInt("LastWeaponIndex", 0);
         EquipWeaponInstant(savedIndex); // Equipar al inicio sin animación
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1)) ChangeWeapon(0);
         if (Input.GetKeyDown(KeyCode.Alpha2)) ChangeWeapon(1);
@@ -34,15 +34,20 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
-    void ChangeWeapon(int index)
+    private void ChangeWeapon(int index)
     {
         if (index == currentIndex) return;
         PlayerPrefs.SetInt("LastWeaponIndex", index);
 
+        if (weapons[currentIndex].isReloading)
+        {
+            weapons[currentIndex].CancelReload();
+        }
+
         StartCoroutine(SwitchWeaponAnimation(index));
     }
 
-    IEnumerator SwitchWeaponAnimation(int newIndex)
+    private IEnumerator SwitchWeaponAnimation(int newIndex)
     {
         Weapon oldWeapon = weapons[currentIndex];
         Transform oldModel = oldWeapon.weaponModelTransform;
@@ -79,7 +84,7 @@ public class WeaponManager : MonoBehaviour
         HUDManager.Instance.UpdateWeaponName(newWeapon.Stats.weaponName);
     }
 
-    IEnumerator SlideUpWeapon(Transform model, Vector3 targetPosition)
+    private IEnumerator SlideUpWeapon(Transform model, Vector3 targetPosition)
     {
         Vector3 startPos = model.localPosition;
         float duration = 0.15f;
@@ -95,7 +100,7 @@ public class WeaponManager : MonoBehaviour
         model.localPosition = targetPosition;
     }
 
-    void EquipWeaponInstant(int index)
+    private void EquipWeaponInstant(int index)
     {
         for (int i = 0; i < weapons.Length; i++)
         {

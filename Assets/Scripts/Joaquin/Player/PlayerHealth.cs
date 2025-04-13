@@ -36,7 +36,7 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
-        Instantiate(deathPrefab, transform.position, Quaternion.identity);
+        DeathManager.Instance.RegisterDeath(deathPrefab, transform.position);
         sceneTransition.LoadSceneWithFade(gameOverSceneName);
     }
 }

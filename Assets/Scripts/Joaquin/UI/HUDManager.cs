@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,9 +13,9 @@ public class HUDManager : MonoBehaviour
     }
 
     [SerializeField] private Slider healthBar;
-    [SerializeField] private TMPro.TMP_Text healthBarText;
-    [SerializeField] private TMPro.TMP_Text ammoText;
-    [SerializeField] private TMPro.TMP_Text weaponNameText;
+    [SerializeField] private TextMeshProUGUI healthBarText;
+    [SerializeField] private TextMeshProUGUI ammoText;
+    [SerializeField] private TextMeshProUGUI weaponNameText;
     [SerializeField] private Image weaponIcon;
 
     //[SerializeField] private Text infoFragmentsText;

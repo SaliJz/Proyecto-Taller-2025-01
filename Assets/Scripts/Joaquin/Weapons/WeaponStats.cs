@@ -10,6 +10,7 @@ public class WeaponStats : ScriptableObject
     public int maxAmmoPerClip;
     public int totalAmmo;
     public float reloadTime;
-    public float shootingDelay;
     public Weapon.ShootingMode shootingMode;
+    public float weaponSwapTime;
+    public float fireRate;
 }
