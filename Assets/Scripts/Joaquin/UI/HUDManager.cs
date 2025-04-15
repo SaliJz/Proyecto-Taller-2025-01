@@ -18,9 +18,9 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI weaponNameText;
     [SerializeField] private Image weaponIcon;
 
-    //[SerializeField] private Text infoFragmentsText;
+    [SerializeField] private TextMeshProUGUI infoFragmentsText;
 
-    //private int infoFragments = 0;
+    private int infoFragments = 0;
 
     private void Awake()
     {
@@ -38,6 +38,8 @@ public class HUDManager : MonoBehaviour
     {
         healthBar.value = 1;
         healthBarText.text = (healthBar.value * 100).ToString();
+
+        AddInfoFragment(0);
 
         //infoFragmentsText.text = "Info Fragments: " + infoFragments;
     }
@@ -61,11 +63,11 @@ public class HUDManager : MonoBehaviour
     {
         weaponIcon.sprite = icon;
     }
-    /*
-    public void AddInfoFragment()
+    
+    public void AddInfoFragment(int fragments)
     {
-        infoFragments++;
+        infoFragments += fragments;
         infoFragmentsText.text = "Info Fragments: " + infoFragments;
     }
-    */
+    
 }
