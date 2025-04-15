@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,11 +13,14 @@ public class HUDManager : MonoBehaviour
     }
 
     [SerializeField] private Slider healthBar;
-    [SerializeField] private TMPro.TMP_Text healthBarText;
+    [SerializeField] private TextMeshProUGUI healthBarText;
+    [SerializeField] private TextMeshProUGUI ammoText;
+    [SerializeField] private TextMeshProUGUI weaponNameText;
+    [SerializeField] private Image weaponIcon;
 
-    //[SerializeField] private Text infoFragmentsText;
+    [SerializeField] private TextMeshProUGUI infoFragmentsText;
 
-    //private int infoFragments = 0;
+    private int infoFragments = 0;
 
     private void Awake()
     {
@@ -35,6 +39,8 @@ public class HUDManager : MonoBehaviour
         healthBar.value = 1;
         healthBarText.text = (healthBar.value * 100).ToString();
 
+        AddInfoFragment(0);
+
         //infoFragmentsText.text = "Info Fragments: " + infoFragments;
     }
 
@@ -42,11 +48,26 @@ public class HUDManager : MonoBehaviour
     {
         healthBar.value = (float)current / max;
     }
-    /*
-    public void AddInfoFragment()
+
+    public void UpdateAmmo(int current, int total)
     {
-        infoFragments++;
+        ammoText.text = $"{current} / {total}";
+    }
+
+    public void UpdateWeaponName(string name)
+    {
+        weaponNameText.text = name;
+    }
+
+    public void UpdateWeaponIcon(Sprite icon)
+    {
+        weaponIcon.sprite = icon;
+    }
+    
+    public void AddInfoFragment(int fragments)
+    {
+        infoFragments += fragments;
         infoFragmentsText.text = "Info Fragments: " + infoFragments;
     }
-    */
+    
 }

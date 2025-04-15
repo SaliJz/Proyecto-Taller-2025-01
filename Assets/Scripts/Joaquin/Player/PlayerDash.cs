@@ -22,6 +22,10 @@ public class PlayerDash : MonoBehaviour
     [SerializeField] private float dashFOVBoost = 15f;
     [SerializeField] private float fovLerpSpeed = 10f;
 
+    [Header("Weapon")]
+    [SerializeField] private Transform weaponHolder;
+    private float originalWeaponScaleZ;
+
     private float originalFOV;
     private Cinemachine.CinemachineVirtualCamera vcam;
 
@@ -32,6 +36,8 @@ public class PlayerDash : MonoBehaviour
 
     private void Start()
     {
+        originalWeaponScaleZ = weaponHolder.localScale.z;
+
         vcam = FindObjectOfType<Cinemachine.CinemachineVirtualCamera>();
         if (vcam != null)
         {
@@ -44,26 +50,33 @@ public class PlayerDash : MonoBehaviour
         // Verifica que haya input (horizontal o vertical)
         bool isMoving = Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0;
 
-        if (canDash)
+        if (canDash && Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && isMoving)
         {
-            if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && isMoving)
+            if (!isGrounded && hasAirDashed) return;
+
+            StartCoroutine(PerformDash());
+
+            if (!isGrounded)
             {
-                // Si estamos en el aire y ya hicimos dash, no hacemos nada
-                if (!isGrounded && hasAirDashed) return;
-
-                StartCoroutine(PerformDash());
-
-                if (!isGrounded)
-                {
-                    hasAirDashed = true;
-                }
+                hasAirDashed = true;
             }
         }
 
-        // Suavizar FOV
-        if (vcam != null && !isDashing)
+        if (!isDashing)
         {
-            vcam.m_Lens.FieldOfView = Mathf.Lerp(vcam.m_Lens.FieldOfView, originalFOV, Time.deltaTime * fovLerpSpeed);
+            // Lerp del FOV
+            if (vcam != null)
+            {
+                vcam.m_Lens.FieldOfView = Mathf.Lerp(vcam.m_Lens.FieldOfView, originalFOV, Time.deltaTime * fovLerpSpeed);
+            }
+
+            // Lerp de escala del arma
+            if (weaponHolder != null)
+            {
+                Vector3 originalScale = weaponHolder.localScale;
+                float targetZ = originalWeaponScaleZ;
+                weaponHolder.localScale = Vector3.Lerp(originalScale, new Vector3(originalScale.x, originalScale.y, targetZ), Time.deltaTime * fovLerpSpeed);
+            }
         }
     }
 
@@ -74,18 +87,19 @@ public class PlayerDash : MonoBehaviour
         // Dirección en base a cámara
         Vector3 dashDirection = cameraForwardSource.forward.normalized;
 
-        // Suavizar el componente vertical
-        dashDirection = new Vector3(dashDirection.x, dashDirection.y * 0.1f, dashDirection.z);
-
-        // Si está en el suelo, ignorar componente Y (dash solo horizontal)
+        // Limita el impulso vertical para que no "vuele"
         if (isGrounded)
         {
             dashDirection.y = 0f;
-            dashDirection = dashDirection.normalized;
+        }
+        else
+        {
+            dashDirection.y *= 0.1f;
         }
 
-        // Aplicar fuerza
-        rb.velocity = Vector3.zero; // reset para no acumular velocidad anterior
+        dashDirection = dashDirection.normalized;
+
+        rb.velocity = Vector3.zero;
         rb.AddForce(dashDirection * dashForce, ForceMode.Impulse);
 
         // Efecto visual
@@ -99,10 +113,25 @@ public class PlayerDash : MonoBehaviour
             }
         }
 
-        // Efecto de cámara
+        // Efecto de escala del arma
+        if (weaponHolder != null)
+        {
+            float scaleBoost = 1 + (dashFOVBoost / originalFOV);
+            weaponHolder.localScale = new Vector3(1, 1, originalWeaponScaleZ * scaleBoost);
+        }
+
+        // FOV de la cámara
         if (vcam != null)
         {
             vcam.m_Lens.FieldOfView = originalFOV + dashFOVBoost;
+        }
+
+        // Escala del arma
+        if (weaponHolder != null)
+        {
+            float scaleBoost = 1 + (dashFOVBoost / originalFOV);
+            Vector3 original = weaponHolder.localScale;
+            weaponHolder.localScale = new Vector3(original.x, original.y, originalWeaponScaleZ * scaleBoost);
         }
 
         yield return new WaitForSeconds(dashTime);

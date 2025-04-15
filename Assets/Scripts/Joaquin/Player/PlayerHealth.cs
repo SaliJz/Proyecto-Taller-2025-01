@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
     [SerializeField] private int maxHealth = 100;
     private int currentHealth;
+    [SerializeField] private string gameOverSceneName = "GameOver";
     [SerializeField] private GameObject deathPrefab;
+    [SerializeField] private SceneTransition sceneTransition;
 
     private void Start()
     {
@@ -33,7 +36,7 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
-        Instantiate(deathPrefab, transform.position, Quaternion.identity);
-        gameObject.SetActive(false);
+        DeathManager.Instance.RegisterDeath(deathPrefab, transform.position);
+        sceneTransition.LoadSceneWithFade(gameOverSceneName);
     }
 }
