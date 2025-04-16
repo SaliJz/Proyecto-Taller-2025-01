@@ -43,14 +43,14 @@ GameObject:
   - component: {fileID: 1760682920963986595}
   - component: {fileID: 8749626943170902220}
   - component: {fileID: 681151174812741667}
-  - component: {fileID: 6394896232276584780}
+  - component: {fileID: 891735800876516052}
   m_Layer: 0
   m_Name: GlitchTimeSkill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4886150407191743147
 Transform:
   m_ObjectHideFlags: 0
@@ -138,7 +138,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6394896232276584780
+--- !u!114 &891735800876516052
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -151,12 +151,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 0}
-  glitchProjectile: {fileID: 7085484802801605271, guid: 9dfec770831cd0346961c6d8de1ff004,
+  projectilePrefab: {fileID: 7085484802801605271, guid: 9dfec770831cd0346961c6d8de1ff004,
     type: 3}
   projectileSpawnPoint: {fileID: 3064037083521005419}
-  cooldown: 0.5
-  projectileLifeTime: 4
-  projectileSpeed: 25
+  cooldown: 12
+  projectileLifeTime: 2
+  projectileSpeed: 50
   spreadIntensity: 0
   cooldownText: {fileID: 0}
 --- !u!1 &650507068087206632
@@ -202,14 +202,14 @@ GameObject:
   - component: {fileID: 3593318228210687534}
   - component: {fileID: 1375924225364133506}
   - component: {fileID: 4868382587229573146}
-  - component: {fileID: 527773393839364708}
+  - component: {fileID: 661557296630573712}
   m_Layer: 0
   m_Name: ElectroHackSkill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5802256456147843531
 Transform:
   m_ObjectHideFlags: 0
@@ -222,7 +222,8 @@ Transform:
   m_LocalPosition: {x: 0, y: -0.29999995, z: 0.3}
   m_LocalScale: {x: 0.15, y: 0.15, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5266386077452053156}
   m_Father: {fileID: 8160491215323087203}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3593318228210687534
@@ -296,7 +297,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &527773393839364708
+--- !u!114 &661557296630573712
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -305,28 +306,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 1039618764485251716}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a459f2e2dca9a147851e9d03224f7b8, type: 3}
+  m_Script: {fileID: 11500000, guid: 59f91321e3f4ac74c82394adcb106df1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 0}
-  isShooting: 0
-  lastShotTime: 0
-  maxAmmoPerClip: 30
-  currentAmmo: 0
-  totalAmmo: 90
-  reloadTime: 5
-  isReloading: 0
-  bulletPerBurst: 3
-  spreadIntensity: 0
-  bulletPrefab: {fileID: 6514547203563394288, guid: dac74eadbd49a2e4a89e8eb3d452d79d,
+  projectilePrefab: {fileID: 7085484802801605271, guid: f1fa18bde138e674493c9c36dd816dd4,
     type: 3}
-  bulletSpawnPoint: {fileID: 0}
-  bulletSpeed: 50
-  bulletLifetime: 5
-  stats: {fileID: 11400000, guid: b98f2fed250d9c54e8d14bef92cc258e, type: 2}
-  originalLocalPosition: {x: 0, y: 0, z: 0}
-  weaponModelTransform: {fileID: 5802256456147843531}
-  currentShootingMode: 2
+  projectileSpawnPoint: {fileID: 5266386077452053156}
+  cooldown: 0.5
+  projectileLifeTime: 2
+  projectileSpeed: 40
+  radius: 5
+  maxTargets: 3
+  tickDamage: 5
+  tickInterval: 2
+  ticks: 2
+  slowMultiplier: 0.25
+  spreadIntensity: 0
+  cooldownText: {fileID: 0}
 --- !u!1 &1586848620660913248
 GameObject:
   m_ObjectHideFlags: 0
@@ -342,7 +339,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8160491215323087203
 Transform:
   m_ObjectHideFlags: 0
@@ -515,7 +512,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7995055033124870633
 Transform:
   m_ObjectHideFlags: 0
@@ -5671,6 +5668,37 @@ Transform:
   - {fileID: 5866483386157149759}
   - {fileID: 8557461592789821262}
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4355156345760432679
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5266386077452053156}
+  m_Layer: 0
+  m_Name: ProjectileSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5266386077452053156
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4355156345760432679}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.6666665, y: 2, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5802256456147843531}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4701876041897125803
 GameObject:

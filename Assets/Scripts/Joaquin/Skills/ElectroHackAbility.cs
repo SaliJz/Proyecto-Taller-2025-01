@@ -3,17 +3,23 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class GlitchAbility : MonoBehaviour
+public class ElectroHackAbility : MonoBehaviour
 {
     [Header("Camera")]
     [SerializeField] private Camera playerCamera;
 
-    [Header("Glitch Settings")]
-    [SerializeField] private GameObject glitchProjectile;
+    [Header("ElectroHack Settings")]
+    [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform projectileSpawnPoint;
-    [SerializeField] private float cooldown = 12f;
+    [SerializeField] private float cooldown = 10f;
     [SerializeField] private float projectileLifeTime = 2f;
-    [SerializeField] private float projectileSpeed = 50f;
+    [SerializeField] private float projectileSpeed = 20f;
+    [SerializeField] private float radius = 5f;
+    [SerializeField] private int maxTargets = 3;
+    [SerializeField] private float tickDamage = 15;
+    [SerializeField] private float tickInterval = 1f;
+    [SerializeField] private int ticks = 2;
+    [SerializeField] private float slowMultiplier = 0.75f; // 25% menos velocidad
 
     [Header("Spread")]
     [SerializeField] private float spreadIntensity;
@@ -33,7 +39,7 @@ public class GlitchAbility : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse1) && canUse)
         {
-            FireGlitchShot();
+            ActivateAbility();
         }
 
         if (!canUse)
@@ -49,16 +55,20 @@ public class GlitchAbility : MonoBehaviour
         }
     }
 
-    private void FireGlitchShot()
+    private void ActivateAbility()
     {
-        Vector3 direction = CalculateDirectionAndSpread().normalized;
-        GameObject projectile = Instantiate(glitchProjectile, projectileSpawnPoint.position, Quaternion.LookRotation(direction));
+        GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
+        Rigidbody rb = projectile.GetComponent<Rigidbody>();
+        rb.velocity = playerCamera.transform.forward * projectileSpeed;
         canUse = false;
         currentCooldown = cooldown;
-        projectile.GetComponent<Rigidbody>().AddForce(direction * projectileSpeed, ForceMode.Impulse);
+
+        ElectroHackShot hack = projectile.AddComponent<ElectroHackShot>();
+        hack.Initialize(radius, maxTargets, tickDamage, tickInterval, ticks, slowMultiplier);
+
         Destroy(projectile, projectileLifeTime);
     }
-
+    /*
     private Vector3 CalculateDirectionAndSpread()
     {
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
@@ -71,4 +81,5 @@ public class GlitchAbility : MonoBehaviour
 
         return direction + new Vector3(x, y, 0);
     }
+    */
 }
