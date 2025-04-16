@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 505301042325473914}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1, y: 1.1999998, z: 0.8}
+  m_LocalPosition: {x: 1, y: 1.1999998, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -43,14 +43,14 @@ GameObject:
   - component: {fileID: 1760682920963986595}
   - component: {fileID: 8749626943170902220}
   - component: {fileID: 681151174812741667}
-  - component: {fileID: 7756786189108216657}
+  - component: {fileID: 891735800876516052}
   m_Layer: 0
   m_Name: GlitchTimeSkill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4886150407191743147
 Transform:
   m_ObjectHideFlags: 0
@@ -63,7 +63,8 @@ Transform:
   m_LocalPosition: {x: 0, y: -0.29999995, z: -0.17}
   m_LocalScale: {x: 0.15, y: 0.15, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 3064037083521005419}
   m_Father: {fileID: 8160491215323087203}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1760682920963986595
@@ -137,7 +138,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7756786189108216657
+--- !u!114 &891735800876516052
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -146,30 +147,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 633714095734062609}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a459f2e2dca9a147851e9d03224f7b8, type: 3}
+  m_Script: {fileID: 11500000, guid: 3795291cf1d685944a32674df5301563, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 0}
-  isShooting: 0
-  isReadyToShoot: 0
-  shootingDelay: 0.5
-  lastShotTime: 0
-  maxAmmoPerClip: 10
-  currentAmmo: 0
-  totalAmmo: 30
-  reloadTime: 1.5
-  isReloading: 0
-  bulletPerBurst: 3
-  spreadIntensity: 0
-  bulletPrefab: {fileID: 1052289049260168198, guid: 1609838cd9cde6041b1074c7a6b3f780,
+  projectilePrefab: {fileID: 7085484802801605271, guid: 9dfec770831cd0346961c6d8de1ff004,
     type: 3}
-  bulletSpawnPoint: {fileID: 0}
-  bulletSpeed: 20
-  bulletLifetime: 2
-  stats: {fileID: 11400000, guid: fff0d78dec47c3748b957fa36ff8ffbe, type: 2}
-  originalLocalPosition: {x: 0, y: 0, z: 0}
-  weaponModelTransform: {fileID: 4886150407191743147}
-  currentShootingMode: 0
+  projectileSpawnPoint: {fileID: 3064037083521005419}
+  cooldown: 12
+  projectileLifeTime: 2
+  projectileSpeed: 50
+  spreadIntensity: 0
+  cooldownText: {fileID: 0}
 --- !u!1 &650507068087206632
 GameObject:
   m_ObjectHideFlags: 0
@@ -213,14 +202,14 @@ GameObject:
   - component: {fileID: 3593318228210687534}
   - component: {fileID: 1375924225364133506}
   - component: {fileID: 4868382587229573146}
-  - component: {fileID: 527773393839364708}
+  - component: {fileID: 661557296630573712}
   m_Layer: 0
   m_Name: ElectroHackSkill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5802256456147843531
 Transform:
   m_ObjectHideFlags: 0
@@ -233,7 +222,8 @@ Transform:
   m_LocalPosition: {x: 0, y: -0.29999995, z: 0.3}
   m_LocalScale: {x: 0.15, y: 0.15, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5266386077452053156}
   m_Father: {fileID: 8160491215323087203}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3593318228210687534
@@ -307,7 +297,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &527773393839364708
+--- !u!114 &661557296630573712
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -316,30 +306,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 1039618764485251716}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a459f2e2dca9a147851e9d03224f7b8, type: 3}
+  m_Script: {fileID: 11500000, guid: 59f91321e3f4ac74c82394adcb106df1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 0}
-  isShooting: 0
-  isReadyToShoot: 0
-  shootingDelay: 0.25
-  lastShotTime: 0
-  maxAmmoPerClip: 30
-  currentAmmo: 0
-  totalAmmo: 90
-  reloadTime: 5
-  isReloading: 0
-  bulletPerBurst: 3
-  spreadIntensity: 0
-  bulletPrefab: {fileID: 6514547203563394288, guid: dac74eadbd49a2e4a89e8eb3d452d79d,
+  projectilePrefab: {fileID: 7085484802801605271, guid: f1fa18bde138e674493c9c36dd816dd4,
     type: 3}
-  bulletSpawnPoint: {fileID: 0}
-  bulletSpeed: 50
-  bulletLifetime: 5
-  stats: {fileID: 11400000, guid: b98f2fed250d9c54e8d14bef92cc258e, type: 2}
-  originalLocalPosition: {x: 0, y: 0, z: 0}
-  weaponModelTransform: {fileID: 5802256456147843531}
-  currentShootingMode: 2
+  projectileSpawnPoint: {fileID: 5266386077452053156}
+  cooldown: 0.5
+  projectileLifeTime: 2
+  projectileSpeed: 40
+  radius: 5
+  maxTargets: 3
+  tickDamage: 5
+  tickInterval: 2
+  ticks: 2
+  slowMultiplier: 0.25
+  spreadIntensity: 0
+  cooldownText: {fileID: 0}
 --- !u!1 &1586848620660913248
 GameObject:
   m_ObjectHideFlags: 0
@@ -355,7 +339,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8160491215323087203
 Transform:
   m_ObjectHideFlags: 0
@@ -495,21 +479,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 0}
   isShooting: 0
-  isReadyToShoot: 0
-  shootingDelay: 0.5
   lastShotTime: 0
   maxAmmoPerClip: 10
   currentAmmo: 0
   totalAmmo: 30
   reloadTime: 1.5
   isReloading: 0
-  bulletPerBurst: 3
+  bulletPerBurst: 1
   spreadIntensity: 0
   bulletPrefab: {fileID: 1052289049260168198, guid: 1609838cd9cde6041b1074c7a6b3f780,
     type: 3}
   bulletSpawnPoint: {fileID: 5558488596238011167}
-  bulletSpeed: 20
-  bulletLifetime: 2
+  bulletSpeed: 50
+  bulletLifetime: 0.5
   stats: {fileID: 11400000, guid: fff0d78dec47c3748b957fa36ff8ffbe, type: 2}
   originalLocalPosition: {x: 0, y: 0, z: 0}
   weaponModelTransform: {fileID: 2754702622615627308}
@@ -530,7 +512,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7995055033124870633
 Transform:
   m_ObjectHideFlags: 0
@@ -686,6 +668,7 @@ MonoBehaviour:
   cameraHolder: {fileID: 5866483386157149759}
   dashFOVBoost: 50
   fovLerpSpeed: 10
+  weaponHolder: {fileID: 7995055033124870633}
 --- !u!1 &3820181279776040069
 GameObject:
   m_ObjectHideFlags: 0
@@ -5686,6 +5669,37 @@ Transform:
   - {fileID: 8557461592789821262}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4355156345760432679
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5266386077452053156}
+  m_Layer: 0
+  m_Name: ProjectileSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5266386077452053156
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4355156345760432679}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.6666665, y: 2, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5802256456147843531}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4701876041897125803
 GameObject:
   m_ObjectHideFlags: 0
@@ -5806,8 +5820,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 0}
   isShooting: 0
-  isReadyToShoot: 0
-  shootingDelay: 0.5
   lastShotTime: 0
   maxAmmoPerClip: 15
   currentAmmo: 0
@@ -5946,25 +5958,54 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 0}
   isShooting: 0
-  isReadyToShoot: 0
-  shootingDelay: 0.5
   lastShotTime: 0
   maxAmmoPerClip: 15
   currentAmmo: 0
   totalAmmo: 60
   reloadTime: 1.5
   isReloading: 0
-  bulletPerBurst: 3
+  bulletPerBurst: 1
   spreadIntensity: 0
   bulletPrefab: {fileID: 6931188823011488847, guid: ab545e48b5558b4499379105b4a94662,
     type: 3}
   bulletSpawnPoint: {fileID: 5466654700999651388}
-  bulletSpeed: 40
-  bulletLifetime: 2
+  bulletSpeed: 30
+  bulletLifetime: 0.4
   stats: {fileID: 11400000, guid: fd6132aebfaca9a4282ced406f929a09, type: 2}
   originalLocalPosition: {x: 0, y: 0, z: 0}
   weaponModelTransform: {fileID: 7732561493241444904}
   currentShootingMode: 1
+--- !u!1 &4870134526752997112
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3064037083521005419}
+  m_Layer: 0
+  m_Name: ProjectileSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3064037083521005419
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4870134526752997112}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.6666665, y: 2, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4886150407191743147}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5391034880052984008
 GameObject:
   m_ObjectHideFlags: 0
@@ -6220,21 +6261,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 0}
   isShooting: 0
-  isReadyToShoot: 0
-  shootingDelay: 0.25
   lastShotTime: 0
   maxAmmoPerClip: 30
   currentAmmo: 0
   totalAmmo: 90
   reloadTime: 5
   isReloading: 0
-  bulletPerBurst: 3
+  bulletPerBurst: 1
   spreadIntensity: 0
   bulletPrefab: {fileID: 6514547203563394288, guid: dac74eadbd49a2e4a89e8eb3d452d79d,
     type: 3}
   bulletSpawnPoint: {fileID: 3588772922881117681}
-  bulletSpeed: 50
-  bulletLifetime: 5
+  bulletSpeed: 60
+  bulletLifetime: 1
   stats: {fileID: 11400000, guid: b98f2fed250d9c54e8d14bef92cc258e, type: 2}
   originalLocalPosition: {x: 0, y: 0, z: 0}
   weaponModelTransform: {fileID: 7833964585978310834}
