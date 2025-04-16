@@ -39,5 +39,21 @@ public class JugadorMovimiento : MonoBehaviour
     }
 
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Si tocamos una plataforma, nos volvemos hijos de ella
+        if (collision.gameObject.CompareTag("Plataforma"))
+        {
+            transform.parent = collision.transform;
+        }
+    }
 
+    private void OnCollisionExit(Collision collision)
+    {
+        // Cuando ya no estamos en la plataforma, dejamos de ser su hijo
+        if (collision.gameObject.CompareTag("Plataforma"))
+        {
+            transform.parent = null;
+        }
+    }
 }
