@@ -2,17 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewBehaviourScript : MonoBehaviour
+public class PlataformaLateral: MonoBehaviour
 {
-    // Start is called before the first frame update
+    public float velocidad = 2f;
+    public float distancia = 3f;
+
+    private Vector3 posicionInicial;
+    private bool moviendoDerecha = true;
+
     void Start()
     {
-        
+        posicionInicial = transform.position;
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
-        
+        if (moviendoDerecha)
+        {
+            transform.position += Vector3.right * velocidad * Time.deltaTime;
+            if(transform.position.x >= posicionInicial.x + distancia)
+            {
+                moviendoDerecha = false;
+            }
+        }
+        else
+        {
+            transform.position += Vector3.left * velocidad * Time.deltaTime;
+            if(transform.position.x<= posicionInicial.x - distancia)
+            {
+                moviendoDerecha = true;
+            }
+        }
     }
 }
