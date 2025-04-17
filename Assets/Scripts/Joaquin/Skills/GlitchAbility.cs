@@ -14,20 +14,14 @@ public class GlitchAbility : MonoBehaviour
     [SerializeField] private float cooldown = 12f;
     [SerializeField] private float projectileLifeTime = 2f;
     [SerializeField] private float projectileSpeed = 50f;
+    [SerializeField] private float slowDuration = 3f;
+    [SerializeField] private float slowMultiplier = 0.5f;
 
     [Header("Spread")]
     [SerializeField] private float spreadIntensity;
 
-    [Header("UI")]
-    [SerializeField] private TMP_Text cooldownText;
-
     private bool canUse = true;
-    private float currentCooldown = 0f;
-
-    private void Start()
-    {
-        cooldownText.text = "Glitch: Ready";
-    }
+    private float currentCooldown = 0;
 
     private void Update()
     {
@@ -39,26 +33,28 @@ public class GlitchAbility : MonoBehaviour
         if (!canUse)
         {
             currentCooldown -= Time.deltaTime;
-            cooldownText.text = $"Glitch: {Mathf.Ceil(currentCooldown)}";
 
             if (currentCooldown <= 0f)
             {
                 canUse = true;
-                cooldownText.text = "Glitch: Ready";
             }
         }
     }
 
     private void ActivateAbility()
     {
-        Vector3 direction = CalculateDirectionAndSpread().normalized;
+        Vector3 direction = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f)).direction;
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));
+        projectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
+
+        projectile.GetComponent<GlitchShot>().Initialize(slowMultiplier, slowDuration);
+        Destroy(projectile, projectileLifeTime);
+
         canUse = false;
         currentCooldown = cooldown;
-        projectile.GetComponent<Rigidbody>().AddForce(direction * projectileSpeed, ForceMode.Impulse);
-        Destroy(projectile, projectileLifeTime);
+        HUDManager.Instance.UpdateAbilityStatus("Glitch", currentCooldown, canUse);
     }
-
+    /*
     private Vector3 CalculateDirectionAndSpread()
     {
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
@@ -71,4 +67,5 @@ public class GlitchAbility : MonoBehaviour
 
         return direction + new Vector3(x, y, 0);
     }
+    */
 }

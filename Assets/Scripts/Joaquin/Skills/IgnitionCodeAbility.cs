@@ -1,31 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
-public class ElectroHackAbility : MonoBehaviour
+public class IgnitionCodeAbility : MonoBehaviour
 {
     [Header("Camera")]
     [SerializeField] private Camera playerCamera;
 
-    [Header("ElectroHack Settings")]
+    [Header("Ignition Settings")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform projectileSpawnPoint;
-    [SerializeField] private float cooldown = 10f;
+    [SerializeField] private float cooldown = 15f;
     [SerializeField] private float projectileLifeTime = 2f;
-    [SerializeField] private float projectileSpeed = 20f;
-    [SerializeField] private float radius = 5f;
-    [SerializeField] private int maxTargets = 3;
-    [SerializeField] private float tickDamage = 15;
-    [SerializeField] private float tickInterval = 1f;
-    [SerializeField] private int ticks = 2;
-    [SerializeField] private float slowMultiplier = 0.75f; // 25% menos velocidad
+    [SerializeField] private float projectileSpeed = 40f;
+    [SerializeField] private float radius = 3f;
+    [SerializeField] private float damagePerSecond = 8f;
+    [SerializeField] private float duration = 3f;
+    [SerializeField] private LayerMask enemyLayer;
 
     [Header("Spread")]
     [SerializeField] private float spreadIntensity;
 
     private bool canUse = true;
     private float currentCooldown = 0;
+
+    private void Start()
+    {
+        HUDManager.Instance.UpdateAbilityStatus("Ignite", currentCooldown, canUse);
+    }
 
     private void Update()
     {
@@ -51,12 +53,12 @@ public class ElectroHackAbility : MonoBehaviour
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));
         projectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
 
-        projectile.GetComponent<ElectroHackShot>().Initialize(radius, maxTargets, tickDamage, tickInterval, ticks, slowMultiplier);
+        projectile.GetComponent<IgnitionCodeShot>().Initialize(radius, damagePerSecond, duration, enemyLayer);
         Destroy(projectile, projectileLifeTime);
 
         canUse = false;
         currentCooldown = cooldown;
-        HUDManager.Instance.UpdateAbilityStatus("Hack", currentCooldown, canUse);
+        HUDManager.Instance.UpdateAbilityStatus("Ignite", currentCooldown, canUse);
     }
     /*
     private Vector3 CalculateDirectionAndSpread()

@@ -9,6 +9,11 @@ public class EnemyAITest : MonoBehaviour
     [SerializeField] private int fragments = 50; // Fragmentos de información que suelta el enemigo
     private float currentSpeed;
 
+    // Referencias a las coroutines activas
+    private Coroutine slowCoroutine;
+    private Coroutine electroHackCoroutine;
+    private Coroutine ignitionCoroutine;
+
     private void Start()
     {
         currentSpeed = baseSpeed;
@@ -16,6 +21,12 @@ public class EnemyAITest : MonoBehaviour
 
     public void ApplySlow(float multiplier, float duration)
     {
+        // Detener la coroutine anterior si está activa
+        if (slowCoroutine != null)
+        {
+            StopCoroutine(slowCoroutine);
+        }
+
         StartCoroutine(SlowRoutine(multiplier, duration));
     }
 
@@ -28,6 +39,12 @@ public class EnemyAITest : MonoBehaviour
 
     public void ApplyElectroHack(float tickDamage, float tickInterval, int ticks, float slowMultiplier)
     {
+        // Detener la coroutine anterior si está activa
+        if (electroHackCoroutine != null)
+        {
+            StopCoroutine(electroHackCoroutine);
+        }
+
         StartCoroutine(ElectroHackRoutine(tickDamage, tickInterval, ticks, slowMultiplier));
     }
 
@@ -42,9 +59,30 @@ public class EnemyAITest : MonoBehaviour
         }
     }
 
+    public void ApplyIgnition(float damagePerSecond, float duration)
+    {
+        // Detener la coroutine anterior si está activa
+        if (ignitionCoroutine != null)
+        {
+            StopCoroutine(ignitionCoroutine);
+        }
+
+        StartCoroutine(IgnitionRoutine(damagePerSecond, duration));
+    }
+
+    private IEnumerator IgnitionRoutine(float damagePerSecond, float duration)
+    {
+        int ticks = Mathf.FloorToInt(duration);
+        for (int i = 0; i < ticks; i++)
+        {
+            TakeDamage(damagePerSecond);
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
     public void TakeDamage(float dmg)
     {
-        life -= dmg; // Ejemplo de daño fijo
+        life -= dmg; // Resta el daño a la vida del enemigo
         if (life <= 0)
         {
             Destroy(gameObject); // Destruye el enemigo al morir

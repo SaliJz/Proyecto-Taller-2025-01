@@ -4,19 +4,26 @@ using UnityEngine;
 
 public class GlitchShot : MonoBehaviour
 {
-    [SerializeField] private float slowDuration = 5f;
-    [SerializeField] private float slowMultiplier = 0.5f;
+    private float slowDuration;
+    private float slowMultiplier;
 
-    private void OnTriggerEnter(Collider other)
+    public void Initialize(float slowDuration, float slowMultiplier)
     {
-        if (other.CompareTag("Enemy")) // Asegúrate de que el enemigo tenga este tag
+        this.slowDuration = slowDuration;
+        this.slowMultiplier = slowMultiplier;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
         {
-            EnemyAITest enemy = other.GetComponent<EnemyAITest>();
+            EnemyAITest enemy = collision.gameObject.GetComponent<EnemyAITest>();
             if (enemy != null)
             {
                 enemy.ApplySlow(slowMultiplier, slowDuration);
             }
-            Destroy(gameObject); // Se destruye al impactar
         }
+
+        Destroy(gameObject);
     }
 }
