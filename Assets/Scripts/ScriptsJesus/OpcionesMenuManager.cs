@@ -13,6 +13,9 @@ public class OpcionesMenuManager : MonoBehaviour
     public Slider sfxSlider;
     public Slider sensitivitySlider;
     public Button retryButton;
+    public TextMeshProUGUI volumeValueText;
+    public TextMeshProUGUI sfxValueText;
+    public TextMeshProUGUI sensitivityValueText;
 
     Resolution[] resolutions;
 
@@ -44,23 +47,25 @@ public class OpcionesMenuManager : MonoBehaviour
     {
         Resolution selected = resolutions[resolutionDropdown.value];
         Screen.SetResolution(selected.width, selected.height, FullScreenMode.Windowed);
+        Debug.Log("Resolución cambiada a: " + selected.width + " x " + selected.height);
     }
 
 
     void SetVolume(float value)
     {
-        // Asume que tienes un AudioMixer
+        volumeValueText.text = Mathf.RoundToInt(value * 100) + "%";
         Debug.Log("Volumen general: " + value);
-        // Aquí podrías usar un AudioMixer para cambiar el volumen real
     }
 
     void SetSFX(float value)
     {
+        sfxValueText.text = Mathf.RoundToInt(value * 100) + "%";
         Debug.Log("Volumen de efectos: " + value);
     }
 
     void SetSensitivity(float value)
     {
+        sensitivityValueText.text = Mathf.RoundToInt(value * 100) + "%";
         Debug.Log("Sensibilidad: " + value);
         
     }
