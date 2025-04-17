@@ -3,88 +3,51 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using TMPro;
+
 
 public class MenuOpciones : MonoBehaviour
 {
-    public string nombreEscenaRetry = "MenuPrincipal";
+    public Button resolucionesButton;
+    public Button volumenButton;
+    public Button sensibilidadButton;
+    public Button volverButton;
 
-    [Header("SCREEN")]
-    public TMP_Dropdown resolutionDropdown;
-    private Resolution[] resolutions;
-    private int currentResolutionIndex;
+    // Nombres de las escenas a las que se irá
+    public string nombreEscenaResoluciones = "Resoluciones";
+    public string nombreEscenaVolumen = "Volumen";
+    public string nombreEscenaSensibilidad = "Sensibilidad";
+    public string nombreEscenaMenuPrincipal = "MenuPrincipalJesus"; // Asegúrate de que el nombre coincida con tu escena principal
 
-    [Header("SOUND")]
-    public Slider volumeSlider;
-    public Slider sfxSlider;
-
-    [Header("GAMEPLAY")]
-    public Slider sensitivitySlider;
-
-     void Start()
+    void Start()
     {
-        // Cargar resoluciones
-        resolutions = Screen.resolutions;
-        resolutionDropdown.ClearOptions();
-
-        int currentResIndex = 0;
-        List<string> options = new List<string>();
-
-        for (int i = 0; i < resolutions.Length; i++)
-        {
-            string option = resolutions[i].width + "x" + resolutions[i].height;
-            options.Add(option);
-
-            if (resolutions[i].width == Screen.currentResolution.width &&
-                resolutions[i].height == Screen.currentResolution.height)
-            {
-                currentResIndex = i;
-            }
-        }
-
-        resolutionDropdown.AddOptions(options);
-        resolutionDropdown.value = currentResIndex;
-        resolutionDropdown.RefreshShownValue();
-
-        // Opcional: Cargar valores previos
-        volumeSlider.value = PlayerPrefs.GetFloat("Volume", 1f);
-        sfxSlider.value = PlayerPrefs.GetFloat("SFX", 1f);
-        sensitivitySlider.value = PlayerPrefs.GetFloat("Sensitivity", 1f);
-
+        resolucionesButton.onClick.AddListener(IrAResoluciones);
+        volumenButton.onClick.AddListener(IrAVolumen);
+        sensibilidadButton.onClick.AddListener(IrASensibilidad);
+        volverButton.onClick.AddListener(VolverAlMenuPrincipal);
     }
 
-    public void SetResolution(int resolutionIndex)
+
+    public void IrAResoluciones()
     {
-        Resolution res = resolutions[resolutionIndex];
-        Screen.SetResolution(res.width, res.height, Screen.fullScreen);
+        SceneManager.LoadScene(nombreEscenaResoluciones);
     }
 
-    public void ApplyResolution()
+    public void IrAVolumen()
     {
-        SetResolution(resolutionDropdown.value);
+        SceneManager.LoadScene(nombreEscenaVolumen);
     }
 
-    public void SetVolume(float volume)
+    public void IrASensibilidad()
     {
-        AudioListener.volume = volume;
-        PlayerPrefs.SetFloat("Volume", volume);
+        SceneManager.LoadScene(nombreEscenaSensibilidad);
     }
 
-    public void SetSFXVolume(float sfx)
+    public void VolverAlMenuPrincipal()
     {
-        // Suponiendo que tienes control independiente de SFX
-        PlayerPrefs.SetFloat("SFX", sfx);
+        SceneManager.LoadScene(nombreEscenaMenuPrincipal);
     }
 
-    public void SetSensitivity(float sens)
-    {
-        PlayerPrefs.SetFloat("Sensitivity", sens);
-    }
 
-    public void RetryGame()
-    {
-        SceneManager.LoadScene(nombreEscenaRetry);
-    }
 
 
 

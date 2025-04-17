@@ -10,10 +10,13 @@ public class MenuController : MonoBehaviour
     public Button jugarButton;
     public Button creditosButton;
     public Button salirButton;
+    public Button opcionesButton;
 
     // Variables para los nombres de las escenas, se pueden cambiar desde el Inspector
     public string nombreEscenaJuego = "Jesus";
     public string nombreEscenaCreditos = "CreditosJesus";
+    public string nombreEscenaOpciones = "MenuOpciones";
+
 
     void Start()
     {
@@ -21,6 +24,7 @@ public class MenuController : MonoBehaviour
         jugarButton.onClick.AddListener(StartGame);
         creditosButton.onClick.AddListener(ShowCredits);
         salirButton.onClick.AddListener(QuitGame);
+        opcionesButton.onClick.AddListener(ShowOpciones);
     }
 
 
@@ -40,6 +44,11 @@ public class MenuController : MonoBehaviour
     // Método para mostrar los créditos
     public void ShowCredits()
     {
-        SceneManager.LoadScene(nombreEscenaCreditos);  // Carga la escena de créditos
+        SceneManager.LoadScene(nombreEscenaCreditos);  
+    }
+
+    public void ShowOpciones()
+    {
+        SceneManager.LoadScene(nombreEscenaOpciones);  
     }
 }
