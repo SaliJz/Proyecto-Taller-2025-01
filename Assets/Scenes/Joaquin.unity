@@ -1615,7 +1615,7 @@ GameObject:
   - component: {fileID: 617634750}
   - component: {fileID: 617634749}
   - component: {fileID: 617634748}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: EnemyTest (1)
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -1760,6 +1760,7 @@ MonoBehaviour:
   weaponNameText: {fileID: 256651631}
   weaponIcon: {fileID: 366383813}
   infoFragmentsText: {fileID: 531732101}
+  abilityStatusText: {fileID: 1405030986}
 --- !u!1 &685305039
 GameObject:
   m_ObjectHideFlags: 0
@@ -1960,7 +1961,7 @@ GameObject:
   - component: {fileID: 751982206}
   - component: {fileID: 751982205}
   - component: {fileID: 751982204}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: EnemyTest (2)
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -2614,7 +2615,7 @@ GameObject:
   - component: {fileID: 1085612499}
   - component: {fileID: 1085612495}
   - component: {fileID: 1085612501}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: EnemyTest
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -4819,19 +4820,9 @@ PrefabInstance:
       objectReference: {fileID: 432355536}
     - target: {fileID: 661557296630573712, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
-      propertyPath: cooldownText
-      value: 
-      objectReference: {fileID: 531732101}
-    - target: {fileID: 661557296630573712, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 432355536}
-    - target: {fileID: 891735800876516052, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: cooldownText
-      value: 
-      objectReference: {fileID: 531732101}
     - target: {fileID: 891735800876516052, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: playerCamera
@@ -4852,16 +4843,16 @@ PrefabInstance:
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 432355536}
-    - target: {fileID: 3709431090654905959, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: playerCamera
-      value: 
-      objectReference: {fileID: 432355536}
     - target: {fileID: 4187975560967645531, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: m_Name
       value: PlayerWithCamera
       objectReference: {fileID: 0}
+    - target: {fileID: 5060233725945681973, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: playerCamera
+      value: 
+      objectReference: {fileID: 432355536}
     - target: {fileID: 6186703028947052587, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: weaponNameText
@@ -4872,6 +4863,11 @@ PrefabInstance:
       propertyPath: weaponIconImage
       value: 
       objectReference: {fileID: 366383813}
+    - target: {fileID: 6189682114585167975, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: playerCamera
+      value: 
+      objectReference: {fileID: 432355536}
     - target: {fileID: 8129634047586214791, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: m_LocalPosition.x

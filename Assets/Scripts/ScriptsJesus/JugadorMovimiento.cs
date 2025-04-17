@@ -7,7 +7,7 @@ public class JugadorMovimiento : MonoBehaviour
     [SerializeField] private float velocidad = 5f;
     [SerializeField] private float fuerzaSalto = 7f;
     private Rigidbody rb;
-    private bool enSuelo;
+   
 
     void Start()
     {
@@ -27,27 +27,33 @@ public class JugadorMovimiento : MonoBehaviour
 
         //Saltar cuando esta en el suelo 
 
-        if (Input.GetButtonDown("Jump") && enSuelo)
+        if (Input.GetButtonDown("Jump") && EstaEnSuelo())
         {
             rb.AddForce(Vector3.up * fuerzaSalto, ForceMode.Impulse);
         }
     }
 
-    // Detectar contacto con el suelo
-    void OnCollisionEnter(Collision collision)
+    private bool EstaEnSuelo()
     {
-        if (collision.gameObject.CompareTag("Suelo"))
+        return Physics.Raycast(transform.position, Vector3.down, 1.1f); // Puedes ajustar el 1.1f si salta en el aire
+    }
+
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Si tocamos una plataforma, nos volvemos hijos de ella
+        if (collision.gameObject.CompareTag("Plataforma"))
         {
-            enSuelo = true;
+            transform.parent = collision.transform;
         }
     }
 
-    void OnCollisionExit(Collision collision)
+    private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Suelo"))
+        // Cuando ya no estamos en la plataforma, dejamos de ser su hijo
+        if (collision.gameObject.CompareTag("Plataforma"))
         {
-            enSuelo = false;
+            transform.parent = null;
         }
     }
-
 }

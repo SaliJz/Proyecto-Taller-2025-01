@@ -20,6 +20,9 @@ public class HUDManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI infoFragmentsText;
 
+    [Header("Cooldowns de habilidades")]
+    [SerializeField] private TextMeshProUGUI abilityStatusText;
+
     private int infoFragments = 0;
 
     private void Awake()
@@ -38,10 +41,10 @@ public class HUDManager : MonoBehaviour
     {
         healthBar.value = 1;
         healthBarText.text = (healthBar.value * 100).ToString();
-
         AddInfoFragment(0);
 
         //infoFragmentsText.text = "Info Fragments: " + infoFragments;
+
     }
 
     public void UpdateHealth(int current, int max)
@@ -69,5 +72,16 @@ public class HUDManager : MonoBehaviour
         infoFragments += fragments;
         infoFragmentsText.text = "Info Fragments: " + infoFragments;
     }
-    
+
+    public void UpdateAbilityStatus(string abilityName, float cooldownRemaining, bool isReady)
+    {
+        if (isReady)
+        {
+            abilityStatusText.text = $"{abilityName}: ¡Listo!";
+        }
+        else
+        {
+            abilityStatusText.text = $"{abilityName}: Cooldown - {Mathf.Ceil(cooldownRemaining)}s";
+        }
+    }
 }
