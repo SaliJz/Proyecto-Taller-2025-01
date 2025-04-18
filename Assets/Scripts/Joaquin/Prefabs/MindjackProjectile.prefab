@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 7800274408525321455}
   - component: {fileID: 604538648066038646}
   - component: {fileID: -7812154640510935172}
-  - component: {fileID: -2879506822229056674}
+  - component: {fileID: 3729787200298174333}
   m_Layer: 0
-  m_Name: IgnitionCodeProjectile
+  m_Name: MindjackProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1e0728490cf3caa4f9493bd675826d45, type: 2}
+  - {fileID: 2100000, guid: 36975dd292f24e64ca70f09f9ba2d5d7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -134,7 +134,7 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 2
---- !u!114 &-2879506822229056674
+--- !u!114 &3729787200298174333
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -143,6 +143,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 7085484802801605271}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21ded1022cc271140b69b62dafd6683a, type: 3}
+  m_Script: {fileID: 11500000, guid: 85f09e2127dcd874fa0f3a84e9e62545, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

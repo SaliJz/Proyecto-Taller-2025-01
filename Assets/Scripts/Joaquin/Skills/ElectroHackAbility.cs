@@ -7,10 +7,10 @@ public class ElectroHackAbility : MonoBehaviour
 {
     [Header("Camera")]
     [SerializeField] private Camera playerCamera;
-
-    [Header("ElectroHack Settings")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform projectileSpawnPoint;
+
+    [Header("ElectroHack Settings")]
     [SerializeField] private float cooldown = 10f;
     [SerializeField] private float projectileLifeTime = 2f;
     [SerializeField] private float projectileSpeed = 20f;

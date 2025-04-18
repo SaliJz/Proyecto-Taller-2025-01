@@ -7,8 +7,10 @@ public class IgnitionCodeShot : MonoBehaviour
     private float radius;
     private float damagePerSecond;
     private float duration;
-    private int maxEnemies;
     private LayerMask enemyLayer;
+
+    [SerializeField]
+    private GameObject ignitionAreaEffectPrefab;
 
     public void Initialize(float radius, float damagePerSecond, float duration, LayerMask enemyLayer)
     {
@@ -20,7 +22,12 @@ public class IgnitionCodeShot : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            ApplyIgnition(transform.position);
+        }
+
+        if (collision.gameObject.CompareTag("Ground"))
         {
             ApplyIgnitionArea(transform.position);
         }
@@ -28,7 +35,7 @@ public class IgnitionCodeShot : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void ApplyIgnitionArea(Vector3 center)
+    private void ApplyIgnition(Vector3 center)
     {
         Collider[] hits = Physics.OverlapSphere(center, radius, enemyLayer);
         foreach (Collider col in hits)
@@ -45,6 +52,20 @@ public class IgnitionCodeShot : MonoBehaviour
         }
 
         // Aquí puedes instanciar un efecto visual de explosión o quemadura
+    }
+
+    private void ApplyIgnitionArea(Vector3 center)
+    {
+        // Instanciar el efecto visual de ascuas
+        if (ignitionAreaEffectPrefab != null)
+        {
+            GameObject ignitionEffect = Instantiate(ignitionAreaEffectPrefab, center, Quaternion.identity);
+            IgnitionAreaEffect areaEffect = ignitionEffect.GetComponent<IgnitionAreaEffect>();
+            if (areaEffect != null)
+            {
+                areaEffect.Initialize(radius, damagePerSecond, duration, enemyLayer);
+            }
+        }
     }
 
     private void OnDrawGizmos()

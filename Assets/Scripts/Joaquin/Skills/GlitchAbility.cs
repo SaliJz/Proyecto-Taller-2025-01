@@ -7,10 +7,10 @@ public class GlitchAbility : MonoBehaviour
 {
     [Header("Camera")]
     [SerializeField] private Camera playerCamera;
-
-    [Header("GlitchTime Settings")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform projectileSpawnPoint;
+
+    [Header("GlitchTime Settings")]
     [SerializeField] private float cooldown = 12f;
     [SerializeField] private float projectileLifeTime = 2f;
     [SerializeField] private float projectileSpeed = 50f;

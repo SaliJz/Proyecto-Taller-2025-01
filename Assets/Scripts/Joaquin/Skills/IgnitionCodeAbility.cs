@@ -6,10 +6,10 @@ public class IgnitionCodeAbility : MonoBehaviour
 {
     [Header("Camera")]
     [SerializeField] private Camera playerCamera;
-
-    [Header("Ignition Settings")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform projectileSpawnPoint;
+
+    [Header("Ignition Settings")]
     [SerializeField] private float cooldown = 15f;
     [SerializeField] private float projectileLifeTime = 2f;
     [SerializeField] private float projectileSpeed = 40f;

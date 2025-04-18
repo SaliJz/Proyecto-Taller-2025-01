@@ -1,22 +1,59 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
 public class EnemyAITest : MonoBehaviour
 {
+    [Header("Stats")]
     [SerializeField] private float baseSpeed = 3f;
     [SerializeField] private float life = 100f;
     [SerializeField] private int fragments = 50; // Fragmentos de información que suelta el enemigo
-    private float currentSpeed;
+    [SerializeField] private float contactDamage = 10f;
+    [SerializeField] private float attackCooldown = 1f;
+    [SerializeField] private float attackRange = 20f;
+
+    [SerializeField] private float currentSpeed;
+    private bool isMindjacked = false;
+    private float lastAttackTime = 0f;
+
+    [Header("Glow")]
+    [SerializeField] private Renderer meshRenderer; // arrastrar el hijo con Mesh Renderer
+    [SerializeField] private Material defaultMaterial;
+    [SerializeField] private Material mindjackMaterial;
 
     // Referencias a las coroutines activas
     private Coroutine slowCoroutine;
     private Coroutine electroHackCoroutine;
     private Coroutine ignitionCoroutine;
+    private Coroutine mindjackCoroutine;
+
+    private Transform player;
+
 
     private void Start()
     {
         currentSpeed = baseSpeed;
+        if (meshRenderer != null && defaultMaterial != null)
+        {
+            meshRenderer.material = defaultMaterial;
+        }
+    }
+
+    private void Update()
+    {
+        transform.Translate(Vector3.forward * currentSpeed * Time.deltaTime);
+    }
+
+    public void TakeDamage(float dmg)
+    {
+        life -= dmg; // Resta el daño a la vida del enemigo
+        if (life <= 0)
+        {
+            Destroy(gameObject); // Destruye el enemigo al morir
+            HUDManager.Instance.AddInfoFragment(fragments); // Actualiza los fragmentos de información
+        }
     }
 
     public void ApplySlow(float multiplier, float duration)
@@ -80,19 +117,114 @@ public class EnemyAITest : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float dmg)
+    public void ApplyMindjack(float damagePerSecond, float duration)
     {
-        life -= dmg; // Resta el daño a la vida del enemigo
-        if (life <= 0)
+        // Detener la coroutine anterior si está activa
+        if (isMindjacked) return;
+        isMindjacked = true;
+
+        // Detener la coroutine anterior si está activa
+        if (mindjackCoroutine != null)
         {
-            Destroy(gameObject); // Destruye el enemigo al morir
-            HUDManager.Instance.AddInfoFragment(fragments); // Actualiza los fragmentos de información
+            StopCoroutine(mindjackCoroutine);
+        }
+
+        StartCoroutine(MindjackRoutine(damagePerSecond, duration));
+
+        if (meshRenderer != null && mindjackMaterial != null)
+        {
+            meshRenderer.material = mindjackMaterial;
         }
     }
 
-    private void Update()
+    private IEnumerator MindjackRoutine(float damagePerSecond, float duration)
     {
-        // ejemplo simple
-        transform.Translate(Vector3.forward * currentSpeed * Time.deltaTime);
+        float elapsed = 0f;
+        float damageInterval = 1f;
+
+        while (elapsed < duration && life > 0)
+        {
+            GameObject target = FindNearestEnemy();
+            if (target != null)
+            {
+                float distance = Vector3.Distance(transform.position, target.transform.position);
+
+                // Movimiento hacia el enemigo
+                if (distance > 1.5f) // separación mínima
+                {
+                    transform.LookAt(target.transform);
+                    transform.position = Vector3.MoveTowards(transform.position, target.transform.position, currentSpeed * Time.deltaTime);
+                }
+
+                // Ataque si está cerca
+                if (distance <= 2f && Time.time >= lastAttackTime + attackCooldown)
+                {
+                    EnemyAITest other = target.GetComponent<EnemyAITest>();
+                    if (other != null && !other.isMindjacked)
+                    {
+                        other.TakeDamage(contactDamage);
+                        lastAttackTime = Time.time;
+                    }
+                }
+            }
+
+            TakeDamage(damagePerSecond); // daño por segundo
+
+            yield return new WaitForSeconds(damageInterval);
+            elapsed += damageInterval;
+        }
+
+        // Fin del efecto Mindjack
+        isMindjacked = false;
+
+        // Restaurar material si es necesario
+        if (meshRenderer != null && defaultMaterial != null)
+        {
+            meshRenderer.material = defaultMaterial;
+        }
+    }
+
+    private GameObject FindNearestEnemy()
+    {
+        GameObject nearest = null;
+        float shortestDistance = Mathf.Infinity;
+
+        int enemyLayer = LayerMask.GetMask("Enemy");
+        Collider[] hits = Physics.OverlapSphere(transform.position, attackRange, enemyLayer);
+
+        foreach (var col in hits)
+        {
+            if (col.gameObject != gameObject)
+            {
+                EnemyAITest other = col.GetComponent<EnemyAITest>();
+                if (other != null && !other.isMindjacked)
+                {
+                    float distance = Vector3.Distance(transform.position, col.transform.position);
+                    if (distance < shortestDistance)
+                    {
+                        shortestDistance = distance;
+                        nearest = col.gameObject;
+                    }
+                }
+            }
+        }
+
+        return nearest;
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (!isMindjacked && collision.gameObject.CompareTag("Player"))
+        {
+            if (Time.time >= lastAttackTime + attackCooldown)
+            {
+                PlayerHealth player = collision.gameObject.GetComponent<PlayerHealth>();
+                if (player != null)
+                {
+                    player.TakeDamage((int)contactDamage);
+                    lastAttackTime = Time.time;
+                }
+            }
+        }
     }
 }
