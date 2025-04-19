@@ -1,4 +1,3 @@
-// VidaEnemigoGeneral.cs
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,14 +5,18 @@ public class VidaEnemigoGeneral : MonoBehaviour
 {
     public enum TipoEnemigo { Ametralladora = 0, Pistola = 1, Escopeta = 2 }
 
-    // Configuracion del enemigo
-    public TipoEnemigo tipo;      // Se asigna en Start()
-    public float vida = 100f;     // Vida inicial
-    public Slider sliderVida;     // Slider UI opcional
+    // Configuración del enemigo
+    public TipoEnemigo tipo;           // Se asigna en Start()
+    public float vida = 100f;          // Vida inicial
+    public Slider sliderVida;          // Slider UI opcional
 
-    // Danio por bala
-    public float danioAlto = 20f; // Cuando la bala NO coincide con el tipo
-    public float danioBajo = 5f;  // Cuando la bala coincide con el tipo
+    // Daño por bala
+    public float danioAlto = 20f;      // Cuando la bala NO coincide con el tipo
+    public float danioBajo = 5f;       // Cuando la bala coincide con el tipo
+
+    // Prefabs para instanciar al morir
+    [Tooltip("Arrastra aquí los prefabs que pueden generarse al morir")]
+    public GameObject[] prefabsAlMorir;
 
     void Start()
     {
@@ -21,7 +24,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
         tipo = (TipoEnemigo)Random.Range(0, 3);
         Debug.Log("[VidaEnemigo] Tipo asignado: " + tipo);
 
-        // Pintar el color segun el tipo
+        // Pintar el color según el tipo
         Color colorAsignado;
         switch (tipo)
         {
@@ -31,15 +34,12 @@ public class VidaEnemigoGeneral : MonoBehaviour
             default: colorAsignado = Color.white; break;
         }
 
+        // Aplicar color (3D o 2D)
         Renderer rend3D = GetComponent<Renderer>();
         if (rend3D != null)
             rend3D.material.color = colorAsignado;
-        else
-        {
-            SpriteRenderer rend2D = GetComponent<SpriteRenderer>();
-            if (rend2D != null)
-                rend2D.color = colorAsignado;
-        }
+        else if (TryGetComponent<SpriteRenderer>(out var rend2D))
+            rend2D.color = colorAsignado;
 
         // Inicializar slider
         if (sliderVida != null)
@@ -64,10 +64,10 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
     public void RecibirDanioPorBala(string tagBala)
     {
-        // Por defecto aplicamos danio alto
+        // Por defecto aplicamos daño alto
         float danioAAplicar = danioAlto;
 
-        // Si coincide bala <-> tipo, aplicamos danio bajo
+        // Si coincide bala <-> tipo, aplicamos daño bajo
         if ((tipo == TipoEnemigo.Ametralladora && tagBala == "BalaAmetralladora") ||
             (tipo == TipoEnemigo.Pistola && tagBala == "BalaPistola") ||
             (tipo == TipoEnemigo.Escopeta && tagBala == "BalaEscopeta"))
@@ -80,13 +80,27 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
     void Morir()
     {
-        // Aqui puedes poner particulas, sonido, etc.
+        // Instanciar un prefab de los disponibles (si hay al menos uno)
+        if (prefabsAlMorir != null && prefabsAlMorir.Length > 0)
+        {
+            // Elegir uno al azar
+            int idx = Random.Range(0, prefabsAlMorir.Length);
+            GameObject prefabSeleccionado = prefabsAlMorir[idx];
+
+            // Instanciar en la posición y rotación actuales
+            Instantiate(prefabSeleccionado, transform.position, transform.rotation);
+        }
+        // Aquí puedes agregar partículas, sonido, etc.
+
+        // Destruir el objeto enemigo
         Destroy(gameObject);
     }
 }
 
 
-//// VidaEnemigoGeneral.cs
+
+
+
 //using UnityEngine;
 //using UnityEngine.UI;
 
@@ -94,54 +108,42 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //{
 //    public enum TipoEnemigo { Ametralladora = 0, Pistola = 1, Escopeta = 2 }
 
-//    [Header("Configuración de enemigo")]
-//    public TipoEnemigo tipo;                // Se sobreescribe en Start()
-//    public float vida = 100f;               // Vida total
-//    public Slider sliderVida;               // Slider UI (opcional)
+//    // Configuracion del enemigo
+//    public TipoEnemigo tipo;      // Se asigna en Start()
+//    public float vida = 100f;     // Vida inicial
+//    public Slider sliderVida;     // Slider UI opcional
 
-//    [Header("Daño por balas")]
-//    public float danioCoincidente = 20f;    // Ahora es el daño ALTO (cuando NO coincide)
-//    public float danioNoCoincidente = 5f;   // Ahora es el daño BAJO (cuando SÍ coincide)
+//    // Danio por bala
+//    public float danioAlto = 20f; // Cuando la bala NO coincide con el tipo
+//    public float danioBajo = 5f;  // Cuando la bala coincide con el tipo
 
 //    void Start()
 //    {
-//        // 1) Elegir al azar uno de los 3 tipos de enemigo
+//        // Elegir tipo al azar
 //        tipo = (TipoEnemigo)Random.Range(0, 3);
-//        Debug.Log($"[VidaEnemigo] Tipo asignado: {tipo}");
+//        Debug.Log("[VidaEnemigo] Tipo asignado: " + tipo);
 
-//        // 2) Pintar al enemigo del color asociado al tipo
+//        // Pintar el color segun el tipo
 //        Color colorAsignado;
 //        switch (tipo)
 //        {
-//            case TipoEnemigo.Ametralladora:
-//                colorAsignado = Color.blue;
-//                break;
-//            case TipoEnemigo.Pistola:
-//                colorAsignado = Color.red;
-//                break;
-//            case TipoEnemigo.Escopeta:
-//                colorAsignado = Color.green;
-//                break;
-//            default:
-//                colorAsignado = Color.white;
-//                break;
+//            case TipoEnemigo.Ametralladora: colorAsignado = Color.blue; break;
+//            case TipoEnemigo.Pistola: colorAsignado = Color.red; break;
+//            case TipoEnemigo.Escopeta: colorAsignado = Color.green; break;
+//            default: colorAsignado = Color.white; break;
 //        }
 
-//        // Si es un objeto 3D con Renderer
 //        Renderer rend3D = GetComponent<Renderer>();
 //        if (rend3D != null)
-//        {
 //            rend3D.material.color = colorAsignado;
-//        }
 //        else
 //        {
-//            // Si es un sprite 2D
 //            SpriteRenderer rend2D = GetComponent<SpriteRenderer>();
 //            if (rend2D != null)
 //                rend2D.color = colorAsignado;
 //        }
 
-//        // 3) Inicializar slider de vida
+//        // Inicializar slider
 //        if (sliderVida != null)
 //        {
 //            sliderVida.maxValue = vida;
@@ -149,7 +151,6 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //        }
 //    }
 
-//    // Reduce vida y actualiza slider
 //    public void RecibirDanio(float danio)
 //    {
 //        vida -= danio;
@@ -163,18 +164,17 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //        }
 //    }
 
-//    // Llamar desde la bala, pasándole su tag
 //    public void RecibirDanioPorBala(string tagBala)
 //    {
-//        // Por defecto daño ALTO (cuando NO coincide)
-//        float danioAAplicar = danioCoincidente;
+//        // Por defecto aplicamos danio alto
+//        float danioAAplicar = danioAlto;
 
-//        // Si el tag coincide con el tipo de enemigo, aplicamos el daño BAJO
+//        // Si coincide bala <-> tipo, aplicamos danio bajo
 //        if ((tipo == TipoEnemigo.Ametralladora && tagBala == "BalaAmetralladora") ||
 //            (tipo == TipoEnemigo.Pistola && tagBala == "BalaPistola") ||
 //            (tipo == TipoEnemigo.Escopeta && tagBala == "BalaEscopeta"))
 //        {
-//            danioAAplicar = danioNoCoincidente;
+//            danioAAplicar = danioBajo;
 //        }
 
 //        RecibirDanio(danioAAplicar);
@@ -182,7 +182,8 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
 //    void Morir()
 //    {
-//        // Aquí puedes reproducir partículas, sonidos, etc.
+//        // Aqui puedes poner particulas, sonido, etc.
 //        Destroy(gameObject);
 //    }
 //}
+
