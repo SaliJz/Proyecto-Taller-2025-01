@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Torreta: MonoBehaviour
 {
@@ -10,6 +11,10 @@ public class Torreta: MonoBehaviour
     public float rangoDeteccion = 15f;
     public float tiempoEntreDisparos = 0.5f;
     public int vida = 100;
+    public TextMeshProUGUI vidaTexto;
+
+    public Material materialNormal;
+    public Material materialSobrecalentado;
 
     private float temporizadorDisparo = 0f;
 
@@ -26,6 +31,7 @@ public class Torreta: MonoBehaviour
     {
         jugador = GameObject.FindGameObjectWithTag("PLAYER").transform;
         rendererCabeza = cabezaTorreta.GetComponent<Renderer>();
+        rendererCabeza.material = materialNormal;
     }
 
 
@@ -70,22 +76,33 @@ public class Torreta: MonoBehaviour
     void Disparar()
     {
         Instantiate(balaPrefab, puntoDisparo.position, puntoDisparo.rotation);
+        Debug.Log("La torreta disparó al jugador.");
+
         contadorDisparos++;
         if (contadorDisparos >= disparosAntesDeSobrecalentamiento)
         {
             sobrecalentado = true;
             temporizadorEnfriamiento = 0f;
-            rendererCabeza.material.color = Color.red;
+            rendererCabeza.material = materialSobrecalentado;
         }
     }
 
     public void TomarDaño(int cantidad)
     {
         vida -= cantidad;
+        vidaTexto.text = "Vida: " + vida;
+        rendererCabeza.material.color = Color.blue;
+
         if (vida <= 0)
         {
             Destroy(gameObject);
         }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, rangoDeteccion);
     }
 
 }
