@@ -7,7 +7,9 @@ public class JugadorMovimiento : MonoBehaviour
     [SerializeField] private float velocidad = 5f;
     [SerializeField] private float fuerzaSalto = 7f;
     private Rigidbody rb;
-   
+
+    public int vida = 100;
+
 
     void Start()
     {
@@ -54,6 +56,18 @@ public class JugadorMovimiento : MonoBehaviour
         if (collision.gameObject.CompareTag("Plataforma"))
         {
             transform.parent = null;
+        }
+    }
+
+    public void TomarDaño(int daño)
+    {
+        vida -= daño;
+        Debug.Log("Vida actual del jugador: " + vida);
+
+        if (vida <= 0)
+        {
+            Debug.Log("¡El jugador ha muerto!");
+            // Aquí puedes reiniciar el nivel, mostrar UI de derrota, etc.
         }
     }
 }
