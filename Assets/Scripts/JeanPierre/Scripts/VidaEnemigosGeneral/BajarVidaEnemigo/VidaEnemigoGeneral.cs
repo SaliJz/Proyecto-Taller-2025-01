@@ -12,8 +12,8 @@ public class VidaEnemigoGeneral : MonoBehaviour
     public Slider sliderVida;               // Slider UI (opcional)
 
     [Header("Daño por balas")]
-    public float danioCoincidente = 20f;    // Daño si el tag coincide con el tipo
-    public float danioNoCoincidente = 5f;   // Daño si no coincide
+    public float danioCoincidente = 20f;    // Ahora es el daño ALTO (cuando NO coincide)
+    public float danioNoCoincidente = 5f;   // Ahora es el daño BAJO (cuando SÍ coincide)
 
     void Start()
     {
@@ -78,14 +78,15 @@ public class VidaEnemigoGeneral : MonoBehaviour
     // Llamar desde la bala, pasándole su tag
     public void RecibirDanioPorBala(string tagBala)
     {
-        float danioAAplicar = danioNoCoincidente;
+        // Por defecto daño ALTO (cuando NO coincide)
+        float danioAAplicar = danioCoincidente;
 
-        // Comparar tag de la bala con el tipo de enemigo
+        // Si el tag coincide con el tipo de enemigo, aplicamos el daño BAJO
         if ((tipo == TipoEnemigo.Ametralladora && tagBala == "BalaAmetralladora") ||
             (tipo == TipoEnemigo.Pistola && tagBala == "BalaPistola") ||
             (tipo == TipoEnemigo.Escopeta && tagBala == "BalaEscopeta"))
         {
-            danioAAplicar = danioCoincidente;
+            danioAAplicar = danioNoCoincidente;
         }
 
         RecibirDanio(danioAAplicar);
@@ -97,52 +98,3 @@ public class VidaEnemigoGeneral : MonoBehaviour
         Destroy(gameObject);
     }
 }
-
-
-//using UnityEngine;
-//using UnityEngine.UI;
-
-//public class VidaEnemigoGeneral : MonoBehaviour
-//{
-//    // Vida total del enemigo
-//    public float vida = 100f;
-
-//    // Referencia al Slider que muestra la vida
-//    public Slider sliderVida;
-
-//    // Se inicializa la barra de vida
-//    void Start()
-//    {
-//        if (sliderVida != null)
-//        {
-//            sliderVida.maxValue = vida;
-//            sliderVida.value = vida;
-//        }
-//    }
-
-//    // Método público que permite recibir daño
-//    public void RecibirDanio(float danio)
-//    {
-//        vida -= danio;
-
-//        // Actualiza la barra de vida en el slider
-//        if (sliderVida != null)
-//        {
-//            sliderVida.value = vida;
-//        }
-
-//        // Si la vida es menor o igual a cero, ejecuta el proceso de "muerte"
-//        if (vida <= 0)
-//        {
-//            vida = 0;
-//            Morir();
-//        }
-//    }
-
-//    // Método que maneja la "muerte" del enemigo
-//    void Morir()
-//    {
-//        // Aquí puedes agregar efectos visuales, partículas o sonidos
-//        Destroy(gameObject);
-//    }
-//}
