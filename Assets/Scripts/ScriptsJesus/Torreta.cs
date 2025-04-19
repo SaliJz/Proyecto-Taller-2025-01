@@ -105,4 +105,15 @@ public class Torreta: MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, rangoDeteccion);
     }
 
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Laser"))
+        {
+            
+            TomarDaño(10); 
+            Debug.Log("¡La torreta recibió daño por el láser!");
+        }
+    }
+
 }

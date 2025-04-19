@@ -67,7 +67,7 @@ public class JugadorMovimiento : MonoBehaviour
         if (vida <= 0)
         {
             Debug.Log("¡El jugador ha muerto!");
-            // Aquí puedes reiniciar el nivel, mostrar UI de derrota, etc.
+            Destroy(gameObject);
         }
     }
 }
