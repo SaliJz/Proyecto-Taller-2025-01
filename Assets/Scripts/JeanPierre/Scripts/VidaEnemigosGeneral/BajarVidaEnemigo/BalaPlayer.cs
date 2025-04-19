@@ -1,14 +1,18 @@
-// BalaPlayer.cs (sin cambios)
+// BalaPlayer.cs
 using UnityEngine;
 
 public class BalaPlayer : MonoBehaviour
 {
+    private bool hasHit = false;  // evita colisiones dobles
+
     private void OnTriggerEnter(Collider other)
     {
-        var enemigo = other.GetComponent<VidaEnemigoGeneral>();
+        if (hasHit) return;
+
+        VidaEnemigoGeneral enemigo = other.GetComponent<VidaEnemigoGeneral>();
         if (enemigo != null)
         {
-            // Le pasamos al enemigo el tag de esta bala
+            hasHit = true;
             enemigo.RecibirDanioPorBala(this.tag);
             Destroy(gameObject);
         }
