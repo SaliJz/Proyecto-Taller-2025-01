@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    [SerializeField] private float bulletDamage = 20f; // Daño de la bala
+    private float bulletDamage;
+
+    public void Initialize(float damage)
+    {
+        bulletDamage = damage;
+    }
 
     private void OnCollisionEnter(Collision collision)
     {

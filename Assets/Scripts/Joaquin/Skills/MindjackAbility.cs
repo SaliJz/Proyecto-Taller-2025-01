@@ -23,11 +23,12 @@ public class MindjackAbility : MonoBehaviour
     [SerializeField] private float spreadIntensity;
 
     private bool canUse = true;
+    private bool alreadyUsedOnEnemy = false;
     private float currentCooldown = 0;
 
     private void Start()
     {
-        HUDManager.Instance.UpdateAbilityStatus("Ignite", currentCooldown, canUse);
+        HUDManager.Instance.UpdateAbilityStatus("Mindjack", currentCooldown, canUse);
     }
 
     private void Awake()
@@ -50,7 +51,10 @@ public class MindjackAbility : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse1) && canUse)
         {
-            ActivateAbility();
+            if (!alreadyUsedOnEnemy)
+            {
+                ActivateAbility();
+            }
         }
 
         if (!canUse)
@@ -75,7 +79,7 @@ public class MindjackAbility : MonoBehaviour
 
         canUse = false;
         currentCooldown = cooldown;
-        HUDManager.Instance.UpdateAbilityStatus("Hack", currentCooldown, canUse);
+        HUDManager.Instance.UpdateAbilityStatus("Mindjack", currentCooldown, canUse);
     }
     /*
     private Vector3 CalculateDirectionAndSpread()
@@ -110,4 +114,9 @@ public class MindjackAbility : MonoBehaviour
         HUDManager.Instance.UpdateAbilityStatus("Mindjack", currentCooldown, canUse);
     }
     */
+
+    private void EnemyMindjacked()
+    {
+        
+    }
 }

@@ -27,6 +27,27 @@ public class ElectroHackAbility : MonoBehaviour
     private bool canUse = true;
     private float currentCooldown = 0;
 
+    private void Start()
+    {
+        HUDManager.Instance.UpdateAbilityStatus("ElectroHack", currentCooldown, canUse);
+    }
+
+    private void Awake()
+    {
+        if (playerCamera == null)
+        {
+            Debug.LogError("Player Camera no está asignada en MindjackAbility.");
+        }
+        if (projectileSpawnPoint == null)
+        {
+            Debug.LogError("Projectile Spawn Point no está asignado en MindjackAbility.");
+        }
+        if (projectilePrefab == null)
+        {
+            Debug.LogError("Projectile Prefab no está asignado en MindjackAbility.");
+        }
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Mouse1) && canUse)
@@ -56,7 +77,7 @@ public class ElectroHackAbility : MonoBehaviour
 
         canUse = false;
         currentCooldown = cooldown;
-        HUDManager.Instance.UpdateAbilityStatus("Hack", currentCooldown, canUse);
+        HUDManager.Instance.UpdateAbilityStatus("ElectroHack", currentCooldown, canUse);
     }
     /*
     private Vector3 CalculateDirectionAndSpread()

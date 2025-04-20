@@ -26,7 +26,23 @@ public class IgnitionCodeAbility : MonoBehaviour
 
     private void Start()
     {
-        HUDManager.Instance.UpdateAbilityStatus("Ignite", currentCooldown, canUse);
+        HUDManager.Instance.UpdateAbilityStatus("IgniteCode", currentCooldown, canUse);
+    }
+
+    private void Awake()
+    {
+        if (playerCamera == null)
+        {
+            Debug.LogError("Player Camera no está asignada en MindjackAbility.");
+        }
+        if (projectileSpawnPoint == null)
+        {
+            Debug.LogError("Projectile Spawn Point no está asignado en MindjackAbility.");
+        }
+        if (projectilePrefab == null)
+        {
+            Debug.LogError("Projectile Prefab no está asignado en MindjackAbility.");
+        }
     }
 
     private void Update()
@@ -58,7 +74,7 @@ public class IgnitionCodeAbility : MonoBehaviour
 
         canUse = false;
         currentCooldown = cooldown;
-        HUDManager.Instance.UpdateAbilityStatus("Ignite", currentCooldown, canUse);
+        HUDManager.Instance.UpdateAbilityStatus("IgniteCode", currentCooldown, canUse);
     }
     /*
     private Vector3 CalculateDirectionAndSpread()

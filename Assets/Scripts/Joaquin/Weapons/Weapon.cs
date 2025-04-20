@@ -27,6 +27,7 @@ public class Weapon : MonoBehaviour
     [Header("Bullet")]
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform bulletSpawnPoint;
+    [SerializeField] private float bulletDamage = 10;
     [SerializeField] private float bulletSpeed = 20f;
     [SerializeField] private float bulletLifetime = 2f; // Tiempos de vida de la bala en segundos
 
@@ -111,9 +112,10 @@ public class Weapon : MonoBehaviour
     // Dispara en modo "Single" o "Auto"
     private void ShootSingle()
     {
-        Vector3 direction = CalculateDirectionAndSpread().normalized;
+        Vector3 direction = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f)).direction;
         GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(direction));
-        bullet.GetComponent<Rigidbody>().AddForce(direction * bulletSpeed, ForceMode.Impulse);
+        bullet.GetComponent<Rigidbody>().velocity = direction * bulletSpeed;
+        bullet.GetComponent<Bullet>().Initialize(bulletDamage);
         Destroy(bullet, bulletLifetime);
     }
 
@@ -124,7 +126,8 @@ public class Weapon : MonoBehaviour
         {
             Vector3 direction = CalculateDirectionAndSpread().normalized;
             GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(direction));
-            bullet.GetComponent<Rigidbody>().AddForce(direction * bulletSpeed, ForceMode.Impulse);
+            bullet.GetComponent<Rigidbody>().velocity = direction * bulletSpeed;
+            bullet.GetComponent<Bullet>().Initialize(bulletDamage);
             Destroy(bullet, bulletLifetime);
         }
     }
@@ -177,7 +180,7 @@ public class Weapon : MonoBehaviour
             isReloading = false;
         }
     }
-
+    
     // Calcula la dirección y la propagación de la bala
     private Vector3 CalculateDirectionAndSpread()
     {
@@ -191,7 +194,7 @@ public class Weapon : MonoBehaviour
 
         return direction + new Vector3(x, y, 0);
     }
-
+    
     // Reproduce la animación de recarga
     public void PlayReloadAnimation()
     {
@@ -227,5 +230,14 @@ public class Weapon : MonoBehaviour
         }
 
         weaponModelTransform.localPosition = startPos;
+    }
+
+    public int TryAddAmmo(int amount)
+    {
+        int capacityLeft = stats.totalAmmo - totalAmmo;
+        int toAdd = Mathf.Min(amount, capacityLeft);
+        totalAmmo += toAdd;
+        HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
+        return toAdd;
     }
 }

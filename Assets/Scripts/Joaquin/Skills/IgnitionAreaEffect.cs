@@ -19,12 +19,20 @@ public class IgnitionAreaEffect : MonoBehaviour
         StartCoroutine(EffectDuration());
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Enemy") || other.CompareTag("Player"))
+        {
+            AplyIgnition(transform.position);
+        }
+    }
+
     private IEnumerator EffectDuration()
     {
+        // Esperar la duración del efecto
         float elapsedTime = 0f;
         while (elapsedTime < duration)
         {
-            ApplyDamageToEnemies();
             elapsedTime += Time.deltaTime;
             yield return null;
         }
@@ -32,9 +40,9 @@ public class IgnitionAreaEffect : MonoBehaviour
         Destroy(gameObject); // Destruir el efecto después de la duración
     }
 
-    private void ApplyDamageToEnemies()
+    private void AplyIgnition(Vector3 center)
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, radius, enemyLayer);
+        Collider[] hits = Physics.OverlapSphere(center, radius, enemyLayer);
         foreach (Collider col in hits)
         {
             if (col.CompareTag("Enemy"))
@@ -42,7 +50,7 @@ public class IgnitionAreaEffect : MonoBehaviour
                 EnemyAITest enemy = col.GetComponent<EnemyAITest>();
                 if (enemy != null)
                 {
-                    enemy.TakeDamage(damagePerSecond * Time.deltaTime);
+                    enemy.ApplyIgnition(damagePerSecond, duration);
                 }
             }
         }

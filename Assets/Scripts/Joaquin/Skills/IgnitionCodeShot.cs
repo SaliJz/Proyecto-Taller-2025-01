@@ -9,8 +9,7 @@ public class IgnitionCodeShot : MonoBehaviour
     private float duration;
     private LayerMask enemyLayer;
 
-    [SerializeField]
-    private GameObject ignitionAreaEffectPrefab;
+    [SerializeField] private GameObject ignitionAreaEffectPrefab;
 
     public void Initialize(float radius, float damagePerSecond, float duration, LayerMask enemyLayer)
     {

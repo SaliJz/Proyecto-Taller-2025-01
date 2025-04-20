@@ -4,17 +4,25 @@ using UnityEngine;
 
 public class DeathBox : MonoBehaviour
 {
+    [SerializeField] private int damageAmount = 1000; // Daño configurable desde el Inspector
+
     private void OnCollisionEnter(Collision collision)
     {
-        PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
-
+        // Verificar si el objeto colisionado tiene el tag "Player"
         if (collision.gameObject.CompareTag("Player"))
         {
-            // Verifica si el jugador ha colisionado con la caja de muerte
+            // Intentar obtener el componente PlayerHealth
+            PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
+
             if (playerHealth != null)
             {
-                playerHealth.TakeDamage(1000); // Aplica daño al jugador
-                Debug.Log("Player hit the death box!");
+                // Aplicar daño al jugador
+                playerHealth.TakeDamage(damageAmount);
+                Debug.Log($"Player hit the death box! Applied {damageAmount} damage to {collision.gameObject.name}.");
+            }
+            else
+            {
+                Debug.LogWarning($"El objeto con tag 'Player' no tiene el componente PlayerHealth: {collision.gameObject.name}");
             }
         }
     }

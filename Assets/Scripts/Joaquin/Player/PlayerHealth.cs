@@ -5,8 +5,17 @@ using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
+    [Header("Salud")]
     [SerializeField] private int maxHealth = 100;
     private int currentHealth;
+
+    [Header("Escudo")]
+    [SerializeField] private int maxShield = 20;
+    private int currentShield;
+    [SerializeField] private float shieldRegenRate = 4f;
+    private bool isRegenShield;
+
+    [Header("Muerte y transición")]
     [SerializeField] private string gameOverSceneName = "GameOver";
     [SerializeField] private GameObject deathPrefab;
     [SerializeField] private SceneTransition sceneTransition;
@@ -14,17 +23,50 @@ public class PlayerHealth : MonoBehaviour
     private void Start()
     {
         currentHealth = maxHealth;
+        currentShield = maxShield;
+
         HUDManager.Instance.UpdateHealth(currentHealth, maxHealth);
+        HUDManager.Instance.UpdateShield(currentShield, maxShield);
+    }
+
+    private void Update()
+    {
+        // Regeneración del escudo
+        if (currentShield < maxShield && !isRegenShield)
+        {
+            StartCoroutine(RegenShield());
+        }
     }
 
     public void TakeDamage(int damage)
     {
-        currentHealth -= damage;
-        HUDManager.Instance.UpdateHealth(currentHealth, maxHealth);
+        int damageLeft = damage;
 
-        if (currentHealth <= 0)
+        if (currentShield > 0)
         {
-            Die();
+            if (damage <= currentShield)
+            {
+                currentShield -= damage;
+                damageLeft = 0;
+            }
+            else
+            {
+                damageLeft = damage - currentShield;
+                currentShield = 0;
+            }
+
+            HUDManager.Instance.UpdateShield(currentShield, maxShield);
+        }
+
+        if (damageLeft > 0)
+        {
+            currentHealth -= damageLeft;
+            HUDManager.Instance.UpdateHealth(currentHealth, maxHealth);
+
+            if (currentHealth <= 0)
+            {
+                Die();
+            }
         }
     }
 
@@ -32,6 +74,21 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         HUDManager.Instance.UpdateHealth(currentHealth, maxHealth);
+    }
+
+    private IEnumerator RegenShield()
+    {
+        isRegenShield = true;
+
+        while (currentShield < maxShield)
+        {
+            yield return new WaitForSeconds(1f);
+            currentShield += Mathf.RoundToInt(shieldRegenRate);
+            currentShield = Mathf.Clamp(currentShield, 0, maxShield);
+            HUDManager.Instance.UpdateShield(currentShield, maxShield);
+        }
+
+        isRegenShield = false;
     }
 
     private void Die()

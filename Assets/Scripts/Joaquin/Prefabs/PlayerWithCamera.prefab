@@ -44,7 +44,8 @@ GameObject:
   - component: {fileID: 8749626943170902220}
   - component: {fileID: 681151174812741667}
   - component: {fileID: 891735800876516052}
-  m_Layer: 0
+  - component: {fileID: 5578200321864129048}
+  m_Layer: 10
   m_Name: GlitchTimeSkill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -160,6 +161,20 @@ MonoBehaviour:
   slowDuration: 3
   slowMultiplier: 0.5
   spreadIntensity: 0
+--- !u!114 &5578200321864129048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 633714095734062609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0399919b1bce82b42b8f8fe1ea57e3c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  abilityName: GlitchTime
+  icon: {fileID: 21300000, guid: 784d8e1e408dea44b9ee91b821d1bc9a, type: 3}
 --- !u!1 &650507068087206632
 GameObject:
   m_ObjectHideFlags: 0
@@ -191,37 +206,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8557461592789821262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &704125608490478436
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5156228513098727717}
-  m_Layer: 0
-  m_Name: ProjectileSpawn
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5156228513098727717
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 704125608490478436}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1, y: 1.1999998, z: 0.5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2950918852207071338}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1039618764485251716
 GameObject:
   m_ObjectHideFlags: 0
@@ -235,7 +219,8 @@ GameObject:
   - component: {fileID: 1375924225364133506}
   - component: {fileID: 4868382587229573146}
   - component: {fileID: 661557296630573712}
-  m_Layer: 0
+  - component: {fileID: 7105405648054054587}
+  m_Layer: 10
   m_Name: ElectroHackSkill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -355,6 +340,20 @@ MonoBehaviour:
   ticks: 2
   slowMultiplier: 0.25
   spreadIntensity: 0
+--- !u!114 &7105405648054054587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1039618764485251716}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0399919b1bce82b42b8f8fe1ea57e3c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  abilityName: ElectroHack
+  icon: {fileID: 21300000, guid: 46013a02ff8b8ae4593bcfa36382a344, type: 3}
 --- !u!1 &1586848620660913248
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,6 +363,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8160491215323087203}
+  - component: {fileID: 1599018760969602108}
   m_Layer: 0
   m_Name: SkillHolder
   m_TagString: Untagged
@@ -387,9 +387,27 @@ Transform:
   - {fileID: 4886150407191743147}
   - {fileID: 5802256456147843531}
   - {fileID: 2902039446575563606}
-  - {fileID: 2950918852207071338}
+  - {fileID: 2867104661612156446}
   m_Father: {fileID: 5866483386157149759}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1599018760969602108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1586848620660913248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a0c59ff65ca8454380da7cd5b90818f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allAbilities:
+  - {fileID: 633714095734062609}
+  - {fileID: 1039618764485251716}
+  - {fileID: 4701876041897125803}
+  - {fileID: 3100109939946986989}
+  activeAbilities: []
 --- !u!1 &2027354105013685677
 GameObject:
   m_ObjectHideFlags: 0
@@ -403,13 +421,13 @@ GameObject:
   - component: {fileID: 5484496777286721899}
   - component: {fileID: 7172923995101443218}
   - component: {fileID: 150223545839985364}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: GunWeapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2754702622615627308
 Transform:
   m_ObjectHideFlags: 0
@@ -522,12 +540,157 @@ MonoBehaviour:
   bulletPrefab: {fileID: 1052289049260168198, guid: 1609838cd9cde6041b1074c7a6b3f780,
     type: 3}
   bulletSpawnPoint: {fileID: 5558488596238011167}
+  bulletDamage: 10
   bulletSpeed: 50
   bulletLifetime: 0.5
   stats: {fileID: 11400000, guid: fff0d78dec47c3748b957fa36ff8ffbe, type: 2}
   originalLocalPosition: {x: 0, y: 0, z: 0}
   weaponModelTransform: {fileID: 2754702622615627308}
   currentShootingMode: 0
+--- !u!1 &3100109939946986989
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2867104661612156446}
+  - component: {fileID: 5525472451759196774}
+  - component: {fileID: 1760474295093899710}
+  - component: {fileID: 8973979772500020611}
+  - component: {fileID: 8814230059228490687}
+  - component: {fileID: 6949696335841151100}
+  m_Layer: 10
+  m_Name: MindjackSkill
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &2867104661612156446
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3100109939946986989}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: -1}
+  m_LocalPosition: {x: 0, y: -0.29999995, z: 0.3}
+  m_LocalScale: {x: 0.14999999, y: 0.14999999, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8638233051409484257}
+  m_Father: {fileID: 8160491215323087203}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &5525472451759196774
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3100109939946986989}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &1760474295093899710
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3100109939946986989}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 04fb01c9c6a9fa54c8ca4aebde6e9e26, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &8973979772500020611
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3100109939946986989}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8814230059228490687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3100109939946986989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f480f66e8eb820942bdf32e1e3f6e140, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCamera: {fileID: 0}
+  projectileSpawnPoint: {fileID: 8638233051409484257}
+  projectilePrefab: {fileID: 7085484802801605271, guid: e433c7532bb6fed4bace84ae34397ae9,
+    type: 3}
+  projectileSpeed: 40
+  projectileLifeTime: 2
+  damagePerSecond: 20
+  duration: 10
+  cooldown: 1
+  spreadIntensity: 0
+--- !u!114 &6949696335841151100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3100109939946986989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0399919b1bce82b42b8f8fe1ea57e3c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  abilityName: Mindjack
+  icon: {fileID: 21300000, guid: d3c858c381fa8aa469d2336dadc0ce4d, type: 3}
 --- !u!1 &3193621507321664050
 GameObject:
   m_ObjectHideFlags: 0
@@ -582,6 +745,37 @@ MonoBehaviour:
   weaponHolder: {fileID: 7995055033124870633}
   weaponNameText: {fileID: 0}
   weaponIconImage: {fileID: 0}
+--- !u!1 &3711160872373463360
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8638233051409484257}
+  m_Layer: 0
+  m_Name: ProjectileSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8638233051409484257
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3711160872373463360}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.6666665, y: 2, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2867104661612156446}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3806916329518456001
 GameObject:
   m_ObjectHideFlags: 0
@@ -593,9 +787,10 @@ GameObject:
   - component: {fileID: 8557461592789821262}
   - component: {fileID: 2458910862583098416}
   - component: {fileID: 3861835015316622551}
-  - component: {fileID: 1273489468588381445}
   - component: {fileID: 2451992749232496777}
-  m_Layer: 0
+  - component: {fileID: 5704334828699022002}
+  - component: {fileID: 8419800157772650935}
+  m_Layer: 7
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -664,23 +859,6 @@ MonoBehaviour:
   orientation: {fileID: 4119031220400882466}
   jumpForce: 5
   jumpCooldown: 0.25
---- !u!114 &1273489468588381445
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3806916329518456001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5c6882f60c46b2429ac40fe93beeb04, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 100
-  gameOverSceneName: GameOver
-  deathPrefab: {fileID: 6210460054218925196, guid: 34ca9467ed1cd764cb04f1e5962ef127,
-    type: 3}
-  sceneTransition: {fileID: 0}
 --- !u!114 &2451992749232496777
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -701,6 +879,46 @@ MonoBehaviour:
   dashFOVBoost: 50
   fovLerpSpeed: 10
   weaponHolder: {fileID: 7995055033124870633}
+--- !u!114 &5704334828699022002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3806916329518456001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5c6882f60c46b2429ac40fe93beeb04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  gameOverSceneName: GameOver
+  deathPrefab: {fileID: 6210460054218925196, guid: 34ca9467ed1cd764cb04f1e5962ef127,
+    type: 3}
+  sceneTransition: {fileID: 0}
+--- !u!136 &8419800157772650935
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3806916329518456001}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3820181279776040069
 GameObject:
   m_ObjectHideFlags: 0
@@ -5745,7 +5963,8 @@ GameObject:
   - component: {fileID: 4109852528599503133}
   - component: {fileID: 4492578188371389293}
   - component: {fileID: 5060233725945681973}
-  m_Layer: 0
+  - component: {fileID: 8486139686523648303}
+  m_Layer: 10
   m_Name: IgnitionCodeSkill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5865,6 +6084,20 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   spreadIntensity: 0
+--- !u!114 &8486139686523648303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4701876041897125803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0399919b1bce82b42b8f8fe1ea57e3c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  abilityName: IgnitionCode
+  icon: {fileID: 21300000, guid: 9385a4b5e7cd6184397cb5973b73509a, type: 3}
 --- !u!1 &4841268610612793011
 GameObject:
   m_ObjectHideFlags: 0
@@ -5878,7 +6111,7 @@ GameObject:
   - component: {fileID: 1511923665423716957}
   - component: {fileID: 3329308664804035575}
   - component: {fileID: 1623021693395869078}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ShotgunWeapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5997,6 +6230,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 6931188823011488847, guid: ab545e48b5558b4499379105b4a94662,
     type: 3}
   bulletSpawnPoint: {fileID: 5466654700999651388}
+  bulletDamage: 10
   bulletSpeed: 30
   bulletLifetime: 0.4
   stats: {fileID: 11400000, guid: fd6132aebfaca9a4282ced406f929a09, type: 2}
@@ -6137,138 +6371,6 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_ComponentOwner: {fileID: 4381596768546755157}
---- !u!1 &5491953061492937794
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2950918852207071338}
-  - component: {fileID: 5493872454771949538}
-  - component: {fileID: 9012054900851610343}
-  - component: {fileID: 623795316868581201}
-  - component: {fileID: 6189682114585167975}
-  m_Layer: 0
-  m_Name: MindjackSkill
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &2950918852207071338
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5491953061492937794}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: -1}
-  m_LocalPosition: {x: 0, y: -0.29999995, z: 0.25}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 5156228513098727717}
-  m_Father: {fileID: 8160491215323087203}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &5493872454771949538
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5491953061492937794}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &9012054900851610343
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5491953061492937794}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 36975dd292f24e64ca70f09f9ba2d5d7, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &623795316868581201
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5491953061492937794}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6189682114585167975
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5491953061492937794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 455edbffdcabf47478af86c4b58a571c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerCamera: {fileID: 0}
-  projectilePrefab: {fileID: 0}
-  projectileSpawnPoint: {fileID: 5156228513098727717}
-  cooldown: 0.5
-  projectileLifeTime: 2
-  projectileSpeed: 40
-  radius: 3
-  damagePerSecond: 8
-  duration: 3
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  spreadIntensity: 0
 --- !u!1 &7018555258835263180
 GameObject:
   m_ObjectHideFlags: 0
@@ -6344,7 +6446,7 @@ GameObject:
   - component: {fileID: 5258885506803910284}
   - component: {fileID: 715431773042724820}
   - component: {fileID: 2868914639831439354}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: RifleWeapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6463,6 +6565,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 6514547203563394288, guid: dac74eadbd49a2e4a89e8eb3d452d79d,
     type: 3}
   bulletSpawnPoint: {fileID: 3588772922881117681}
+  bulletDamage: 10
   bulletSpeed: 60
   bulletLifetime: 1
   stats: {fileID: 11400000, guid: b98f2fed250d9c54e8d14bef92cc258e, type: 2}
@@ -6513,9 +6616,9 @@ GameObject:
   - component: {fileID: 1668287378607185907}
   - component: {fileID: 7456640486865575947}
   - component: {fileID: 3276687160819411527}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: PlayerObj
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

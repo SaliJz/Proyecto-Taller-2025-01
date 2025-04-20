@@ -16,6 +16,7 @@ public class EnemyAITest : MonoBehaviour
 
     [SerializeField] private float currentSpeed;
     private bool isMindjacked = false;
+    private bool isIgnited = false;
     private float lastAttackTime = 0f;
 
     [Header("Glow")]
@@ -98,6 +99,9 @@ public class EnemyAITest : MonoBehaviour
 
     public void ApplyIgnition(float damagePerSecond, float duration)
     {
+        if (isIgnited) return;
+        isIgnited = true;
+
         // Detener la coroutine anterior si está activa
         if (ignitionCoroutine != null)
         {
