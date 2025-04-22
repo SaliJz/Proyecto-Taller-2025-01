@@ -2,48 +2,73 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class JugadorMovimiento : MonoBehaviour
 {
+    [Header("Movimiento")]
     [SerializeField] private float velocidad = 5f;
     [SerializeField] private float fuerzaSalto = 7f;
+    [SerializeField] private float deteccionSueloDistancia = 1.2f;
+
+    [Header("Vida")]
     private Rigidbody rb;
 
     public int vida = 100;
+    private Vector3 direccionMovimiento;
+    private bool estaEnSuelo;
+
+    [Header("Material físico sin fricción")]
+    [SerializeField] private PhysicMaterial sinFriccion;
 
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+
+        Collider col = GetComponent<Collider>();
+        if (col != null && sinFriccion != null)
+        {
+            col.material = sinFriccion;
+        }
     }
 
     void Update()
     {
-        //Movimiento en horizontal y vertical 
-
+        
         float movX = Input.GetAxis("Horizontal");
         float movZ = Input.GetAxis("Vertical");
 
-        Vector3 movimiento = new Vector3(movX, 0f, movZ) * velocidad;
-        Vector3 nuevaVelocidad = new Vector3(movimiento.x, rb.velocity.y, movimiento.z);
-        rb.velocity = nuevaVelocidad;
+        direccionMovimiento = new Vector3(movX, 0f, movZ).normalized;
 
-        //Saltar cuando esta en el suelo 
+        estaEnSuelo = Physics.Raycast(transform.position, Vector3.down, deteccionSueloDistancia);
+
 
         if (Input.GetButtonDown("Jump") && EstaEnSuelo())
         {
+            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
             rb.AddForce(Vector3.up * fuerzaSalto, ForceMode.Impulse);
         }
     }
 
+    private void FixedUpdate()
+    {
+        Vector3 movimiento = direccionMovimiento * velocidad;
+        Vector3 nuevaVelocidad = new Vector3(movimiento.x, rb.velocity.y, movimiento.z);
+        rb.velocity = nuevaVelocidad;
+    }
+
     private bool EstaEnSuelo()
     {
-        return Physics.Raycast(transform.position, Vector3.down, 1.1f); // Puedes ajustar el 1.1f si salta en el aire
+        return Physics.Raycast(transform.position, Vector3.down, 1.1f); 
     }
 
 
     private void OnCollisionEnter(Collision collision)
     {
-        // Si tocamos una plataforma, nos volvemos hijos de ella
+        
         if (collision.gameObject.CompareTag("Plataforma"))
         {
             transform.parent = collision.transform;
@@ -52,7 +77,7 @@ public class JugadorMovimiento : MonoBehaviour
 
     private void OnCollisionExit(Collision collision)
     {
-        // Cuando ya no estamos en la plataforma, dejamos de ser su hijo
+        
         if (collision.gameObject.CompareTag("Plataforma"))
         {
             transform.parent = null;
