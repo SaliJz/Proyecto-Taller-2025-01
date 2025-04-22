@@ -1,91 +1,104 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
-[RequireComponent(typeof(Rigidbody))]
+
 public class Mover : MonoBehaviour
 {
-    [Header("Movimiento")]
-    [SerializeField] private float velocidad = 8f;
-    [SerializeField] private float fuerzaSalto = 7f;
-    [SerializeField] private float deteccionSueloDistancia = 1.2f;
+    [Header("Movement Settings")]
+    public float moveSpeed = 5f;
+    public float jumpForce = 7f;
+    public float groundCheckDistance = 0.1f;
 
-    [Header("Vida")]
-    public int vida = 100;
+    [Header("Collision Settings")]
+    public LayerMask groundLayer;
+    public float skinWidth = 0.1f;
 
     private Rigidbody rb;
-    private Vector3 direccionMovimiento;
-    private bool estaEnSuelo;
+    private CapsuleCollider col;
+    private bool isGrounded;
 
-    [Header("Material físico sin fricción")]
-    [SerializeField] private PhysicMaterial sinFriccion;
-
-    private void Start()
+    void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
-        rb.interpolation = RigidbodyInterpolation.Interpolate;
-        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        col = GetComponent<CapsuleCollider>();
+    }
 
-        
-        Collider col = GetComponent<Collider>();
-        if (col != null && sinFriccion != null)
+    void Update()
+    {
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+
+        Vector3 moveVelocity = new Vector3(horizontalInput * moveSpeed, rb.velocity.y, verticalInput * moveSpeed);
+
+        if (horizontalInput != 0 && CheckSideCollision(horizontalInput, true))
         {
-            col.material = sinFriccion;
+            moveVelocity.x = 0;
+        }
+
+        if (verticalInput != 0 && CheckSideCollision(verticalInput, false))
+        {
+            moveVelocity.z = 0;
+        }
+
+        rb.velocity = moveVelocity;
+
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
     }
 
-    private void Update()
+    void FixedUpdate()
     {
-        float movX = Input.GetAxis("Horizontal");
-        float movZ = Input.GetAxis("Vertical");
+        isGrounded = Physics.Raycast(
+            transform.position,
+            Vector3.down,
+            col.height / 2 + groundCheckDistance,
+            groundLayer);
+    }
 
-        direccionMovimiento = new Vector3(movX, 0f, movZ).normalized;
+    bool CheckSideCollision(float direction, bool isHorizontal)
+    {
+        Vector3 rayOrigin = transform.position;
+        float rayDistance = col.radius + skinWidth;
 
-        estaEnSuelo = Physics.Raycast(transform.position, Vector3.down, deteccionSueloDistancia);
+        Vector3 rayDirection = isHorizontal ?
+            Vector3.right * Mathf.Sign(direction) :
+            Vector3.forward * Mathf.Sign(direction);
 
-        if (Input.GetButtonDown("Jump") && estaEnSuelo)
+
+        RaycastHit hit;
+        if (Physics.Raycast(
+            rayOrigin,
+            rayDirection,
+            out hit,
+            rayDistance,
+            groundLayer))
         {
-            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-            rb.AddForce(Vector3.up * fuerzaSalto, ForceMode.Impulse);
+            return true; 
+        }
+        return false;
+    }
+
+    void OnDrawGizmos()
+    {
+        if (col != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawRay(transform.position, Vector3.down * (col.height / 2 + groundCheckDistance));
+
+            
+            Gizmos.DrawRay(transform.position, Vector3.right * (col.radius + skinWidth));
+            Gizmos.DrawRay(transform.position, Vector3.left * (col.radius + skinWidth));
+            Gizmos.DrawRay(transform.position, Vector3.forward * (col.radius + skinWidth));
+            Gizmos.DrawRay(transform.position, Vector3.back * (col.radius + skinWidth));
         }
     }
 
-    private void FixedUpdate()
-    {
-        Vector3 movimiento = direccionMovimiento * velocidad;
-        Vector3 nuevaVelocidad = new Vector3(movimiento.x, rb.velocity.y, movimiento.z);
-        rb.velocity = nuevaVelocidad;
-    }
 
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Plataforma"))
-        {
-            transform.parent = collision.transform;
-        }
-    }
 
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Plataforma"))
-        {
-            transform.parent = null;
-        }
-    }
-
-
-    public void TomarDaño(int daño)
-    {
-        vida -= daño;
-        Debug.Log("Vida actual del jugador: " + vida);
-
-        if (vida <= 0)
-        {
-            Debug.Log("¡El jugador ha muerto!");
-            Destroy(gameObject);
-        }
-    }
 
 }
