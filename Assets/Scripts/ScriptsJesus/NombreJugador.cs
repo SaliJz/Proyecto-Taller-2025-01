@@ -6,12 +6,13 @@ using TMPro;
 using UnityEngine.UI;
 
 
+
 public class NombreJugador: MonoBehaviour
 {
-    public TMP_InputField inputNombre; // Campo para escribir el nombre
-    public Button botonComenzar;       // Botón para comenzar el juego
+    public TMP_InputField inputNombre; 
+    public Button botonComenzar;       
 
-    public static string nombreJugador; // Variable accesible desde cualquier escena
+    public static string nombreJugador; 
 
     void Start()
     {
