@@ -541,7 +541,7 @@ MonoBehaviour:
     type: 3}
   bulletSpawnPoint: {fileID: 5558488596238011167}
   bulletDamage: 10
-  bulletSpeed: 50
+  bulletSpeed: 350
   bulletLifetime: 0.5
   stats: {fileID: 11400000, guid: fff0d78dec47c3748b957fa36ff8ffbe, type: 2}
   originalLocalPosition: {x: 0, y: 0, z: 0}
@@ -892,6 +892,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  maxShield: 20
+  shieldRegenRate: 4
   gameOverSceneName: GameOver
   deathPrefab: {fileID: 6210460054218925196, guid: 34ca9467ed1cd764cb04f1e5962ef127,
     type: 3}
@@ -6230,8 +6232,8 @@ MonoBehaviour:
   bulletPrefab: {fileID: 6931188823011488847, guid: ab545e48b5558b4499379105b4a94662,
     type: 3}
   bulletSpawnPoint: {fileID: 5466654700999651388}
-  bulletDamage: 10
-  bulletSpeed: 30
+  bulletDamage: 20
+  bulletSpeed: 400
   bulletLifetime: 0.4
   stats: {fileID: 11400000, guid: fd6132aebfaca9a4282ced406f929a09, type: 2}
   originalLocalPosition: {x: 0, y: 0, z: 0}
@@ -6565,8 +6567,8 @@ MonoBehaviour:
   bulletPrefab: {fileID: 6514547203563394288, guid: dac74eadbd49a2e4a89e8eb3d452d79d,
     type: 3}
   bulletSpawnPoint: {fileID: 3588772922881117681}
-  bulletDamage: 10
-  bulletSpeed: 60
+  bulletDamage: 8
+  bulletSpeed: 600
   bulletLifetime: 1
   stats: {fileID: 11400000, guid: b98f2fed250d9c54e8d14bef92cc258e, type: 2}
   originalLocalPosition: {x: 0, y: 0, z: 0}
@@ -6616,9 +6618,9 @@ GameObject:
   - component: {fileID: 1668287378607185907}
   - component: {fileID: 7456640486865575947}
   - component: {fileID: 3276687160819411527}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: PlayerObj
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

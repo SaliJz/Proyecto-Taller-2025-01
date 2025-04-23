@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using static SupplyBox;
 
 public class PickupItem : MonoBehaviour
 {
@@ -15,48 +16,113 @@ public class PickupItem : MonoBehaviour
     }
 
     [SerializeField] private PickupType pickupType;
-
     [SerializeField] private Vector2 amountRange;
     [SerializeField] private GameObject pickupCanvas;
     [SerializeField] private TextMeshProUGUI pickupAmountText;
-    [SerializeField] private float pickUpRange;
+    [SerializeField] private float pickUpRange = 5;
+    [SerializeField] private float flySpeed = 10f;
+    [SerializeField] private float rotationSpeed = 10f;
+    [SerializeField] private float positionOffset = 1f;
 
     private int actualAmount;
-    private bool playerInRange = false;
+    [SerializeField] private bool playerInRange = false;
+    private bool isFlyingToPlayer = false;
+    private Transform playerTarget;
+    private Rigidbody rb;
 
     private void Start()
     {
-        if (pickupType == PickupType.CodeFragment)
+        amountRange = pickupType switch
         {
-            amountRange = new Vector2(100, 200); // Fragmento de código: 100 - 200
-        }
-        else if (pickupType == PickupType.AmmoSingle)
-        {
-            amountRange = new Vector2(15, 20); // Pistola: 15 - 20
-        }
-        else if (pickupType == PickupType.AmmoSemiAuto)
-        {
-            amountRange = new Vector2(3, 8); // Escopeta: 3 - 8
-        }
-        else if (pickupType == PickupType.AmmoAuto)
-        {
-            amountRange = new Vector2(10, 20); // Ametralladora: 10 - 20
-        }
-        else
-        {
-            amountRange = new Vector2(0, 0);
-        }
+            PickupType.CodeFragment => new Vector2(100, 200),
+            PickupType.AmmoSingle => new Vector2(15, 20),
+            PickupType.AmmoSemiAuto => new Vector2(3, 8),
+            PickupType.AmmoAuto => new Vector2(10, 20),
+            _ => new Vector2(0, 0)
+        };
 
         actualAmount = Random.Range((int)amountRange.x, (int)amountRange.y + 1);
         UpdateVisual();
+
+        // Buscar Rigidbody del hijo
+        rb = GetComponentInChildren<Rigidbody>();
+
+        if (rb != null)
+        {
+            switch (pickupType)
+            {
+                case PickupType.CodeFragment:
+                    Debug.Log("Rigidbody encontrado, configurando propiedades para fragmento de código");
+                    rb.mass = 0.1f; // Más "ligero"
+                    rb.drag = 1f;
+                    rb.angularDrag = 1f;
+                    break;
+
+                case PickupType.AmmoSingle:
+                case PickupType.AmmoSemiAuto:
+                case PickupType.AmmoAuto:
+                    Debug.Log("Rigidbody encontrado, configurando propiedades para munición");
+                    rb.mass = 0.3f;
+                    rb.drag = 1f;
+                    rb.angularDrag = 1f;
+                    rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ |
+                                     RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+                    break;
+            }
+        }
+
+        // Si el objeto es un fragmento de código, lo volamos hacia el jugador
+        if (pickupType == PickupType.CodeFragment)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                Debug.Log("Jugador encontrado.");
+                playerTarget = player.transform;
+            }
+        }
     }
 
     private void Update()
     {
-        if (playerInRange && Input.GetKeyDown(KeyCode.F))
+        if (pickupType == PickupType.CodeFragment)
         {
-            Debug.Log("Intentando recoger el objeto");
-            TryPickup();
+            if (!isFlyingToPlayer && playerTarget != null)
+            {
+                float distance = Vector3.Distance(transform.position, playerTarget.position);
+                if (distance <= pickUpRange)
+                {
+                    isFlyingToPlayer = true;
+                    if (rb != null) rb.isKinematic = true;
+                }
+            }
+
+            FollowAtPlayer(); // llamado constante desde Update
+        }
+        else if (playerInRange)
+        {
+            TryPickup(); // solo para munición
+        }
+    }
+
+    private void FollowAtPlayer()
+    {
+        if (!isFlyingToPlayer || playerTarget == null) return;
+
+        Vector3 targetPosition = playerTarget.position + Vector3.up * positionOffset;
+        transform.position = Vector3.MoveTowards(transform.position, targetPosition, flySpeed * Time.deltaTime);
+
+        Vector3 lookDirection = targetPosition - transform.position;
+        if (lookDirection != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+        }
+
+        if (Vector3.Distance(transform.position, targetPosition) < 0.2f)
+        {
+            HUDManager.Instance.AddInfoFragment(actualAmount);
+            Destroy(gameObject);
         }
     }
 
@@ -64,7 +130,7 @@ public class PickupItem : MonoBehaviour
     {
         Collider playerCollider = Physics.OverlapSphere(transform.position, pickUpRange).FirstOrDefault(c => c.CompareTag("Player"));
 
-        if (playerCollider != null) 
+        if (playerCollider != null)
         {
             Debug.Log("Jugador encontrado en el rango de recogida");
         }
@@ -84,17 +150,10 @@ public class PickupItem : MonoBehaviour
             Debug.Log("No se encontró ningún Weapon en la jerarquía y capa especificada.");
             return;
         }
-
         int added = 0;
 
         switch (pickupType)
         {
-            case PickupType.CodeFragment:
-                HUDManager.Instance.AddInfoFragment(actualAmount);
-                Debug.Log($"Recogido {actualAmount} fragmentos de código.");
-                Destroy(gameObject);
-                return;
-
             case PickupType.AmmoSingle:
                 if (weapon.currentShootingMode == Weapon.ShootingMode.Single)
                     added = weapon.TryAddAmmo(actualAmount);
@@ -135,17 +194,14 @@ public class PickupItem : MonoBehaviour
 
         foreach (var col in colliders)
         {
-            if (col.gameObject.layer == weaponLayer)
+            Weapon weapon = col.GetComponent<Weapon>();
+            if (weapon != null)
             {
-                Weapon weapon = col.GetComponent<Weapon>();
-                if (weapon != null)
+                float distance = Vector3.Distance(origin, col.transform.position);
+                if (distance < shortestDistance)
                 {
-                    float distance = Vector3.Distance(origin, col.transform.position);
-                    if (distance < shortestDistance)
-                    {
-                        shortestDistance = distance;
-                        nearestWeapon = weapon;
-                    }
+                    shortestDistance = distance;
+                    nearestWeapon = weapon;
                 }
             }
         }
@@ -153,24 +209,16 @@ public class PickupItem : MonoBehaviour
         return nearestWeapon;
     }
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<PlayerHealth>() != null)
         {
-            playerInRange = true;
-            pickupCanvas.gameObject.SetActive(true);
+            if (pickupType != PickupType.CodeFragment)
+            {
+                playerInRange = true;
+            }
         }
     }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.GetComponent<PlayerHealth>() != null)
-        {
-            playerInRange = false;
-            pickupCanvas.gameObject.SetActive(false);
-        }
-    }
-
 
     private void UpdateVisual()
     {
@@ -185,6 +233,5 @@ public class PickupItem : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, pickUpRange);
         Gizmos.DrawLine(transform.position, transform.position + Vector3.up * 2f);
-        Gizmos.DrawIcon(transform.position + Vector3.up * 2f, "PickupItem.png", true);
     }
 }
