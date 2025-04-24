@@ -210,7 +210,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 61a54387b906efd40a0279fc66ebf00f, type: 2}
+  - {fileID: 2100000, guid: 7579c4fc7964ea84988f17557c55a9e1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -246,7 +246,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tipo: 0
   vida: 100
-  sliderVida: {fileID: 0}
+  sliderVida: {fileID: 5293056406468863315}
   danioAlto: 60
   danioBajo: 5
   prefabsAlMorir:
@@ -315,11 +315,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec07f42a0a5c039409a449484ba3569d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
   objetoADestruir: {fileID: 6086510206101937207}
   prefabAviso: {fileID: 5646449055244728217, guid: 91cd875bc5d908c49b1d5d6bc98c44b3,
     type: 3}
-  prefabImpacto: {fileID: 7220142849740571854, guid: e0661119567952141881b5f5a271d191,
+  prefabImpacto: {fileID: 5085181803687662013, guid: e025133501c2e5f41a7b066c2f68ed9f,
     type: 3}
   alturaPrefabY: -2.73
   velocidadVuelo: 5
@@ -595,7 +594,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetObject: {fileID: 554492199946102366}
   verticalOffset: 0
-  playerTransform: {fileID: 3738284610906298608}
+  playerTag: Player
   rotationSmoothness: 0
   maintainHeight: 0
 --- !u!1 &7653074161224725157
