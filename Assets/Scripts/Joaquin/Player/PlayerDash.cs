@@ -14,17 +14,14 @@ public class PlayerDash : MonoBehaviour
     private bool isGrounded;
     private bool hasAirDashed = false;
 
-    [Header("VFX")]
-    [SerializeField] private GameObject dashVFX;
-
     [Header("Camera")]
     [SerializeField] private Transform cameraHolder;
     [SerializeField] private float dashFOVBoost = 15f;
     [SerializeField] private float fovLerpSpeed = 10f;
 
-    [Header("Weapon")]
-    [SerializeField] private Transform weaponHolder;
-    private float originalWeaponScaleZ;
+    [Header("Objects")]
+    [SerializeField] private GameObject weaponHolderObject;
+    [SerializeField] private GameObject abilityHolderObject;
 
     private float originalFOV;
     private Cinemachine.CinemachineVirtualCamera vcam;
@@ -36,8 +33,6 @@ public class PlayerDash : MonoBehaviour
 
     private void Start()
     {
-        originalWeaponScaleZ = weaponHolder.localScale.z;
-
         vcam = FindObjectOfType<Cinemachine.CinemachineVirtualCamera>();
         if (vcam != null)
         {
@@ -69,19 +64,16 @@ public class PlayerDash : MonoBehaviour
             {
                 vcam.m_Lens.FieldOfView = Mathf.Lerp(vcam.m_Lens.FieldOfView, originalFOV, Time.deltaTime * fovLerpSpeed);
             }
-
-            // Lerp de escala del arma
-            if (weaponHolder != null)
-            {
-                Vector3 originalScale = weaponHolder.localScale;
-                float targetZ = originalWeaponScaleZ;
-                weaponHolder.localScale = Vector3.Lerp(originalScale, new Vector3(originalScale.x, originalScale.y, targetZ), Time.deltaTime * fovLerpSpeed);
-            }
         }
     }
 
     private IEnumerator PerformDash()
     {
+        // Desactivar holders durante dash
+        if (weaponHolderObject != null) weaponHolderObject.SetActive(false);
+
+        if (abilityHolderObject != null) abilityHolderObject.SetActive(false);
+
         isDashing = true;
 
         // Dirección en base a cámara
@@ -94,31 +86,11 @@ public class PlayerDash : MonoBehaviour
         }
         else
         {
-            dashDirection.y *= 0.1f;
+            dashDirection.y = 0.05f; // Fuerza a que el dash no sume el salto
         }
-
-        dashDirection = dashDirection.normalized;
 
         rb.velocity = Vector3.zero;
         rb.AddForce(dashDirection * dashForce, ForceMode.Impulse);
-
-        // Efecto visual
-        if (dashVFX != null)
-        {
-            dashVFX.SetActive(true);
-            ParticleSystem ps = dashVFX.GetComponent<ParticleSystem>();
-            if (ps != null)
-            {
-                ps.Play();
-            }
-        }
-
-        // Efecto de escala del arma
-        if (weaponHolder != null)
-        {
-            float scaleBoost = 1 + (dashFOVBoost / originalFOV);
-            weaponHolder.localScale = new Vector3(1, 1, originalWeaponScaleZ * scaleBoost);
-        }
 
         // FOV de la cámara
         if (vcam != null)
@@ -126,15 +98,13 @@ public class PlayerDash : MonoBehaviour
             vcam.m_Lens.FieldOfView = originalFOV + dashFOVBoost;
         }
 
-        // Escala del arma
-        if (weaponHolder != null)
-        {
-            float scaleBoost = 1 + (dashFOVBoost / originalFOV);
-            Vector3 original = weaponHolder.localScale;
-            weaponHolder.localScale = new Vector3(original.x, original.y, originalWeaponScaleZ * scaleBoost);
-        }
-
         yield return new WaitForSeconds(dashTime);
+
+        // Activar holders después del dash
+        if (weaponHolderObject != null) weaponHolderObject.SetActive(true);
+
+        if (abilityHolderObject != null) abilityHolderObject.SetActive(true);
+
         isDashing = false;
     }
 

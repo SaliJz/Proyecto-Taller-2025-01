@@ -20,8 +20,12 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private GameObject deathPrefab;
     [SerializeField] private SceneTransition sceneTransition;
 
+    private bool isIgnited = false;
+    private Coroutine ignitionCoroutine;
+
     private void Start()
     {
+        maxHealth = UpgradeDataStore.Instance.playerMaxHealth;
         currentHealth = maxHealth;
         currentShield = maxShield;
 
@@ -91,8 +95,35 @@ public class PlayerHealth : MonoBehaviour
         isRegenShield = false;
     }
 
+    public void ApplyIgnition(float damagePerSecond, float duration)
+    {
+        if (isIgnited) return;
+        isIgnited = true;
+
+        // Detener la coroutine anterior si está activa
+        if (ignitionCoroutine != null)
+        {
+            StopCoroutine(ignitionCoroutine);
+        }
+
+        StartCoroutine(IgnitionRoutine(damagePerSecond, duration));
+    }
+
+    private IEnumerator IgnitionRoutine(float damagePerSecond, float duration)
+    {
+        int ticks = Mathf.FloorToInt(duration);
+        for (int i = 0; i < ticks; i++)
+        {
+            TakeDamage((int)damagePerSecond);
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
     private void Die()
     {
+        EnemySpawner enemySpawner = FindObjectOfType<EnemySpawner>();
+        enemySpawner.ResetSpawner();
+        UpgradeDataStore.Instance.ResetTemporaryUpgrades();
         DeathManager.Instance.RegisterDeath(deathPrefab, transform.position);
         if (sceneTransition != null)
         {

@@ -9,6 +9,7 @@ public class Weapon : MonoBehaviour
     [Header("Shoot")]
     [SerializeField] bool isShooting;
     [SerializeField] private float lastShotTime = 0f;
+    [SerializeField] private float fireRate = 0.5f; // Disparos por segundo
 
     [Header("Ammo")]
     [SerializeField] private int maxAmmoPerClip = 30;
@@ -22,7 +23,8 @@ public class Weapon : MonoBehaviour
     [SerializeField] private int bulletPerBurst = 3;
 
     [Header("Spread")]
-    [SerializeField] private float spreadIntensity;
+    [SerializeField] private float spreadIntensity = 1f; // Intensidad de la propagación
+    [SerializeField] private float spreadAngle = 1f; // Grados de propagación
 
     [Header("Bullet")]
     [SerializeField] private GameObject bulletPrefab;
@@ -37,6 +39,11 @@ public class Weapon : MonoBehaviour
     [HideInInspector] public Vector3 originalLocalPosition;
     [SerializeField] public Transform weaponModelTransform;
     private Coroutine reloadCoroutine;
+
+    private float baseBulletDamage;
+    private float baseFireRate;
+    private float baseReloadTime;
+    private int baseTotalAmmo;
 
     public WeaponStats Stats => stats;
 
@@ -58,9 +65,17 @@ public class Weapon : MonoBehaviour
     // Inicializa el arma
     private void Start()
     {
+        // Obtener los valores base desde WeaponStats (ScriptableObject)
+        baseBulletDamage = stats.bulletDamage;
+        baseFireRate = stats.fireRate;
+        baseReloadTime = stats.reloadTime;
+        baseTotalAmmo = stats.totalAmmo;
+
+        // Aplicar upgrades usando los valores base
+        ApplyPassiveUpgrades();
+
+        // Inicializar variables que no cambian por pasiva
         currentAmmo = stats.maxAmmoPerClip;
-        totalAmmo = stats.totalAmmo;
-        reloadTime = stats.reloadTime;
         HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
     }
 
@@ -125,7 +140,12 @@ public class Weapon : MonoBehaviour
         for (int i = 0; i < bulletPerBurst; i++)
         {
             Vector3 direction = CalculateDirectionAndSpread().normalized;
-            GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(direction));
+
+            // Desplazamiento lateral leve al spawn 
+            float lateralOffset = Random.Range(-spreadAngle, spreadAngle); 
+            Vector3 spawnOffset = bulletSpawnPoint.right * lateralOffset;
+
+            GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position + spawnOffset, Quaternion.LookRotation(direction));
             bullet.GetComponent<Rigidbody>().velocity = direction * bulletSpeed;
             bullet.GetComponent<Bullet>().Initialize(bulletDamage);
             Destroy(bullet, bulletLifetime);
@@ -134,7 +154,7 @@ public class Weapon : MonoBehaviour
 
     // Verifica si el arma puede disparar
     private bool CanShoot() =>
-    !isReloading && currentAmmo > 0 && Time.time >= lastShotTime + 1f / stats.fireRate;
+    !isReloading && currentAmmo > 0 && Time.time >= lastShotTime + 1f / fireRate;
 
     // Recarga el arma
     private IEnumerator Reload()
@@ -184,20 +204,24 @@ public class Weapon : MonoBehaviour
     // Calcula la dirección y la propagación de la bala
     private Vector3 CalculateDirectionAndSpread()
     {
-        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        RaycastHit hit;
-        Vector3 targetPoint = Physics.Raycast(ray, out hit) ? hit.point : ray.GetPoint(100);
-        Vector3 direction = targetPoint - bulletSpawnPoint.position;
+        // Dirección central (de la cámara al centro de pantalla)
+        Vector3 direction = playerCamera.transform.forward;
 
-        float x = Random.Range(-spreadIntensity, spreadIntensity);
-        float y = Random.Range(-spreadIntensity, spreadIntensity);
+        // Generamos un pequeño ángulo de desviación
+        float angleX = Random.Range(-spreadIntensity, spreadIntensity);
+        float angleY = Random.Range(-spreadIntensity, spreadIntensity);
 
-        return direction + new Vector3(x, y, 0);
+        // Aplicamos la desviación en la rotación
+        Quaternion spreadRotation = Quaternion.Euler(angleY, angleX, 0);
+        Vector3 spreadDirection = spreadRotation * direction;
+
+        return spreadDirection.normalized;
     }
-    
+
     // Reproduce la animación de recarga
     public void PlayReloadAnimation()
     {
+        Debug.Log("Recargando...");
         if (reloadCoroutine != null)
         {
             StopCoroutine(reloadCoroutine);
@@ -239,5 +263,15 @@ public class Weapon : MonoBehaviour
         totalAmmo += toAdd;
         HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
         return toAdd;
+    }
+
+    public void ApplyPassiveUpgrades()
+    {
+        var data = UpgradeDataStore.Instance;
+
+        bulletDamage = baseBulletDamage * data.weaponDamageMultiplier;
+        fireRate = baseFireRate + data.weaponFireRateMultiplier;
+        reloadTime = baseReloadTime * data.weaponReloadSpeedMultiplier;
+        totalAmmo = baseTotalAmmo + data.weaponAmmoBonus;
     }
 }

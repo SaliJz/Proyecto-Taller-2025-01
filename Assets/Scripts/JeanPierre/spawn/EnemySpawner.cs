@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Linq;
+using System.Collections.Generic;
 
 public class EnemySpawner : MonoBehaviour
 {
@@ -11,7 +12,11 @@ public class EnemySpawner : MonoBehaviour
     public float spawnRadius = 2f;          // Radio de dispersión alrededor del punto
 
     [SerializeField] private int maxEnemiesInScene = 20; // Máximo de enemigos en la escena
+    [SerializeField] private int maxEnemiesTotal = 50; // Máximo de enemigos totales 
     [SerializeField] private SpawnPoint[] spawnPoints; // Lista de puntos con disponibilidad
+
+    private List<GameObject> activeEnemies = new List<GameObject>();
+    private int totalEnemiesSpawned = 0; // Contador de enemigos totales creados
 
     void Start()
     {
@@ -30,32 +35,44 @@ public class EnemySpawner : MonoBehaviour
         {
             yield return new WaitForSeconds(spawnInterval);
 
-            int currentEnemies = GameObject.FindGameObjectsWithTag("Enemy").Length;
-            if (currentEnemies >= maxEnemiesInScene)
+            // Limpia referencias nulas de enemigos muertos
+            activeEnemies.RemoveAll(e => e == null);
+
+            if (activeEnemies.Count >= maxEnemiesInScene)
             {
                 Debug.Log("Límite de enemigos alcanzado. Esperando espacio libre...");
                 continue; // Esperar hasta que haya espacio
             }
 
-            int spawnsAllowed = Mathf.Min(enemiesPerSpawn, maxEnemiesInScene - currentEnemies);
-
-            for (int i = 0; i < spawnsAllowed; i++)
+            if (totalEnemiesSpawned >= maxEnemiesTotal)
             {
-                SpawnSingleEnemy();
-                Debug.Log($"Enemigo {i + 1} de {spawnsAllowed} creado.");
+                Debug.Log("Límite global de enemigos alcanzado.");
+                yield break; // Se detiene el spawn
+            }
+            // Calcula cuántos enemigos se pueden crear
+            int availableSpawnSlots = Mathf.Min(enemiesPerSpawn, maxEnemiesInScene - activeEnemies.Count, maxEnemiesTotal - totalEnemiesSpawned);
+
+            for (int i = 0; i < availableSpawnSlots; i++)
+            {
+                var enemy = SpawnSingleEnemy();
+                if (enemy != null)
+                {
+                    totalEnemiesSpawned++;
+                    Debug.Log($"Enemigo {totalEnemiesSpawned} instanciado.");
+                }
             }
         }
     }
 
-    void SpawnSingleEnemy()
+    GameObject SpawnSingleEnemy()
     {
         // Filtrar solo los puntos habilitados
-        var availablePoints = spawnPoints.Where(p => p.IsAvailable).ToList();
+        var availablePoints = spawnPoints.Where(spawnPoint => spawnPoint.IsAvailable).ToList();
 
         if (availablePoints.Count == 0)
         {
             Debug.LogWarning("No hay puntos de spawn disponibles para enemigos.");
-            return;
+            return null; // No hay puntos disponibles
         }
 
         GameObject randomEnemy = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
@@ -65,7 +82,16 @@ public class EnemySpawner : MonoBehaviour
         Vector3 spawnPosition = randomPoint.transform.position + 
                                 new Vector3(offset.x, 0, offset.y);
 
-        Instantiate(randomEnemy, spawnPosition, randomPoint.transform.rotation);
+        GameObject enemy = Instantiate(randomEnemy, spawnPosition, randomPoint.transform.rotation); // Instanciar enemigo
+
+        activeEnemies.Add(enemy); // Agregado a la lista de enemigos activos
+        return enemy;
+    }
+
+    public void ResetSpawner()
+    {
+        totalEnemiesSpawned = 0;
+        activeEnemies.Clear();
     }
 
     // Visualizar el radio de spawn en el editor

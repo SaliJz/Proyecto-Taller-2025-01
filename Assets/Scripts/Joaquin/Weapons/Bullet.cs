@@ -39,7 +39,6 @@ public class Bullet : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Ground"))
         {
-            Debug.Log("Hit ground!");
             Destroy(gameObject); // Destruye la bala al impactar
         }
     }

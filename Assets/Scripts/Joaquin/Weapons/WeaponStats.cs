@@ -13,4 +13,5 @@ public class WeaponStats : ScriptableObject
     public Weapon.ShootingMode shootingMode;
     public float weaponSwapTime;
     public float fireRate;
+    public float bulletDamage;
 }

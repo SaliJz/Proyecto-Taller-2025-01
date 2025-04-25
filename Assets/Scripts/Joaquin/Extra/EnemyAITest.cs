@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
 
-[RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(Collider))] // Asegúrate de que el objeto tenga un Collider
 public class EnemyAITest : MonoBehaviour
 {
     [Header("Stats")]
@@ -31,7 +31,7 @@ public class EnemyAITest : MonoBehaviour
     private Coroutine mindjackCoroutine;
 
     private Transform player;
-
+    private bool isDead = false;
 
     private void Start()
     {
@@ -47,13 +47,24 @@ public class EnemyAITest : MonoBehaviour
         transform.Translate(Vector3.forward * currentSpeed * Time.deltaTime);
     }
 
+    private void Die()
+    {
+        if (isDead) return; // Protege de múltiples ejecuciones
+        isDead = true;
+
+        Destroy(gameObject); // Destruye el enemigo al morir
+        HUDManager.Instance.AddInfoFragment(fragments); // Actualiza los fragmentos de información
+        FindObjectOfType<MissionManager>().RegisterKill(gameObject.tag); // Actualiza la misión
+    }
+
     public void TakeDamage(float dmg)
     {
+        if (isDead) return; // Ya muerto, no recibir más daño
+
         life -= dmg; // Resta el daño a la vida del enemigo
         if (life <= 0)
         {
-            Destroy(gameObject); // Destruye el enemigo al morir
-            HUDManager.Instance.AddInfoFragment(fragments); // Actualiza los fragmentos de información
+            Die();
         }
     }
 
@@ -126,6 +137,15 @@ public class EnemyAITest : MonoBehaviour
         // Detener la coroutine anterior si está activa
         if (isMindjacked) return;
         isMindjacked = true;
+        MindjackAbility mindjackAbility = FindObjectOfType<MindjackAbility>(); // Obtener la instancia de la habilidad
+        if (mindjackAbility != null)
+        {
+            mindjackAbility.EnemyMindjacked(true); // Actualizar el estado de la habilidad
+        }
+        else
+        {
+            Debug.LogError("No se encontró la habilidad MindjackAbility.");
+        }
 
         // Detener la coroutine anterior si está activa
         if (mindjackCoroutine != null)
@@ -180,6 +200,16 @@ public class EnemyAITest : MonoBehaviour
 
         // Fin del efecto Mindjack
         isMindjacked = false;
+
+        MindjackAbility mindjackAbility = FindObjectOfType<MindjackAbility>(); // Obtener la instancia de la habilidad
+        if (mindjackAbility != null)
+        {
+            mindjackAbility.EnemyMindjacked(false); // Restablecer el estado de la habilidad
+        }
+        else
+        {
+            Debug.LogError("No se encontró la habilidad MindjackAbility.");
+        }
 
         // Restaurar material si es necesario
         if (meshRenderer != null && defaultMaterial != null)

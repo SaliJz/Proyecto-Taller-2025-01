@@ -115,8 +115,8 @@ public class MindjackAbility : MonoBehaviour
     }
     */
 
-    private void EnemyMindjacked()
+    public void EnemyMindjacked(bool estate)
     {
-        
+        alreadyUsedOnEnemy = estate;
     }
 }
