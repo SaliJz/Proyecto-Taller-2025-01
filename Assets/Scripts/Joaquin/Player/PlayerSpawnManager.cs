@@ -49,4 +49,10 @@ public class PlayerSpawnManager : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
     }
+
+    public void ResetGameData()
+    {
+        PlayerPrefs.DeleteKey("LastSpawnIndex");
+        PlayerPrefs.Save();
+    }
 }

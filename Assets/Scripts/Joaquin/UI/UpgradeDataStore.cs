@@ -6,6 +6,7 @@ public class UpgradeDataStore : MonoBehaviour
 {
     public static UpgradeDataStore Instance;
 
+    [Header("Configuración de las mejoras")]
     // Multiplicadores de daño, velocidad de disparo, velocidad de recarga y bonificación de munición
     [Header("Armas")]
     public float weaponDamageMultiplier = 1f;
@@ -18,6 +19,7 @@ public class UpgradeDataStore : MonoBehaviour
     public float abilityDamageMultiplier = 1f;
     public float abilityDurationMultiplier = 1f;
     public float abilityCooldownReduction = 0f;
+    public float abilityRangeMultiplier = 1f;
 
     // Salud máxima y tiempo de recarga de la habilidad de dash
     [Header("Jugador")]
@@ -30,7 +32,6 @@ public class UpgradeDataStore : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            LoadData();
         }
         else
         {
@@ -38,39 +39,38 @@ public class UpgradeDataStore : MonoBehaviour
         }
     }
 
-    public void SaveData()
+    public void ApplyUpgrade(PassiveUpgradeStats upgrade)
     {
-        PlayerPrefs.SetFloat("WeaponDamage", weaponDamageMultiplier);
-        PlayerPrefs.SetFloat("WeaponFireRate", weaponFireRateMultiplier);
-        PlayerPrefs.SetFloat("WeaponReloadSpeed", weaponReloadSpeedMultiplier);
-        PlayerPrefs.SetInt("WeaponAmmoBonus", weaponAmmoBonus);
+        float value = upgrade.isPercentage
+            ? Random.Range(upgrade.valueRange.x, upgrade.valueRange.y)
+            : Mathf.RoundToInt(Random.Range(upgrade.valueRange.x, upgrade.valueRange.y));
 
-        PlayerPrefs.SetFloat("AbilityDamage", abilityDamageMultiplier);
-        PlayerPrefs.SetFloat("AbilityDuration", abilityDurationMultiplier);
-        PlayerPrefs.SetFloat("AbilityCooldown", abilityCooldownReduction);
+        switch (upgrade.upgradeType)
+        {
+            case PassiveUpgradeStats.UpgradeType.WeaponDamage:
+                weaponDamageMultiplier += value;
+                break;
+            case PassiveUpgradeStats.UpgradeType.FireRate:
+                weaponFireRateMultiplier += value;
+                break;
+            case PassiveUpgradeStats.UpgradeType.ReloadSpeed:
+                weaponReloadSpeedMultiplier += value;
+                break;
+            case PassiveUpgradeStats.UpgradeType.AmmoBonus:
+                weaponAmmoBonus += Mathf.RoundToInt(value);
+                break;
+        }
 
-        PlayerPrefs.SetInt("PlayerMaxHealth", playerMaxHealth);
-        PlayerPrefs.SetFloat("PlayerDashCooldown", playerDashCooldown);
-
-        PlayerPrefs.Save();
+        Debug.Log($"Aplicada mejora: {upgrade.upgradeName} (+{value})");
+        Weapon[] weapons = FindObjectsOfType<Weapon>();
+        foreach (var weapon in weapons)
+        {
+            weapon.ApplyPassiveUpgrades();
+            Debug.Log($"Arma actualizada: {weapon.name}");
+        }
     }
 
-    public void LoadData()
-    {
-        weaponDamageMultiplier = PlayerPrefs.GetFloat("WeaponDamage", 1f);
-        weaponFireRateMultiplier = PlayerPrefs.GetFloat("WeaponFireRate", 1f);
-        weaponReloadSpeedMultiplier = PlayerPrefs.GetFloat("WeaponReloadSpeed", 1f);
-        weaponAmmoBonus = PlayerPrefs.GetInt("WeaponAmmoBonus", 0);
-
-        abilityDamageMultiplier = PlayerPrefs.GetFloat("AbilityDamage", 1f);
-        abilityDurationMultiplier = PlayerPrefs.GetFloat("AbilityDuration", 1f);
-        abilityCooldownReduction = PlayerPrefs.GetFloat("AbilityCooldown", 0f);
-
-        playerMaxHealth = PlayerPrefs.GetInt("PlayerMaxHealth", 100);
-        playerDashCooldown = PlayerPrefs.GetFloat("PlayerDashCooldown", 1f);
-    }
-
-    public void ResetAllUpgrades()
+    public void ResetTemporaryUpgrades()
     {
         weaponDamageMultiplier = 1f;
         weaponFireRateMultiplier = 1f;
@@ -80,22 +80,16 @@ public class UpgradeDataStore : MonoBehaviour
         abilityDamageMultiplier = 1f;
         abilityDurationMultiplier = 1f;
         abilityCooldownReduction = 0f;
+        abilityRangeMultiplier = 1f;
 
         playerMaxHealth = 100;
         playerDashCooldown = 1f;
 
-        PlayerPrefs.DeleteKey("WeaponDamage");
-        PlayerPrefs.DeleteKey("WeaponFireRate");
-        PlayerPrefs.DeleteKey("WeaponReloadSpeed");
-        PlayerPrefs.DeleteKey("WeaponAmmoBonus");
-
-        PlayerPrefs.DeleteKey("AbilityDamage");
-        PlayerPrefs.DeleteKey("AbilityDuration");
-        PlayerPrefs.DeleteKey("AbilityCooldown");
-
-        PlayerPrefs.DeleteKey("PlayerMaxHealth");
-        PlayerPrefs.DeleteKey("PlayerDashCooldown");
-
-        PlayerPrefs.Save();
+        Weapon[] weapons = FindObjectsOfType<Weapon>();
+        foreach (var weapon in weapons)
+        {
+            weapon.ApplyPassiveUpgrades();
+            Debug.Log($"Arma actualizada: {weapon.name}");
+        }
     }
 }
