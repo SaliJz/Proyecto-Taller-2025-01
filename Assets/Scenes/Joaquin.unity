@@ -8880,9 +8880,19 @@ PrefabInstance:
       objectReference: {fileID: 432355536}
     - target: {fileID: 661557296630573712, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
+      propertyPath: cooldown
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 661557296630573712, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 432355536}
+    - target: {fileID: 891735800876516052, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: cooldown
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 891735800876516052, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: playerCamera
@@ -8893,6 +8903,11 @@ PrefabInstance:
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 432355536}
+    - target: {fileID: 2451992749232496777, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: dashTime
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 2868914639831439354, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: playerCamera
@@ -8902,6 +8917,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlayerWithCamera
+      objectReference: {fileID: 0}
+    - target: {fileID: 5060233725945681973, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: cooldown
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 5060233725945681973, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
@@ -8972,6 +8992,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8814230059228490687, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: cooldown
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8814230059228490687, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
@@ -9423,6 +9448,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1215588828924167393, guid: 7c976d521131d754a912369e31821219,
         type: 3}
+      propertyPath: sceneName
+      value: CreditosJesus
+      objectReference: {fileID: 0}
+    - target: {fileID: 1215588828924167393, guid: 7c976d521131d754a912369e31821219,
+        type: 3}
       propertyPath: allAbilities.Array.data[0]
       value: 
       objectReference: {fileID: 147622493}
@@ -9445,6 +9475,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: AbilitySelector
+      objectReference: {fileID: 0}
+    - target: {fileID: 4722166011011013835, guid: 7c976d521131d754a912369e31821219,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6766949478459139576, guid: 7c976d521131d754a912369e31821219,
         type: 3}
@@ -9746,9 +9781,11 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 6911148713237179523}
+  - {fileID: 134238682}
+  - {fileID: 334975318}
   - {fileID: 432355537}
   - {fileID: 2068491203}
-  - {fileID: 134238682}
   - {fileID: 1502186830}
   - {fileID: 358285462}
   - {fileID: 900092539}
@@ -9769,7 +9806,5 @@ SceneRoots:
   - {fileID: 8623358521842923700}
   - {fileID: 1641472323}
   - {fileID: 1505311202}
-  - {fileID: 334975318}
   - {fileID: 1962269083}
   - {fileID: 433702321}
-  - {fileID: 6911148713237179523}
