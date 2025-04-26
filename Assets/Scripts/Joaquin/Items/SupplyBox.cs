@@ -166,7 +166,7 @@ public class SupplyBox : MonoBehaviour
     {
         if (pickupCanvas != null && pickupAmountText != null)
         {
-            pickupAmountText.text = $"x{actualAmount}";
+            pickupAmountText.text = $"{supplyType} x{actualAmount}";
         }
     }
 

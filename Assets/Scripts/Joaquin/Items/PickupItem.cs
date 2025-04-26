@@ -224,7 +224,7 @@ public class PickupItem : MonoBehaviour
     {
         if (pickupCanvas != null && pickupAmountText != null)
         {
-            pickupAmountText.text = $"x{actualAmount}";
+            pickupAmountText.text = $"{pickupType} x{actualAmount}";
         }
     }
 
