@@ -24,8 +24,19 @@ public class MovimientoZigzag : MonoBehaviour
     // Velocidad actual acumulada.
     private float velocidadActual;
 
+    private EnemyAbilityReceiver abilityReceiver;
+
     void Start()
     {
+        if (abilityReceiver == null)
+        {
+            abilityReceiver = GetComponent<EnemyAbilityReceiver>();
+        }
+        else
+        {
+            Debug.LogWarning("No se encontró el componente EnemyAbilityReceiver en " + gameObject.name);
+        }
+
         velocidadActual = velocidadInicial;
 
         // Se busca el objeto Player utilizando el tag "Player" si no se asignó manualmente.
@@ -47,6 +58,8 @@ public class MovimientoZigzag : MonoBehaviour
     {
         if (playerTransform == null)
             return;
+
+        float velocidad = abilityReceiver ? abilityReceiver.CurrentSpeed : velocidadActual;
 
         // Calcula la distancia entre este objeto y el jugador.
         float distanciaAlPlayer = Vector3.Distance(transform.position, playerTransform.position);
@@ -81,7 +94,7 @@ public class MovimientoZigzag : MonoBehaviour
             velocidadActual = Mathf.Min(velocidadActual, velocidadMaxima);
 
             // Mueve el objeto en la dirección final calculada.
-            transform.position += direccionFinal * velocidadActual * Time.deltaTime;
+            transform.position += direccionFinal * velocidad * Time.deltaTime;
         }
         else
         {

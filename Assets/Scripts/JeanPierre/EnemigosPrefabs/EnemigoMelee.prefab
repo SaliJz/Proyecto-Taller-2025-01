@@ -438,9 +438,10 @@ GameObject:
   - component: {fileID: 5329243870490351715}
   - component: {fileID: 3675985458192577473}
   - component: {fileID: 2900301066802915152}
-  m_Layer: 0
+  - component: {fileID: 2287403463676174761}
+  m_Layer: 6
   m_Name: EnemigoMelee
-  m_TagString: Enemigo
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -530,6 +531,7 @@ MonoBehaviour:
   danioBajo: 5
   meshRenderer: {fileID: 5156655046650108194}
   prefabsAlMorir: []
+  fragments: 50
 --- !u!114 &4643872267189118312
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -637,6 +639,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageAmount: 15
   damageInterval: 1.5
+--- !u!114 &2287403463676174761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5120538479886475079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60b3e15c74cf41e4b9fa53c6573e81bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  contactDamage: 15
+  attackCooldown: 1.5
+  attackRange: 20
+  baseSpeed: 5
+  currentSpeed: 0
+  meshRenderer: {fileID: 5156655046650108194}
+  defaultMaterial: {fileID: 2100000, guid: 1e0728490cf3caa4f9493bd675826d45, type: 2}
+  mindjackMaterial: {fileID: 2100000, guid: dab846e30402f9248b19a7f6d174e391, type: 2}
 --- !u!1 &6642947135343746201
 GameObject:
   m_ObjectHideFlags: 0

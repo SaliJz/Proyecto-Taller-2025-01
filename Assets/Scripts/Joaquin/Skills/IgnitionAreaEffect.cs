@@ -9,7 +9,7 @@ public class IgnitionAreaEffect : MonoBehaviour
     private float duration;
     private LayerMask enemyLayer;
 
-    private HashSet<EnemyAITest> affectedEnemies = new HashSet<EnemyAITest>();
+    private HashSet<EnemyAbilityReceiver> affectedEnemies = new HashSet<EnemyAbilityReceiver>();
     private HashSet<PlayerHealth> affectedPlayers = new HashSet<PlayerHealth>();
 
 
@@ -46,7 +46,7 @@ public class IgnitionAreaEffect : MonoBehaviour
         {
             if (col.CompareTag("Enemy"))
             {
-                var enemy = col.GetComponent<EnemyAITest>();
+                var enemy = col.GetComponent<EnemyAbilityReceiver>();
                 if (enemy != null && !affectedEnemies.Contains(enemy))
                 {
                     affectedEnemies.Add(enemy);

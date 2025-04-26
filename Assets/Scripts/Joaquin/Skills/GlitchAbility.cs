@@ -68,7 +68,7 @@ public class GlitchAbility : MonoBehaviour
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));
         projectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
 
-        projectile.GetComponent<GlitchShot>().Initialize(slowMultiplier, slowDuration);
+        projectile.GetComponent<GlitchShot>().Initialize(slowDuration, slowMultiplier);
         Destroy(projectile, projectileLifeTime);
 
         canUse = false;

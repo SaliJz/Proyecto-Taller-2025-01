@@ -21,6 +21,10 @@ public class VidaEnemigoGeneral : MonoBehaviour
     [Tooltip("Arrastra aquí los prefabs que pueden generarse al morir")]
     public GameObject[] prefabsAlMorir;
 
+    // Nuevo agregado
+    [SerializeField] private int fragments = 50; // Fragmentos de información que suelta el enemigo
+    private bool isDead = false; // Para evitar múltiples muertes
+
     private TipoEnemigo tipo;
 
     void Start()
@@ -67,6 +71,8 @@ public class VidaEnemigoGeneral : MonoBehaviour
     /// </summary>
     public void RecibirDanio(float danio)
     {
+        if (isDead) return; // No hacer nada si ya está muerto
+
         vida -= danio;
         if (sliderVida != null)
             sliderVida.value = vida;
@@ -101,12 +107,18 @@ public class VidaEnemigoGeneral : MonoBehaviour
     /// </summary>
     void Morir()
     {
+        // Ya fue marcado como muerto en RecibirDanio, así que esta verificación puede quedar opcional
+        if (isDead == false) isDead = true;
+
         if (prefabsAlMorir != null && prefabsAlMorir.Length > 0)
         {
             int idx = Random.Range(0, prefabsAlMorir.Length);
             Instantiate(prefabsAlMorir[idx], transform.position, transform.rotation);
         }
-        // Aquí puedes agregar efectos de partículas, sonidos, etc.
+        
+        HUDManager.Instance.AddInfoFragment(fragments); // Actualiza los fragmentos de información
+        FindObjectOfType<MissionManager>().RegisterKill(gameObject.tag); // Actualiza la misión
+
         Destroy(gameObject);
     }
 }

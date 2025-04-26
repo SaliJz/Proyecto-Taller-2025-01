@@ -17,7 +17,7 @@ public class GlitchShot : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            EnemyAITest enemy = collision.gameObject.GetComponent<EnemyAITest>();
+            EnemyAbilityReceiver enemy = collision.gameObject.GetComponent<EnemyAbilityReceiver>();
             if (enemy != null)
             {
                 enemy.ApplySlow(slowMultiplier, slowDuration);

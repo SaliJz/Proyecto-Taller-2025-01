@@ -40,8 +40,19 @@ public class EnemigoVolador : MonoBehaviour
     private Vector3 objetivoPicada;         // posición capturada para la picada
     private GameObject avisoInstancia;      // instancia del prefabAviso
 
+    private EnemyAbilityReceiver abilityReceiver;
+
     void Start()
     {
+        if (abilityReceiver == null)
+        {
+            abilityReceiver = GetComponent<EnemyAbilityReceiver>();
+        }
+        else
+        {
+            Debug.LogWarning("No se encontró el componente EnemyAbilityReceiver en " + gameObject.name);
+        }
+
         // Capturamos al jugador automáticamente por tag
         GameObject jugador = GameObject.FindGameObjectWithTag("Player");
         if (jugador != null)
@@ -100,7 +111,10 @@ public class EnemigoVolador : MonoBehaviour
         Vector3 destinoPlanar = new Vector3(player.position.x, transform.position.y, player.position.z);
         Vector3 dirPlanar = (destinoPlanar - transform.position).normalized;
         RotarHacia(dirPlanar);
-        transform.Translate(Vector3.forward * velocidadVuelo * Time.deltaTime);
+
+        // velocidad de vuelo, si el objeto tiene un EnemyAbilityReceiver
+        float speed = abilityReceiver ? abilityReceiver.CurrentSpeed : velocidadVuelo;
+        transform.Translate(Vector3.forward * speed * Time.deltaTime);
 
         // al alcanzar la distancia de picada:
         if (distXZ <= distanciaPicada)

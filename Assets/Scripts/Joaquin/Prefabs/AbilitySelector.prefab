@@ -92,13 +92,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 10
+  m_fontSizeBase: 10
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 16
+  m_fontStyle: 17
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -424,13 +424,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 10
+  m_fontSizeBase: 10
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 16
+  m_fontStyle: 17
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -859,8 +859,16 @@ MonoBehaviour:
   sceneName: 
   rerollText: {fileID: 7627476434059864097}
   promptText: {fileID: 3650007132014549443}
-  allAbilities: []
-  passiveUpgrades: []
+  allAbilities:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  passiveUpgrades:
+  - {fileID: 11400000, guid: 6acff8987f0dc0046820a0ba4dac3681, type: 2}
+  - {fileID: 11400000, guid: 2078f9bd304b4244a909a613463a16e0, type: 2}
+  - {fileID: 11400000, guid: 19941ead5104b3a44820c2bdc17288d6, type: 2}
+  - {fileID: 11400000, guid: 1aca7184bda4c6a4d872ca014fd58ffa, type: 2}
 --- !u!1 &5190936992824127599
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,7 +17,7 @@ public class MindjackShot : MonoBehaviour
     {
         if (collision.collider.CompareTag("Enemy"))
         {
-            EnemyAITest enemy = collision.collider.GetComponent<EnemyAITest>();
+            EnemyAbilityReceiver enemy = collision.collider.GetComponent<EnemyAbilityReceiver>();
             if (enemy != null)
             {
                 enemy.ApplyMindjack(damagePerSecond, duration);

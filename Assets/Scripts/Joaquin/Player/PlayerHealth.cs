@@ -122,7 +122,10 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         EnemySpawner enemySpawner = FindObjectOfType<EnemySpawner>();
-        enemySpawner.ResetSpawner();
+        if (enemySpawner != null)
+        {
+            enemySpawner.ResetSpawner();
+        }
         UpgradeDataStore.Instance.ResetTemporaryUpgrades();
         DeathManager.Instance.RegisterDeath(deathPrefab, transform.position);
         if (sceneTransition != null)

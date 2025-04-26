@@ -41,6 +41,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private Vector2 floatingEndPos = new Vector2(-10, 0f);      // editable desde el inspector
 
     [Header("Mission UI")]
+    [SerializeField] private bool animateMission = false;
     [SerializeField] private RectTransform missionTextObject;
     [SerializeField] private float missionDisplayTime = 2f;
     [SerializeField] private Vector2 missionStartPos = new Vector2(480f, 0f); // editable desde el inspector
@@ -68,7 +69,16 @@ public class HUDManager : MonoBehaviour
     private void Start()
     {
         floatingTextObject.gameObject.SetActive(false);
-        missionTextObject.gameObject.SetActive(false);
+
+        if (!animateMission)
+        {
+            missionTextObject.anchoredPosition = missionEndPos;
+            missionTextObject.gameObject.SetActive(true);
+        }
+        else
+        {
+            missionTextObject.gameObject.SetActive(false);
+        }
     }
 
     public void UpdateHealth(int current, int max)
@@ -149,6 +159,19 @@ public class HUDManager : MonoBehaviour
     public void ShowMission(string message)
     {
         Debug.Log($"Mostrar misión: {message}");
+        if (missionTextObject == null)
+        {
+            Debug.LogError("missionTextObject no está asignado en el HUDManager.");
+            return;
+        }
+
+        if (!animateMission)
+        {
+            var text = missionTextObject.GetComponentInChildren<TextMeshProUGUI>();
+            if (text != null) text.text = message;
+            return;
+        }
+
         if (missionCoroutine != null)
         {
             StopCoroutine(missionCoroutine);

@@ -28,7 +28,7 @@ public class ElectroHackShot : MonoBehaviour
         hasExploded = true;
 
         Collider[] hits = Physics.OverlapSphere(transform.position, radius);
-        HashSet<EnemyAITest> affectedEnemies = new HashSet<EnemyAITest>();
+        HashSet<EnemyAbilityReceiver> affectedEnemies = new HashSet<EnemyAbilityReceiver>();
 
         int affected = 0;
 
@@ -38,7 +38,7 @@ public class ElectroHackShot : MonoBehaviour
 
             if (col.CompareTag("Enemy"))
             {
-                EnemyAITest enemy = col.GetComponent<EnemyAITest>();
+                EnemyAbilityReceiver enemy = col.GetComponent<EnemyAbilityReceiver>();
                 if (enemy != null && !affectedEnemies.Contains(enemy))
                 {
                     enemy.ApplyElectroHack(tickDamage, tickInterval, ticks, slowMultiplier);

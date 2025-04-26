@@ -20,8 +20,19 @@ public class EnemigoDisparador : MonoBehaviour
     public float intervaloDisparo = 3f;
     private float temporizadorDisparo = 0f;
 
+    private EnemyAbilityReceiver abilityReceiver;
+
     private void Awake()
     {
+        if (abilityReceiver == null)
+        {
+            abilityReceiver = GetComponent<EnemyAbilityReceiver>();
+        }
+        else
+        {
+            Debug.LogWarning("No se encontró el componente EnemyAbilityReceiver en " + gameObject.name);
+        }
+
         // Intentar asignar el jugador por tag si no se asignó en el Inspector
         if (jugador == null)
         {
@@ -45,6 +56,9 @@ public class EnemigoDisparador : MonoBehaviour
             return;
         }
 
+        // Obtener la velocidad del enemigo desde el componente EnemyAbilityReceiver
+        float speed = abilityReceiver ? abilityReceiver.CurrentSpeed : velocidadMovimiento;
+
         // Dirección y distancia horizontal hacia el jugador (ignorando el eje Y)
         Vector3 direccionHaciaJugador = jugador.position - transform.position;
         direccionHaciaJugador.y = 0f;
@@ -57,7 +71,7 @@ public class EnemigoDisparador : MonoBehaviour
             // Acércate al jugador
             Vector3 nuevaPos = Vector3.MoveTowards(transform.position,
                                                    transform.position + direccionMovimiento,
-                                                   velocidadMovimiento * Time.deltaTime);
+                                                   speed * Time.deltaTime);
             transform.position = nuevaPos;
         }
         else if (distanciaAlJugador < distanciaDeseada - margen)
@@ -65,7 +79,7 @@ public class EnemigoDisparador : MonoBehaviour
             // Aléjate del jugador
             Vector3 nuevaPos = Vector3.MoveTowards(transform.position,
                                                    transform.position - direccionMovimiento,
-                                                   velocidadMovimiento * Time.deltaTime);
+                                                   speed * Time.deltaTime);
             transform.position = nuevaPos;
         }
 
@@ -75,7 +89,7 @@ public class EnemigoDisparador : MonoBehaviour
         if (direccionRotacion != Vector3.zero)
         {
             Quaternion rotacionDeseada = Quaternion.LookRotation(direccionRotacion);
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotacionDeseada, velocidadMovimiento * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotacionDeseada, speed * Time.deltaTime);
         }
 
         // Control de disparos

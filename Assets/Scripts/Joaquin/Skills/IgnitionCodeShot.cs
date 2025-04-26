@@ -41,16 +41,14 @@ public class IgnitionCodeShot : MonoBehaviour
         {
             if (col.CompareTag("Enemy"))
             {
-                EnemyAITest enemy = col.GetComponent<EnemyAITest>();
+                EnemyAbilityReceiver enemy = col.GetComponent<EnemyAbilityReceiver>();
                 if (enemy != null)
                 {
                     enemy.ApplyIgnition(damagePerSecond, duration);
-                    // Aquí puedes agregar un efecto de fuego en el enemigo
                 }
             }
         }
 
-        // Aquí puedes instanciar un efecto visual de explosión o quemadura
     }
 
     private void ApplyIgnitionArea(Vector3 center)

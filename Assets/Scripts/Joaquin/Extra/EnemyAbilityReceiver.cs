@@ -4,34 +4,36 @@ using System.Net;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))] // Asegúrate de que el objeto tenga un Collider
-public class EnemyAITest : MonoBehaviour
+public class EnemyAbilityReceiver : MonoBehaviour
 {
-    [Header("Stats")]
-    [SerializeField] private float baseSpeed = 3f;
-    [SerializeField] private float life = 100f;
-    [SerializeField] private int fragments = 50; // Fragmentos de información que suelta el enemigo
+    // Referencia a VidaEnemigoGeneral
+    private VidaEnemigoGeneral vida;
+
+    [Header("Attack")]
     [SerializeField] private float contactDamage = 10f;
     [SerializeField] private float attackCooldown = 1f;
     [SerializeField] private float attackRange = 20f;
 
-    [SerializeField] private float currentSpeed;
+    [Header("Slow")]
+    [SerializeField] private float baseSpeed = 3f;
+    public float currentSpeed;
+    public float CurrentSpeed => currentSpeed;
+
+    [Header("Glow")]
+    [SerializeField] private Renderer meshRenderer;
+    [SerializeField] private Material defaultMaterial;
+    [SerializeField] private Material mindjackMaterial;
+
+    // Estado de las habilidades
     private bool isMindjacked = false;
     private bool isIgnited = false;
     private float lastAttackTime = 0f;
-
-    [Header("Glow")]
-    [SerializeField] private Renderer meshRenderer; // arrastrar el hijo con Mesh Renderer
-    [SerializeField] private Material defaultMaterial;
-    [SerializeField] private Material mindjackMaterial;
 
     // Referencias a las coroutines activas
     private Coroutine slowCoroutine;
     private Coroutine electroHackCoroutine;
     private Coroutine ignitionCoroutine;
     private Coroutine mindjackCoroutine;
-
-    private Transform player;
-    private bool isDead = false;
 
     private void Start()
     {
@@ -42,30 +44,20 @@ public class EnemyAITest : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void Awake()
     {
-        transform.Translate(Vector3.forward * currentSpeed * Time.deltaTime);
-    }
-
-    private void Die()
-    {
-        if (isDead) return; // Protege de múltiples ejecuciones
-        isDead = true;
-
-        Destroy(gameObject); // Destruye el enemigo al morir
-        HUDManager.Instance.AddInfoFragment(fragments); // Actualiza los fragmentos de información
-        FindObjectOfType<MissionManager>().RegisterKill(gameObject.tag); // Actualiza la misión
+        vida = GetComponent<VidaEnemigoGeneral>();
+        if (vida == null)
+        {
+            Debug.LogWarning("VidaEnemigoGeneral no encontrada en el enemigo.");
+        }
     }
 
     public void TakeDamage(float dmg)
     {
-        if (isDead) return; // Ya muerto, no recibir más daño
 
-        life -= dmg; // Resta el daño a la vida del enemigo
-        if (life <= 0)
-        {
-            Die();
-        }
+        vida?.RecibirDanio(dmg);
+
     }
 
     public void ApplySlow(float multiplier, float duration)
@@ -130,6 +122,8 @@ public class EnemyAITest : MonoBehaviour
             TakeDamage(damagePerSecond);
             yield return new WaitForSeconds(1f);
         }
+
+        isIgnited = false;
     }
 
     public void ApplyMindjack(float damagePerSecond, float duration)
@@ -166,7 +160,7 @@ public class EnemyAITest : MonoBehaviour
         float elapsed = 0f;
         float damageInterval = 1f;
 
-        while (elapsed < duration && life > 0)
+        while (elapsed < duration && vida.vida > 0)
         {
             GameObject target = FindNearestEnemy();
             if (target != null)
@@ -183,7 +177,7 @@ public class EnemyAITest : MonoBehaviour
                 // Ataque si está cerca
                 if (distance <= 2f && Time.time >= lastAttackTime + attackCooldown)
                 {
-                    EnemyAITest other = target.GetComponent<EnemyAITest>();
+                    EnemyAbilityReceiver other = target.GetComponent<EnemyAbilityReceiver>();
                     if (other != null && !other.isMindjacked)
                     {
                         other.TakeDamage(contactDamage);
@@ -230,7 +224,7 @@ public class EnemyAITest : MonoBehaviour
         {
             if (col.gameObject != gameObject)
             {
-                EnemyAITest other = col.GetComponent<EnemyAITest>();
+                EnemyAbilityReceiver other = col.GetComponent<EnemyAbilityReceiver>();
                 if (other != null && !other.isMindjacked)
                 {
                     float distance = Vector3.Distance(transform.position, col.transform.position);
@@ -246,19 +240,9 @@ public class EnemyAITest : MonoBehaviour
         return nearest;
     }
 
-    private void OnCollisionStay(Collision collision)
+    private void OnDrawGizmos()
     {
-        if (!isMindjacked && collision.gameObject.CompareTag("Player"))
-        {
-            if (Time.time >= lastAttackTime + attackCooldown)
-            {
-                PlayerHealth player = collision.gameObject.GetComponent<PlayerHealth>();
-                if (player != null)
-                {
-                    player.TakeDamage((int)contactDamage);
-                    lastAttackTime = Time.time;
-                }
-            }
-        }
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

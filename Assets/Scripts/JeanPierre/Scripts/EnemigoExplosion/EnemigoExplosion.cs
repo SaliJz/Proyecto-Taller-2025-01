@@ -35,6 +35,8 @@ public class EnemigoExplosion : MonoBehaviour
     private bool toggleZigzag = false;
     private Vector3 previousLateralOffset = Vector3.zero;
 
+    private EnemyAbilityReceiver abilityReceiver;
+
     void Awake()
     {
         GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
@@ -46,6 +48,15 @@ public class EnemigoExplosion : MonoBehaviour
 
     void Start()
     {
+        if (abilityReceiver == null)
+        {
+            abilityReceiver = GetComponent<EnemyAbilityReceiver>();
+        }
+        else
+        {
+            Debug.LogWarning("No se encontró el componente EnemyAbilityReceiver en " + gameObject.name);
+        }
+
         enemyRenderer = GetComponent<Renderer>();
         if (enemyRenderer == null)
         {
@@ -77,8 +88,11 @@ public class EnemigoExplosion : MonoBehaviour
         {
             float lateralOsc = continuousZigzagAmplitude *
                                Mathf.Sin(Time.time * continuousZigzagFrequency * 2f * Mathf.PI);
+
+            float speed = abilityReceiver ? abilityReceiver.CurrentSpeed : moveSpeed;
+
             Vector3 lateralOffset = transform.right * lateralOsc;
-            Vector3 forwardMove = transform.forward * moveSpeed * Time.deltaTime;
+            Vector3 forwardMove = transform.forward * speed * Time.deltaTime;
             transform.position += forwardMove + (lateralOffset - previousLateralOffset);
             previousLateralOffset = lateralOffset;
         }
