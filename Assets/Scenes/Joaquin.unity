@@ -628,9 +628,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyPrefabs:
   - {fileID: 3775705321392681890, guid: 949378dbd6b7b9f46bdb905d67e7579e, type: 3}
-  - {fileID: 4394272956414374065, guid: f3ca6ab5d5dde4c448a6f18caf6d353c, type: 3}
   - {fileID: 5120538479886475079, guid: 60a69db7658caea4097d98b236849d7b, type: 3}
-  - {fileID: 1603735669551673134, guid: 1c4aa42d1bcc19c4aad679c27195ae2f, type: 3}
   spawnInterval: 13
   enemiesPerSpawn: 3
   spawnRadius: 5
@@ -1921,10 +1919,6 @@ MonoBehaviour:
   attackCooldown: 1
   attackRange: 15
   baseSpeed: 2
-  currentSpeed: 0
-  meshRenderer: {fileID: 276727853}
-  defaultMaterial: {fileID: 2100000, guid: 1e0728490cf3caa4f9493bd675826d45, type: 2}
-  mindjackMaterial: {fileID: 2100000, guid: dab846e30402f9248b19a7f6d174e391, type: 2}
 --- !u!54 &617634750
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2051,10 +2045,6 @@ MonoBehaviour:
   attackCooldown: 1
   attackRange: 20
   baseSpeed: 4
-  currentSpeed: 0
-  meshRenderer: {fileID: 1411316239}
-  defaultMaterial: {fileID: 2100000, guid: 1e0728490cf3caa4f9493bd675826d45, type: 2}
-  mindjackMaterial: {fileID: 2100000, guid: dab846e30402f9248b19a7f6d174e391, type: 2}
 --- !u!54 &751982206
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7377,10 +7367,6 @@ MonoBehaviour:
   attackCooldown: 1
   attackRange: 20
   baseSpeed: 2
-  currentSpeed: 0
-  meshRenderer: {fileID: 2013084390}
-  defaultMaterial: {fileID: 2100000, guid: 1e0728490cf3caa4f9493bd675826d45, type: 2}
-  mindjackMaterial: {fileID: 2100000, guid: dab846e30402f9248b19a7f6d174e391, type: 2}
 --- !u!54 &1085612499
 Rigidbody:
   m_ObjectHideFlags: 0
