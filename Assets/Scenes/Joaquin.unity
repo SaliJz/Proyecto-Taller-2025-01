@@ -510,7 +510,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &134238682
 Transform:
   m_ObjectHideFlags: 0
@@ -1394,7 +1394,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &433702318
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1503,7 +1503,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &592544826
 Transform:
   m_ObjectHideFlags: 0
@@ -7326,7 +7326,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1505311198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7566,7 +7566,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1641472319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8162,12 +8162,17 @@ PrefabInstance:
     - target: {fileID: 3482949209254475376, guid: 60a69db7658caea4097d98b236849d7b,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5120538479886475079, guid: 60a69db7658caea4097d98b236849d7b,
         type: 3}
       propertyPath: m_Name
       value: EnemigoMelee
+      objectReference: {fileID: 0}
+    - target: {fileID: 5120538479886475079, guid: 60a69db7658caea4097d98b236849d7b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -8750,6 +8755,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Transition
       objectReference: {fileID: 0}
+    - target: {fileID: 3361291804808458079, guid: 75a75955aca89ff40a322a9214cd49a4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4343298303781466249, guid: 75a75955aca89ff40a322a9214cd49a4,
         type: 3}
       propertyPath: m_Pivot.x
@@ -9174,6 +9184,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: RifleAmmoPickUpTest
       objectReference: {fileID: 0}
+    - target: {fileID: 3206890931059546896, guid: 7fc3418ba54185644942d523878dbe0d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9191,6 +9206,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: CodeFragmentPickUpTest
+      objectReference: {fileID: 0}
+    - target: {fileID: 4688980061749175599, guid: 71fa26f444887dd47908328e632687b4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7220047792563096247, guid: 71fa26f444887dd47908328e632687b4,
         type: 3}
@@ -9310,6 +9330,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: GunAmmoPickUpTest
       objectReference: {fileID: 0}
+    - target: {fileID: 4801807564617485238, guid: 12fb4266885dd134eae5c27fd7949446,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9377,6 +9402,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ShotgunAmmoPickUpTest
+      objectReference: {fileID: 0}
+    - target: {fileID: 7583714264058374518, guid: 8b926fcb8a2af1445bb60147a2693b48,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9584,6 +9614,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SuplyBoxTest
       objectReference: {fileID: 0}
+    - target: {fileID: 6054837066180717420, guid: 6f290be9ce304f9488aee3b3a52aa1a9,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9713,17 +9748,16 @@ SceneRoots:
   m_Roots:
   - {fileID: 432355537}
   - {fileID: 2068491203}
+  - {fileID: 134238682}
   - {fileID: 1502186830}
   - {fileID: 358285462}
   - {fileID: 900092539}
-  - {fileID: 6911148713237179523}
   - {fileID: 1232394381918650955}
+  - {fileID: 277649594775033596}
+  - {fileID: 9003196820129188591}
   - {fileID: 1981206119}
-  - {fileID: 433702321}
   - {fileID: 1212294222096492786}
   - {fileID: 592544826}
-  - {fileID: 9003196820129188591}
-  - {fileID: 277649594775033596}
   - {fileID: 1085612500}
   - {fileID: 617634751}
   - {fileID: 751982207}
@@ -9735,6 +9769,7 @@ SceneRoots:
   - {fileID: 8623358521842923700}
   - {fileID: 1641472323}
   - {fileID: 1505311202}
-  - {fileID: 134238682}
   - {fileID: 334975318}
   - {fileID: 1962269083}
+  - {fileID: 433702321}
+  - {fileID: 6911148713237179523}

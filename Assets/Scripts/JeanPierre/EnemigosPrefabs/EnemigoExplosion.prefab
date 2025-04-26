@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4105841438761647058}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Handle Slide Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,7 +45,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1467815588542345684}
   - component: {fileID: 7042047892011389192}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 5165150872088642790}
   - component: {fileID: 9048069147706797483}
   - component: {fileID: 5282014191307511184}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -212,7 +212,7 @@ GameObject:
   - component: {fileID: 4660449535587620680}
   - component: {fileID: 6293802967978291908}
   - component: {fileID: 4129830059832063290}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -313,7 +313,7 @@ GameObject:
   - component: {fileID: 8963739892343340965}
   - component: {fileID: 4927330634759321447}
   - component: {fileID: 9205359260407933811}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -393,9 +393,10 @@ GameObject:
   - component: {fileID: 9056342299624545217}
   - component: {fileID: 516370562975526604}
   - component: {fileID: 252989855927526988}
-  m_Layer: 0
+  - component: {fileID: 7750208852716804292}
+  m_Layer: 6
   m_Name: EnemigoExplosion
-  m_TagString: Enemigo
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -485,6 +486,7 @@ MonoBehaviour:
   danioBajo: 5
   meshRenderer: {fileID: 1706927457529838850}
   prefabsAlMorir: []
+  fragments: 50
 --- !u!136 &1268450203785874081
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -583,6 +585,26 @@ MonoBehaviour:
   disappearDuration: 0.2
   appearDuration: 0.1
   toggleObject: {fileID: 3282461227398318059}
+--- !u!114 &7750208852716804292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4394272956414374065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60b3e15c74cf41e4b9fa53c6573e81bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  contactDamage: 10
+  attackCooldown: 1
+  attackRange: 20
+  baseSpeed: 2
+  currentSpeed: 0
+  meshRenderer: {fileID: 1706927457529838850}
+  defaultMaterial: {fileID: 2100000, guid: 1e0728490cf3caa4f9493bd675826d45, type: 2}
+  mindjackMaterial: {fileID: 2100000, guid: dab846e30402f9248b19a7f6d174e391, type: 2}
 --- !u!1 &6482934429859103929
 GameObject:
   m_ObjectHideFlags: 0
@@ -623,7 +645,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6971248541406976715}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -92,7 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1316070876042400433}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Handle Slide Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -216,9 +216,10 @@ GameObject:
   - component: {fileID: 6601771850978330811}
   - component: {fileID: 6378987150485078684}
   - component: {fileID: 3594408424444352700}
-  m_Layer: 0
+  - component: {fileID: 7193954085930714274}
+  m_Layer: 6
   m_Name: EnemigoDisparo
-  m_TagString: Enemigo
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -309,6 +310,7 @@ MonoBehaviour:
   danioBajo: 5
   meshRenderer: {fileID: 5606153922046367338}
   prefabsAlMorir: []
+  fragments: 50
 --- !u!136 &6601771850978330811
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -381,6 +383,26 @@ MonoBehaviour:
   puntoDisparo: {fileID: 6438556830375113683}
   velocidadBala: 10
   intervaloDisparo: 2.2
+--- !u!114 &7193954085930714274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3775705321392681890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60b3e15c74cf41e4b9fa53c6573e81bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  contactDamage: 10
+  attackCooldown: 1
+  attackRange: 20
+  baseSpeed: 5
+  currentSpeed: 0
+  meshRenderer: {fileID: 5606153922046367338}
+  defaultMaterial: {fileID: 2100000, guid: 1e0728490cf3caa4f9493bd675826d45, type: 2}
+  mindjackMaterial: {fileID: 2100000, guid: dab846e30402f9248b19a7f6d174e391, type: 2}
 --- !u!1 &6177287622287384025
 GameObject:
   m_ObjectHideFlags: 0
@@ -392,7 +414,7 @@ GameObject:
   - component: {fileID: 7262613785013474579}
   - component: {fileID: 2898402908816512861}
   - component: {fileID: 8679366728889184733}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -465,7 +487,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7693804381117835625}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -503,7 +525,7 @@ GameObject:
   - component: {fileID: 1488090924276994573}
   - component: {fileID: 9188787804862562854}
   - component: {fileID: 2581768181906072886}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -577,7 +599,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4339348727177564618}
   - component: {fileID: 223591490518025410}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -669,7 +691,7 @@ GameObject:
   - component: {fileID: 3603387889873845417}
   - component: {fileID: 3434763334153644670}
   - component: {fileID: 6849834781533865357}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
