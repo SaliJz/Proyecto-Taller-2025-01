@@ -12,8 +12,8 @@ public class EnemigoVolador : MonoBehaviour
     public GameObject prefabImpacto;        // efecto al impactar
 
     [Header("Configuración de posición")]
-    [Tooltip("Altura en Y a la que se instancian los prefabs de aviso e impacto")]
-    public float alturaPrefabY = 0f;
+    [Tooltip("(Obsoleto) Altura en Y a la que se instancian los prefabs de aviso e impacto")]
+    public float alturaPrefabY = 0f;        // ya no se utilizará para posicionar prefabs
 
     [Header("Velocidades")]
     public float velocidadVuelo = 5f;       // velocidad al acercarse
@@ -44,11 +44,8 @@ public class EnemigoVolador : MonoBehaviour
 
     void Start()
     {
+        abilityReceiver = GetComponent<EnemyAbilityReceiver>();
         if (abilityReceiver == null)
-        {
-            abilityReceiver = GetComponent<EnemyAbilityReceiver>();
-        }
-        else
         {
             Debug.LogWarning("No se encontró el componente EnemyAbilityReceiver en " + gameObject.name);
         }
@@ -62,7 +59,7 @@ public class EnemigoVolador : MonoBehaviour
         else
         {
             Debug.LogError("No se encontró ningún GameObject con tag 'Player'");
-            enabled = false; // desactivamos este script para evitar errores posteriores
+            enabled = false;
             return;
         }
 
@@ -101,7 +98,6 @@ public class EnemigoVolador : MonoBehaviour
 
     void MoverAcercarse()
     {
-        // distancia horizontal (XZ) al jugador
         float distXZ = Vector2.Distance(
             new Vector2(transform.position.x, transform.position.z),
             new Vector2(player.position.x, player.position.z)
@@ -112,19 +108,17 @@ public class EnemigoVolador : MonoBehaviour
         Vector3 dirPlanar = (destinoPlanar - transform.position).normalized;
         RotarHacia(dirPlanar);
 
-        // velocidad de vuelo, si el objeto tiene un EnemyAbilityReceiver
         float speed = abilityReceiver ? abilityReceiver.CurrentSpeed : velocidadVuelo;
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
 
-        // al alcanzar la distancia de picada:
         if (distXZ <= distanciaPicada)
         {
             objetivoPicada = player.position;  // fija la posición actual del jugador
 
-            // crea aviso en la altura configurada
+            // crea aviso en la posición del jugador
             if (prefabAviso != null)
             {
-                Vector3 posAviso = new Vector3(objetivoPicada.x, alturaPrefabY, objetivoPicada.z);
+                Vector3 posAviso = player.position;
                 avisoInstancia = Instantiate(prefabAviso, posAviso, Quaternion.identity);
             }
 
@@ -149,17 +143,15 @@ public class EnemigoVolador : MonoBehaviour
             velocidadPicada * Time.deltaTime
         );
 
-        // al llegar al punto de impacto:
         if (Vector3.Distance(transform.position, objetivoPicada) < 0.1f)
         {
-            // crea efecto de impacto en la altura configurada
+            // crea efecto de impacto en el punto de picada
             if (prefabImpacto != null)
             {
-                Vector3 posImpacto = new Vector3(objetivoPicada.x, alturaPrefabY, objetivoPicada.z);
+                Vector3 posImpacto = objetivoPicada;
                 Instantiate(prefabImpacto, posImpacto, Quaternion.identity);
             }
 
-            // destruye el aviso
             if (avisoInstancia != null)
                 Destroy(avisoInstancia);
 
@@ -176,7 +168,6 @@ public class EnemigoVolador : MonoBehaviour
 
     void MoverSubida()
     {
-        // sube hasta la altura deseada sobre el jugador
         float targetY = player.position.y + alturaVuelo;
         Vector3 destino = new Vector3(transform.position.x, targetY, transform.position.z);
         Vector3 dir = (destino - transform.position).normalized;
@@ -184,7 +175,6 @@ public class EnemigoVolador : MonoBehaviour
 
         transform.Translate(Vector3.up * velocidadSubida * Time.deltaTime, Space.World);
 
-        // no sobrepasar la altura
         Vector3 pos = transform.position;
         pos.y = Mathf.Min(pos.y, targetY);
         transform.position = pos;
@@ -210,7 +200,6 @@ public class EnemigoVolador : MonoBehaviour
 
     void Flotar()
     {
-        // oscila verticalmente alrededor de la altura de vuelo
         float offset = Mathf.Sin(Time.time * frecuenciaFlotacion) * amplitudFlotacion;
         Vector3 pos = transform.position;
         pos.y = player.position.y + alturaVuelo + offset;
@@ -226,11 +215,26 @@ public class EnemigoVolador : MonoBehaviour
 
     void OnDestroy()
     {
-        // al destruirse, también destruye el objeto referenciado
         if (objetoADestruir != null)
             Destroy(objetoADestruir);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -240,44 +244,68 @@ public class EnemigoVolador : MonoBehaviour
 //public class EnemigoVolador : MonoBehaviour
 //{
 //    [Header("Referencias")]
-//    public Transform player;               // referencia al player
-//    public GameObject objetoADestruir;     // otro GameObject a destruir cuando este muera
+//    private Transform player;               // ahora se captura automáticamente por tag
+//    public GameObject objetoADestruir;      // otro GameObject a destruir cuando este muera
 
 //    [Header("Prefabs de efectos")]
-//    public GameObject prefabAviso;         // aviso antes de la caída
-//    public GameObject prefabImpacto;       // efecto al impactar
+//    public GameObject prefabAviso;          // aviso antes de la caída
+//    public GameObject prefabImpacto;        // efecto al impactar
 
 //    [Header("Configuración de posición")]
 //    [Tooltip("Altura en Y a la que se instancian los prefabs de aviso e impacto")]
 //    public float alturaPrefabY = 0f;
 
 //    [Header("Velocidades")]
-//    public float velocidadVuelo = 5f;      // velocidad al acercarse
-//    public float velocidadPicada = 10f;    // velocidad durante la picada
-//    public float velocidadSubida = 5f;     // velocidad al volver a altura
+//    public float velocidadVuelo = 5f;       // velocidad al acercarse
+//    public float velocidadPicada = 10f;     // velocidad durante la picada
+//    public float velocidadSubida = 5f;      // velocidad al volver a altura
 
 //    [Header("Distancias y Alturas")]
-//    public float distanciaPicada = 10f;    // distancia horizontal para activar la picada
-//    public float alturaVuelo = 20f;        // altura sobre el jugador
+//    public float distanciaPicada = 10f;     // distancia horizontal para activar la picada
+//    public float alturaVuelo = 20f;         // altura sobre el jugador
 
 //    [Header("Temporización")]
-//    public float tiempoEspera = 1f;        // espera tras subir antes de reanudar
-//    public float tiempoAntesDeCaer = 1f;   // tiempo entre aviso y picada
-//    public float tiempoEnTierra = 1f;      // tiempo que permanece en la posición de impacto
-//    public float rotacionVelocidad = 2f;   // rapidez de rotación
+//    public float tiempoEspera = 1f;         // espera tras subir antes de reanudar
+//    public float tiempoAntesDeCaer = 1f;    // tiempo entre aviso y picada
+//    public float tiempoEnTierra = 1f;       // tiempo que permanece en la posición de impacto
+//    public float rotacionVelocidad = 2f;    // rapidez de rotación
 
 //    [Header("Flotación")]
-//    public float amplitudFlotacion = 0.5f; // amplitud de oscilación vertical
-//    public float frecuenciaFlotacion = 1f; // frecuencia de oscilación
+//    public float amplitudFlotacion = 0.5f;  // amplitud de oscilación vertical
+//    public float frecuenciaFlotacion = 1f;  // frecuencia de oscilación
 
 //    private enum Estado { Acercarse, Avisando, Picando, EnTierra, Subiendo, Esperando }
 //    private Estado estadoActual = Estado.Acercarse;
 
-//    private Vector3 objetivoPicada;        // posición capturada para la picada
-//    private GameObject avisoInstancia;     // instancia del prefabAviso
+//    private Vector3 objetivoPicada;         // posición capturada para la picada
+//    private GameObject avisoInstancia;      // instancia del prefabAviso
+
+//    private EnemyAbilityReceiver abilityReceiver;
 
 //    void Start()
 //    {
+//        if (abilityReceiver == null)
+//        {
+//            abilityReceiver = GetComponent<EnemyAbilityReceiver>();
+//        }
+//        else
+//        {
+//            Debug.LogWarning("No se encontró el componente EnemyAbilityReceiver en " + gameObject.name);
+//        }
+
+//        // Capturamos al jugador automáticamente por tag
+//        GameObject jugador = GameObject.FindGameObjectWithTag("Player");
+//        if (jugador != null)
+//        {
+//            player = jugador.transform;
+//        }
+//        else
+//        {
+//            Debug.LogError("No se encontró ningún GameObject con tag 'Player'");
+//            enabled = false; // desactivamos este script para evitar errores posteriores
+//            return;
+//        }
+
 //        // Inicial: sitúa al enemigo a alturaVuelo sobre el jugador
 //        Vector3 p = transform.position;
 //        p.y = player.position.y + alturaVuelo;
@@ -323,7 +351,10 @@ public class EnemigoVolador : MonoBehaviour
 //        Vector3 destinoPlanar = new Vector3(player.position.x, transform.position.y, player.position.z);
 //        Vector3 dirPlanar = (destinoPlanar - transform.position).normalized;
 //        RotarHacia(dirPlanar);
-//        transform.Translate(Vector3.forward * velocidadVuelo * Time.deltaTime);
+
+//        // velocidad de vuelo, si el objeto tiene un EnemyAbilityReceiver
+//        float speed = abilityReceiver ? abilityReceiver.CurrentSpeed : velocidadVuelo;
+//        transform.Translate(Vector3.forward * speed * Time.deltaTime);
 
 //        // al alcanzar la distancia de picada:
 //        if (distXZ <= distanciaPicada)
@@ -440,3 +471,4 @@ public class EnemigoVolador : MonoBehaviour
 //            Destroy(objetoADestruir);
 //    }
 //}
+
