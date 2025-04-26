@@ -123,7 +123,7 @@ public class HUDManager : MonoBehaviour
             StopCoroutine(floatingTextCoroutine);
         }
 
-        floatingTextCoroutine = StartCoroutine(ShowFloatingText($"Info Fragments: + {amount} -> {infoFragments}"));
+        floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: + {amount} -> {infoFragments}"));
     }
 
     private IEnumerator ShowFloatingText(string message)
@@ -153,7 +153,7 @@ public class HUDManager : MonoBehaviour
     {
         infoFragments -= amount;
         infoFragments = Mathf.Max(0, infoFragments);
-        floatingTextCoroutine = StartCoroutine(ShowFloatingText($"Info Fragments: - {amount} -> {infoFragments}"));
+        floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: - {amount} -> {infoFragments}"));
     }
 
     public void ShowMission(string message)
