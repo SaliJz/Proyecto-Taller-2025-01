@@ -15,10 +15,10 @@ public class MenuPausa : MonoBehaviour
 
     void Start()
     {
-        // Asegurarse que el menú esté oculto al inicio
+        
         canvasPausa.SetActive(false);
 
-        // Asignar funciones a los botones por código
+       
         botonContinuar.onClick.AddListener(ReanudarJuego);
         botonMenuPrincipal.onClick.AddListener(SalirAlMenu);
     }
@@ -38,21 +38,21 @@ public class MenuPausa : MonoBehaviour
 
     public void PausarJuego()
     {
-        Time.timeScale = 0f; // Detener el tiempo
+        Time.timeScale = 0f; 
         canvasPausa.SetActive(true);
         juegoPausado = true;
     }
 
     public void ReanudarJuego()
     {
-        Time.timeScale = 1f; // Reanudar el tiempo
+        Time.timeScale = 1f; 
         canvasPausa.SetActive(false);
         juegoPausado = false;
     }
 
     public void SalirAlMenu()
     {
-        Time.timeScale = 1f; // Asegúrate de reanudar el tiempo antes de salir
+        Time.timeScale = 1f; 
         SceneManager.LoadScene("MenuPrincipalJesus");
     }
 }
