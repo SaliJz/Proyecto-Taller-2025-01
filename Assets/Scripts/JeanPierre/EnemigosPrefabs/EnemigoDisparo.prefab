@@ -306,8 +306,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vida: 100
   sliderVida: {fileID: 223591490518025410}
-  danioAlto: 20
-  danioBajo: 5
+  danioAlto: 55
+  danioBajo: 0
   meshRenderer: {fileID: 5606153922046367338}
   prefabsAlMorir:
   - {fileID: 4688980061749175599, guid: 71fa26f444887dd47908328e632687b4, type: 3}
@@ -403,10 +403,6 @@ MonoBehaviour:
   attackCooldown: 1
   attackRange: 20
   baseSpeed: 5
-  currentSpeed: 0
-  meshRenderer: {fileID: 5606153922046367338}
-  defaultMaterial: {fileID: 2100000, guid: 1e0728490cf3caa4f9493bd675826d45, type: 2}
-  mindjackMaterial: {fileID: 2100000, guid: dab846e30402f9248b19a7f6d174e391, type: 2}
 --- !u!1 &6177287622287384025
 GameObject:
   m_ObjectHideFlags: 0
