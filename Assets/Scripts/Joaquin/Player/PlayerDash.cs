@@ -14,6 +14,9 @@ public class PlayerDash : MonoBehaviour
     private bool isGrounded;
     private bool hasAirDashed = false;
 
+    [SerializeField] private float recoveryTime = 1;
+    private bool isRecovering = false;
+
     [Header("Camera")]
     [SerializeField] private Transform cameraHolder;
     [SerializeField] private float dashFOVBoost = 15f;
@@ -50,6 +53,7 @@ public class PlayerDash : MonoBehaviour
             if (!isGrounded && hasAirDashed) return;
 
             StartCoroutine(PerformDash());
+            StartCoroutine(RestoreStateAfterDash());
 
             if (!isGrounded)
             {
@@ -57,22 +61,29 @@ public class PlayerDash : MonoBehaviour
             }
         }
 
-        if (!isDashing)
+        if (isRecovering)
         {
             // Lerp del FOV
             if (vcam != null)
             {
                 vcam.m_Lens.FieldOfView = Mathf.Lerp(vcam.m_Lens.FieldOfView, originalFOV, Time.deltaTime * fovLerpSpeed);
+                isRecovering = vcam.m_Lens.FieldOfView != originalFOV; // Verifica si el FOV ha vuelto al original
             }
         }
+
     }
 
     private IEnumerator PerformDash()
     {
         // Desactivar holders durante dash
         if (weaponHolderObject != null) weaponHolderObject.SetActive(false);
-
         if (abilityHolderObject != null) abilityHolderObject.SetActive(false);
+
+        // FOV de la cámara
+        if (vcam != null)
+        {
+            vcam.m_Lens.FieldOfView = originalFOV + dashFOVBoost;
+        }
 
         isDashing = true;
 
@@ -92,20 +103,20 @@ public class PlayerDash : MonoBehaviour
         rb.velocity = Vector3.zero;
         rb.AddForce(dashDirection * dashForce, ForceMode.Impulse);
 
-        // FOV de la cámara
-        if (vcam != null)
-        {
-            vcam.m_Lens.FieldOfView = originalFOV + dashFOVBoost;
-        }
-
         yield return new WaitForSeconds(dashTime);
 
-        // Activar holders después del dash
-        if (weaponHolderObject != null) weaponHolderObject.SetActive(true);
+        isDashing = false;
+    }
 
+    private IEnumerator RestoreStateAfterDash()
+    {
+        yield return new WaitForSeconds(recoveryTime); // Tiempo específico para restaurar el estado
+
+        // Reactivar objetos
+        if (weaponHolderObject != null) weaponHolderObject.SetActive(true);
         if (abilityHolderObject != null) abilityHolderObject.SetActive(true);
 
-        isDashing = false;
+        isRecovering = true;
     }
 
     private void OnCollisionStay(Collision collision)
