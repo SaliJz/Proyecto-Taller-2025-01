@@ -209,7 +209,7 @@ Transform:
   m_GameObject: {fileID: 63674334}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 348, y: 166, z: 890}
+  m_LocalPosition: {x: 348, y: 139, z: 743}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -712,8 +712,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 156, y: 4}
-  m_SizeDelta: {x: 222.98242, y: -166.6838}
+  m_AnchoredPosition: {x: 156, y: -134.77036}
+  m_SizeDelta: {x: 222.9824, y: 110.8569}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1801392425
 MonoBehaviour:
@@ -831,6 +831,7 @@ MonoBehaviour:
   cameraTransform: {fileID: 63674337}
   fadeStartDistance: 5
   fadeEndDistance: 20
+  resetTime: 45
 --- !u!1 &1937779154
 GameObject:
   m_ObjectHideFlags: 0
