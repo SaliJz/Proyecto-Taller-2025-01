@@ -439,6 +439,7 @@ GameObject:
   - component: {fileID: 3675985458192577473}
   - component: {fileID: 2900301066802915152}
   - component: {fileID: 2287403463676174761}
+  - component: {fileID: -3876290804030161075}
   m_Layer: 6
   m_Name: EnemigoMelee
   m_TagString: Enemy
@@ -659,6 +660,20 @@ MonoBehaviour:
   attackCooldown: 1.5
   attackRange: 20
   baseSpeed: 5
+--- !u!114 &-3876290804030161075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5120538479886475079}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b112c93795a8ee44798694fa10c35f63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  separationRadius: 2
+  separationStrength: 3
 --- !u!1 &6642947135343746201
 GameObject:
   m_ObjectHideFlags: 0
