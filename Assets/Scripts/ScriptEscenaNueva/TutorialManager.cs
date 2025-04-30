@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro; 
+using TMPro;
+using UnityEngine.UI; 
+
 
 public class TutorialManager : MonoBehaviour
 {
     public TMP_Text tutorialText;
+    public Image backgroundImage;
 
     private int currentStep = 0;
 
@@ -78,6 +81,7 @@ public class TutorialManager : MonoBehaviour
         else
         {
             tutorialText.text = "";
+            backgroundImage.gameObject.SetActive(false);
             this.enabled = false; 
         }
     }
