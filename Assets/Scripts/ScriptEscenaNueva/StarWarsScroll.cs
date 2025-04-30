@@ -4,47 +4,43 @@ using UnityEngine;
 
 public class StarWarsScroll : MonoBehaviour
 {
-    public float speed = 10f; 
-    public float angle = 30f;
+    [SerializeField] private float speed = 10f; 
+    [SerializeField] private float angle = 30f;
 
-    public Transform cameraTransform; 
-    public float fadeStartDistance = 5f;
-    public float fadeEndDistance = 20f;
+    [SerializeField] private Transform cameraTransform;
 
-    private CanvasGroup canvasGroup;
+    [SerializeField] private Vector3 initialPosition;
+    [SerializeField] private Vector3 finalPosition;
+
     private Vector3 direction;
-    private Vector3 initialPosition;
-
-    private float timer = 0f;          
-    public float resetTime = 15f;
+    private Vector3 scrollDirection;
+    private float scrollLength;
 
     private void Start()
     {
-        
         transform.rotation = Quaternion.Euler(angle, 0f, 0f);
-        canvasGroup = GetComponent<CanvasGroup>();
         direction = transform.up;
         initialPosition = transform.position;
+
+        scrollDirection = (finalPosition - initialPosition).normalized;
+        scrollLength = Vector3.Distance(finalPosition, initialPosition);
     }
 
     private void Update()
     {
-       
         transform.position += direction * speed * Time.deltaTime;
-        timer += Time.deltaTime;
 
-        if (canvasGroup != null && cameraTransform != null)
-        {
-            float distance = Vector3.Distance(transform.position, cameraTransform.position);
-            float alpha = Mathf.InverseLerp(fadeEndDistance, fadeStartDistance, distance);
-            canvasGroup.alpha = Mathf.Clamp01(alpha);
-        }
+        float movedDistance = Vector3.Dot(transform.position - initialPosition, scrollDirection);
 
-        if (timer >= resetTime)
+        if (movedDistance >= scrollLength)
         {
-            transform.position = initialPosition;
-            timer = 0f;
+            ResetPosition();
         }
     }
 
+    private void ResetPosition()
+    {
+        // Resetea a la posición inicial.
+        transform.position = initialPosition;
+    }
 }

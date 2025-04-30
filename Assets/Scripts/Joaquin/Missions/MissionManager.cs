@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MissionManager : MonoBehaviour
 {
     [Header("Misión base")]
     [SerializeField] private List<Mission> baseMissions; // ScriptableObjects
     [SerializeField] private GameObject abilitySelectorUI;
+    [SerializeField] private string nextSceneName = "VictoryScene";
 
     private List<MissionInstance> runtimeMissions = new();
     private int currentMissionIndex = 0;
@@ -34,10 +36,12 @@ public class MissionManager : MonoBehaviour
         if (mission.IsCompleted)
         {
             Debug.Log($"¡Misión completada!: {mission.missionSO.missionName}");
+
+            abilitySelectorUI.SetActive(true);
             currentMissionIndex++;
 
             if (currentMissionIndex < runtimeMissions.Count) ShowCurrentMission();
-            else abilitySelectorUI.SetActive(true);
+            else StartCoroutine(ChangeSceneAfterDelay());
         }
         else
         {
@@ -63,6 +67,15 @@ public class MissionManager : MonoBehaviour
         }
 
         currentMissionIndex = 0;
+    }
+
+    private IEnumerator ChangeSceneAfterDelay()
+    {
+        // Opcional: esperar a que el jugador seleccione su habilidad
+        yield return new WaitUntil(() => abilitySelectorUI.activeSelf == false);
+
+        // Luego cambiar de escena
+        SceneManager.LoadScene(nextSceneName);
     }
 }
 

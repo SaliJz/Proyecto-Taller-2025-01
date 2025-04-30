@@ -17,16 +17,21 @@ public class MenuController : MonoBehaviour
     public string nombreEscenaCreditos = "CreditosJesus";
     public string nombreEscenaOpciones = "MenuOpciones";
 
-
     void Start()
     {
+        Cursor.lockState = CursorLockMode.None;  // Desbloquear el cursor al iniciar el juego
+        Cursor.visible = true;  // Hacer visible el cursor
+
         // Asignar listeners a los botones, sin necesidad de usar OnClick() en el Inspector
         jugarButton.onClick.AddListener(StartGame);
         creditosButton.onClick.AddListener(ShowCredits);
         salirButton.onClick.AddListener(QuitGame);
-        opcionesButton.onClick.AddListener(ShowOpciones);
+        
+        if (opcionesButton != null)
+        {
+            opcionesButton.onClick.AddListener(ShowOpciones);
+        }
     }
-
 
     // Método para iniciar el juego
     public void StartGame()

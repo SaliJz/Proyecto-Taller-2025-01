@@ -24,6 +24,8 @@ public class PickupItem : MonoBehaviour
     [SerializeField] private float rotationSpeed = 10f;
     [SerializeField] private float positionOffset = 1f;
 
+    [SerializeField] private float lifetime = 60f;
+
     private int actualAmount;
     [SerializeField] private bool playerInRange = false;
     private bool isFlyingToPlayer = false;
@@ -32,6 +34,8 @@ public class PickupItem : MonoBehaviour
 
     private void Start()
     {
+        Invoke(nameof(DestroyPickup), lifetime);
+
         amountRange = pickupType switch
         {
             PickupType.CodeFragment => new Vector2(100, 200),
@@ -226,6 +230,11 @@ public class PickupItem : MonoBehaviour
         {
             pickupAmountText.text = $"{pickupType} x{actualAmount}";
         }
+    }
+
+    private void DestroyPickup()
+    {
+        Destroy(gameObject);
     }
 
     private void OnDrawGizmos()

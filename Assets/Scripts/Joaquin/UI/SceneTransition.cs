@@ -21,6 +21,13 @@ public class SceneTransition : MonoBehaviour
     public void LoadSceneWithFade(string sceneName)
     {
         gameObject.SetActive(true); // Asegúrate de que el objeto está activo
+        
+        MenuPausa menuPausa = FindObjectOfType<MenuPausa>();
+
+        if (menuPausa != null)
+        {
+            menuPausa.SetIsDead(true); // Desactiva el menú de pausa
+        }
         StartCoroutine(LoadSceneCoroutine(sceneName));
     }
 

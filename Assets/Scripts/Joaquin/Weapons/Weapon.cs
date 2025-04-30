@@ -18,6 +18,8 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float reloadTime = 1.5f;
 
     public bool isReloading = false;
+    private bool isAutomaticReload = false;
+    private bool animationInProgress = false;
 
     [Header("Shotgun")]
     [SerializeField] private int bulletPerBurst = 3;
@@ -92,25 +94,55 @@ public class Weapon : MonoBehaviour
             isShooting = Input.GetKeyDown(KeyCode.Mouse0);
         }
 
-        // Recarga
+        // Disparo
+        if (isShooting)
+        {
+            // Si está recargando manualmente y no es recarga automática, la interrumpe
+            if (isReloading && !isAutomaticReload)
+            {
+                if (!animationInProgress) CancelReload(); // // Espera a que termine animación actual
+            }
+
+            if (CanShoot())
+            {
+                lastShotTime = Time.time;
+                Shoot();
+            }
+            // Recarga automática si no hay balas
+            else if (currentAmmo <= 0 && totalAmmo > 0 && !isReloading)
+            {
+                isAutomaticReload = true;
+                reloadCoroutine = StartCoroutine(Reload());
+            }
+        }
+
+        // Recarga manual
         if (Input.GetKeyDown(KeyCode.R) && !isReloading && currentAmmo < maxAmmoPerClip && totalAmmo > 0)
         {
+            isAutomaticReload = false;
             reloadCoroutine = StartCoroutine(Reload());
             return;
         }
+    }
 
-        // Disparo
-        if (isShooting && CanShoot())
-        {
-            lastShotTime = Time.time;
-            Shoot();
-        }
+    // Verifica si el arma puede disparar
+    private bool CanShoot() =>
+    !isReloading && currentAmmo >= GetAmmoCostPerShot() && Time.time >= lastShotTime + 1f / fireRate;
+
+    // Calcula el costo de munición por disparo
+    private int GetAmmoCostPerShot()
+    {
+        return currentShootingMode == ShootingMode.SemiAuto ? bulletPerBurst : 1;
     }
 
     // Dispara el arma
     private void Shoot()
     {
-        currentAmmo--;
+        int ammoCost = GetAmmoCostPerShot();
+
+        if (currentAmmo < ammoCost) return;
+
+        currentAmmo -= ammoCost;
         HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
 
         switch (currentShootingMode)
@@ -152,37 +184,32 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    // Verifica si el arma puede disparar
-    private bool CanShoot() =>
-    !isReloading && currentAmmo > 0 && Time.time >= lastShotTime + 1f / fireRate;
-
     // Recarga el arma
     private IEnumerator Reload()
     {
         isReloading = true;
+        animationInProgress = true;
+
+        int neededAmmo = maxAmmoPerClip - currentAmmo;
+        int ammoToReload = Mathf.Min(neededAmmo, totalAmmo);
+
+        Coroutine animCoroutine = StartCoroutine(AnimateReload(reloadTime));
 
         if (currentShootingMode == ShootingMode.SemiAuto && reloadTime > 0f)
         {
-            PlayReloadAnimation();
-
-            int neededAmmo = maxAmmoPerClip - currentAmmo;
-            int ammoToReload = Mathf.Min(neededAmmo, totalAmmo);
+            float timePerBullet = reloadTime / ammoToReload;
 
             for (int i = 0; i < ammoToReload; i++)
             {
                 currentAmmo++;
                 totalAmmo--;
                 HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
-
-                yield return new WaitForSeconds(reloadTime);
+                yield return new WaitForSeconds(timePerBullet);
             }
         }
         else
         {
-            yield return StartCoroutine(AnimateReload(reloadTime));
-
-            int neededAmmo = maxAmmoPerClip - currentAmmo;
-            int ammoToReload = Mathf.Min(neededAmmo, totalAmmo);
+            yield return new WaitForSeconds(reloadTime);
 
             currentAmmo += ammoToReload;
             totalAmmo -= ammoToReload;
@@ -190,28 +217,30 @@ public class Weapon : MonoBehaviour
         }
 
         isReloading = false;
+        isAutomaticReload = false;
     }
 
+    // Cancela la recarga
     public void CancelReload()
     {
         if (isReloading && reloadCoroutine != null)
         {
-            StopCoroutine(reloadCoroutine);
-            isReloading = false;
+            isReloading = false; 
+            isAutomaticReload = false;
         }
     }
-    
+
     // Calcula la dirección y la propagación de la bala
     private Vector3 CalculateDirectionAndSpread()
     {
-        // Dirección central (de la cámara al centro de pantalla)
+        // Dirección de la cámara al centro de pantalla
         Vector3 direction = playerCamera.transform.forward;
 
-        // Generamos un pequeño ángulo de desviación
+        // Genera un pequeño ángulo de desviación
         float angleX = Random.Range(-spreadIntensity, spreadIntensity);
         float angleY = Random.Range(-spreadIntensity, spreadIntensity);
 
-        // Aplicamos la desviación en la rotación
+        // Aplica la desviación en la rotación
         Quaternion spreadRotation = Quaternion.Euler(angleY, angleX, 0);
         Vector3 spreadDirection = spreadRotation * direction;
 
@@ -256,6 +285,7 @@ public class Weapon : MonoBehaviour
         weaponModelTransform.localPosition = startPos;
     }
 
+    // Agrega munición al arma
     public int TryAddAmmo(int amount)
     {
         int capacityLeft = stats.totalAmmo - totalAmmo;
@@ -265,6 +295,7 @@ public class Weapon : MonoBehaviour
         return toAdd;
     }
 
+    // Aplica las mejoras pasivas al arma
     public void ApplyPassiveUpgrades()
     {
         var data = UpgradeDataStore.Instance;

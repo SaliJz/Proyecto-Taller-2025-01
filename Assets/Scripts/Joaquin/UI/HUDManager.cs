@@ -84,7 +84,7 @@ public class HUDManager : MonoBehaviour
     public void UpdateHealth(int current, int max)
     {
         healthBar.value = (float)current / max;
-        healthBarText.text = $"{current} / {max}";
+        healthBarText.text = $"{current}";
     }
 
     public void UpdateShield(int current, int max)
@@ -95,7 +95,7 @@ public class HUDManager : MonoBehaviour
         }
         if (shieldText != null)
         {
-            shieldText.text = $"{current} / {max}";
+            shieldText.text = $"{current}";
         }
     }
 

@@ -19,6 +19,8 @@ public class SupplyBox : MonoBehaviour
     [SerializeField] private GameObject pickupCanvas;
     [SerializeField] private TextMeshProUGUI pickupAmountText;
     [SerializeField] private float pickUpRange;
+    [SerializeField] private float refillDelay = 5f;
+    [SerializeField] private bool autoRefill;
 
     private int actualAmount;
     private bool playerInRange = false;
@@ -108,9 +110,23 @@ public class SupplyBox : MonoBehaviour
 
         if (actualAmount <= 0)
         {
-            Debug.Log($"Máximo de munición/fragmentos de codigo recogido");
-            return; // salimos si no queda más munición
+            if (autoRefill)
+            {
+                StartCoroutine(RefillAfterDelay());
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
+    }
+
+    private IEnumerator RefillAfterDelay()
+    {
+        pickupCanvas.SetActive(false);
+        yield return new WaitForSeconds(refillDelay);
+        actualAmount = Random.Range((int)amountRange.x, (int)amountRange.y + 1);
+        UpdateVisual();
     }
 
     private Weapon FindWeaponNearby(Vector3 origin, float radius)

@@ -18,9 +18,9 @@ public class PlayerDash : MonoBehaviour
     private bool isRecovering = false;
 
     [Header("Camera")]
-    [SerializeField] private Transform cameraHolder;
     [SerializeField] private float dashFOVBoost = 15f;
     [SerializeField] private float fovLerpSpeed = 10f;
+    private bool fovInitialized = false;
 
     [Header("Objects")]
     [SerializeField] private GameObject weaponHolderObject;
@@ -37,18 +37,22 @@ public class PlayerDash : MonoBehaviour
     private void Start()
     {
         vcam = FindObjectOfType<Cinemachine.CinemachineVirtualCamera>();
-        if (vcam != null)
-        {
-            originalFOV = vcam.m_Lens.FieldOfView;
-        }
     }
 
     private void Update()
     {
-        // Verifica que haya input (horizontal o vertical)
-        bool isMoving = Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0;
+        if (!fovInitialized && vcam != null)
+        {
+            originalFOV = vcam.m_Lens.FieldOfView;
+            fovInitialized = true;
+        }
 
-        if (canDash && Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && isMoving)
+        // Verifica que haya input vertical
+        float vertical = Input.GetAxisRaw("Vertical");
+
+        bool isMovingForward = vertical > 0.1f;
+
+        if (canDash && Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && isMovingForward)
         {
             if (!isGrounded && hasAirDashed) return;
 
