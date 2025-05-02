@@ -138,6 +138,8 @@ public class Weapon : MonoBehaviour
     // Dispara el arma
     private void Shoot()
     {
+        if (Time.timeScale == 0f) return; // Evita disparar si el tiempo está pausado
+
         int ammoCost = GetAmmoCostPerShot();
 
         if (currentAmmo < ammoCost) return;

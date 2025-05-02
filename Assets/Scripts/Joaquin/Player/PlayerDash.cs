@@ -1,50 +1,57 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class PlayerDash : MonoBehaviour
 {
-    [Header("Dash")]
+    [Header("Key input")]
+    [SerializeField] private KeyCode dashKey = KeyCode.LeftShift;
+
+    [Header("Dash Settings")]
     [SerializeField] private float dashForce = 20f;
-    [SerializeField] private float dashTime = 0.2f;
-    [SerializeField] private Transform cameraForwardSource;
-    private Rigidbody rb;
+    [SerializeField] private float dashUpwardForce = 2f;
+    [SerializeField] private float dashDuration = 0.25f;
+    [SerializeField] private float dashCooldown = 1f;
+    [SerializeField] private bool useCameraForward = true;
+    [SerializeField] private float dashCollisionCheckDistance = 2f;
+
+    [Header("References")]
+    [SerializeField] private Transform orientation;
+    [SerializeField] private Transform playerCam;
+    [SerializeField] private Rigidbody rb;
+    [SerializeField] private ParticleSystem dashEffectForward;
+    [SerializeField] private CinemachineVirtualCamera virtualCam;
+
+    [Header("CameraEffects")]
+    [SerializeField] private float dashFov = 45f;
+    [SerializeField] private float fovTransitionSpeed = 8f;
+
+    private float defaultFov;
+    private float targetFov;
     private bool isDashing = false;
     private bool canDash = true;
-    private bool isGrounded;
-    private bool hasAirDashed = false;
-
-    [SerializeField] private float recoveryTime = 1;
-    private bool isRecovering = false;
-
-    [Header("Camera")]
-    [SerializeField] private float dashFOVBoost = 15f;
-    [SerializeField] private float fovLerpSpeed = 10f;
-    private bool fovInitialized = false;
-
-    [Header("Objects")]
-    [SerializeField] private GameObject weaponHolderObject;
-    [SerializeField] private GameObject abilityHolderObject;
-
-    private float originalFOV;
-    private Cinemachine.CinemachineVirtualCamera vcam;
-
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody>();
-    }
+    private Coroutine dashCoroutine;
+    private PlayerMovement playerMovement;
 
     private void Start()
     {
-        vcam = FindObjectOfType<Cinemachine.CinemachineVirtualCamera>();
+        rb = GetComponent<Rigidbody>();
+        playerMovement = GetComponent<PlayerMovement>();
+
+        if (virtualCam != null)
+        {
+            defaultFov = virtualCam.m_Lens.FieldOfView;
+            targetFov = defaultFov;
+        }
     }
 
     private void Update()
     {
-        if (!fovInitialized && vcam != null)
+        if (virtualCam != null)
         {
-            originalFOV = vcam.m_Lens.FieldOfView;
-            fovInitialized = true;
+            float currentFov = virtualCam.m_Lens.FieldOfView;
+            virtualCam.m_Lens.FieldOfView = Mathf.Lerp(currentFov, targetFov, Time.deltaTime * fovTransitionSpeed);
         }
 
         // Verifica que haya input vertical
@@ -52,103 +59,93 @@ public class PlayerDash : MonoBehaviour
 
         bool isMovingForward = vertical > 0.1f;
 
-        if (canDash && Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && isMovingForward)
+        if (Input.GetKeyDown(dashKey) && canDash && !isDashing && isMovingForward)
         {
-            if (!isGrounded && hasAirDashed) return;
-
-            StartCoroutine(PerformDash());
-            StartCoroutine(RestoreStateAfterDash());
-
-            if (!isGrounded)
+            rb.drag = 0; // Desactiva la fricción al iniciar el dash
+            Vector3 dashDirection = GetDashDirection();
+            if (IsPathClear(dashDirection, dashCollisionCheckDistance))
             {
-                hasAirDashed = true;
+                StartDash(dashDirection);
+            }
+            else
+            {
+                Debug.Log("Dash bloqueado por obstáculo.");
             }
         }
-
-        if (isRecovering)
-        {
-            // Lerp del FOV
-            if (vcam != null)
-            {
-                vcam.m_Lens.FieldOfView = Mathf.Lerp(vcam.m_Lens.FieldOfView, originalFOV, Time.deltaTime * fovLerpSpeed);
-                isRecovering = vcam.m_Lens.FieldOfView != originalFOV; // Verifica si el FOV ha vuelto al original
-            }
-        }
-
     }
 
-    private IEnumerator PerformDash()
+    private void StartDash(Vector3 dashDirection)
     {
-        // Desactivar holders durante dash
-        if (weaponHolderObject != null) weaponHolderObject.SetActive(false);
-        if (abilityHolderObject != null) abilityHolderObject.SetActive(false);
+        if (dashCoroutine != null) StopCoroutine(dashCoroutine);
 
-        // FOV de la cámara
-        if (vcam != null)
-        {
-            vcam.m_Lens.FieldOfView = originalFOV + dashFOVBoost;
-        }
+        dashCoroutine = StartCoroutine(DashRoutine(dashDirection));
+    }
 
+    private IEnumerator DashRoutine(Vector3 dashDirection)
+    {
         isDashing = true;
+        canDash = false;
 
-        // Dirección en base a cámara
-        Vector3 dashDirection = cameraForwardSource.forward.normalized;
+        PlayDashEffect();
+        targetFov = dashFov;
 
-        // Limita el impulso vertical para que no "vuele"
-        if (isGrounded)
+        if (playerMovement != null && playerMovement.IsGrounded == true)
         {
-            dashDirection.y = 0f;
+            rb.AddForce(dashDirection * dashForce, ForceMode.Impulse);
         }
         else
         {
-            dashDirection.y = 0.05f; // Fuerza a que el dash no sume el salto
+            // Cambia a VelocityChange para un dash más suave en el aire
+            rb.AddForce(dashDirection * (dashForce/2), ForceMode.VelocityChange);
+            // Agrega fuerza hacia arriba solo si no estamos subiendo rápidamente ya
+            if (rb.velocity.y < dashUpwardForce)
+            {
+                rb.AddForce(Vector3.up * dashUpwardForce, ForceMode.VelocityChange);
+            }
         }
 
-        rb.velocity = Vector3.zero;
-        rb.AddForce(dashDirection * dashForce, ForceMode.Impulse);
+        float timer = 0f;
+        while (timer < dashDuration && isDashing)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
 
-        yield return new WaitForSeconds(dashTime);
-
+        targetFov = defaultFov;
         isDashing = false;
+
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
     }
 
-    private IEnumerator RestoreStateAfterDash()
+    private void PlayDashEffect()
     {
-        yield return new WaitForSeconds(recoveryTime); // Tiempo específico para restaurar el estado
-
-        // Reactivar objetos
-        if (weaponHolderObject != null) weaponHolderObject.SetActive(true);
-        if (abilityHolderObject != null) abilityHolderObject.SetActive(true);
-
-        isRecovering = true;
-    }
-
-    private void OnCollisionStay(Collision collision)
-    {
-        // Desactiva el uso del dash al colisionar con paredes
-        if (collision.gameObject.CompareTag("Wall"))
+        if (dashEffectForward != null)
         {
-            canDash = false;
-        }
-        // Permite el uso del dash al colisionar con el suelo
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-            hasAirDashed = false;
+            dashEffectForward.Play(); // Reproduce el efecto de dash
         }
     }
 
-    private void OnCollisionExit(Collision collision)
+    private Vector3 GetDashDirection()
     {
-        // Reactiva el uso del dash al salir de la colisión con paredes
-        if (collision.gameObject.CompareTag("Wall"))
+        Transform forwardSource = useCameraForward ? playerCam : orientation; // usar la cámara o la orientación del jugador
+        Vector3 direction = forwardSource.forward;
+        return direction.normalized;
+    }
+
+    private bool IsPathClear(Vector3 direction, float distance)
+    {
+        RaycastHit hit;
+        return !Physics.Raycast(transform.position, direction, out hit, distance);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (isDashing)
         {
-            canDash = true;
-        }
-        // Desactiva el dash al salir del suelo
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
+            rb.velocity = Vector3.zero;
+            isDashing = false; // cancela el dash al chocar
+            targetFov = defaultFov;
         }
     }
 }
