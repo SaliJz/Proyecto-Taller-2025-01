@@ -129,53 +129,35 @@ public class PickupItem : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
+    
     private void TryPickup()
     {
-        Collider playerCollider = Physics.OverlapSphere(transform.position, pickUpRange).FirstOrDefault(c => c.CompareTag("Player"));
+        Debug.Log("Recogiendo objeto");
 
-        if (playerCollider != null)
-        {
-            Debug.Log("Jugador encontrado en el rango de recogida");
-        }
-        else
-        {
-            Debug.Log("No se encontró al jugador en el rango de recogida");
-            return;
-        }
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null) return;
 
-        Weapon weapon = FindWeaponNearby(transform.position, pickUpRange);
-        if (weapon != null)
-        {
-            Debug.Log("Weapon encontrado en la jerarquía y capa especificada: " + weapon.name);
-        }
-        else
-        {
-            Debug.Log("No se encontró ningún Weapon en la jerarquía y capa especificada.");
-            return;
-        }
+        WeaponManager weaponManager = FindAnyObjectByType<WeaponManager>();
+        if (weaponManager == null) return;
+        
         int added = 0;
 
         switch (pickupType)
         {
             case PickupType.AmmoSingle:
-                if (weapon.currentShootingMode == Weapon.ShootingMode.Single)
-                    added = weapon.TryAddAmmo(actualAmount);
-                Debug.Log($"Recogido {added} balas de pistola.");
+                weaponManager.TryAddAmmoToWeapon(Weapon.ShootingMode.Single, actualAmount, out added);
                 break;
 
             case PickupType.AmmoSemiAuto:
-                if (weapon.currentShootingMode == Weapon.ShootingMode.SemiAuto)
-                    added = weapon.TryAddAmmo(actualAmount);
-                Debug.Log($"Recogido {added} balas de escopeta.");
+                weaponManager.TryAddAmmoToWeapon(Weapon.ShootingMode.SemiAuto, actualAmount, out added);
                 break;
 
             case PickupType.AmmoAuto:
-                if (weapon.currentShootingMode == Weapon.ShootingMode.Auto)
-                    added = weapon.TryAddAmmo(actualAmount);
-                Debug.Log($"Recogido {added} balas de ametralladora.");
+                weaponManager.TryAddAmmoToWeapon(Weapon.ShootingMode.Auto, actualAmount, out added);
                 break;
         }
+
+        Debug.Log($"Recogido {added} balas de tipo {pickupType}");
 
         actualAmount -= added;
         UpdateVisual();
@@ -185,7 +167,7 @@ public class PickupItem : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
+    /*
     private Weapon FindWeaponNearby(Vector3 origin, float radius)
     {
         int weaponLayer = LayerMask.NameToLayer("Weapon");
@@ -212,7 +194,7 @@ public class PickupItem : MonoBehaviour
 
         return nearestWeapon;
     }
-
+    */
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<PlayerHealth>() != null)
@@ -228,7 +210,22 @@ public class PickupItem : MonoBehaviour
     {
         if (pickupCanvas != null && pickupAmountText != null)
         {
-            pickupAmountText.text = $"{pickupType} x{actualAmount}";
+            if (pickupType == PickupType.CodeFragment)
+            {
+                pickupAmountText.text = $"F. Cod. x{actualAmount}";
+            }
+            else if (pickupType == PickupType.AmmoSingle)
+            {
+                pickupAmountText.text = $"Pistola x{actualAmount}";
+            }
+            else if (pickupType == PickupType.AmmoSemiAuto)
+            {
+                pickupAmountText.text = $"Escopeta x{actualAmount}";
+            }
+            else if (pickupType == PickupType.AmmoAuto)
+            {
+                pickupAmountText.text = $"Rifle x{actualAmount}";
+            }
         }
     }
 

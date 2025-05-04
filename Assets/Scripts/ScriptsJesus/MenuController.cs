@@ -14,7 +14,7 @@ public class MenuController : MonoBehaviour
 
     // Variables para los nombres de las escenas, se pueden cambiar desde el Inspector
     public string nombreEscenaJuego = "Jesus";
-    public string nombreEscenaCreditos = "CreditosJesus";
+    public string nombreEscenaCreditos = "Creditos";
     public string nombreEscenaOpciones = "MenuOpciones";
 
     void Start()
@@ -36,6 +36,7 @@ public class MenuController : MonoBehaviour
     // Método para iniciar el juego
     public void StartGame()
     {
+
         SceneManager.LoadScene(nombreEscenaJuego);  // Carga la escena especificada
     }
 

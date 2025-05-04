@@ -79,7 +79,7 @@ public class WeaponManager : MonoBehaviour
         StartCoroutine(SlideUpWeapon(newModel, newWeapon.originalLocalPosition));
 
         // Actualizar HUD
-        HUDManager.Instance.UpdateAmmo(newWeapon.currentAmmo, newWeapon.totalAmmo);
+        HUDManager.Instance.UpdateAmmo(newWeapon.CurrentAmmo, newWeapon.TotalAmmo);
         HUDManager.Instance.UpdateWeaponIcon(newWeapon.Stats.weaponIcon);
         HUDManager.Instance.UpdateWeaponName(newWeapon.Stats.weaponName);
     }
@@ -113,8 +113,37 @@ public class WeaponManager : MonoBehaviour
         // Asegura que el arma esté en su posición base desde el inicio
         currentWeapon.weaponModelTransform.localPosition = currentWeapon.originalLocalPosition;
 
-        HUDManager.Instance.UpdateAmmo(currentWeapon.currentAmmo, currentWeapon.totalAmmo);
+        HUDManager.Instance.UpdateAmmo(currentWeapon.CurrentAmmo, currentWeapon.TotalAmmo);
         HUDManager.Instance.UpdateWeaponIcon(currentWeapon.Stats.weaponIcon);
         HUDManager.Instance.UpdateWeaponName(currentWeapon.Stats.weaponName);
+    }
+
+    // Método para obtener el índice del arma actual
+    public bool TryAddAmmoToWeapon(Weapon.ShootingMode mode, int amountToAdd, out int amountActuallyAdded)
+    {
+        amountActuallyAdded = 0;
+        Debug.Log("Intentando agregar balas al modo: " + mode);
+
+        foreach (Weapon weapon in weapons)
+        {
+            Debug.Log("Revisando arma con modo: " + weapon.currentShootingMode);
+            if (weapon != null && weapon.currentShootingMode == mode)
+            {
+                if (weapon.TryAddAmmo(amountToAdd, out int added))
+                {
+                    amountActuallyAdded = added;
+                    Debug.Log("Balas agregadas: " + added);
+
+                    // Solo actualiza HUD si es el arma actualmente equipada
+                    if (weapon == weapons[currentIndex])
+                    {
+                        HUDManager.Instance.UpdateAmmo(weapon.CurrentAmmo, weapon.TotalAmmo);
+                    }
+                    return true; // Devuelve verdadero si la munición se agregó con éxito
+                }
+            }
+        }
+
+        return false; // Devuelve falso si no hay armas coincidentes o no se pudo agregar munición
     }
 }

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class AbilitySelectionUI : MonoBehaviour
 {
-    [Header("UI Elements")]
+    [Header("Elementos UI")]
     [SerializeField] private Button passiveUpgradeButton;
     [SerializeField] private Button abilityButton;
     [SerializeField] private Button rerollButton;
@@ -16,7 +16,7 @@ public class AbilitySelectionUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI rerollText;
     [SerializeField] private TextMeshProUGUI promptText;
 
-    [Header("All Abilities and Upgrades")]
+    [Header("Todas las habilidades y mejoras temporales")]
     [SerializeField] private List<GameObject> allAbilities;
     [SerializeField] private List<PassiveUpgradeStats> passiveUpgrades;
 
@@ -59,14 +59,15 @@ public class AbilitySelectionUI : MonoBehaviour
         {
             proposedAbility = null;
             abilityButton.interactable = false;
-            abilityButton.GetComponentInChildren<TextMeshProUGUI>().text = "All skills unlocked";
+            abilityButton.GetComponentInChildren<TextMeshProUGUI>().text = "Todas las habilidades desbloqueadas";
         }
 
         proposedUpgrade = passiveUpgrades[Random.Range(0, passiveUpgrades.Count)];
         UpdatePassiveButton(proposedUpgrade);
 
-        rerollText.text = $"Rerolls left: {rerollAttempts}";
-        promptText.text = abilityMgr.activedAbilities.Count < 2 ? "Select a new skill" : "Select a skill to replace";
+        rerollText.text = $"Rerolls restantes: {rerollAttempts}";
+        promptText.text = abilityMgr.activedAbilities.Count < 2 ? "Selecciona una nueva habilidad" : 
+                                                        "Seleccione una habilidad para reemplazar";
     }
 
     private void UpdatePassiveButton(PassiveUpgradeStats upgrade)
@@ -111,7 +112,7 @@ public class AbilitySelectionUI : MonoBehaviour
     private IEnumerator WaitForReplacement(GameObject newAbility)
     {
         AbilityManager abilityMgr = FindObjectOfType<AbilityManager>();
-        promptText.text = "Select skill to replace";
+        promptText.text = "Selecciona la habilidad para reemplazar";
 
         var active = abilityMgr.activedAbilities;
 

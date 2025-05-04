@@ -13,8 +13,8 @@ public class Weapon : MonoBehaviour
 
     [Header("Ammo")]
     [SerializeField] private int maxAmmoPerClip = 30;
-    public int currentAmmo;
-    public int totalAmmo = 90;
+    [SerializeField] private int currentAmmo;
+    [SerializeField] private int totalAmmo = 90;
     [SerializeField] private float reloadTime = 1.5f;
 
     public bool isReloading = false;
@@ -57,6 +57,8 @@ public class Weapon : MonoBehaviour
     }
 
     public ShootingMode currentShootingMode;
+    public int CurrentAmmo => currentAmmo;
+    public int TotalAmmo => totalAmmo;
 
     // Inicializa el arma al activarse
     private void Awake()
@@ -287,14 +289,25 @@ public class Weapon : MonoBehaviour
         weaponModelTransform.localPosition = startPos;
     }
 
-    // Agrega munición al arma
-    public int TryAddAmmo(int amount)
+    // Intenta añadir munición al arma
+    public bool TryAddAmmo(int amountToAdd, out int amountActuallyAdded)
     {
-        int capacityLeft = stats.totalAmmo - totalAmmo;
-        int toAdd = Mathf.Min(amount, capacityLeft);
-        totalAmmo += toAdd;
-        HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
-        return toAdd;
+        Debug.Log($"Intentando añadir {amountToAdd} de munición. Munición actual: {currentAmmo} / {totalAmmo}");
+        int maxReserveAmmo = baseTotalAmmo + UpgradeDataStore.Instance.weaponAmmoBonus;
+
+        int availableSpace = maxReserveAmmo - totalAmmo;
+
+        if (availableSpace <= 0)
+        {
+            amountActuallyAdded = 0;
+            Debug.Log("No hay espacio disponible para añadir munición.");
+            return false;
+        }
+
+        amountActuallyAdded = Mathf.Min(amountToAdd, availableSpace);
+        totalAmmo += amountActuallyAdded;
+        Debug.Log($"Añadido {amountActuallyAdded} de munición. Munición total: {totalAmmo}");
+        return true;
     }
 
     // Aplica las mejoras pasivas al arma

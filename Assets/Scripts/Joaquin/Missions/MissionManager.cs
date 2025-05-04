@@ -26,6 +26,20 @@ public class MissionManager : MonoBehaviour
         ShowCurrentMission();
     }
 
+    private void Awake()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name != gameObject.scene.name) // Si cambió de escena
+        {
+            ResetAllMissions();
+        }
+    }
+
+    // Este método se llama para registrar una muerte
     public void RegisterKill(string killedTag)
     {
         if (currentMissionIndex >= runtimeMissions.Count) return;
@@ -49,6 +63,7 @@ public class MissionManager : MonoBehaviour
         }
     }
 
+    // Muestra la misión actual en el HUD
     private void ShowCurrentMission()
     {
         Debug.Log($"Misión actual: {currentMissionIndex + 1}/{runtimeMissions.Count}");
@@ -59,6 +74,7 @@ public class MissionManager : MonoBehaviour
         HUDManager.Instance.ShowMission(message);
     }
 
+    // Reinicia todas las misiones
     public void ResetAllMissions()
     {
         foreach (var mission in runtimeMissions)
@@ -69,6 +85,7 @@ public class MissionManager : MonoBehaviour
         currentMissionIndex = 0;
     }
 
+    // Cambia de escena después de un retraso
     private IEnumerator ChangeSceneAfterDelay()
     {
         // Opcional: esperar a que el jugador seleccione su habilidad

@@ -9,6 +9,7 @@ public class AbilityDataStore : MonoBehaviour
     public List<string> abilityNames = new List<string>();
     public int currentIndex = 0;
 
+    // Almacena los nombres de las habilidades en el orden en que se desbloquean
     private void Awake()
     {
         if (Instance == null)
@@ -22,6 +23,7 @@ public class AbilityDataStore : MonoBehaviour
         }
     }
 
+    // Método para agregar un nombre de habilidad
     public void Clear()
     {
         abilityNames.Clear();

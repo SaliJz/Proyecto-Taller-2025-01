@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using static PickupItem;
 
 public class SupplyBox : MonoBehaviour
 {
     public enum SupplyType
     {
         CodeFragment,
-        AmmoSingle,
-        AmmoSemiAuto,
-        AmmoAuto
+        Single,
+        SemiAuto,
+        Auto
     }
 
     [SerializeField] private SupplyType supplyType;
     [SerializeField] private Vector2 amountRange;
-    [SerializeField] private GameObject pickupCanvas;
-    [SerializeField] private TextMeshProUGUI pickupAmountText;
-    [SerializeField] private float pickUpRange;
+    [SerializeField] private GameObject supplyCanvas;
+    [SerializeField] private TextMeshProUGUI supplyAmountText;
+    [SerializeField] private float supplyRange;
     [SerializeField] private float refillDelay = 5f;
     [SerializeField] private bool autoRefill;
 
@@ -27,14 +28,14 @@ public class SupplyBox : MonoBehaviour
 
     private void Start()
     {
-        pickupCanvas.SetActive(false);
+        supplyCanvas.SetActive(false);
 
         amountRange = supplyType switch
         {
             SupplyType.CodeFragment => new Vector2(100, 200),
-            SupplyType.AmmoSingle => new Vector2(15, 20),
-            SupplyType.AmmoSemiAuto => new Vector2(3, 8),
-            SupplyType.AmmoAuto => new Vector2(10, 20),
+            SupplyType.Single => new Vector2(15, 20),
+            SupplyType.SemiAuto => new Vector2(3, 8),
+            SupplyType.Auto => new Vector2(10, 20),
             _ => new Vector2(0, 0)
         };
 
@@ -53,57 +54,31 @@ public class SupplyBox : MonoBehaviour
 
     private void TrySuplyBox()
     {
-        Collider playerCollider = Physics.OverlapSphere(transform.position, pickUpRange).FirstOrDefault(c => c.CompareTag("Player"));
+        Debug.Log("Recogiendo objeto");
 
-        if (playerCollider != null)
-        {
-            Debug.Log("Jugador encontrado en el rango de recogida");
-        }
-        else
-        {
-            Debug.Log("No se encontró al jugador en el rango de recogida");
-            return;
-        }
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null) return;
 
-        Weapon weapon = FindWeaponNearby(transform.position, pickUpRange);
-        if (weapon != null)
-        {
-            Debug.Log("Weapon encontrado en la jerarquía y capa especificada: " + weapon.name);
-        }
-        else
-        {
-            Debug.Log("No se encontró ningún Weapon en la jerarquía y capa especificada.");
-            return;
-        }
-
+        WeaponManager weaponManager = FindAnyObjectByType<WeaponManager>();
+        if (weaponManager == null) return;
         int added = 0;
 
         switch (supplyType)
         {
-            case SupplyType.CodeFragment:
-                HUDManager.Instance.AddInfoFragment(actualAmount);
-                Debug.Log($"Recogido {actualAmount} fragmentos de código.");
-                Destroy(gameObject);
-                return;
-
-            case SupplyType.AmmoSingle:
-                if (weapon.currentShootingMode == Weapon.ShootingMode.Single)
-                    added = weapon.TryAddAmmo(actualAmount);
-                Debug.Log($"Recogido {added} balas de pistola.");
+            case SupplyType.Single:
+                weaponManager.TryAddAmmoToWeapon(Weapon.ShootingMode.Single, actualAmount, out added);
                 break;
 
-            case SupplyType.AmmoSemiAuto:
-                if (weapon.currentShootingMode == Weapon.ShootingMode.SemiAuto)
-                    added = weapon.TryAddAmmo(actualAmount);
-                Debug.Log($"Recogido {added} balas de escopeta.");
+            case SupplyType.SemiAuto:
+                weaponManager.TryAddAmmoToWeapon(Weapon.ShootingMode.SemiAuto, actualAmount, out added);
                 break;
 
-            case SupplyType.AmmoAuto:
-                if (weapon.currentShootingMode == Weapon.ShootingMode.Auto)
-                    added = weapon.TryAddAmmo(actualAmount);
-                Debug.Log($"Recogido {added} balas de ametralladora.");
+            case SupplyType.Auto:
+                weaponManager.TryAddAmmoToWeapon(Weapon.ShootingMode.Auto, actualAmount, out added);
                 break;
         }
+
+        Debug.Log($"Recogido {added} balas de tipo {supplyType}");
 
         actualAmount -= added;
         UpdateVisual();
@@ -123,12 +98,12 @@ public class SupplyBox : MonoBehaviour
 
     private IEnumerator RefillAfterDelay()
     {
-        pickupCanvas.SetActive(false);
+        supplyCanvas.SetActive(false);
         yield return new WaitForSeconds(refillDelay);
         actualAmount = Random.Range((int)amountRange.x, (int)amountRange.y + 1);
         UpdateVisual();
     }
-
+    /*
     private Weapon FindWeaponNearby(Vector3 origin, float radius)
     {
         int weaponLayer = LayerMask.NameToLayer("Weapon");
@@ -158,13 +133,13 @@ public class SupplyBox : MonoBehaviour
 
         return nearestWeapon;
     }
-
+    */
     private void OnTriggerStay(Collider other)
     {
         if (other.GetComponent<PlayerHealth>() != null)
         {
             playerInRange = true;
-            pickupCanvas.gameObject.SetActive(true);
+            supplyCanvas.gameObject.SetActive(true);
         }
     }
 
@@ -173,23 +148,38 @@ public class SupplyBox : MonoBehaviour
         if (other.GetComponent<PlayerHealth>() != null)
         {
             playerInRange = false;
-            pickupCanvas.gameObject.SetActive(false);
+            supplyCanvas.gameObject.SetActive(false);
         }
     }
 
 
     private void UpdateVisual()
     {
-        if (pickupCanvas != null && pickupAmountText != null)
+        if (supplyCanvas != null && supplyAmountText != null)
         {
-            pickupAmountText.text = $"{supplyType} x{actualAmount}";
+            if (supplyType == SupplyType.CodeFragment)
+            {
+                supplyAmountText.text = $"F. Cod. x{actualAmount}";
+            }
+            else if (supplyType == SupplyType.Single)
+            {
+                supplyAmountText.text = $"Pistola x{actualAmount}";
+            }
+            else if (supplyType == SupplyType.SemiAuto)
+            {
+                supplyAmountText.text = $"Escopeta x{actualAmount}";
+            }
+            else if (supplyType == SupplyType.Auto)
+            {
+                supplyAmountText.text = $"Rifle x{actualAmount}";
+            }
         }
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, pickUpRange);
+        Gizmos.DrawWireSphere(transform.position, supplyRange);
         Gizmos.DrawLine(transform.position, transform.position + Vector3.up * 2f);
     }
 }
