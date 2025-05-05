@@ -18,9 +18,12 @@ public class PlataformaCae : MonoBehaviour
     {
         if (collision.collider.CompareTag("PLAYER"))
         {
-            
-            rb.isKinematic = false;
-            Debug.Log("Plataforma ahora caerá");
+
+            if (collision.contacts[0].point.y > transform.position.y + 0.2f)
+            {
+                rb.isKinematic = false;
+                Debug.Log("¡Jugador encima! Plataforma caerá.");
+            }
         }
     }
 }
