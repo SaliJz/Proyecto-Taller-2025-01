@@ -306,7 +306,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 126
+  m_Constraints: 112
   m_CollisionDetection: 1
 --- !u!114 &3612720725928200239
 MonoBehaviour:
@@ -325,18 +325,25 @@ MonoBehaviour:
     type: 3}
   prefabImpacto: {fileID: 4722550662299864377, guid: 6c3f6eb06631c784696def3260b344ab,
     type: 3}
-  alturaPrefabY: -2.73
   velocidadVuelo: 5
   velocidadPicada: 15
   velocidadSubida: 10
   distanciaPicada: 22
-  alturaVuelo: 4.7
+  alturaVuelo: 2.3
   tiempoEspera: 2.2
   tiempoAntesDeCaer: 1
   tiempoEnTierra: 1
   rotacionVelocidad: 2
-  amplitudFlotacion: 1
-  frecuenciaFlotacion: 1
+  amplitudFlotacion: 0.6
+  frecuenciaFlotacion: 0.6
+  ceilingMask:
+    serializedVersion: 2
+    m_Bits: 8192
+  ceilingClearance: 0.5
+  floorMask:
+    serializedVersion: 2
+    m_Bits: 16384
+  floorClearance: 2
 --- !u!136 &5229980193007098258
 CapsuleCollider:
   m_ObjectHideFlags: 0
