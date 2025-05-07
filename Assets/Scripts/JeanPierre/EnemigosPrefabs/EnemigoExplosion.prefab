@@ -556,7 +556,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 0}
-  triggerDistance: 3
+  triggerDistance: 2
+  reopenDistance: 4
+  enemyRenderer: {fileID: 7280533851858509494}
+  warningMaterial: {fileID: 2100000, guid: 071baf0dfed5b9b4695fa8009fa4f8c5, type: 2}
+  blinkInterval: 0.2
+  warningDuration: 2
   bulletPrefab: {fileID: 7127249950028823837, guid: d24c60bb608165342afd67e0715ce466,
     type: 3}
   finalBulletScale: {x: 12, y: 12, z: 12}

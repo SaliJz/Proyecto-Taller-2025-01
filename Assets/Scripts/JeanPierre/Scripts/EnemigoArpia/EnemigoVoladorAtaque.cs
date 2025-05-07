@@ -234,6 +234,3 @@ public class EnemigoVolador : MonoBehaviour
     }
 }
 
-
-
-
