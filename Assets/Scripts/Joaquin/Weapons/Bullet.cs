@@ -5,23 +5,43 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     private float bulletDamage;
+    [SerializeField] private GameObject bulletImpactPrefab; // Prefab del efecto de impacto
 
     public void Initialize(float damage)
     {
         bulletDamage = damage;
     }
 
-    // Cambiamos a OnTriggerEnter y Collider en lugar de Collision
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Wall"))
+        if (other.CompareTag("Wall") || other.CompareTag("Ground"))
         {
-            Debug.Log("Hit wall!");
-            Destroy(gameObject); // Destruye la bala al impactar
+            CreateBulletEffect(other);
         }
-        else if (other.CompareTag("Ground"))
+
+        Destroy(gameObject);
+    }
+
+    private void CreateBulletEffect(Collider other)
+    {
+        Debug.Log("Golpe en " + other.gameObject.name);
+
+        // Intenta hacer raycast desde la bala hacia adelante
+        Ray ray = new Ray(transform.position, transform.forward);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 2f))
         {
-            Destroy(gameObject); // Destruye la bala al impactar
+            GameObject hole = Instantiate(bulletImpactPrefab, hit.point, Quaternion.LookRotation(hit.normal));
+            hole.transform.SetParent(hit.collider.transform);
+        }
+        else
+        {
+            // Si falla el raycast, instancia en el centro del objeto golpeado
+            Vector3 fallbackPoint = other.bounds.center;
+            GameObject hole = Instantiate(bulletImpactPrefab, fallbackPoint, Quaternion.identity);
+            hole.transform.SetParent(other.transform);
+            Debug.LogWarning("Raycast no detectó contacto, usando fallback point");
         }
     }
 }
