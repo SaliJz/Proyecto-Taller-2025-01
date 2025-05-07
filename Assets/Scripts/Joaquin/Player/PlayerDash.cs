@@ -122,7 +122,8 @@ public class PlayerDash : MonoBehaviour
     {
         if (dashEffectForward != null)
         {
-            dashEffectForward.Play(); // Reproduce el efecto de dash
+            // Reproducir el efecto de partículas
+            dashEffectForward.Play();
         }
     }
 

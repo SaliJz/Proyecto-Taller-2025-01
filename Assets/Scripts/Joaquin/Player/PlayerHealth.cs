@@ -127,8 +127,18 @@ public class PlayerHealth : MonoBehaviour
         {
             enemySpawner.ResetSpawner();
         }
+
         UpgradeDataStore.Instance.ResetTemporaryUpgrades();
-        DeathManager.Instance.RegisterDeath(deathPrefab, transform.position);
+
+        if (deathPrefab != null)
+        {
+            DeathManager.Instance.RegisterDeath(deathPrefab, transform.position);
+        }
+        else
+        {
+            Debug.LogError("El prefab de muerte no está asignado en PlayerHealth.");
+        }
+
         if (sceneTransition != null)
         {
             sceneTransition.LoadSceneWithFade(gameOverSceneName);

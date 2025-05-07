@@ -33,6 +33,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI abilityNameText;
     [SerializeField] private TextMeshProUGUI abilityStatusText;
     [SerializeField] private Image abilityIcon;
+    [SerializeField] private Image abilityCooldownFill;
 
     [Header("Info Fragments")]
     [SerializeField] private RectTransform floatingTextObject;
@@ -203,15 +204,23 @@ public class HUDManager : MonoBehaviour
         missionTextObject.anchoredPosition = missionStartPos;
     }
 
-    public void UpdateAbilityStatus(string abilityName, float cooldownRemaining, bool isReady)
+    public void UpdateAbilityStatus(string abilityName, float cooldownRemaining, bool isReady, float cooldownTotal = 1f)
     {
         if (isReady)
         {
             abilityStatusText.text = $"¡Listo!";
+            if (abilityCooldownFill != null)
+            {
+                abilityCooldownFill.fillAmount = 0f;
+            }
         }
         else
         {
             abilityStatusText.text = $"Cooldown - {Mathf.Ceil(cooldownRemaining)}s";
+            if (abilityCooldownFill != null)
+            {
+                abilityCooldownFill.fillAmount = cooldownRemaining / cooldownTotal;
+            }
         }
     }
 

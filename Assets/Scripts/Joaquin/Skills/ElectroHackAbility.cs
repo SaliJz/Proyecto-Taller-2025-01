@@ -26,6 +26,7 @@ public class ElectroHackAbility : MonoBehaviour
 
     private bool canUse = true;
     private float currentCooldown = 0;
+    private float lastCooldownDisplay = -1f;
 
     private void Start()
     {
@@ -58,10 +59,19 @@ public class ElectroHackAbility : MonoBehaviour
         if (!canUse)
         {
             currentCooldown -= Time.deltaTime;
+            currentCooldown = Mathf.Max(0f, currentCooldown);
+
+            // Solo actualiza si hay diferencia perceptible
+            if (Mathf.Ceil(currentCooldown) != Mathf.Ceil(lastCooldownDisplay))
+            {
+                HUDManager.Instance.UpdateAbilityStatus("ElectroHack", currentCooldown, canUse, cooldown);
+                lastCooldownDisplay = currentCooldown;
+            }
 
             if (currentCooldown <= 0f)
             {
                 canUse = true;
+                HUDManager.Instance.UpdateAbilityStatus("ElectroHack", 0f, canUse, cooldown);
             }
         }
     }
