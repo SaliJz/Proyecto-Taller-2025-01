@@ -13,42 +13,46 @@ public class PuertaDoble : MonoBehaviour
 
     private Vector3 posInicialIzquierda;
     private Vector3 posInicialDerecha;
+    private Vector3 posFinalIzquierda;
+    private Vector3 posFinalDerecha;
     private bool abrir = false;
     private bool cambiarEscena = false;
 
     void Start()
     {
-        posInicialIzquierda = puertaIzquierda.position;
-        posInicialDerecha = puertaDerecha.position;
+        posInicialIzquierda = puertaIzquierda.localPosition;
+        posInicialDerecha = puertaDerecha.localPosition;
+
+     
+        posFinalIzquierda = posInicialIzquierda + puertaIzquierda.right * -distanciaApertura;
+        posFinalDerecha = posInicialDerecha + puertaDerecha.right * distanciaApertura;
     }
 
     
     void Update()
     {
-        if (abrir)
+        if (abrir && !cambiarEscena)
         {
             Debug.Log("Las puertas se están abriendo...");
-            Debug.Log("Posición izquierda: " + puertaIzquierda.position);
-            Debug.Log("Posición derecha: " + puertaDerecha.position);
+            Debug.Log($"Posición izquierda actual: {puertaIzquierda.localPosition} / objetivo: {posFinalIzquierda}");
+            Debug.Log($"Posición derecha actual: {puertaDerecha.localPosition} / objetivo: {posFinalDerecha}");
 
-            puertaIzquierda.position = Vector3.MoveTowards(
-               puertaIzquierda.position,
-               posInicialIzquierda + Vector3.left * distanciaApertura,
+            puertaIzquierda.localPosition = Vector3.MoveTowards(
+               puertaIzquierda.localPosition,
+               posFinalIzquierda,
                velocidad * Time.deltaTime);
 
-            puertaDerecha.position = Vector3.MoveTowards(
-                puertaDerecha.position,
-                posInicialDerecha + Vector3.right * distanciaApertura,
+            puertaDerecha.localPosition = Vector3.MoveTowards(
+                puertaDerecha.localPosition,
+                posFinalDerecha,
                 velocidad * Time.deltaTime);
 
-            if (Vector3.Distance(puertaIzquierda.position, posInicialIzquierda + Vector3.left * distanciaApertura) < 0.01f &&
-               Vector3.Distance(puertaDerecha.position, posInicialDerecha + Vector3.right * distanciaApertura) < 0.01f)
+            if (Vector3.Distance(puertaIzquierda.localPosition, posFinalIzquierda) < 0.01f &&
+               Vector3.Distance(puertaDerecha.localPosition, posFinalDerecha) < 0.01f)
             {
-                if (!cambiarEscena)
-                {
-                    cambiarEscena = true;
-                    Invoke("CambiarEscena", 1f); 
-                }
+                Debug.Log("Puertas completamente abiertas - Cambiando escena");
+                cambiarEscena = true;
+                Invoke("CambiarEscena", 1f);
             }
 
         }
@@ -56,11 +60,16 @@ public class PuertaDoble : MonoBehaviour
 
     public void ActivarPuerta()
     {
-        abrir = true;
+        if (!abrir)
+        {
+            Debug.Log("Activando apertura de puertas");
+            abrir = true;
+        }
     }
 
     private void CambiarEscena()
     {
+        Debug.Log($"Cargando escena: {nombreEscena}");
         SceneManager.LoadScene(nombreEscena);
     }
 }
