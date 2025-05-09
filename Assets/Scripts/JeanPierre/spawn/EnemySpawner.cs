@@ -92,6 +92,8 @@ public class EnemySpawner : MonoBehaviour
     {
         totalEnemiesSpawned = 0;
         activeEnemies.Clear();
+        StopAllCoroutines(); // Por si acaso
+        StartCoroutine(SpawnRoutine()); // Reinicia el spawn
     }
 
     // Visualizar el radio de spawn en el editor
