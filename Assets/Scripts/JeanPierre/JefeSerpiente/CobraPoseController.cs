@@ -1,213 +1,224 @@
 ﻿// CobraPoseController.cs
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(SnakeController))]
 public class CobraPoseController : MonoBehaviour
 {
-    [Header("Configuración de la pose de cobra vertical")]
-    [Tooltip("¿Adoptar la pose al iniciar?")]
+    public enum Estado { Inactivo, Pose, Atacando, Retornando }
+
+    [Header("Pose de cobra")]
     public bool poseOnStart = false;
-
-    [Tooltip("Altura máxima del cuello (cabeza)")]
     public float alturaMax = 2f;
-
-    [Tooltip("Ángulo total de curvatura para el cuello (grados)")]
-    [Range(0, 180)]
-    public float anguloCurva = 90f;
-
-    [Tooltip("Cuántos segmentos forman el cuello arqueado")]
-    public int segmentosCuello = 8;
-
-    [Tooltip("Velocidad de interpolación para la pose (más alto = más rápido)")]
+    [Range(0, 180)] public float anguloCurva = 90f;
+    [Min(2)] public int segmentosCuello = 8;
     public float poseSmoothSpeed = 10f;
+
+    [Header("Secuencia automática")]
+    public float delayAntesDePose = 1f;
+    public float delayAntesDeAtaque = 1.5f;
+    public float delayAntesDeDesactivar = 1f;
+    public float distanciaActivacion = 10f;
 
     private SnakeController snake;
     private List<Transform> segmentos;
-    private bool inPose = false;
+    private Estado estado = Estado.Inactivo;
+    private Transform player;
+    private bool sequenceRunning = false;
+    private bool hasTriggered = false;
 
-    // Altura fija del suelo
-    private const float pisoY = 0f;
+    private Vector3 headAttackStart, baseAttackStart, headAttackEnd, attackTarget;
+    private float timer;
 
     void Start()
     {
         snake = GetComponent<SnakeController>();
-        if (poseOnStart) EnterCobraPose();
+        GameObject p = GameObject.FindWithTag("Player");
+        if (p == null) Debug.LogError("No se encontró ningún GameObject con tag \"Player\".");
+        else player = p.transform;
+
+        if (poseOnStart) EntrarPose();
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C))
+        if (player == null) return;
+
+        // Medir distancia desde la cabeza móvil, no desde el pivot
+        float dist = Vector3.Distance(snake.Segmentos[0].position, player.position);
+        Debug.Log($"[Cobra] dist={dist:F2}, umbral={distanciaActivacion:F2}");
+
+        if (dist <= distanciaActivacion && !hasTriggered && !sequenceRunning)
         {
-            if (inPose) ExitCobraPose();
-            else EnterCobraPose();
+            hasTriggered = true;
+            StartCoroutine(FullSequence());
+        }
+        else if (dist > distanciaActivacion)
+        {
+            hasTriggered = false;
         }
 
-        if (inPose)
-            ApplyPose();
+        switch (estado)
+        {
+            case Estado.Pose: AplicarPose(); break;
+            case Estado.Atacando: UpdateAtaque(); break;
+            case Estado.Retornando: UpdateRetorno(); break;
+            case Estado.Inactivo: snake.enabled = true; break;
+        }
     }
 
-    private void EnterCobraPose()
+    private IEnumerator FullSequence()
+    {
+        sequenceRunning = true;
+        yield return new WaitForSeconds(delayAntesDePose);
+        EntrarPose();
+        yield return new WaitForSeconds(delayAntesDeAtaque);
+        IniciarAtaque();
+        while (estado != Estado.Pose) yield return null;
+        yield return new WaitForSeconds(delayAntesDeDesactivar);
+        SalirPose();
+        sequenceRunning = false;
+        hasTriggered = false;
+    }
+
+    void EntrarPose()
     {
         segmentos = snake.Segmentos;
-        segmentosCuello = Mathf.Clamp(segmentosCuello, 2, segmentos.Count);
-        inPose = true;
+        segmentosCuello = Mathf.Clamp(segmentosCuello, 2, segmentos.Count - 1);
+        estado = Estado.Pose;
         snake.enabled = false;
     }
 
-    private void ExitCobraPose()
+    void SalirPose() => estado = Estado.Inactivo;
+
+    void AplicarPose()
     {
-        inPose = false;
-        snake.enabled = true;
+        if (segmentos == null) return;
+        Vector3 headFlat = new Vector3(segmentos[0].position.x, 0, segmentos[0].position.z);
+        Vector3 playerFlat = new Vector3(player.position.x, 0, player.position.z);
+        Vector3 dir = (playerFlat - headFlat).sqrMagnitude < 0.01f
+            ? transform.forward
+            : (playerFlat - headFlat).normalized;
+        Vector3 targetHead = headFlat + Vector3.up * alturaMax;
+        FollowChain(targetHead, dir, poseSmoothSpeed);
     }
 
-    private void ApplyPose()
+    void IniciarAtaque()
     {
-        if (segmentos == null || segmentos.Count == 0) return;
-        // 1) Determinar "adelante" hacia el jugador en el plano horizontal
-        Vector3 headWorld = segmentos[0].position;
-        Vector3 headGround = new Vector3(headWorld.x, pisoY, headWorld.z);
-        Vector3 playerGround = new Vector3(snake.jugador.position.x, pisoY, snake.jugador.position.z);
-        Vector3 forwardXZ = (playerGround - headGround).normalized;
-        if (forwardXZ.sqrMagnitude < 0.0001f)
-            forwardXZ = transform.forward; // fallback
+        segmentos = snake.Segmentos;
+        segmentosCuello = Mathf.Clamp(segmentosCuello, 2, segmentos.Count - 1);
+        headAttackStart = segmentos[0].position;
+        baseAttackStart = segmentos[segmentosCuello].position;
+        attackTarget = player.position;
+        timer = 0f;
+        estado = Estado.Atacando;
+    }
 
-        Vector3 rightAxis = Vector3.Cross(forwardXZ, Vector3.up).normalized;
+    void UpdateAtaque()
+    {
+        timer = Mathf.Min(1f, timer + Time.deltaTime / delayAntesDeAtaque);
+        Vector3 flatLerp = Vector3.Lerp(headAttackStart, attackTarget, timer);
+        float arcY = Mathf.Sin(timer * Mathf.PI) * alturaMax;
+        Vector3 headPos = flatLerp + Vector3.up * arcY;
+        MoveNeckCurved(headPos, baseAttackStart, alturaMax);
+
+        if (timer >= 1f)
+        {
+            headAttackEnd = segmentos[0].position;
+            timer = 0f;
+            estado = Estado.Retornando;
+        }
+    }
+
+    void UpdateRetorno()
+    {
+        timer = Mathf.Min(1f, timer + Time.deltaTime / delayAntesDeDesactivar);
+        Vector3 returnHead = baseAttackStart + Vector3.up * alturaMax;
+        Vector3 headPos = Vector3.Lerp(headAttackEnd, returnHead, timer);
+        MoveNeckCurved(headPos, baseAttackStart, alturaMax);
+
+        if (timer >= 1f) estado = Estado.Pose;
+    }
+
+    void MoveNeckCurved(Vector3 headPos, Vector3 basePos, float alturaControl)
+    {
+        Vector3 p0 = headPos, p2 = basePos;
+        Vector3 p1 = (p0 + p2) * 0.5f + Vector3.up * alturaControl;
+        for (int i = 0; i < segmentosCuello; i++)
+        {
+            float t = (float)i / (segmentosCuello - 1);
+            Vector3 pos = Mathf.Pow(1 - t, 2) * p0
+                        + 2 * (1 - t) * t * p1
+                        + Mathf.Pow(t, 2) * p2;
+            segmentos[i].position = pos;
+
+            float tn = Mathf.Min(1f, t + 1f / (segmentosCuello - 1));
+            Vector3 next = Mathf.Pow(1 - tn, 2) * p0
+                         + 2 * (1 - tn) * tn * p1
+                         + Mathf.Pow(tn, 2) * p2;
+            Vector3 dir = next - pos; dir.y = 0;
+            if (dir.sqrMagnitude > 0.001f)
+                segmentos[i].rotation = Quaternion.LookRotation(dir);
+        }
+    }
+
+    void FollowChain(Vector3 headT, Vector3 dirXZ, float speed)
+    {
         float sep = snake.separacionSegmentos;
         float halfPi = Mathf.PI * 0.5f;
-
-        // 2) Posicionar la cabeza
-        float yOff0 = Mathf.Sin(halfPi) * alturaMax;  // = alturaMax
-        Vector3 prevPos = headGround + Vector3.up * yOff0;
-        segmentos[0].position = Vector3.Lerp(segmentos[0].position, prevPos, poseSmoothSpeed * Time.deltaTime);
-
-        // 3) Cada segmento a partir del 1
+        Vector3 right = Vector3.Cross(dirXZ, Vector3.up).normalized;
+        segmentos[0].position = Vector3.Lerp(segmentos[0].position, headT, speed * Time.deltaTime);
+        Vector3 prev = segmentos[0].position;
         for (int i = 1; i < segmentos.Count; i++)
         {
-            Transform seg = segmentos[i];
-            Vector3 bentDir;
-            float yOff = 0f;
-
-            if (i < segmentosCuello)
-            {
-                // cuello arqueado
-                float tN = (float)i / (segmentosCuello - 1);
-                float bendA = anguloCurva * tN;
-                bentDir = Quaternion.AngleAxis(bendA, rightAxis) * forwardXZ;
-                yOff = Mathf.Sin((1f - tN) * halfPi) * alturaMax;
-            }
-            else
-            {
-                // resto del cuerpo, recto hacia atrás
-                bentDir = forwardXZ;
-            }
-
-            // mantener solo componente XZ para espaciado
-            Vector3 bentDirXZ = new Vector3(bentDir.x, 0, bentDir.z).normalized;
-            Vector3 targetPos = prevPos - bentDirXZ * sep;
-            targetPos.y = pisoY + yOff;
-
-            seg.position = Vector3.Lerp(seg.position, targetPos, poseSmoothSpeed * Time.deltaTime);
-
-            // orientación horizontal suave
-            Vector3 look = (prevPos - seg.position);
-            look.y = 0;
-            if (look.sqrMagnitude > 0.0001f)
-            {
-                Quaternion rot = Quaternion.LookRotation(look);
-                seg.rotation = Quaternion.Slerp(seg.rotation, rot, poseSmoothSpeed * Time.deltaTime);
-            }
-
-            prevPos = seg.position;
+            float t = (i < segmentosCuello) ? (float)i / (segmentosCuello - 1) : 1f;
+            Vector3 bent = (i < segmentosCuello)
+                ? Quaternion.AngleAxis(anguloCurva * t, right) * dirXZ
+                : dirXZ;
+            float yOff = (i < segmentosCuello)
+                ? Mathf.Sin((1f - t) * halfPi) * alturaMax
+                : 0f;
+            Vector3 bentXZ = new Vector3(bent.x, 0, bent.z).normalized;
+            Vector3 target = prev - bentXZ * sep;
+            target.y = yOff;
+            segmentos[i].position = Vector3.Lerp(segmentos[i].position, target, speed * Time.deltaTime);
+            Vector3 look = prev - segmentos[i].position; look.y = 0;
+            if (look.sqrMagnitude > 0.001f)
+                segmentos[i].rotation = Quaternion.Slerp(
+                    segmentos[i].rotation,
+                    Quaternion.LookRotation(look),
+                    speed * Time.deltaTime
+                );
+            prev = segmentos[i].position;
         }
     }
 }
 
 
-//// CobraPoseController.cs
-//using System.Collections.Generic;
-//using UnityEngine;
 
-//[RequireComponent(typeof(SnakeController))]
-//public class CobraPoseController : MonoBehaviour
-//{
-//    [Header("Configuración de la pose de cobra vertical")]
-//    [Tooltip("¿Adoptar la pose al iniciar?")]
-//    public bool poseOnStart = false;
 
-//    [Tooltip("Altura máxima de elevación (cabeza)")]
-//    public float alturaMax = 2f;
 
-//    [Tooltip("Ángulo total de la curva en grados")]
-//    [Range(0, 180)]
-//    public float anguloCurva = 90f;
 
-//    private SnakeController snake;
-//    private List<Transform> segmentos;
-//    private bool inPose = false;
 
-//    void Start()
-//    {
-//        snake = GetComponent<SnakeController>();
-//        segmentos = snake.Segmentos;
 
-//        if (poseOnStart)
-//            EnterCobraPose();
-//    }
 
-//    void Update()
-//    {
-//        if (Input.GetKeyDown(KeyCode.C))
-//        {
-//            if (inPose) ExitCobraPose();
-//            else EnterCobraPose();
-//        }
-//    }
 
-//    private void EnterCobraPose()
-//    {
-//        inPose = true;
-//        snake.enabled = false;    // pausa el seguimiento
-//        SetCobraPose();
-//    }
 
-//    private void ExitCobraPose()
-//    {
-//        inPose = false;
-//        snake.enabled = true;     // reanuda el seguimiento
-//    }
 
-//    private void SetCobraPose()
-//    {
-//        if (segmentos == null || segmentos.Count == 0) return;
 
-//        // Posición y dirección de la cabeza actuales
-//        Vector3 headPos = segmentos[0].position;
-//        Vector3 forward = segmentos[0].forward.normalized;
 
-//        int total = segmentos.Count;
-//        float angRad = anguloCurva * Mathf.Deg2Rad;
 
-//        for (int i = 0; i < total; i++)
-//        {
-//            Transform seg = segmentos[i];
-//            float t = (float)i / (total - 1);  // 0 = cabeza, 1 = cola
 
-//            // Línea recta detrás de la cabeza
-//            Vector3 basePos = headPos - forward * snake.separacionSegmentos * i;
 
-//            // Curva vertical tipo 'S' en Y: sin de 0->angRad
-//            float yOffset = Mathf.Sin(t * angRad) * alturaMax;
 
-//            // Ajuste para que sólo la cabeza alcance alturaMax
-//            if (i == total - 1)
-//                yOffset = 0f;  // cola a nivel de base
 
-//            seg.position = new Vector3(basePos.x, basePos.y + yOffset, basePos.z);
 
-//            // Orientación: mirar hacia el segmento anterior (o mantener forward si i==0)
-//            if (i > 0)
-//                seg.LookAt(new Vector3(segmentos[i - 1].position.x, seg.position.y, segmentos[i - 1].position.z));
-//        }
-//    }
-//}
+
+
+
+
+
+
+
+
