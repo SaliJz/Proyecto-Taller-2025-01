@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: 1stMission
   m_EditorClassIdentifier: 
   missionName: Matar 10 enemigos
-  enemyTag: Enemy
-  targetAmount: 10
-  currentAmount: 0
+  killConditions:
+  - conditionType: 0
+    value: Any
+    requiredAmount: 10
+    currentAmount: 10

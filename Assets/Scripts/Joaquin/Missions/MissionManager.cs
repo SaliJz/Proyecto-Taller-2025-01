@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,23 +12,22 @@ public class MissionManager : MonoBehaviour
     [SerializeField] private GameObject abilitySelectorUI;
     [SerializeField] private string nextSceneName = "VictoryScene";
 
-    private List<MissionInstance> runtimeMissions = new();
     private int currentMissionIndex = 0;
+
+    public static MissionManager Instance { get; private set; }
 
     private void Start()
     {
-        // Crear instancias nuevas para que no compartan estado
-        foreach (var mission in baseMissions)
-        {
-            runtimeMissions.Add(new MissionInstance { missionSO = mission });
-        }
-
         ResetAllMissions();
         ShowCurrentMission();
     }
 
     private void Awake()
     {
+        // Singleton
+        if (Instance != null && Instance != this) Destroy(gameObject);
+        else Instance = this;
+
         SceneManager.sceneLoaded += OnSceneLoaded; // Suscribirse al evento
     }
 
@@ -45,58 +45,63 @@ public class MissionManager : MonoBehaviour
     }
 
     // Este método se llama para registrar una muerte
-    public void RegisterKill(string killedTag)
+    public void RegisterKill(string tag, string name, string tipo)
     {
-        if (currentMissionIndex >= runtimeMissions.Count)
-      {
-          Debug.LogWarning("No hay más misiones para completar.");
-          return;
-      }
+        if (currentMissionIndex >= baseMissions.Count)
+        {
+            Debug.LogWarning("No hay más misiones.");
+            return;
+        }
 
-      var mission = runtimeMissions[currentMissionIndex];
-      mission.RegisterKill(killedTag);
+        var currentMission = baseMissions[currentMissionIndex];
+        currentMission.RegisterKill(tag, name, tipo);
 
-      if (mission.IsCompleted)
-      {
-          Debug.Log($"¡Misión completada!: {mission.missionSO.missionName}");
+        if (currentMission.IsCompleted)
+        {
+            Debug.Log($"¡Misión completada!: {currentMission.missionName}");
 
-          abilitySelectorUI.SetActive(true);
-          currentMissionIndex++;
+            abilitySelectorUI.SetActive(true);
+            currentMissionIndex++;
 
-          if (currentMissionIndex < runtimeMissions.Count) ShowCurrentMission();
-          else StartCoroutine(ChangeSceneAfterDelay());
-      }
-      else
-      {
-          ShowCurrentMission();
-      }
+            if (currentMissionIndex < baseMissions.Count)
+                ShowCurrentMission();
+            else
+                StartCoroutine(ChangeSceneAfterDelay());
+        }
+        else
+        {
+            ShowCurrentMission();
+        }
     }
 
     // Muestra la misión actual en el HUD
     private void ShowCurrentMission()
     {
-        Debug.Log($"Misión actual: {currentMissionIndex + 1}/{runtimeMissions.Count}");
-      if (currentMissionIndex >= runtimeMissions.Count) return;
+        if (currentMissionIndex >= baseMissions.Count) return;
 
-      var mission = runtimeMissions[currentMissionIndex];
-      string message = $"{mission.missionSO.missionName} ({mission.currentAmount}/{mission.missionSO.targetAmount})";
+        var currentMission = baseMissions[currentMissionIndex];
 
-      if (HUDManager.Instance != null)
-      {
-          HUDManager.Instance.ShowMission(message);
-      }
-      else
-      {
-          Debug.LogWarning("HUDManager.Instance es null. No se puede mostrar la misión.");
-      }
+        string progress = string.Join(" | ", currentMission.killConditions.Select(k =>
+            $"{k.currentAmount}/{k.requiredAmount}"));
+
+        string message = $"{currentMission.missionName}\n{progress}";
+
+        if (HUDManager.Instance != null)
+        {
+            HUDManager.Instance.ShowMission(message);
+        }
+        else
+        {
+            Debug.LogWarning("HUDManager no encontrado.");
+        }
     }
 
     // Reinicia todas las misiones
     public void ResetAllMissions()
     {
-        foreach (var mission in runtimeMissions)
+        foreach (var mission in baseMissions)
         {
-            mission.ResetProgress(); // Reiniciar instancias reales
+            mission.ResetProgress();
         }
 
         currentMissionIndex = 0;
@@ -120,27 +125,5 @@ public class MissionManager : MonoBehaviour
         }
         // Luego cambiar de escena
         SceneManager.LoadScene(nextSceneName);
-    }
-}
-
-[System.Serializable]
-public class MissionInstance
-{
-    public Mission missionSO; // Referencia al ScriptableObject
-    public int currentAmount = 0;
-
-    public bool IsCompleted => currentAmount >= missionSO.targetAmount;
-
-    public void RegisterKill(string killedTag)
-    {
-        if (killedTag == missionSO.enemyTag || missionSO.enemyTag == "Any")
-        {
-            currentAmount++;
-        }
-    }
-
-    public void ResetProgress()
-    {
-        currentAmount = 0;
     }
 }

@@ -69,7 +69,7 @@ public class PlayerDash : MonoBehaviour
             }
             else
             {
-                Debug.Log("Dash bloqueado por obstáculo.");
+                Log("Dash bloqueado por obstáculo.");
             }
         }
     }
@@ -149,4 +149,11 @@ public class PlayerDash : MonoBehaviour
             targetFov = defaultFov;
         }
     }
+
+#if UNITY_EDITOR
+    private void Log(string message)
+    {
+        Debug.Log(message);
+    }
+#endif
 }

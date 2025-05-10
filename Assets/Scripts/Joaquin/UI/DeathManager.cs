@@ -32,7 +32,7 @@ public class DeathManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Se destruyó una instancia duplicada de DeathManager: {gameObject.name}");
+            Log($"Se destruyó una instancia duplicada de DeathManager: {gameObject.name}");
             Destroy(gameObject);
         }
     }
@@ -65,7 +65,7 @@ public class DeathManager : MonoBehaviour
             {
                 if (bodyData.body != null)
                 {
-                    Debug.Log($"Eliminando cuerpo de la escena: {bodyData.sceneName}");
+                    Log($"Eliminando cuerpo de la escena: {bodyData.sceneName}");
                     Destroy(bodyData.body);
                 }
             }
@@ -92,7 +92,7 @@ public class DeathManager : MonoBehaviour
 
             // Instanciar el DeathBody con la rotación calculada
             GameObject instance = Instantiate(prefab, hit.point, rotation);
-            Debug.Log($"Cuerpo registrado: {instance.name} en la posición {hit.point} en la escena {currentSceneName}");
+            Log($"Cuerpo registrado: {instance.name} en la posición {hit.point} en la escena {currentSceneName}");
             DontDestroyOnLoad(instance);
 
             // Incrementar el contador de cuerpos
@@ -106,7 +106,7 @@ public class DeathManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("No se encontró el script DeathBodyController en el prefab.");
+                Log("No se encontró el script DeathBodyController en el prefab.");
             }
 
             // Agregar el cuerpo a la cola
@@ -118,14 +118,14 @@ public class DeathManager : MonoBehaviour
                 BodyData oldest = bodies.Dequeue();
                 if (oldest.body != null)
                 {
-                    Debug.Log($"Cuerpo eliminado: {oldest.body.name} de la escena {oldest.sceneName}");
+                    Log($"Cuerpo eliminado: {oldest.body.name} de la escena {oldest.sceneName}");
                     Destroy(oldest.body);
                 }
             }
         }
         else
         {
-            Debug.LogWarning("No se detectó ninguna superficie debajo del punto especificado.");
+            Log("No se detectó ninguna superficie debajo del punto especificado.");
         }
     }
 
@@ -141,4 +141,11 @@ public class DeathManager : MonoBehaviour
         }
         bodies.Clear();
     }
+
+#if UNITY_EDITOR
+    private void Log(string message)
+    {
+        Debug.Log(message);
+    }
+#endif
 }

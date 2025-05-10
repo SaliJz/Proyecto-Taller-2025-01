@@ -247,6 +247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b524772f76b695a4b81e8d23f7240e89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyName: EnemigoVoladorDona(Clone)
   vida: 100
   sliderVida: {fileID: 5293056406468863315}
   danioAlto: 55
@@ -329,21 +330,17 @@ MonoBehaviour:
   velocidadPicada: 15
   velocidadSubida: 10
   distanciaPicada: 22
-  alturaVuelo: 2.3
   tiempoEspera: 2.2
   tiempoAntesDeCaer: 1
   tiempoEnTierra: 1
   rotacionVelocidad: 2
-  amplitudFlotacion: 0.6
-  frecuenciaFlotacion: 0.6
-  ceilingMask:
+  alturaSobreJugador: 5
+  distanciaBajoTecho: 1
+  suavizadoAltura: 2
+  maxDistanciaRaycast: 50
+  layerTechoVolador:
     serializedVersion: 2
-    m_Bits: 8192
-  ceilingClearance: 0.5
-  floorMask:
-    serializedVersion: 2
-    m_Bits: 16384
-  floorClearance: 2
+    m_Bits: 0
 --- !u!136 &5229980193007098258
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -33,15 +33,16 @@ public class GlitchAbility : MonoBehaviour
     {
         if (playerCamera == null)
         {
-            Debug.LogError("Player Camera no está asignada en MindjackAbility.");
+            playerCamera = Camera.main;
+            Debug.LogError("Player Camera no está asignada en GlitchTime.");
         }
         if (projectileSpawnPoint == null)
         {
-            Debug.LogError("Projectile Spawn Point no está asignado en MindjackAbility.");
+            Debug.LogError("Projectile Spawn Point no está asignado en GlitchTime.");
         }
         if (projectilePrefab == null)
         {
-            Debug.LogError("Projectile Prefab no está asignado en MindjackAbility.");
+            Debug.LogError("Projectile Prefab no está asignado en GlitchTime.");
         }
     }
 

@@ -63,6 +63,11 @@ public class Weapon : MonoBehaviour
     // Inicializa el arma al activarse
     private void Awake()
     {
+        if (playerCamera == null)
+        {
+            playerCamera = Camera.main;
+        }
+
         originalLocalPosition = weaponModelTransform.localPosition;
     }
 
@@ -128,8 +133,16 @@ public class Weapon : MonoBehaviour
     }
 
     // Verifica si el arma puede disparar
-    private bool CanShoot() =>
-    !isReloading && currentAmmo >= GetAmmoCostPerShot() && Time.time >= lastShotTime + 1f / fireRate;
+    private bool CanShoot()
+    {
+        if (isReloading || Time.time < lastShotTime + 1f / fireRate)
+            return false; // no puede disparar si está recargando o no ha pasado el tiempo de recarga
+
+        if (currentShootingMode == ShootingMode.SemiAuto)
+            return currentAmmo > 0; // permite disparar si hay al menos 1 bala
+
+        return currentAmmo >= GetAmmoCostPerShot();
+    }
 
     // Calcula el costo de munición por disparo
     private int GetAmmoCostPerShot()
@@ -142,21 +155,21 @@ public class Weapon : MonoBehaviour
     {
         if (Time.timeScale == 0f) return; // Evita disparar si el tiempo está pausado
 
-        int ammoCost = GetAmmoCostPerShot();
-
-        if (currentAmmo < ammoCost) return;
-
-        currentAmmo -= ammoCost;
-        HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
-
-        switch (currentShootingMode)
+        if (currentShootingMode == ShootingMode.SemiAuto)
         {
-            case ShootingMode.SemiAuto:
-                ShootShotgun();
-                break;
-            default:
-                ShootSingle();
-                break;
+            int bulletsToShoot = Mathf.Min(currentAmmo, bulletPerBurst);
+            currentAmmo -= bulletsToShoot;
+            HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
+            ShootShotgun(bulletsToShoot);
+        }
+        else
+        {
+            int ammoCost = GetAmmoCostPerShot();
+            if (currentAmmo < ammoCost) return;
+
+            currentAmmo -= ammoCost;
+            HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
+            ShootSingle();
         }
     }
 
@@ -171,9 +184,9 @@ public class Weapon : MonoBehaviour
     }
 
     // Dispara en modo "Shotgun"
-    private void ShootShotgun()
+    private void ShootShotgun(int pellets)
     {
-        for (int i = 0; i < bulletPerBurst; i++)
+        for (int i = 0; i < pellets; i++)
         {
             Vector3 direction = CalculateDirectionAndSpread().normalized;
 
