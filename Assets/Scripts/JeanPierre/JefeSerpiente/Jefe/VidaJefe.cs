@@ -83,7 +83,7 @@ public class VidaJefe : MonoBehaviour
         if (isDead) return;
 
         float pct = vida / vidaMaxima * 100f;
-        Debug.Log($"[VidaJefe] Vida%={pct:F1} | fue80={fue80} | fue60={fue60} | fue40={fue40}");
+        Log($"[VidaJefe] Vida%={pct:F1} | fue80={fue80} | fue60={fue60} | fue40={fue40}");
 
         // Cambio de tipo periódico
         tiempoAcumulado += Time.deltaTime;
@@ -115,12 +115,12 @@ public class VidaJefe : MonoBehaviour
     {
         if (columnWrap == null)
         {
-            Debug.LogError("ColumnWrapController no está asignado en VidaJefe.");
+            Log("ColumnWrapController no está asignado en VidaJefe.");
             return;
         }
         if (targetCol == null)
         {
-            Debug.LogError($"Columna para fase {faseId} no está asignada.");
+            Log($"Columna para fase {faseId} no está asignada.");
             return;
         }
 
@@ -131,7 +131,7 @@ public class VidaJefe : MonoBehaviour
 
         columnWrap.columna = targetCol;
         columnWrap.enabled = true;
-        Debug.Log($"[VidaJefe] Iniciando fase {faseId} en columna {targetCol.name}");
+        Log($"[VidaJefe] Iniciando fase {faseId} en columna {targetCol.name}");
 
         faseRutina = StartCoroutine(EsperarWrapYSpawn(faseId));
     }
@@ -216,18 +216,24 @@ public class VidaJefe : MonoBehaviour
     private void Morir()
     {
         isDead = true;
-        HUDManager.Instance.AddInfoFragment(fragments);
 
-        // Registra la muerte en el MissionManager
-        // Ajusta "KillSerpentBoss" y el nombre según tu configuración de misiones
-        string missionId = "KillSerpentBoss";
-        string targetTag = gameObject.tag;
-        string targetName = gameObject.name;
-        FindObjectOfType<MissionManager>()
-            .RegisterKill(missionId, targetTag, targetName);
+        if (HUDManager.Instance != null)
+        {
+            HUDManager.Instance.AddInfoFragment(fragments); // Actualiza los fragments de informacion
+        }
+        else
+        {
+            Log("[VidaEnemigo] No se ha asignado el HUDManager en el Inspector.");
+        }
 
         Destroy(gameObject);
     }
+#if UNITY_EDITOR
+    private void Log(string message)
+    {
+        Debug.Log(message);
+    }
+#endif
 }
 
 
