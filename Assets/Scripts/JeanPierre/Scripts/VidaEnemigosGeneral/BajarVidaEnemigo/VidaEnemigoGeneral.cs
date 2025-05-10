@@ -5,6 +5,8 @@ public class VidaEnemigoGeneral : MonoBehaviour
 {
     public enum TipoEnemigo { Ametralladora = 0, Pistola = 1, Escopeta = 2 }
 
+    [SerializeField] private string enemyName = "Enemigo"; // Nombre del enemigo para la mision
+
     [Header("Configuracion de vida")]
     public float vida = 100f;
     public Slider sliderVida;
@@ -30,7 +32,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
     {
         // 1) Elegir tipo al azar
         tipo = (TipoEnemigo)Random.Range(0, 3);
-        Debug.Log("[VidaEnemigo] Tipo asignado: " + tipo);
+        Log("[VidaEnemigo] Tipo asignado: " + tipo);
 
         // 2) Determinar color segun el tipo
         Color colorAsignado = Color.white;
@@ -54,7 +56,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[VidaEnemigo] No se ha asignado el MeshRenderer en el Inspector.");
+            Log("[VidaEnemigo] No se ha asignado el MeshRenderer en el Inspector.");
         }
 
         // 4) Inicializar slider de vida
@@ -114,11 +116,29 @@ public class VidaEnemigoGeneral : MonoBehaviour
             Instantiate(prefabsAlMorir[idx], transform.position, transform.rotation);
         }
 
-        HUDManager.Instance.AddInfoFragment(fragments); // Actualiza los fragments de informacion
-        FindObjectOfType<MissionManager>().RegisterKill(gameObject.tag); // Actualiza la mision
+        if (HUDManager.Instance != null)
+        {
+            HUDManager.Instance.AddInfoFragment(fragments); // Actualiza los fragments de informacion
+        }
+
+        else
+        {
+            Log("[VidaEnemigo] No se ha asignado el HUDManager en el Inspector.");
+        }
+
+        if (MissionManager.Instance != null)
+        {
+            MissionManager.Instance.RegisterKill(gameObject.tag, enemyName, tipo.ToString()); // Actualiza la mision
+        }
 
         Destroy(gameObject);
     }
+#if UNITY_EDITOR
+    private void Log(string message)
+    {
+        Debug.Log(message);
+    }
+#endif
 }
 
 

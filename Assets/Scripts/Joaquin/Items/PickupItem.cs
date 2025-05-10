@@ -202,6 +202,19 @@ public class PickupItem : MonoBehaviour
             if (pickupType != PickupType.CodeFragment)
             {
                 playerInRange = true;
+                Debug.Log("Jugador dentro del rango de recogida.");
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            if (pickupType != PickupType.CodeFragment)
+            {
+                playerInRange = false;
+                Debug.Log("Jugador fuera del rango de recogida.");
             }
         }
     }

@@ -24,7 +24,7 @@ public class Bullet : MonoBehaviour
 
     private void CreateBulletEffect(Collider other)
     {
-        Debug.Log("Golpe en " + other.gameObject.name);
+        Log("Golpe en " + other.gameObject.name);
 
         // Intenta hacer raycast desde la bala hacia adelante
         Ray ray = new Ray(transform.position, transform.forward);
@@ -41,9 +41,16 @@ public class Bullet : MonoBehaviour
             Vector3 fallbackPoint = other.bounds.center;
             GameObject hole = Instantiate(bulletImpactPrefab, fallbackPoint, Quaternion.identity);
             hole.transform.SetParent(other.transform);
-            Debug.LogWarning("Raycast no detectó contacto, usando fallback point");
+            Log("Raycast no detectó contacto, usando fallback point");
         }
     }
+
+#if UNITY_EDITOR
+    private void Log(string message)
+    {
+        Debug.Log(message);
+    }
+#endif
 }
 
 

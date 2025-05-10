@@ -34,6 +34,7 @@ public class IgnitionCodeAbility : MonoBehaviour
     {
         if (playerCamera == null)
         {
+            playerCamera = Camera.main;
             Debug.LogError("Player Camera no está asignada en MindjackAbility.");
         }
         if (projectileSpawnPoint == null)

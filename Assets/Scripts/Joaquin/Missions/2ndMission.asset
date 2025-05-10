@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: 2ndMission
   m_EditorClassIdentifier: 
   missionName: Matar 20 enemigos
-  enemyTag: Enemy
-  targetAmount: 20
-  currentAmount: 0
+  killConditions:
+  - conditionType: 0
+    value: Any
+    requiredAmount: 20
+    currentAmount: 1
