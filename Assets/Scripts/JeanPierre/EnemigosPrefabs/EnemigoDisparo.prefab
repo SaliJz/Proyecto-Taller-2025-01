@@ -219,6 +219,7 @@ GameObject:
   - component: {fileID: 7193954085930714274}
   - component: {fileID: 7723565866553249891}
   - component: {fileID: -5007632262281444201}
+  - component: {fileID: 6963322664671768031}
   m_Layer: 6
   m_Name: EnemigoDisparo
   m_TagString: Enemy
@@ -306,11 +307,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b524772f76b695a4b81e8d23f7240e89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyName: EnemigoDisparo(Clone)
   vida: 100
   sliderVida: {fileID: 223591490518025410}
-  danioAlto: 55
-  danioBajo: 0
+  danioBajoAmetralladora: 0
+  danioBajoPistola: 0
+  danioBajoEscopeta: 0
+  danioAltoAmetralladora: 30
+  danioAltoPistola: 18
+  danioAltoEscopeta: 40
+  headshotMultiplier: 2
+  headCollider: {fileID: 6601771850978330811}
+  bodyColliders:
+  - {fileID: 6963322664671768031}
   meshRenderer: {fileID: 5606153922046367338}
   prefabsAlMorir:
   - {fileID: 4688980061749175599, guid: 71fa26f444887dd47908328e632687b4, type: 3}
@@ -338,9 +346,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 2
+  m_Height: 0.39
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0.67, z: 0}
 --- !u!54 &6378987150485078684
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -433,6 +441,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   separationRadius: 3.5
   separationStrength: 4
+--- !u!65 &6963322664671768031
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3775705321392681890}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.1355801, y: 1.3492129, z: 1}
+  m_Center: {x: 0.0045194626, y: -0.370587, z: 0}
 --- !u!1 &6177287622287384025
 GameObject:
   m_ObjectHideFlags: 0

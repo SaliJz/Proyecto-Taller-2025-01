@@ -395,6 +395,7 @@ GameObject:
   - component: {fileID: 252989855927526988}
   - component: {fileID: 7750208852716804292}
   - component: {fileID: -2804150367015730761}
+  - component: {fileID: 7170101365556741992}
   m_Layer: 6
   m_Name: EnemigoExplosion
   m_TagString: Enemy
@@ -482,11 +483,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b524772f76b695a4b81e8d23f7240e89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyName: EnemigoExplosion(Clone)
   vida: 100
   sliderVida: {fileID: 7042047892011389192}
-  danioAlto: 55
-  danioBajo: 0
+  danioBajoAmetralladora: 0
+  danioBajoPistola: 0
+  danioBajoEscopeta: 0
+  danioAltoAmetralladora: 30
+  danioAltoPistola: 18
+  danioAltoEscopeta: 40
+  headshotMultiplier: 100
+  headCollider: {fileID: 1268450203785874081}
+  bodyColliders:
+  - {fileID: 7170101365556741992}
   meshRenderer: {fileID: 7280533851858509494}
   prefabsAlMorir:
   - {fileID: 4688980061749175599, guid: 71fa26f444887dd47908328e632687b4, type: 3}
@@ -513,10 +521,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2.2535267
+  m_Radius: 0.48
+  m_Height: 0.47
   m_Direction: 1
-  m_Center: {x: -0.21, y: 0.040482044, z: -0.1}
+  m_Center: {x: -0.22, y: 0.72, z: 0.36}
 --- !u!54 &9056342299624545217
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -627,6 +635,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   separationRadius: 2
   separationStrength: 3
+--- !u!65 &7170101365556741992
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4394272956414374065}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.38, y: 2.3226388, z: 0.89}
+  m_Center: {x: -0.24000001, y: 0.08131921, z: -0.25}
 --- !u!1 &6482934429859103929
 GameObject:
   m_ObjectHideFlags: 0
