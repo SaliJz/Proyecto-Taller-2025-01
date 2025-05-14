@@ -19,8 +19,10 @@ public class EnemyHealth : MonoBehaviour
         currentHealth -= amount;
         Debug.Log(gameObject.name + " recibió " + amount + " de daño. Vida restante: " + currentHealth);
 
-        if (currentHealth <= 0)
+        if (currentHealth <= 0) 
+        {
             Debug.Log(gameObject.name + " fue destruido.");
-        Destroy(gameObject);
+            Destroy(gameObject);
+        }
     }
 }
