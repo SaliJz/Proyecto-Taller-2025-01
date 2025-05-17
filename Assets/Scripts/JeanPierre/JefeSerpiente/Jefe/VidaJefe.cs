@@ -10,7 +10,7 @@ public class VidaJefe : MonoBehaviour
     public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
 
     [Header("Configuración de vida")]
-    public float vida = 500f;
+    public float vida = 500f; 
     public Slider sliderVida;
 
     [Header("Umbrales de vida (%)")]
@@ -28,6 +28,8 @@ public class VidaJefe : MonoBehaviour
 
     [Header("Cambio de tipo")]
     public float intervaloCambio = 10f;
+    [Header("Transición de color")]
+    public float duracionTransicionColor = 1f;     // Duración en segundos
 
     [Header("Columnas de wrap")]
     public Transform columna1;
@@ -51,14 +53,16 @@ public class VidaJefe : MonoBehaviour
     private int currentPhase = 0;
     private Coroutine faseRutina;
 
-    // Tipo actual del jefe
     private TipoEnemigo currentTipo;
 
-    // Referencias
     private List<MeshRenderer> meshRenderers = new List<MeshRenderer>();
     private SnakeController snakeController;
     [SerializeField] private CobraPoseController cobraPose;
     [SerializeField] private ColumnWrapController columnWrap;
+
+    // Para transición de color
+    private Coroutine colorRoutine;
+    private Color colorBase = Color.white;
 
     private IEnumerator Start()
     {
@@ -77,6 +81,10 @@ public class VidaJefe : MonoBehaviour
         cobraPose.enabled = true;
         columnWrap.enabled = false;
 
+        // Inicializa colorBase con el color actual de los materiales
+        if (meshRenderers.Count > 0)
+            colorBase = meshRenderers[0].material.color;
+
         ActualizarTipoYColor();
         InicializarSlider();
     }
@@ -86,9 +94,6 @@ public class VidaJefe : MonoBehaviour
         if (isDead) return;
 
         float pct = vida / vidaMaxima * 100f;
-        Debug.Log($"[VidaJefe] Vida%={pct:F1} | fue80={fue80} | fue60={fue60} | fue40={fue40}");
-
-        // Cambio de tipo periódico
         tiempoAcumulado += Time.deltaTime;
         if (tiempoAcumulado >= intervaloCambio)
         {
@@ -96,7 +101,6 @@ public class VidaJefe : MonoBehaviour
             ActualizarTipoYColor();
         }
 
-        // Umbrales de vida
         if (!fue80 && pct <= umbralPorcentaje80)
         {
             fue80 = true;
@@ -134,15 +138,12 @@ public class VidaJefe : MonoBehaviour
 
         columnWrap.columna = targetCol;
         columnWrap.enabled = true;
-        Debug.Log($"[VidaJefe] Iniciando fase {faseId} en columna {targetCol.name}");
-
         faseRutina = StartCoroutine(EsperarWrapYSpawn(faseId));
     }
 
     private IEnumerator EsperarWrapYSpawn(int faseId)
     {
-        while (columnWrap.enabled)
-            yield return null;
+        while (columnWrap.enabled) yield return null;
 
         while (currentPhase == faseId && !isDead)
         {
@@ -156,7 +157,6 @@ public class VidaJefe : MonoBehaviour
             for (int i = 0; i < totalEnemigos; i++)
             {
                 if (enemyPrefabs == null || enemyPrefabs.Length == 0) break;
-
                 int idx = Random.Range(0, enemyPrefabs.Length);
                 var prefab = enemyPrefabs[idx];
                 Vector3 dir = Random.onUnitSphere; dir.y = 0; dir.Normalize();
@@ -169,10 +169,33 @@ public class VidaJefe : MonoBehaviour
     private void ActualizarTipoYColor()
     {
         currentTipo = (TipoEnemigo)Random.Range(0, System.Enum.GetValues(typeof(TipoEnemigo)).Length);
-        Color c = currentTipo == TipoEnemigo.Ametralladora ? Color.blue
-                 : currentTipo == TipoEnemigo.Pistola ? Color.red
-                 : Color.green;
-        meshRenderers.ForEach(r => r.material.color = c);
+        Color targetColor = currentTipo == TipoEnemigo.Ametralladora ? Color.blue
+                          : currentTipo == TipoEnemigo.Pistola ? Color.red
+                          : Color.green;
+
+        // Iniciar transición de color
+        if (colorRoutine != null) StopCoroutine(colorRoutine);
+        colorRoutine = StartCoroutine(CambiarColorSuave(targetColor));
+    }
+
+    private IEnumerator CambiarColorSuave(Color targetColor)
+    {
+        float elapsed = 0f;
+        // Captura color inicial de la transición
+        Color startColor = meshRenderers.Count > 0 ? meshRenderers[0].material.color : colorBase;
+
+        while (elapsed < duracionTransicionColor)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duracionTransicionColor);
+            Color lerpCol = Color.Lerp(startColor, targetColor, t);
+            meshRenderers.ForEach(r => r.material.color = lerpCol);
+            yield return null;
+        }
+
+        // Asegura color final exacto
+        meshRenderers.ForEach(r => r.material.color = targetColor);
+        colorBase = targetColor;
     }
 
     private void InicializarSlider()
@@ -196,12 +219,9 @@ public class VidaJefe : MonoBehaviour
 
     public void RecibirDanioPorBala(BalaPlayer.TipoBala tb)
     {
-        // Comparamos enums directamente
         bool coincide = System.Enum.TryParse<TipoEnemigo>(tb.ToString(), out var tipoBala)
                         && tipoBala == currentTipo;
-
         float d = coincide ? danioBajo : danioAlto;
-        // Si coincide, skipBlink = true -> no parpadeo
         RecibirDanio(d, skipBlink: coincide);
     }
 
@@ -230,13 +250,11 @@ public class VidaJefe : MonoBehaviour
     {
         isDead = true;
         HUDManager.Instance.AddInfoFragment(fragments);
-
         string missionId = "KillSerpentBoss";
         string targetTag = gameObject.tag;
         string targetName = gameObject.name;
         FindObjectOfType<MissionManager>()
             .RegisterKill(missionId, targetTag, targetName);
-
         Destroy(gameObject);
     }
 }
