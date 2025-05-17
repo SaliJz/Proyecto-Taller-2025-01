@@ -38,7 +38,10 @@ public class ElectroHackAbility : MonoBehaviour
         if (playerCamera == null)
         {
             playerCamera = Camera.main;
-            Debug.LogError("Player Camera no está asignada en MindjackAbility.");
+            if (playerCamera == null)
+            {
+                Debug.LogError("No se encontró la cámara principal. Asegúrate de que haya una cámara con la etiqueta 'MainCamera' en la escena.");
+            }
         }
         if (projectileSpawnPoint == null)
         {

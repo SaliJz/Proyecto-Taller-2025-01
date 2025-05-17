@@ -96,7 +96,7 @@ public class UpgradeDataStore : MonoBehaviour
 #if UNITY_EDITOR
     private void Log(string message)
     {
-        Debug.Log(message);
+        Debug.Log("[UpdateDataStore]" + message);
     }
 #endif
 }

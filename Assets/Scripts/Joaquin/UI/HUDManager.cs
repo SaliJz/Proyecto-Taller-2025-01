@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -48,6 +49,8 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private Vector2 missionStartPos = new Vector2(480f, 0f); // editable desde el inspector
     [SerializeField] private Vector2 missionEndPos = new Vector2(-10f, 0f); // editable desde el inspector
 
+    [Header("JSS Timer")]
+    [SerializeField] private TextMeshProUGUI timerText;
 
     private Coroutine floatingTextCoroutine;
     private Coroutine missionCoroutine;
@@ -157,12 +160,33 @@ public class HUDManager : MonoBehaviour
         floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: - {amount} -> {infoFragments}"));
     }
 
-    public void ShowMission(string message)
+    public void UpdateTimer(float time)
     {
-        Debug.Log($"Mostrar misión: {message}");
+        if (timerText != null)
+        {
+            time = Mathf.Max(time, 0f);
+            int hours = (int)(time / 3600);
+            int minutes = (int)((time % 3600) / 60);
+            int seconds = (int)(time % 60);
+            timerText.text = $"{hours:00}:{minutes:00}:{seconds:00}";
+        }
+    }
+
+    public void HideMission()
+    {
+        missionTextObject.gameObject?.SetActive(false);
+        timerText.gameObject?.SetActive(false); 
+    }
+
+    public void ShowMission(string message, bool isJSS = false)
+    {
+        timerText.gameObject?.SetActive(isJSS);
+
+        Log($"Mostrar misión: {message}");
+
         if (missionTextObject == null)
         {
-            Debug.LogError("missionTextObject no está asignado en el HUDManager.");
+            Log("missionTextObject no está asignado en el HUDManager.");
             return;
         }
 
@@ -233,4 +257,11 @@ public class HUDManager : MonoBehaviour
             abilityNameText.text = info.abilityName;
         }
     }
+
+#if UNITY_EDITOR
+    private void Log(string message)
+    {
+        Debug.Log("[HUDManager]" + message);
+    }
+#endif
 }

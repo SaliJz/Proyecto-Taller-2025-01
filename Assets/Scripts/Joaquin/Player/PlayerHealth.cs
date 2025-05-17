@@ -120,7 +120,7 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    private void Die()
+    public void Die()
     {
         EnemySpawner enemySpawner = FindObjectOfType<EnemySpawner>();
         if (enemySpawner != null)
