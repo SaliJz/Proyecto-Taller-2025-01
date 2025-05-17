@@ -14,12 +14,14 @@ public class SurvivalTimer : MonoBehaviour
     [Header("Progreso de Captura")]
     public Image progressBarFill;
     private float progress = 0f;
-    public float captureSpeed = 0.1f;
+    public float captureSpeed = 0.5f;
+    public float decaySpeed = 0.3f;
 
-    private Color green = Color.green;
-    private Color red = Color.red;
+    private Color green = new Color(0.2f, 0.8f, 0.2f);
+    private Color red = new Color(0.8f, 0.2f, 0.2f);
 
-    private bool capturing = false;
+    private bool wasCapturing = false;
+
 
     void Update()
     {
@@ -29,42 +31,54 @@ public class SurvivalTimer : MonoBehaviour
             return;
         }
 
-        if (zone.playerInside && zone.enemiesInside == 0)
+        bool isCapturing = zone.playerInside && zone.enemiesInside == 0;
+
+        if (isCapturing)
         {
-            capturing = true;
             progress += captureSpeed * Time.deltaTime;
             currentTime += Time.deltaTime;
         }
         else
         {
-            capturing = false;
+            progress -= decaySpeed * Time.deltaTime;
             if (!zone.playerInside)
+            {
                 currentTime -= Time.deltaTime;
+            }
         }
 
         progress = Mathf.Clamp01(progress);
         currentTime = Mathf.Clamp(currentTime, 0f, maxTime);
 
-        int minutes = Mathf.FloorToInt(currentTime / 60f);
-        int seconds = Mathf.FloorToInt(currentTime % 60f);
-        timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
-
-        progressBarFill.fillAmount = progress;
-        Color targetColor = capturing ? green : red;
-        progressBarFill.color = Color.Lerp(progressBarFill.color, targetColor, Time.deltaTime * 4f);
+        UpdateTimerDisplay();
+        UpdateProgressBar(isCapturing);
 
         if (progress >= 1f)
         {
             Debug.Log("¡Ganaste!");
             GameManager.instance?.Win();
+            enabled = false; 
         }
 
         if (currentTime <= 0f)
         {
             Debug.Log("¡Perdiste!");
             GameManager.instance?.Lose();
+            enabled = false; // Desactivar el script
         }
+    }
 
-        Debug.Log($"Capturando: {capturing} | Progreso: {progress} | Tiempo: {currentTime}");
-    }  
+    void UpdateTimerDisplay()
+    {
+        int minutes = Mathf.FloorToInt(currentTime / 60f);
+        int seconds = Mathf.FloorToInt(currentTime % 60f);
+        timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+    }
+
+    void UpdateProgressBar(bool isCapturing)
+    {
+        progressBarFill.fillAmount = progress;
+        progressBarFill.color = isCapturing ? green : red;
+    }
+
 }

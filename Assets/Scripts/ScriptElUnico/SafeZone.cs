@@ -22,6 +22,6 @@ public class SafeZone : MonoBehaviour
             playerInside = false;
 
         if (other.CompareTag("Enemy"))
-            enemiesInside = Mathf.Max(0, enemiesInside - 1);
+            enemiesInside--;
     }
 }
