@@ -8,6 +8,7 @@ public class Mission : ScriptableObject
 {
     public string missionName;
     public List<KillCondition> killConditions = new();
+    public float duration;
 
     public bool IsCompleted => killConditions.All(k => k.IsMet);
 

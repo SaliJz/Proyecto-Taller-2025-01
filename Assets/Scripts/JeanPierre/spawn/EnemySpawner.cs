@@ -12,7 +12,7 @@ public class EnemySpawner : MonoBehaviour
     public float spawnRadius = 2f;          // Radio de dispersión alrededor del punto
 
     [SerializeField] private int maxEnemiesInScene = 20; // Máximo de enemigos en la escena
-    [SerializeField] private int maxEnemiesTotal = 50; // Máximo de enemigos totales 
+    [SerializeField] private int maxEnemiesInTotal = 50; // Máximo de enemigos totales 
     [SerializeField] private SpawnPoint[] spawnPoints; // Lista de puntos con disponibilidad
 
     private HashSet<GameObject> activeEnemies = new HashSet<GameObject>();
@@ -29,7 +29,19 @@ public class EnemySpawner : MonoBehaviour
         StartCoroutine(SpawnRoutine());
     }
 
-    IEnumerator SpawnRoutine()
+    public void JssSpawnCondition(int maxEnemiesInTotal, float spawnInterval)
+    {
+        this.maxEnemiesInTotal = maxEnemiesInTotal;
+        this.spawnInterval = spawnInterval;
+    }
+
+    public void EnemiesKilledCount(int count)
+    {
+        totalEnemiesSpawned -= count;
+        if (totalEnemiesSpawned < 0) totalEnemiesSpawned = 0; // Evitar números negativos
+    }
+
+    private IEnumerator SpawnRoutine()
     {
         while (true)
         {
@@ -53,21 +65,32 @@ public class EnemySpawner : MonoBehaviour
         if (activeEnemies.Count >= maxEnemiesInScene)
         {
             Log("Límite de enemigos alcanzado. Esperando espacio libre...");
-            return false;
+            return true; // Detener el spawn temporalmente
         }
 
-        if (totalEnemiesSpawned >= maxEnemiesTotal)
+        if (maxEnemiesInTotal >= 0 && totalEnemiesSpawned >= maxEnemiesInTotal)
         {
             Log("Límite global de enemigos alcanzado.");
-            return true;
+            return true; // Detener el spawn
         }
 
-        return false;
+        return false; // Continuar spawn
     }
 
     private void SpawnEnemies()
     {
-        int availableSpawnSlots = Mathf.Min(enemiesPerSpawn, maxEnemiesInScene - activeEnemies.Count, maxEnemiesTotal - totalEnemiesSpawned);
+        int availableByTotal = (maxEnemiesInTotal >= 0) ? (maxEnemiesInTotal - totalEnemiesSpawned) : enemiesPerSpawn;
+        int availableSpawnSlots = Mathf.Min(
+        enemiesPerSpawn,
+        maxEnemiesInScene - activeEnemies.Count,
+        availableByTotal
+        );
+
+        if (availableSpawnSlots <= 0)
+        {
+            Log("No hay espacio para más enemigos.");
+            return; // No hay espacio para más enemigos
+        }
 
         for (int i = 0; i < availableSpawnSlots; i++)
         {
@@ -77,6 +100,34 @@ public class EnemySpawner : MonoBehaviour
                 totalEnemiesSpawned++;
                 Log($"Enemigo {totalEnemiesSpawned} instanciado.");
             }
+        }
+    }
+
+    public void SpawnWave(int totalEnemies)
+    {
+        int spawnerCount = Mathf.Min(spawnPoints.Length, 5);
+        int perSpawner = totalEnemies / spawnerCount;
+        int extra = totalEnemies % spawnerCount;
+        int spawned = 0;
+
+        for (int i = 0; i < spawnerCount; i++)
+        {
+            int toSpawn = perSpawner + (i < extra ? 1 : 0);
+            for (int j = 0; j < toSpawn; j++)
+            {
+                var enemy = SpawnSingleEnemy();
+                if (enemy != null)
+                {
+                    totalEnemiesSpawned++;
+                    spawned++;
+                    Log($"Enemigo {totalEnemiesSpawned} instanciado.");
+                }
+            }
+        }
+
+        if (spawned < totalEnemies)
+        {
+            Log($"Solo se pudieron instanciar {spawned} de {totalEnemies} enemigos solicitados.");
         }
     }
 
