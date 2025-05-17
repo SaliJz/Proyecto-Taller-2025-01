@@ -488,9 +488,9 @@ MonoBehaviour:
   danioBajoAmetralladora: 0
   danioBajoPistola: 0
   danioBajoEscopeta: 0
-  danioAltoAmetralladora: 30
-  danioAltoPistola: 18
-  danioAltoEscopeta: 40
+  danioAltoAmetralladora: 10
+  danioAltoPistola: 13
+  danioAltoEscopeta: 17
   headshotMultiplier: 100
   headCollider: {fileID: 1268450203785874081}
   bodyColliders:
@@ -570,10 +570,10 @@ MonoBehaviour:
   enemyRenderer: {fileID: 7280533851858509494}
   warningMaterial: {fileID: 2100000, guid: 071baf0dfed5b9b4695fa8009fa4f8c5, type: 2}
   blinkInterval: 0.2
-  warningDuration: 2
+  warningDuration: 0.9
   bulletPrefab: {fileID: 7127249950028823837, guid: d24c60bb608165342afd67e0715ce466,
     type: 3}
-  finalBulletScale: {x: 12, y: 12, z: 12}
+  finalBulletScale: {x: 30, y: 30, z: 30}
   scaleDuration: 0.1
   finalDelay: 0.1
   cameraShakeDuration: 0.5
