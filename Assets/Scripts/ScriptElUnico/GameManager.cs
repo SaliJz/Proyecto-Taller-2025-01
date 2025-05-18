@@ -41,12 +41,12 @@ public class GameManager : MonoBehaviour
     {
         ActivateRandomZone();
 
-       
-        StartTimer();
-
         currentTime = totalTime;
         timerSlider.maxValue = totalTime;
         timerSlider.value = totalTime;
+
+        UpdateTimerText();
+
         captureProgressSlider.value = 0;
         captureProgressSlider.maxValue = 1;
         captureProgressSlider.gameObject.SetActive(false);
@@ -64,12 +64,6 @@ public class GameManager : MonoBehaviour
         Debug.Log("Zona activada");
     }
 
-    
-    public void StartTimer()
-    {
-        currentTime = totalTime;
-        timerRunning = true;
-    }
 
     void HandlePlayerStateChange(bool entered)
     {
@@ -79,19 +73,24 @@ public class GameManager : MonoBehaviour
         {
             captureProgressSlider.gameObject.SetActive(true);
             captureStatusText.text = "Capturando...";
-  
-            if (captureProgressSlider != null)
-                captureProgressSlider.fillRect.GetComponent<Image>().color = colorJugadorSolo;
+            captureProgressSlider.fillRect.GetComponent<Image>().color = colorJugadorSolo;
+
+            if (!timerRunning)
+                StartTimer();
+
         }
         else
         {
-            if (captureProgressSlider != null)
-                captureProgressSlider.fillRect.GetComponent<Image>().color = colorConEnemigos;
-            captureProgressSlider.value = 0;
-            captureStatusText.text = "";
+            captureProgressSlider.fillRect.GetComponent<Image>().color = colorConEnemigos;
+            captureStatusText.text = "¡Fuera de la zona!";
         }
 
         UpdateCaptureBarColor();
+    }
+
+    void StartTimer()
+    {
+        timerRunning = true;
     }
 
     void Update()
@@ -124,17 +123,33 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (jugadorEnZona && !enemigosEnZona && captureProgressSlider.gameObject.activeSelf)
+        if (jugadorEnZona)
         {
-            captureProgressSlider.value += Time.deltaTime;
-            if (captureProgressSlider.value >= 1f)
+            if (!enemigosEnZona)
             {
-                captureProgressSlider.value = 1;
-                Debug.Log("¡Zona capturada! Ganaste");
-                GameOver(true);
+                captureProgressSlider.value += Time.deltaTime / totalTime;
+
+                if (captureProgressSlider.value >= 1f)
+                {
+                    captureProgressSlider.value = 1f;
+                    Debug.Log("¡Zona capturada! Ganaste");
+                    GameOver(true);
+                }
+            }
+            else
+            {
+                captureStatusText.text = "¡Enemigos detectados!";
             }
         }
-        
+
+        else
+        {
+            if (captureProgressSlider.value > 0)
+            {
+                captureProgressSlider.value -= Time.deltaTime / (totalTime / 2f); 
+                if (captureProgressSlider.value < 0) captureProgressSlider.value = 0;
+            }
+        }
     }
 
     void UpdateTimerText()
@@ -144,10 +159,6 @@ public class GameManager : MonoBehaviour
         timerText.text = $"{min:00}:{sec:00}";
     }
 
-    void UpdateCaptureBar()
-    {
-        // La lógica ya está en Update()
-    }
 
     void UpdateCaptureBarColor()
     {
@@ -167,8 +178,9 @@ public class GameManager : MonoBehaviour
 
     void GameOver(bool win)
     {
-        timerRunning = false; 
+        timerRunning = false;
         captureStatusText.text = win ? "¡Ganaste!" : "¡Perdiste!";
+        Debug.Log(win ? "VICTORIA" : "DERROTA");
     }
 
 
