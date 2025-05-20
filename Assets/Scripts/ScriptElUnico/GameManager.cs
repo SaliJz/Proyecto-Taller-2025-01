@@ -34,6 +34,8 @@ public class GameManager : MonoBehaviour
     private float timeSinceStart = 0f; 
     private bool missionStarted = false;
 
+    private bool jugadorEntroAlgunaVez = false;
+
     void Awake()
     {
         if (instance == null) instance = this;
@@ -44,7 +46,7 @@ public class GameManager : MonoBehaviour
     {
         ActivateRandomZone();
 
-        currentTime = 0f;
+        currentTime = 30f;
         timerSlider.maxValue = totalTime;
         timerSlider.value = 0f;
 
@@ -56,6 +58,9 @@ public class GameManager : MonoBehaviour
         captureStatusText.text = "";
 
         safeZone.OnPlayerStateChange += HandlePlayerStateChange;
+
+        timerRunning = true;
+        missionStarted = true;
 
         UpdateCaptureBarColor(); 
     }
@@ -74,6 +79,8 @@ public class GameManager : MonoBehaviour
 
         if (entered)
         {
+            jugadorEntroAlgunaVez = true;
+
             captureProgressSlider.gameObject.SetActive(true);
             captureStatusText.text = "Capturando...";
             captureProgressSlider.fillRect.GetComponent<Image>().color = colorJugadorSolo;
@@ -100,6 +107,15 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         if (!zonaActivo) return;
+
+
+        if (Time.timeSinceLevelLoad >= 30f && !jugadorEntroAlgunaVez)
+        {
+            Debug.Log("No entraste a tiempo a la zona segura. Perdiste.");
+            GameOver(false);
+            enabled = false;
+            return;
+        }
 
         enemigosEnZona = safeZone.enemiesInside > 0;
 
