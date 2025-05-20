@@ -31,6 +31,9 @@ public class GameManager : MonoBehaviour
     private bool jugadorEnZona = false;
     private bool enemigosEnZona = false;
 
+    private float timeSinceStart = 0f; 
+    private bool missionStarted = false;
+
     void Awake()
     {
         if (instance == null) instance = this;
@@ -41,9 +44,9 @@ public class GameManager : MonoBehaviour
     {
         ActivateRandomZone();
 
-        currentTime = totalTime;
+        currentTime = 0f;
         timerSlider.maxValue = totalTime;
-        timerSlider.value = totalTime;
+        timerSlider.value = 0f;
 
         UpdateTimerText();
 
@@ -91,6 +94,7 @@ public class GameManager : MonoBehaviour
     void StartTimer()
     {
         timerRunning = true;
+        missionStarted = true;
     }
 
     void Update()
@@ -101,14 +105,35 @@ public class GameManager : MonoBehaviour
 
         UpdateCaptureBarColor();
 
+        if (!missionStarted)
+        {
+            timeSinceStart += Time.deltaTime;
+
+            if (timeSinceStart >= 30f && !jugadorEnZona)
+            {
+                Debug.Log("No entraste a tiempo a la zona. Perdiste.");
+                GameOver(false);
+                return;
+            }
+        }
+
         if (timerRunning)
         {
-            currentTime -= Time.deltaTime;
-            if (currentTime < 0) currentTime = 0;
+            if (jugadorEnZona && !enemigosEnZona)
+            {
+                currentTime += Time.deltaTime;
+                if (currentTime > totalTime) currentTime = totalTime;
+            }
+            else if (!jugadorEnZona)
+            {
+                currentTime -= Time.deltaTime;
+                if (currentTime < 0) currentTime = 0;
+            }
+
             timerSlider.value = currentTime;
             UpdateTimerText();
 
-            if (currentTime <= 0)
+            if (currentTime >= totalTime)
             {
                 if (captureProgressSlider.value < 1f)
                 {
@@ -182,8 +207,4 @@ public class GameManager : MonoBehaviour
         captureStatusText.text = win ? "¡Ganaste!" : "¡Perdiste!";
         Debug.Log(win ? "VICTORIA" : "DERROTA");
     }
-
-
-
-
 }
