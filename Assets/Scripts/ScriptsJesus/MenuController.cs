@@ -1,60 +1,76 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;  // Necesario para trabajar con los botones
-using UnityEngine.SceneManagement;  // Necesario para cargar escenas
+using UnityEngine.Audio;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour
 {
-    // Variables públicas para asignar los botones desde el Inspector
-    public Button jugarButton;
-    public Button creditosButton;
-    public Button salirButton;
-    public Button opcionesButton;
+    [Header("Buttons")]
+    [SerializeField] private Button playButton;
+    [SerializeField] private Button creditsButton;
+    [SerializeField] private Button settingsButton;
+    [SerializeField] private Button quitButton;
 
-    // Variables para los nombres de las escenas, se pueden cambiar desde el Inspector
-    public string nombreEscenaJuego = "Jesus";
-    public string nombreEscenaCreditos = "Creditos";
-    public string nombreEscenaOpciones = "MenuOpciones";
+    [Header("Audio")]
+    [SerializeField] private AudioSource SFXSource;
+    [SerializeField] private AudioClip buttonClip;
 
-    void Start()
+    [Header("Panels")]
+    [SerializeField] private GameObject mainMenuPanel;
+    [SerializeField] private GameObject settingsPanel;
+
+    [Header("Scenes")]
+    [SerializeField] private string levelSceneName = "Jesus";
+    [SerializeField] private string creditsSceneName = "Creditos";
+
+    private void Start()
     {
-        Cursor.lockState = CursorLockMode.None;  // Desbloquear el cursor al iniciar el juego
-        Cursor.visible = true;  // Hacer visible el cursor
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
-        // Asignar listeners a los botones, sin necesidad de usar OnClick() en el Inspector
-        jugarButton.onClick.AddListener(StartGame);
-        creditosButton.onClick.AddListener(ShowCredits);
-        salirButton.onClick.AddListener(QuitGame);
+        playButton.onClick.AddListener(StartGame);
+        creditsButton.onClick.AddListener(ShowCredits);
+        quitButton.onClick.AddListener(QuitGame);
         
-        if (opcionesButton != null)
+        if (settingsPanel != null)
         {
-            opcionesButton.onClick.AddListener(ShowOpciones);
+            settingsButton.onClick.AddListener(ShowOpciones);
         }
     }
 
-    // Método para iniciar el juego
     public void StartGame()
     {
-
-        SceneManager.LoadScene(nombreEscenaJuego);  // Carga la escena especificada
+        ClickSound();
+        SceneManager.LoadScene(levelSceneName);
     }
 
-    // Método para salir del juego
-    public void QuitGame()
-    {
-        Debug.Log("Salir del juego");
-        Application.Quit();  // Cierra la aplicación
-    }
-
-    // Método para mostrar los créditos
     public void ShowCredits()
     {
-        SceneManager.LoadScene(nombreEscenaCreditos);  
+        ClickSound();
+        SceneManager.LoadScene(creditsSceneName);  
     }
 
     public void ShowOpciones()
     {
-        SceneManager.LoadScene(nombreEscenaOpciones);  
+        ClickSound();
+        mainMenuPanel.SetActive(false);
+        settingsPanel.SetActive(true);
+    }
+
+    public void QuitGame()
+    {
+        Debug.Log("Salir del juego");
+        ClickSound();
+        Application.Quit();
+    }
+
+    private void ClickSound()
+    {
+        if (buttonClip != null)
+        {
+            SFXSource.PlayOneShot(buttonClip);
+        }
     }
 }
