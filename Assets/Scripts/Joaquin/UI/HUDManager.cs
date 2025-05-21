@@ -52,6 +52,9 @@ public class HUDManager : MonoBehaviour
     [Header("JSS Timer")]
     [SerializeField] private TextMeshProUGUI timerText;
 
+    [Header("Events")]
+    [SerializeField] private Image eventIcon;
+
     private Coroutine floatingTextCoroutine;
     private Coroutine missionCoroutine;
 
@@ -256,6 +259,23 @@ public class HUDManager : MonoBehaviour
             abilityIcon.sprite = info.icon;
             abilityNameText.text = info.abilityName;
         }
+    }
+
+    public void UpdateIcon(Sprite newIcon)
+    {
+        Log($"Actualizar icono: {newIcon.name}");
+
+        if (eventIcon != null && newIcon != null)
+        {
+            eventIcon.sprite = newIcon;
+            eventIcon.gameObject.SetActive(true);
+        }
+    }
+
+    public void HideIcon()
+    {
+        if (eventIcon != null)
+            eventIcon.gameObject.SetActive(false);
     }
 
 #if UNITY_EDITOR
