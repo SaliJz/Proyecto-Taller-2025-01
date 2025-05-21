@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class WeaponManager : MonoBehaviour
 {
     [SerializeField] private Weapon[] weapons;
     [SerializeField] private Transform weaponHolder;
-    [SerializeField] private TMPro.TMP_Text weaponNameText;
-    [SerializeField] private UnityEngine.UI.Image weaponIconImage;
+    [SerializeField] private TMP_Text weaponNameText;
+    [SerializeField] private Image weaponIconImage;
 
     private int currentIndex = 0;
 
