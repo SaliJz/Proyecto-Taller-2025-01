@@ -21,10 +21,8 @@ public class EnemigoDisparador : MonoBehaviour
         if (jugador == null)
         {
             var jugadorGO = GameObject.FindGameObjectWithTag("Player");
-            if (jugadorGO != null)
-                jugador = jugadorGO.transform;
-            else
-                Debug.LogWarning($"No se encontró ningún GameObject con tag 'Player' en {name}");
+            if (jugadorGO) jugador = jugadorGO.transform;
+            else Debug.LogWarning($"No se encontró Player en {name}");
         }
     }
 
@@ -33,43 +31,106 @@ public class EnemigoDisparador : MonoBehaviour
         if (jugador == null) return;
 
         temporizadorDisparo += Time.deltaTime;
-        float dist = Vector3.Distance(transform.position, jugador.position);
-
-        if (temporizadorDisparo >= intervaloDisparo)
+        if (temporizadorDisparo >= intervaloDisparo &&
+            Vector3.Distance(transform.position, jugador.position) <= distanciaDisparo)
         {
-            if (dist <= distanciaDisparo)
-                DispararBala();
-
+            DispararBala();
             temporizadorDisparo = 0f;
         }
     }
 
     private void DispararBala()
     {
-        if (balaPrefab == null)
-        {
-            Debug.LogWarning($"No se ha asignado el prefab de la bala en {name}");
-            return;
-        }
+        if (balaPrefab == null) return;
 
-        // Instancia la bala en la posición y rotación de 'puntoDisparo'
-        Vector3 spawnPos = puntoDisparo ? puntoDisparo.position : transform.position;
-        Quaternion spawnRot = puntoDisparo ? puntoDisparo.rotation : Quaternion.identity;
-        GameObject bala = Instantiate(balaPrefab, spawnPos, spawnRot);
+        // 1) Instancia la bala COMO HIJA de puntoDisparo
+        Vector3 spawnPos = puntoDisparo.position;
+        GameObject bala = Instantiate(balaPrefab, spawnPos, puntoDisparo.rotation, puntoDisparo);
 
+        // 2) Pasa la referencia al jugador y la velocidad
         var balaScript = bala.GetComponent<BalaEnemigoVolador>();
         if (balaScript != null)
         {
-            balaScript.direccion = (jugador.position - spawnPos).normalized;
+            balaScript.jugador = jugador;
             balaScript.velocidad = velocidadBala;
-            balaScript.spawnTransform = puntoDisparo;
-        }
-        else
-        {
-            Debug.LogWarning($"El prefab de bala no tiene el componente 'BalaEnemigoVolador'");
+            balaScript.tiempoCarga = balaScript.tiempoCarga;   // usa su propio valor por defecto
         }
     }
 }
+
+
+//// EnemigoDisparador.cs
+//using UnityEngine;
+
+//public class EnemigoDisparador : MonoBehaviour
+//{
+//    [Header("Referencia al Jugador")]
+//    public Transform jugador;
+
+//    [Header("Disparo de bala")]
+//    public float distanciaDisparo = 10f;
+//    public GameObject balaPrefab;
+//    public Transform puntoDisparo;
+//    public float velocidadBala = 10f;
+
+//    [Header("Intervalo entre disparos")]
+//    public float intervaloDisparo = 3f;
+//    private float temporizadorDisparo = 0f;
+
+//    private void Awake()
+//    {
+//        if (jugador == null)
+//        {
+//            var jugadorGO = GameObject.FindGameObjectWithTag("Player");
+//            if (jugadorGO != null)
+//                jugador = jugadorGO.transform;
+//            else
+//                Debug.LogWarning($"No se encontró ningún GameObject con tag 'Player' en {name}");
+//        }
+//    }
+
+//    private void Update()
+//    {
+//        if (jugador == null) return;
+
+//        temporizadorDisparo += Time.deltaTime;
+//        float dist = Vector3.Distance(transform.position, jugador.position);
+
+//        if (temporizadorDisparo >= intervaloDisparo)
+//        {
+//            if (dist <= distanciaDisparo)
+//                DispararBala();
+
+//            temporizadorDisparo = 0f;
+//        }
+//    }
+
+//    private void DispararBala()
+//    {
+//        if (balaPrefab == null)
+//        {
+//            Debug.LogWarning($"No se ha asignado el prefab de la bala en {name}");
+//            return;
+//        }
+
+//        // Instancia la bala en la posición y rotación de 'puntoDisparo'
+//        Vector3 spawnPos = puntoDisparo ? puntoDisparo.position : transform.position;
+//        Quaternion spawnRot = puntoDisparo ? puntoDisparo.rotation : Quaternion.identity;
+//        GameObject bala = Instantiate(balaPrefab, spawnPos, spawnRot);
+
+//        var balaScript = bala.GetComponent<BalaEnemigoVolador>();
+//        if (balaScript != null)
+//        {
+//            balaScript.direccion = (jugador.position - spawnPos).normalized;
+//            balaScript.velocidad = velocidadBala;
+//            balaScript.spawnTransform = puntoDisparo;
+//        }
+//        else
+//        {
+//            Debug.LogWarning($"El prefab de bala no tiene el componente 'BalaEnemigoVolador'");
+//        }
+//    }
+//}
 
 
 
