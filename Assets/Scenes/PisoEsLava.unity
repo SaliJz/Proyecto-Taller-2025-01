@@ -536,14 +536,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   plataformas:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 2183364599406141219, guid: 8cf7d364166ff4143a2faef27d0ace70, type: 3}
+  - {fileID: 573673130492312038, guid: 35cb4937e602d0143a6a36afcae19aa9, type: 3}
+  - {fileID: 2183364599406141219, guid: 8cf7d364166ff4143a2faef27d0ace70, type: 3}
+  - {fileID: 573673130492312038, guid: 35cb4937e602d0143a6a36afcae19aa9, type: 3}
+  - {fileID: 2183364599406141219, guid: 8cf7d364166ff4143a2faef27d0ace70, type: 3}
+  - {fileID: 573673130492312038, guid: 35cb4937e602d0143a6a36afcae19aa9, type: 3}
+  - {fileID: 2183364599406141219, guid: 8cf7d364166ff4143a2faef27d0ace70, type: 3}
+  - {fileID: 573673130492312038, guid: 35cb4937e602d0143a6a36afcae19aa9, type: 3}
   tiempoEntrePlataformas: 2
   alturaIncremento: 2
   rangoX: 5
@@ -556,7 +556,7 @@ Transform:
   m_GameObject: {fileID: 418114656}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -74.76, y: 2.0805547, z: 33.138615}
+  m_LocalPosition: {x: -90.6, y: -13.9, z: 13.9}
   m_LocalScale: {x: -0.1547658, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1178,7 +1178,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   velocidad: 5
-  fuerzaSalto: 10
+  fuerzaSalto: 20
   saludMaxima: 100
 --- !u!54 &1931077021
 Rigidbody:

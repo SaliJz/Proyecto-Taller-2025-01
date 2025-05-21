@@ -34,6 +34,7 @@ public class PlataformaSpawner : MonoBehaviour
         Vector3 spawnPos = new Vector3(posX, alturaActual, transform.position.z);
         Instantiate(plataformaElegida, spawnPos, Quaternion.identity);
 
+        Debug.Log("Plataforma generada en: " + spawnPos);
         alturaActual += alturaIncremento;
     }
 
