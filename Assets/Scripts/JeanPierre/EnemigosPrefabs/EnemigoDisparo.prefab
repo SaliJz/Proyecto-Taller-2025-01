@@ -220,6 +220,8 @@ GameObject:
   - component: {fileID: 7723565866553249891}
   - component: {fileID: -5007632262281444201}
   - component: {fileID: 6963322664671768031}
+  - component: {fileID: 4903496702232755476}
+  - component: {fileID: -7787485087883272279}
   m_Layer: 6
   m_Name: EnemigoDisparo
   m_TagString: Enemy
@@ -429,9 +431,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jugador: {fileID: 0}
-  distanciaDeseada: 5
-  velocidadMovimiento: 3
+  distanciaMinima: 7
+  distanciaMaxima: 15
   margen: 0.5
+  velocidadMovimiento: 3
   velocidadCirculo: 6
   sentidoHorario: 1
 --- !u!114 &-5007632262281444201
@@ -469,6 +472,39 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.1355801, y: 1.3492129, z: 1}
   m_Center: {x: 0.0045194626, y: -0.370587, z: 0}
+--- !u!114 &4903496702232755476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3775705321392681890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e799e14579da86c488c46cea7be8e3af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!65 &-7787485087883272279
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3775705321392681890}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.61, y: 2, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6177287622287384025
 GameObject:
   m_ObjectHideFlags: 0

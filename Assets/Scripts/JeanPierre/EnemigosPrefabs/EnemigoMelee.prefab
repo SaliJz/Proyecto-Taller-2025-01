@@ -442,6 +442,8 @@ GameObject:
   - component: {fileID: -3876290804030161075}
   - component: {fileID: 9012557896323379569}
   - component: {fileID: 8893220702585947661}
+  - component: {fileID: 2588779043328187818}
+  - component: {fileID: 3247441937836668493}
   m_Layer: 6
   m_Name: EnemigoMelee
   m_TagString: Enemy
@@ -728,6 +730,48 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.29, y: 1.7633178, z: 0.59}
   m_Center: {x: 0, y: -0.21165884, z: 0}
+--- !u!114 &2588779043328187818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5120538479886475079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec77bc04ca9542441b7d17604fcbe3e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTransform: {fileID: 0}
+  velocidadPersecucion: 10
+  velocidadAtaque: 22
+  velocidadRetirada: 5
+  distanciaAtaqueMin: 20
+  distanciaAtaqueMax: 30
+  minAtaques: 3
+  maxAtaques: 5
+  prefabColiderAtaque: {fileID: 5126359519349961444, guid: 7fa3d9e90703cfb40ac2a81552014c43,
+    type: 3}
+  duracionColider: 0.5
+  tiempoEntreColiders: 0.3
+  tiempoRetirada: 1
+  velocidadRotacion: 5
+--- !u!114 &3247441937836668493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5120538479886475079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8d2823f626513546a0e4bb9e13809f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comportamientoA: {fileID: 4643872267189118312}
+  comportamientoB: {fileID: 2588779043328187818}
+  activarA: 0
+  activarB: 1
 --- !u!1 &6642947135343746201
 GameObject:
   m_ObjectHideFlags: 0
