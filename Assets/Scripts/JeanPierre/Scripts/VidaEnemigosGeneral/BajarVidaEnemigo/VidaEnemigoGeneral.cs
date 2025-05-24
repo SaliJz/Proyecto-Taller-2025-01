@@ -59,19 +59,25 @@ public class VidaEnemigoGeneral : MonoBehaviour
         Debug.Log($"[VidaEnemigo] Tipo: {tipo}");
 #endif
 
-        // escogemos el HDR para emisión
-        Color baseEmission = tipo == TipoEnemigo.Ametralladora ? hdrColorAmetralladora
-                             : tipo == TipoEnemigo.Pistola ? hdrColorPistola
-                                                                   : hdrColorEscopeta;
-
-        // oscurecemos al 50%
-        Color emissionColor = baseEmission * 0.5f;
+        // Seleccionamos el color HDR directamente
+        Color finalColor = tipo == TipoEnemigo.Ametralladora ? hdrColorAmetralladora
+                        : tipo == TipoEnemigo.Pistola ? hdrColorPistola
+                        : hdrColorEscopeta;
 
         foreach (var mr in meshRenderers)
         {
-            // habilita y asigna emisión HDR oscura
-            mr.material.EnableKeyword("_EMISSION");
-            mr.material.SetColor("_EmissionColor", emissionColor);
+            Material mat = mr.material;
+
+            // Base Color
+            if (mat.HasProperty("_BaseColor"))
+                mat.SetColor("_BaseColor", finalColor);
+            else if (mat.HasProperty("_Color"))
+                mat.SetColor("_Color", finalColor);
+
+            // Emission Color
+            mat.EnableKeyword("_EMISSION");
+            if (mat.HasProperty("_EmissionColor"))
+                mat.SetColor("_EmissionColor", finalColor);
         }
 
         if (sliderVida != null)
@@ -130,6 +136,8 @@ public class VidaEnemigoGeneral : MonoBehaviour
         Destroy(gameObject);
     }
 }
+
+
 
 //using System.Linq;
 //using UnityEngine;
