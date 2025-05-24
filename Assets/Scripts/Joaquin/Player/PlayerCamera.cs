@@ -16,6 +16,9 @@ public class PlayerCamera : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        sensitivity = SettingsService.Sensitivity;
+
     }
 
     private void LateUpdate()
@@ -23,12 +26,9 @@ public class PlayerCamera : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * Time.deltaTime * sensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * Time.deltaTime * sensitivity;
 
-        // Rotación vertical (eje X)
         rotationX -= mouseY;
         rotationY += mouseX;
         rotationX = Mathf.Clamp(rotationX, -verticalClamp, verticalClamp);
-
-        // Rotación horizontal (eje Y) — gira el cuerpo del jugador
 
         transform.rotation = Quaternion.Euler(rotationX, rotationY, 0f);
         orientation.rotation = Quaternion.Euler(0f, rotationY, 0f);

@@ -27,6 +27,9 @@ public class MenuController : MonoBehaviour
 
     private void Start()
     {
+        mainMenuPanel.SetActive(true);
+        settingsPanel.SetActive(false);
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
@@ -42,19 +45,22 @@ public class MenuController : MonoBehaviour
 
     public void StartGame()
     {
-        ClickSound();
+        PlayButtonAudio();
+
         SceneManager.LoadScene(levelSceneName);
     }
 
     public void ShowCredits()
     {
-        ClickSound();
+        PlayButtonAudio();
+
         SceneManager.LoadScene(creditsSceneName);  
     }
 
     public void ShowOpciones()
     {
-        ClickSound();
+        PlayButtonAudio();
+
         mainMenuPanel.SetActive(false);
         settingsPanel.SetActive(true);
     }
@@ -62,11 +68,12 @@ public class MenuController : MonoBehaviour
     public void QuitGame()
     {
         Debug.Log("Salir del juego");
-        ClickSound();
+
+        PlayButtonAudio();
         Application.Quit();
     }
 
-    private void ClickSound()
+    private void PlayButtonAudio()
     {
         if (buttonClip != null)
         {

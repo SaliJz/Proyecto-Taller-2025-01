@@ -7,48 +7,128 @@ using TMPro;
 
 public static class SettingsService
 {
-    private static readonly string MasterVolumeKey = "VolumenGeneral";
-    private static readonly string SfxVolumeKey = "VolumenSFX";
-    private static readonly string SensitivityKey = "Sensibilidad";
-    private static readonly string ResolutionIndexKey = "ResolucionIndex";
+    private const string MasterVolumeKey = "MasterVolume";
+    private const string SFXVolumeKey = "SFXVolume";
+    private const string MuteKey = "Mute";
+    private const string ResolutionKey = "Resolution";
+    private const string VSyncKey = "VSync";
+    private const string FullscreenKey = "Fullscreen";
+    private const string SensitivityKey = "Sensitivity";
+    private const string ShowFpsKey = "ShowFps";
 
-    public static float MasterVolume { get; set; } = 1f;
-    public static float SfxVolume { get; set; } = 1f;
-    public static float Sensitivity { get; set; } = 1f;
-    public static int ResolutionIndex { get; set; } = 0;
+    public static float MasterVolume = 1f;
+    public static float SfxVolume = 1f;
+    public static float Sensitivity = 1f;
+    public static bool Mute = false;
+    public static bool VSync = true;
+    public static bool IsFullscreen = true;
+    public static bool ShowFps = true;
+    public static int ResolutionIndex = 0;
+
+    // Resoluciones estándar como en SettingsController
+    private static readonly List<Vector2Int> StandardResolutions = new()
+    {
+        new Vector2Int(1280, 720),
+        new Vector2Int(1366, 768),
+        new Vector2Int(1920, 1080),
+        new Vector2Int(2560, 1440),
+        new Vector2Int(3840, 2160),
+        new Vector2Int(7680, 4320)
+    };
 
     public static void Load()
     {
         MasterVolume = PlayerPrefs.GetFloat(MasterVolumeKey, 1f);
-        SfxVolume = PlayerPrefs.GetFloat(SfxVolumeKey, 1f);
+        SfxVolume = PlayerPrefs.GetFloat(SFXVolumeKey, 1f);
+        Mute = PlayerPrefs.GetInt(MuteKey, 0) == 1;
+        ResolutionIndex = PlayerPrefs.GetInt(ResolutionKey, 2); // por defecto 1920x1080
+        VSync = PlayerPrefs.GetInt(VSyncKey, 1) == 1;
+        IsFullscreen = PlayerPrefs.GetInt(FullscreenKey, 1) == 1;
         Sensitivity = PlayerPrefs.GetFloat(SensitivityKey, 1f);
-        ResolutionIndex = PlayerPrefs.GetInt(ResolutionIndexKey, 0);
+        ShowFps = PlayerPrefs.GetInt(ShowFpsKey, 1) == 1;
     }
 
     public static void Save()
     {
         PlayerPrefs.SetFloat(MasterVolumeKey, MasterVolume);
-        PlayerPrefs.SetFloat(SfxVolumeKey, SfxVolume);
+        PlayerPrefs.SetFloat(SFXVolumeKey, SfxVolume);
+        PlayerPrefs.SetInt(MuteKey, Mute ? 1 : 0);
+        PlayerPrefs.SetInt(ResolutionKey, ResolutionIndex);
+        PlayerPrefs.SetInt(VSyncKey, VSync ? 1 : 0);
+        PlayerPrefs.SetInt(FullscreenKey, IsFullscreen ? 1 : 0);
         PlayerPrefs.SetFloat(SensitivityKey, Sensitivity);
-        PlayerPrefs.SetInt(ResolutionIndexKey, ResolutionIndex);
-        PlayerPrefs.Save();
+        PlayerPrefs.SetInt(ShowFpsKey, ShowFps ? 1 : 0);
     }
 
-    public static void Apply(AudioMixer mixer, Toggle vsyncToggle)
+    public static void Apply(AudioMixer audioMixer)
     {
-        // Audio
-        mixer.SetFloat("VolMaster", Mathf.Log10(MasterVolume) * 20);
-        mixer.SetFloat("VolSFX", Mathf.Log10(SfxVolume) * 20);
+        float masterDb = MasterVolume <= 0.001f ? -80f : Mathf.Lerp(-80f, 0f, MasterVolume);
+        float sfxDb = SfxVolume <= 0.001f ? -80f : Mathf.Lerp(-80f, 0f, SfxVolume);
 
-        // Sensibilidad
-        // ej: InputManager.Instance.SetSensitivity(Sensitivity);
+        audioMixer.SetFloat("VolMaster", Mute ? -80f : masterDb);
+        audioMixer.SetFloat("VolSFX", Mute ? -80f : sfxDb);
 
-        // Resolución
-        Resolution[] res = Screen.resolutions;
-        int idx = Mathf.Clamp(ResolutionIndex, 0, res.Length - 1);
-        Screen.SetResolution(res[idx].width, res[idx].height, Screen.fullScreen);
+        AudioListener.pause = Mute;
 
-        // VSync
-        QualitySettings.vSyncCount = vsyncToggle.isOn ? 1 : 0;
+        Vector2Int selectedRes = StandardResolutions[Mathf.Clamp(ResolutionIndex, 0, StandardResolutions.Count - 1)];
+        Screen.SetResolution(selectedRes.x, selectedRes.y, IsFullscreen);
+        QualitySettings.vSyncCount = VSync ? 1 : 0;
     }
+
+    public static bool HasChanges(
+        float masterVolume,
+        float sfxVolume,
+        bool mute,
+        int resolutionIndex,
+        bool vsync,
+        bool fullscreen,
+        float sensitivity)
+    {
+        return !Mathf.Approximately(masterVolume, MasterVolume) ||
+               !Mathf.Approximately(sfxVolume, SfxVolume) ||
+               mute != Mute ||
+               resolutionIndex != ResolutionIndex ||
+               vsync != VSync ||
+               fullscreen != IsFullscreen ||
+               !Mathf.Approximately(sensitivity, Sensitivity);
+    }
+
+    public static SettingsData Clone()
+    {
+        return new SettingsData
+        {
+            MasterVolume = MasterVolume,
+            SfxVolume = SfxVolume,
+            Sensitivity = Sensitivity,
+            ResolutionIndex = ResolutionIndex,
+            IsFullscreen = IsFullscreen,
+            VSync = VSync,
+            ShowFps = ShowFps,
+            Mute = Mute
+        };
+    }
+
+    public static void ResetToDefault()
+    {
+        MasterVolume = 1f;
+        SfxVolume = 1f;
+        Sensitivity = 1f;
+        Mute = false;
+        VSync = true;
+        IsFullscreen = true;
+        ResolutionIndex = 2;
+        ShowFps = true;
+    }
+}
+
+public class SettingsData
+{
+    public float MasterVolume;
+    public float SfxVolume;
+    public float Sensitivity;
+    public int ResolutionIndex;
+    public bool IsFullscreen;
+    public bool VSync;
+    public bool ShowFps;
+    public bool Mute;
 }
