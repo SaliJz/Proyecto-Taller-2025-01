@@ -18,7 +18,7 @@ public static class SettingsService
 
     public static float MasterVolume = 1f;
     public static float SfxVolume = 1f;
-    public static float Sensitivity = 1f;
+    public static float Sensitivity = 5f;
     public static bool Mute = false;
     public static bool VSync = true;
     public static bool IsFullscreen = true;
@@ -112,7 +112,7 @@ public static class SettingsService
     {
         MasterVolume = 1f;
         SfxVolume = 1f;
-        Sensitivity = 1f;
+        Sensitivity = 5f;
         Mute = false;
         VSync = true;
         IsFullscreen = true;

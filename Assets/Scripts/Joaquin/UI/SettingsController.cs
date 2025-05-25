@@ -45,8 +45,6 @@ public class SettingsController : MonoBehaviour
     [SerializeField] private AudioClip toggleClip;
     [SerializeField] private AudioClip sliderClip;
 
-    private float deltaTime;
-
     private readonly List<Vector2Int> standardResolutions = new()
     {
         new Vector2Int(1280, 720),
@@ -68,13 +66,6 @@ public class SettingsController : MonoBehaviour
     private void OnEnable()
     {
         LoadSettings();
-    }
-
-    private void Update()
-    {
-        if (!fpsText.gameObject.activeSelf) return;
-        deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
-        fpsText.text = $"FPS: {Mathf.CeilToInt(1f / deltaTime)}";
     }
 
     private IEnumerator ShowConfirmation(string message)
@@ -104,8 +95,7 @@ public class SettingsController : MonoBehaviour
         {
             tempSettings.ShowFps = value;
             if (!value) fpsText.gameObject.SetActive(false);
-            else
-                fpsText.gameObject.SetActive(value);
+            else fpsText.gameObject.SetActive(value);
         });
 
         applyButton.onClick.AddListener(ApplySettings);

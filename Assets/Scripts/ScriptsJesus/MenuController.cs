@@ -67,7 +67,7 @@ public class MenuController : MonoBehaviour
 
     public void QuitGame()
     {
-        Debug.Log("Salir del juego");
+        Log("Salir del juego");
 
         PlayButtonAudio();
         Application.Quit();
@@ -80,4 +80,8 @@ public class MenuController : MonoBehaviour
             SFXSource.PlayOneShot(buttonClip);
         }
     }
+
+#if UNITY_EDITOR
+    private void Log(string message) => Debug.Log(message);
+#endif
 }

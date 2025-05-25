@@ -6,75 +6,111 @@ using UnityEngine.UI;
 
 public class MenuPausa : MonoBehaviour
 {
-    [SerializeField] private GameObject canvasPausa;
-    [SerializeField] private Button botonContinuar;
-    [SerializeField] private Button botonMenuPrincipal;
+    [Header("Panels")]
+    [SerializeField] private GameObject pauseMenuPanel;
+    [SerializeField] private GameObject settingsPanel;
+
+    [Header("Buttons")]
+    [SerializeField] private Button restartButton;
+    [SerializeField] private Button mainMenuButton;
+    [SerializeField] private Button settingsButton;
+    [SerializeField] private Button quitButton;
+
+    [Header("Texts")]
     [SerializeField] private string nombreEscenaMenuPrincipal;
-    [SerializeField] private Button botonSalir;
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource SFXSource;
+    [SerializeField] private AudioClip buttonClip;
 
     private bool isDead = false; 
     private bool juegoPausado = false;
 
-    void Start()
+    private void Start()
     {
-        canvasPausa.SetActive(false);
-       
-        botonContinuar.onClick.AddListener(ReanudarJuego);
-        botonMenuPrincipal.onClick.AddListener(SalirAlMenu);
-        botonSalir.onClick.AddListener(SalirJuego);
+        pauseMenuPanel.SetActive(false);
+        settingsPanel.SetActive(false);
+
+        if (restartButton == null || mainMenuButton == null || settingsButton == null || quitButton == null)
+        {
+            Log("Uno o más botones no están asignados en el inspector.");
+            return;
+        }
+        restartButton.onClick.AddListener(RestartGame);
+        mainMenuButton.onClick.AddListener(GoToMainMenu);
+        settingsButton.onClick.AddListener(ShowSettings);
+        quitButton.onClick.AddListener(QuitGame);
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape) && !isDead)
         {
-            Debug.Log("ESCAPE PRESIONADO");
-
-            if (!juegoPausado)
-                PausarJuego();
-            else
-                ReanudarJuego();
+            if (!juegoPausado) PauseGame();
+            else RestartGame();
         }
     }
 
-    public void PausarJuego()
+    public void PauseGame()
     {
-        Debug.Log("Juego pausado");
-
+        PlayButtonAudio();
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true; // Ocultar el cursor
 
         Time.timeScale = 0f;
-        canvasPausa.SetActive(true);
+        pauseMenuPanel.SetActive(true);
+        settingsPanel.SetActive(false);
         juegoPausado = true;
     }
 
-    public void ReanudarJuego()
+    public void RestartGame()
     {
-        Debug.Log("Juego reanudado");
-
+        PlayButtonAudio();
         Cursor.lockState = CursorLockMode.Locked; // Desbloquear el cursor
         Cursor.visible = false; // Mostrar el cursor
 
         Time.timeScale = 1f; 
-        canvasPausa.SetActive(false);
+        pauseMenuPanel.SetActive(false);
+        settingsPanel.SetActive(false);
         juegoPausado = false;
     }
 
-    public void SalirAlMenu()
+    public void ShowSettings()
     {
+        PlayButtonAudio();
+        pauseMenuPanel.SetActive(false);
+        settingsPanel.SetActive(true);
+    }
+
+    public void GoToMainMenu()
+    {
+        PlayButtonAudio();
         Time.timeScale = 1f; 
         SceneManager.LoadScene(nombreEscenaMenuPrincipal);
     }
 
-    public void SalirJuego()
+    public void QuitGame()
     {
+        Log("Saliendo del juego...");
+
+        PlayButtonAudio();
         Application.Quit();
-        Debug.Log("Saliendo del juego...");
     }
 
     public void SetIsDead(bool isDead)
     {
         this.isDead = isDead; // Actualizar el estado de muerte
     }
+
+    private void PlayButtonAudio()
+    {
+        if (SFXSource != null && buttonClip != null)
+        {
+            SFXSource.PlayOneShot(buttonClip);
+        }
+    }
+
+#if UNITY_EDITOR
+    private void Log(string message) => Debug.Log(message);
+#endif
 }

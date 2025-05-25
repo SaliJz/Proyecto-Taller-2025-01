@@ -17,7 +17,7 @@ public class PlayerCamera : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        sensitivity = SettingsService.Sensitivity;
+        sensitivity = SettingsService.Sensitivity * 100;
 
     }
 
