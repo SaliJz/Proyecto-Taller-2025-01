@@ -1176,10 +1176,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemigoExplosion (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4394272956414374065, guid: f3ca6ab5d5dde4c448a6f18caf6d353c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5165150872088642790, guid: f3ca6ab5d5dde4c448a6f18caf6d353c,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2419,13 +2424,14 @@ GameObject:
   - component: {fileID: 561226452}
   - component: {fileID: 561226453}
   - component: {fileID: 561226454}
+  - component: {fileID: 561226455}
   m_Layer: 0
   m_Name: SERPIENTE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &561226449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2476,7 +2482,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 561226448}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6d69fde7da1e7c44ba462e26d16c064, type: 3}
   m_Name: 
@@ -2544,6 +2550,25 @@ MonoBehaviour:
   fragments: 200
   cobraPose: {fileID: 0}
   columnWrap: {fileID: 0}
+--- !u!114 &561226455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561226448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d3faaa392b449646b9077c16ebd3328, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  poseAlInicio: 0
+  alturaMaxima: 9
+  anguloCurvo: 180
+  numSegmentosCuello: 10
+  velocidadSuavizado: 10
+  duracionColetazo: 2
+  distanciaColetazo: 3
 --- !u!1 &571849479
 GameObject:
   m_ObjectHideFlags: 0
@@ -2718,12 +2743,17 @@ PrefabInstance:
     - target: {fileID: 3482949209254475376, guid: 60a69db7658caea4097d98b236849d7b,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5120538479886475079, guid: 60a69db7658caea4097d98b236849d7b,
         type: 3}
       propertyPath: m_Name
       value: EnemigoMelee (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5120538479886475079, guid: 60a69db7658caea4097d98b236849d7b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3964,7 +3994,7 @@ PrefabInstance:
     - target: {fileID: 803501590308224596, guid: 1c4aa42d1bcc19c4aad679c27195ae2f,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1442836555084614997, guid: 1c4aa42d1bcc19c4aad679c27195ae2f,
         type: 3}
@@ -4020,6 +4050,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: EnemigoVoladorDona (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1603735669551673134, guid: 1c4aa42d1bcc19c4aad679c27195ae2f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6899,10 +6934,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemigoDisparo
       objectReference: {fileID: 0}
+    - target: {fileID: 3775705321392681890, guid: 949378dbd6b7b9f46bdb905d67e7579e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7262613785013474579, guid: 949378dbd6b7b9f46bdb905d67e7579e,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
