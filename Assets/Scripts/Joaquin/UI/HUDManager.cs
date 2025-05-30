@@ -43,14 +43,14 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private Vector2 floatingEndPos = new Vector2(-10, 0f);      // editable desde el inspector
 
     [Header("Mission UI")]
-    [SerializeField] private bool animateMission = false;
     [SerializeField] private RectTransform missionTextObject;
+    [SerializeField] private bool animateMission = false;
     [SerializeField] private float missionDisplayTime = 2f;
     [SerializeField] private Vector2 missionStartPos = new Vector2(480f, 0f); // editable desde el inspector
     [SerializeField] private Vector2 missionEndPos = new Vector2(-10f, 0f); // editable desde el inspector
-
-    [Header("JSS Timer")]
     [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private Slider missionProgressSlider;
+    [SerializeField] private TextMeshProUGUI missionProgressText;
 
     [Header("Events")]
     [SerializeField] private Image eventIcon;
@@ -175,15 +175,40 @@ public class HUDManager : MonoBehaviour
         }
     }
 
+    public void UpdateMissionProgress(float progress, float totalProgress, bool isEnemy = false)
+    {
+        missionProgressSlider?.gameObject.SetActive(true);
+        float normalizedProgress = Mathf.Clamp01(progress / totalProgress) * 100;
+
+        if (missionProgressSlider != null)
+        {
+            missionProgressSlider.value = normalizedProgress;
+        }
+
+        if (missionProgressText != null)
+        {
+            missionProgressText.text = $"{normalizedProgress:F0}%";
+        }
+
+        if (isEnemy)
+        {
+            missionProgressSlider.fillRect.GetComponent<Image>().color = Color.red; // Cambiar color a rojo si es enemigo
+        }
+        else
+        {
+            missionProgressSlider.fillRect.GetComponent<Image>().color = Color.green; // Cambiar color a verde si no es enemigo
+        }
+    }
+
     public void HideMission()
     {
         missionTextObject.gameObject?.SetActive(false);
         timerText.gameObject?.SetActive(false); 
     }
 
-    public void ShowMission(string message, bool isJSS = false)
+    public void ShowMission(string message, bool isTimer = false)
     {
-        timerText.gameObject?.SetActive(isJSS);
+        timerText.gameObject?.SetActive(isTimer);
 
         Log($"Mostrar misión: {message}");
 
@@ -274,8 +299,7 @@ public class HUDManager : MonoBehaviour
 
     public void HideIcon()
     {
-        if (eventIcon != null)
-            eventIcon.gameObject.SetActive(false);
+        if (eventIcon != null) eventIcon.gameObject.SetActive(false);
     }
 
 #if UNITY_EDITOR

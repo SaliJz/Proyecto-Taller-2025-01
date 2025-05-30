@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 
 public class MissionManager : MonoBehaviour
 {
-    private enum MissionMode { Purgador, JSS }
+    private enum MissionMode { Purgador, JSS, ElUnico }
 
     [Header("Misión base")]
     [SerializeField] private List<Mission> baseMissions; // ScriptableObjects
@@ -18,17 +18,29 @@ public class MissionManager : MonoBehaviour
     [SerializeField] private string nextSceneName = "VictoryScene";
 
     [Header("Configuración de misión")]
-    [SerializeField] private bool canChangeScene = true; // Para evitar que cambie de escena al completar la misión
-    [SerializeField] private float missionStartDelay = 10f; // Retraso antes de iniciar la misión
-    [SerializeField] private int jssMaxEnemiesInTotal = -1; // Sin límite de enemigos en escena
-    [SerializeField] private float jssMissionInterval = 1f; // Intervalo de misión JSS
+    [SerializeField] private bool canChangeScene = true;
+
+    [SerializeField] private float missionStartDelay = 10f;
+    [SerializeField] private int maxEnemiesInTotal = -1;
+    [SerializeField] private float spawnInterval = 1f;
+
+    [SerializeField] private GameObject[] safeZones;
+    [SerializeField] private float totalCaptureTime = 120f;
+    [SerializeField] private float currentTimeCapture = 30f;
+
+    private bool isCapturing = false;
+    private bool isEnemyInCaptureZone = false;
+    private bool activeMission = false;
 
     private int currentMissionIndex = 0;
+    private int currentSafeZoneIndex = 0;
+
     private MissionMode currentMode;
     private EnemySpawner spawner;
     private Coroutine delayRoutine;
 
     public static MissionManager Instance { get; private set; }
+    public bool ActiveMission => activeMission;
 
     private void Awake()
     {
@@ -41,7 +53,7 @@ public class MissionManager : MonoBehaviour
             spawner = FindObjectOfType<EnemySpawner>();
         }
 
-        SceneManager.sceneLoaded += OnSceneLoaded; // Suscribirse al evento
+        SceneManager.sceneLoaded += OnSceneLoaded; // Suscribe al evento
 
     }
 
@@ -51,9 +63,48 @@ public class MissionManager : MonoBehaviour
         BeginMission();
     }
 
+    private void Update()
+    {
+        if (!activeMission) return;
+
+        if (isCapturing)
+        {
+            if (isEnemyInCaptureZone)
+            {
+                return; // No se puede capturar si hay enemigos en la zona
+            }
+            else
+            {
+                currentTimeCapture += Time.deltaTime;
+
+                HUDManager.Instance?.UpdateMissionProgress(currentTimeCapture, totalCaptureTime, true);
+                HUDManager.Instance?.UpdateTimer(currentTimeCapture);
+
+                if (currentTimeCapture >= totalCaptureTime)
+                {
+                    currentTimeCapture = totalCaptureTime;
+                    CompleteMission();
+                }
+            }
+        }
+        else
+        {
+            currentTimeCapture -= Time.deltaTime;
+
+            HUDManager.Instance?.UpdateMissionProgress(currentTimeCapture, totalCaptureTime, true);
+            HUDManager.Instance?.UpdateTimer(currentTimeCapture);
+
+            if (currentTimeCapture < 0f)
+            {
+                currentTimeCapture = 0f;
+                FailedMission(); 
+            }
+        }
+    }
+
     private void OnDestroy()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded; // Desuscribirse del evento
+        SceneManager.sceneLoaded -= OnSceneLoaded; // Desuscribe del evento
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -156,19 +207,36 @@ public class MissionManager : MonoBehaviour
 
         string progress = string.Join(" | ", currentMission.killConditions.Select(k =>
             $"{k.currentAmount}/{k.requiredAmount}"));
-        string message = $"{currentMission.missionName}\n{progress}";
+            string message = $"{currentMission.missionName}\n{progress}";
 
         if (currentMode == MissionMode.JSS)
         {
-            spawner.ResetSpawner(); // reiniciar spawner
-            spawner.JssSpawnCondition(jssMaxEnemiesInTotal, jssMissionInterval);
+            spawner.ResetSpawner();
+
             int simult = currentMission.killConditions[0].requiredAmount;
+            maxEnemiesInTotal = -1;
+            spawnInterval= 2.5f;
+            spawner.SpawnCondition(maxEnemiesInTotal, spawnInterval);
             spawner.SpawnWave(simult);
-            StartCoroutine(JSSCoroutine(currentMission.duration));
+
+            StartCoroutine(TimerCoroutine(currentMission.duration));
+
             HUDManager.Instance?.ShowMission(message, true); // Mostrar misión JSS
+        }
+        else if (currentMode == MissionMode.ElUnico)
+        {
+            spawner.ResetSpawner(); 
+
+            SelectSafeZone();
+            currentTimeCapture = 30f;
+            totalCaptureTime = currentMission.duration;
+            maxEnemiesInTotal = -1;
+            spawnInterval = 2.5f;
+            spawner.SpawnCondition(maxEnemiesInTotal, spawnInterval);
         }
         else
         {
+            spawner.ResetSpawner();
             HUDManager.Instance?.ShowMission(message); // Mostrar misión Purgador
         }
     }
@@ -183,27 +251,91 @@ public class MissionManager : MonoBehaviour
         Match match = Regex.Match(sceneName, @"(\d+)$");
         if (match.Success && int.TryParse(match.Groups[1].Value, out lvl))
         {
-            if (lvl <= 2) return MissionMode.Purgador;
+            if (lvl == 1) return MissionMode.Purgador;
+            else if (lvl == 2) return MissionMode.ElUnico;
             else if (lvl == 3) return MissionMode.JSS;
             else Log($"Nivel {lvl} detectado. Selección aleatoria.");
         }
         else
         {
-            // nombre no coincide con NivelX: elegimos al azar
+            // Cuando nombre no coincide con NivelX se elige al azar
             Log($"Nombre de escena '{sceneName}' no tiene nivel. Modo al azar.");
         }
 
         // Si no se detecta número, o es 4 o más, selecciona aleatoriamente
-        MissionMode randomMode = UnityEngine.Random.value < 0.5f
-            ? MissionMode.Purgador
-            : MissionMode.JSS;
+        MissionMode randomMode = (MissionMode)UnityEngine.Random.Range(0, 3);
 
         Log($"Modo aleatorio seleccionado: {randomMode}");
 
         return randomMode;
     }
 
-    private IEnumerator JSSCoroutine(float duration)
+    public void SetActiveCapture(bool isActive)
+    {
+        isCapturing = isActive;
+        if (isCapturing)
+        {
+            HUDManager.Instance?.ShowMission("Capturando zona segura...", true);
+        }
+        else
+        {
+            HUDManager.Instance?.ShowMission("Regresa a la zona de captura", true);
+        }
+    }
+
+    public void SetEnemyOnCaptureZone(bool isEnemy)
+    {
+        isEnemyInCaptureZone = isEnemy;
+        if (isEnemy)
+        {
+            HUDManager.Instance?.ShowMission("¡Enemigos en la zona de captura!", true);
+        }
+        else
+        {
+            HUDManager.Instance?.ShowMission("Zona segura despejada. Continúa capturando.", true);
+        }
+    }
+
+    private void SelectSafeZone()
+    {
+        if (safeZones == null || safeZones.Length == 0) return;
+
+        // Desactiva todas las zonas primero
+        foreach (var zone in safeZones)
+        {
+            if (zone != null) zone.SetActive(false);
+        }
+
+        int previousIndex = currentSafeZoneIndex;
+        do
+        {
+            currentSafeZoneIndex = UnityEngine.Random.Range(0, safeZones.Length);
+        }
+
+        while (safeZones.Length > 1 && currentSafeZoneIndex == previousIndex);
+
+        GameObject selectedZone = safeZones[currentSafeZoneIndex];
+
+        if (selectedZone != null)
+        {
+            Log($"Zona segura seleccionada: {selectedZone.name}");
+            selectedZone.SetActive(true);
+            CaptureZone captureZone = selectedZone.GetComponent<CaptureZone>();
+            if (captureZone != null)
+            {
+                captureZone.Activate();
+            }
+            HUDManager.Instance?.ShowMission($"Dirígete a la zona segura: {selectedZone.name}", true);
+        }
+        else
+        {
+            Log("Zona segura no encontrada.");
+        }
+
+        activeMission = true;
+    }
+
+    private IEnumerator TimerCoroutine(float duration)
     {
         float remaining = duration;
         while (remaining > 0f)
@@ -219,14 +351,17 @@ public class MissionManager : MonoBehaviour
         }
         else
         {
-            OnJSSFailed();
+            FailedMission();
             Log("¡Tiempo agotado! Misión JSS fallida.");
         }
     }
 
-    private void OnJSSFailed()
+    private void FailedMission()
     {
-        Log("¡Tiempo agotado! Misión JSS fallida.");
+        Log("Misión fallida.");
+
+        activeMission = false;
+
         PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
         if (playerHealth != null)
         {
@@ -241,8 +376,12 @@ public class MissionManager : MonoBehaviour
     private void CompleteMission()
     {
         Log($"¡Misión completada!: {baseMissions[currentMissionIndex].missionName}");
+
+        activeMission = false;
+
         abilitySelectorUI.SetActive(true);
         currentMissionIndex++;
+
         if (currentMissionIndex < baseMissions.Count)
         {
             BeginMission();
@@ -261,6 +400,20 @@ public class MissionManager : MonoBehaviour
                 Log("No se puede cambiar de escena.");
                 return; // No cambiar de escena
             }
+        }
+
+        if (currentMode == MissionMode.ElUnico)
+        {
+            GameObject selectedZone = safeZones[currentSafeZoneIndex];
+            CaptureZone captureZone = selectedZone.GetComponent<CaptureZone>();
+
+            if (captureZone != null)
+            {
+                captureZone.Deactivate();
+            }
+
+            isCapturing = false;
+            isEnemyInCaptureZone = false;
         }
     }
 

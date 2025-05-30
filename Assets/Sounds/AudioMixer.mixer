@@ -1,5 +1,24 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!243 &-4730635164126528015
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Voice
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: 524fb29df7642cf47942384bf3ed6310
+  m_Children: []
+  m_Volume: 94635d684b72316468a27cc6e09e74f0
+  m_Pitch: 97e365c0fb9d151419e72ade04c0dc52
+  m_Send: 00000000000000000000000000000000
+  m_Effects:
+  - {fileID: 6878140724799971735}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
 --- !u!241 &24100000
 AudioMixerController:
   m_ObjectHideFlags: 0
@@ -20,10 +39,13 @@ AudioMixerController:
     name: VolMaster
   - guid: 6c1fa543826980340b2735f2e2ca4449
     name: VolSFX
+  - guid: 94635d684b72316468a27cc6e09e74f0
+    name: VolVoice
   m_AudioMixerGroupViews:
   - guids:
     - fc330c520747da246907ce53774ed4e2
     - 0551d28270bf08b49a5ace6686781381
+    - 524fb29df7642cf47942384bf3ed6310
     name: View
   m_CurrentViewIndex: 0
   m_TargetSnapshot: {fileID: 24500006}
@@ -38,6 +60,7 @@ AudioMixerGroupController:
   m_GroupID: fc330c520747da246907ce53774ed4e2
   m_Children:
   - {fileID: 2078340726197777755}
+  - {fileID: -4730635164126528015}
   m_Volume: 82164844c3d46154489bf851e2f7b4cb
   m_Pitch: 974d89923c540074fb91ada9b40f259d
   m_Send: 00000000000000000000000000000000
@@ -105,3 +128,17 @@ AudioMixerGroupController:
   m_Mute: 0
   m_Solo: 0
   m_BypassEffects: 0
+--- !u!244 &6878140724799971735
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 49544f078ffd244489121db78cd85d1f
+  m_EffectName: Attenuation
+  m_MixLevel: 0bcce093af50fcc44b1ee422548cb06c
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0

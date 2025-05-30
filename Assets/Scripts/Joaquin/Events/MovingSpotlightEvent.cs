@@ -9,46 +9,16 @@ public class MovingSpotlightEvent : MonoBehaviour
     private Dictionary<PlayerHealth, Coroutine> damageCoroutines = new Dictionary<PlayerHealth, Coroutine>();
 
     [Header("Movimiento")]
-    [SerializeField] private Transform[] waypoints;
-    [SerializeField] private float spotlightSpeed = 2f; // Se multiplicará por la velocidad del jugador
+    [SerializeField] private Vector3[] waypoints;
+    [SerializeField] private float spotlightSpeed = 2f;
     [SerializeField] private float changePatternInterval = 5f;
 
     [Header("Daño")]
     [SerializeField] private float damagePerSecond = 1f;
     [SerializeField] private LayerMask playerLayer;
 
-    [Header("Luz y Proyección")]
-    [SerializeField] private float spotlightRadius = 3f;
-
-    [Header("Referencias")]
-    [SerializeField] private Sprite eventIcon; // Icono que se mostrará en el HUD
-
-    private Light spotLight;
-    private SphereCollider damageArea;
     private int currentWaypoint = 0;
     private float patternTimer;
-
-    private void Awake()
-    {
-        if (spotLight == null)
-            spotLight = GetComponent<Light>();
-
-        if (damageArea == null)
-            damageArea = GetComponent<SphereCollider>();
-
-        spotLight.type = LightType.Spot;
-        spotLight.spotAngle = 90f;
-        spotLight.range = 20f;
-
-        damageArea.isTrigger = true;
-        damageArea.radius = spotlightRadius;
-    }
-
-    private void Start()
-    {
-        if (HUDManager.Instance != null && eventIcon != null)
-            HUDManager.Instance.UpdateIcon(eventIcon);
-    }
 
     private void Update()
     {
@@ -68,10 +38,10 @@ public class MovingSpotlightEvent : MonoBehaviour
     {
         if (waypoints.Length == 0) return;
 
-        Transform target = waypoints[currentWaypoint];
-        transform.position = Vector3.MoveTowards(transform.position, target.position, spotlightSpeed * Time.deltaTime);
+        Vector3 target = waypoints[currentWaypoint];
+        transform.position = Vector3.MoveTowards(transform.position, target, spotlightSpeed * Time.deltaTime);
 
-        if (Vector3.Distance(transform.position, target.position) < 0.2f)
+        if (Vector3.Distance(transform.position, target) < 0.2f)
             currentWaypoint = (currentWaypoint + 1) % waypoints.Length;
     }
 
@@ -110,6 +80,23 @@ public class MovingSpotlightEvent : MonoBehaviour
         {
             player.TakeDamage((int)damagePerSecond);
             yield return new WaitForSeconds(1f);
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        if (waypoints != null && waypoints.Length > 0)
+        {
+            for (int i = 0; i < waypoints.Length; i++)
+            {
+                Gizmos.DrawSphere(waypoints[i], 0.3f);
+                if (i < waypoints.Length - 1)
+                    Gizmos.DrawLine(waypoints[i], waypoints[i + 1]);
+            }
+            
+            if (waypoints.Length > 1)
+                Gizmos.DrawLine(waypoints[waypoints.Length - 1], waypoints[0]);
         }
     }
 }

@@ -29,7 +29,7 @@ public class EnemySpawner : MonoBehaviour
         StartCoroutine(SpawnRoutine());
     }
 
-    public void JssSpawnCondition(int maxEnemiesInTotal, float spawnInterval)
+    public void SpawnCondition(int maxEnemiesInTotal, float spawnInterval)
     {
         this.maxEnemiesInTotal = maxEnemiesInTotal;
         this.spawnInterval = spawnInterval;
