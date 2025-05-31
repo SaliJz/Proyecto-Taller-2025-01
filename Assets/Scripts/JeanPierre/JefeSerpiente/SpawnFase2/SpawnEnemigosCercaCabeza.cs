@@ -1,14 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Genera enemigos aleatorios alrededor de un Transform "cabeza",
-/// cada cierto intervalo y en cantidad definida, usando un arreglo de prefabs.
+/// Genera enemigos aleatorios alrededor del segmento cabeza de la serpiente,
+/// usando directamente la cabeza de SnakeController.
 /// </summary>
 public class SpawnEnemigosCercaCabeza : MonoBehaviour
 {
-    [Header("Referencia al segmento cabeza de la serpiente")]
-    [Tooltip("Asigna aquí el Transform del segmento cabeza de tu serpiente (por ejemplo, el GameObject que usa el prefabCabeza).")]
-    public Transform cabeza;
+    [Header("Referencia al SnakeController")]
+    [Tooltip("Asigna aquí el componente SnakeController de tu serpiente")]
+    public SnakeController snakeController;
 
     [Header("Configuración de spawn")]
     [Tooltip("Array de prefabs de enemigos posibles a instanciar.")]
@@ -23,26 +23,32 @@ public class SpawnEnemigosCercaCabeza : MonoBehaviour
     [Tooltip("Radio (en unidades de mundo) alrededor de la cabeza donde pueden generarse los enemigos.")]
     public float radioSpawn = 3f;
 
-    // Contador interno para controlar cuándo tocará spawnear la siguiente ola
     private float tiempoHastaProximoSpawn;
 
     void Start()
     {
-        // Inicializamos el contador para que en X segundos (intervaloSpawn) se genere la primera ola.
+        if (snakeController == null)
+        {
+            Debug.LogError("SpawnEnemigosCercaCabeza: No se ha asignado SnakeController.");
+            enabled = false;
+            return;
+        }
+
+        // Inicializar contador para el primer spawn
         tiempoHastaProximoSpawn = intervaloSpawn;
     }
 
     void Update()
     {
-        // Si no hay referencia al Transform de la cabeza, salimos para no lanzar errores.
-        if (cabeza == null)
+        // Asegurarse de que SnakeController ya tenga la cabeza instanciada
+        if (snakeController.Segmentos == null || snakeController.Segmentos.Count == 0)
             return;
 
-        // Reducimos el contador según el tiempo transcurrido
+        // Reducir el contador según el tiempo transcurrido
         tiempoHastaProximoSpawn -= Time.deltaTime;
         if (tiempoHastaProximoSpawn <= 0f)
         {
-            // Cuando llega a 0 (o menos), generamos la ola de enemigos y reiniciamos el contador
+            // Generar enemigos alrededor de la cabeza
             SpawnEnemigos();
             tiempoHastaProximoSpawn = intervaloSpawn;
         }
@@ -50,7 +56,11 @@ public class SpawnEnemigosCercaCabeza : MonoBehaviour
 
     private void SpawnEnemigos()
     {
-        // Por cada enemigo que queramos en la ola...
+        // Obtener la cabeza directamente de SnakeController
+        Transform cabeza = snakeController.Segmentos[0];
+        if (cabeza == null)
+            return;
+
         for (int i = 0; i < enemigosPorOla; i++)
         {
             if (prefabsEnemigos == null || prefabsEnemigos.Length == 0)
@@ -59,12 +69,12 @@ public class SpawnEnemigosCercaCabeza : MonoBehaviour
                 return;
             }
 
-            // Elegimos aleatoriamente uno de los prefabs disponibles
+            // Elegir aleatoriamente uno de los prefabs disponibles
             int indicePrefab = Random.Range(0, prefabsEnemigos.Length);
             GameObject prefabElegido = prefabsEnemigos[indicePrefab];
 
-            // Calculamos una posición aleatoria en un círculo de radio "radioSpawn" sobre el plano XZ,
-            // manteniendo la misma Y de la cabeza.
+            // Calcular posición aleatoria en un círculo de radio "radioSpawn" sobre el plano XZ,
+            // manteniendo la Y de la cabeza
             Vector2 puntoAleatorio2D = Random.insideUnitCircle * radioSpawn;
             Vector3 posicionSpawn = new Vector3(
                 cabeza.position.x + puntoAleatorio2D.x,
@@ -72,7 +82,7 @@ public class SpawnEnemigosCercaCabeza : MonoBehaviour
                 cabeza.position.z + puntoAleatorio2D.y
             );
 
-            // Instanciamos el enemigo en la posición calculada, sin rotación especial (Quaternion.identity)
+            // Instanciar el enemigo en la posición calculada
             Instantiate(prefabElegido, posicionSpawn, Quaternion.identity);
         }
     }

@@ -2791,6 +2791,7 @@ MonoBehaviour:
   - {fileID: 561226459}
   - {fileID: 561226456}
   - {fileID: 561226457}
+  - {fileID: 561226463}
   initialAttackDelay: 5
   attackInterval: 3.5
 --- !u!114 &561226460
@@ -2851,6 +2852,7 @@ MonoBehaviour:
   - {fileID: 561226459}
   - {fileID: 561226457}
   - {fileID: 561226456}
+  - {fileID: 561226463}
 --- !u!114 &561226463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2858,16 +2860,20 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 561226448}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eb80aa1819799894194db95b1bcf08ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cabeza: {fileID: 0}
-  prefabsEnemigos: []
-  enemigosPorOla: 3
-  intervaloSpawn: 5
-  radioSpawn: 3
+  snakeController: {fileID: 561226449}
+  prefabsEnemigos:
+  - {fileID: 3775705321392681890, guid: 949378dbd6b7b9f46bdb905d67e7579e, type: 3}
+  - {fileID: 4394272956414374065, guid: f3ca6ab5d5dde4c448a6f18caf6d353c, type: 3}
+  - {fileID: 5120538479886475079, guid: 60a69db7658caea4097d98b236849d7b, type: 3}
+  - {fileID: 1603735669551673134, guid: 1c4aa42d1bcc19c4aad679c27195ae2f, type: 3}
+  enemigosPorOla: 2
+  intervaloSpawn: 23
+  radioSpawn: 5
 --- !u!1 &571849479
 GameObject:
   m_ObjectHideFlags: 0
