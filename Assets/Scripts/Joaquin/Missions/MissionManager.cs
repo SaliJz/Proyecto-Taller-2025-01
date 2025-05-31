@@ -14,7 +14,9 @@ public class MissionManager : MonoBehaviour
 
     [Header("Misión base")]
     [SerializeField] private List<Mission> baseMissions; // ScriptableObjects
-    [SerializeField] private GameObject abilitySelectorUI;
+
+    [SerializeField] private GameObject[] teleporters;
+
     [SerializeField] private string nextSceneName = "VictoryScene";
 
     [Header("Configuración de misión")]
@@ -38,7 +40,7 @@ public class MissionManager : MonoBehaviour
     private MissionMode currentMode;
     private EnemySpawner spawner;
     private Coroutine delayRoutine;
-
+    private int randomTeleporterIndex = 0;
     public static MissionManager Instance { get; private set; }
     public bool ActiveMission => activeMission;
 
@@ -335,6 +337,29 @@ public class MissionManager : MonoBehaviour
         activeMission = true;
     }
 
+    private void SelectTeleporter()
+            {
+        if (teleporters == null || teleporters.Length == 0) return;
+        // Desactiva todos los teleportadores primero
+        foreach (var teleporter in teleporters)
+        {
+            if (teleporter != null) teleporter.SetActive(false);
+        }
+        int randomIndex = UnityEngine.Random.Range(0, teleporters.Length);
+        randomTeleporterIndex = randomIndex; // Guardar el índice seleccionado
+        GameObject selectedTeleporter = teleporters[randomIndex];
+        if (selectedTeleporter != null)
+        {
+            Log($"Teletransportador seleccionado: {selectedTeleporter.name}");
+            selectedTeleporter.SetActive(true);
+            HUDManager.Instance?.ShowMission($"Dirígete al teletransportador: {selectedTeleporter.name}", true);
+        }
+        else
+        {
+            Log("Teletransportador no encontrado.");
+        }
+    }
+
     private IEnumerator TimerCoroutine(float duration)
     {
         float remaining = duration;
@@ -379,7 +404,7 @@ public class MissionManager : MonoBehaviour
 
         activeMission = false;
 
-        abilitySelectorUI.SetActive(true);
+        SelectTeleporter();
         currentMissionIndex++;
 
         if (currentMissionIndex < baseMissions.Count)
@@ -447,7 +472,7 @@ public class MissionManager : MonoBehaviour
         float timeout = 10f; // Tiempo máximo de espera
         float elapsedTime = 0f;
 
-        while (abilitySelectorUI.activeSelf && elapsedTime < timeout)
+        while (teleporters[randomTeleporterIndex].activeSelf && elapsedTime < timeout)
         {
             elapsedTime += Time.deltaTime;
             yield return null;

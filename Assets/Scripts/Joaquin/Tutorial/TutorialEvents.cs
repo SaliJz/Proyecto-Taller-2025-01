@@ -5,21 +5,71 @@ using UnityEngine;
 public class TutorialEvents : MonoBehaviour
 {
     [SerializeField] private GameObject gun;
-    [SerializeField] private GameObject rifle;
-    [SerializeField] private GameObject shotgun;
-    [SerializeField] private GameObject MissionManager;
-    [SerializeField] private GameObject SpawnerManager;
+    [SerializeField] private GameObject weaponIcon;
+    [SerializeField] private GameObject spawnerManager;
+    [SerializeField] private GameObject spawners;
+    [SerializeField] private GameObject abilitySelector;
+
     [SerializeField] private WeaponManager weaponManager;
+
+    [SerializeField] private MissionManager missionManager;
+
+    [SerializeField] private GameObject glitchDeathCinematic;
     [SerializeField] private GameObject[] normalEnemies;
     [SerializeField] private int normalEnemiesCount = 10;
-    [SerializeField] private GameObject[] specialEnemies;
-    [SerializeField] private int specialEnemiesCount = 5;
-    [SerializeField] private Transform spawnPos;
+
+    [SerializeField] private GameObject infoFragments;
+
+    [SerializeField] private float timeToWait = 5f;
+    [SerializeField] private bool waitForCinematic = false; // Si se debe esperar por la cinemática de muerte glitch
+
+    private void Start()
+    {
+        if (weaponManager != null) weaponManager.enabled = false;
+        if (missionManager != null) missionManager.enabled = false;
+
+        if (gun != null) gun.SetActive(false);
+        if (weaponIcon != null) weaponIcon.SetActive(false);
+
+        if (spawnerManager != null) spawnerManager.SetActive(false);
+        if (spawners != null) spawners.SetActive(false);
+
+        if (glitchDeathCinematic != null) glitchDeathCinematic.SetActive(false);
+
+        if (infoFragments != null) infoFragments.SetActive(false);
+        if (abilitySelector != null) abilitySelector.SetActive(false);
+    }
+
+    private void Update()
+    {
+        if (!waitForCinematic) return;
+
+        timeToWait -= Time.deltaTime;
+
+        if (timeToWait <= 0)
+        {
+            waitForCinematic = false;
+
+            if (glitchDeathCinematic != null && glitchDeathCinematic.activeSelf)
+            {
+                Debug.Log("[TutorialEvents] Terminó la espera, desactivando cinematic y avanzando el tutorial.");
+                glitchDeathCinematic.SetActive(false);
+
+                // Inicia el siguiente escenario (escena 5)
+                TutorialManager.Instance.StartScenarioByManual(5);
+            }
+            else
+            {
+                Debug.LogWarning("[TutorialEvents] No se encontró glitchCinematic activo.");
+            }
+        }
+    }
 
     public void ActiveGun()
     {
         if (weaponManager != null) weaponManager.enabled = false;
-        gun.SetActive(true);
+        if (gun != null) gun.SetActive(true);
+        if (weaponIcon != null) weaponIcon.SetActive(true);
     }
 
     public void ActiveRifleAndShotgun()
@@ -28,32 +78,47 @@ public class TutorialEvents : MonoBehaviour
         {
             weaponManager.enabled = true;
         }
-
-        rifle.SetActive(true);
-        shotgun.SetActive(true);
     }
 
     public void SpawnNormalEnemies()
     {
-        for (int i = 0; i < normalEnemiesCount; i++)
+        int count = Mathf.Min(normalEnemiesCount, normalEnemies.Length);
+        for (int i = 0; i < count; i++)
         {
-            Vector3 vector3 = spawnPos.position + Vector3.right * i * 2f; // Espaciado de 2 unidades entre enemigos
-            Instantiate(normalEnemies[Random.Range(0, normalEnemies.Length)], vector3, Quaternion.identity);
+            if (normalEnemies[i] != null) normalEnemies[i].SetActive(true);
         }
     }
 
-    public void SpawnSpecialEnemies()
+    public void PlayGlitchDeathCinematic()
     {
-        for (int i = 0; i < specialEnemiesCount; i++)
+        timeToWait = 5f;
+        waitForCinematic = true;
+
+        if (glitchDeathCinematic != null)
         {
-            Vector3 vector3 = spawnPos.position + Vector3.right * i * 3f; // Espaciado de 3 unidades entre enemigos especiales
-            Instantiate(specialEnemies[Random.Range(0, specialEnemies.Length)], vector3, Quaternion.identity);
+            glitchDeathCinematic.SetActive(true);
+        }
+    }
+
+    public void ActivateInfoFragments()
+    {
+        if (infoFragments != null)
+        {
+            infoFragments.SetActive(true);
         }
     }
 
     public void ActivateFirstMission()
     {
-        if (MissionManager != null) MissionManager.SetActive(true);
-        if (SpawnerManager != null) SpawnerManager.SetActive(true);
+        Debug.Log("[TutorialEvents] Activando primera misión.");
+
+        if (spawners != null) spawners.SetActive(true);
+        if (spawnerManager != null) spawnerManager.SetActive(true);
+        if (missionManager != null) missionManager.enabled = true;
+    }
+
+    public void ActivateAbilitySelector()
+    {
+        if (abilitySelector != null) abilitySelector.SetActive(true);
     }
 }

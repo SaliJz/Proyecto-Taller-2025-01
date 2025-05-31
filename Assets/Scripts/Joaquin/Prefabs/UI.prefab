@@ -643,7 +643,6 @@ RectTransform:
   - {fileID: 4884779647499088220}
   - {fileID: 4364346158405721674}
   - {fileID: 4881551479331495396}
-  - {fileID: 1026260856902616074}
   - {fileID: 6983043169639503383}
   - {fileID: 5133464408312604417}
   - {fileID: 7946805199461570092}
@@ -683,12 +682,14 @@ MonoBehaviour:
   displayDuration: 4
   floatingStartPos: {x: -480, y: -50}
   floatingEndPos: {x: 0, y: -50}
-  animateMission: 0
   missionTextObject: {fileID: 9196173460398108404}
+  animateMission: 0
   missionDisplayTime: 4
   missionStartPos: {x: -480, y: 400}
   missionEndPos: {x: 0, y: 400}
   timerText: {fileID: 8144316804160387803}
+  missionProgressSlider: {fileID: 0}
+  missionProgressText: {fileID: 0}
   eventIcon: {fileID: 6674958631448509107}
 --- !u!1 &1929980185201838237
 GameObject:
@@ -1024,6 +1025,7 @@ RectTransform:
   m_Children:
   - {fileID: 2584648296089609787}
   - {fileID: 8904892367672876338}
+  - {fileID: 1026260856902616074}
   m_Father: {fileID: 976072251511882999}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1677,16 +1679,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4891989320669667251}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 976072251511882999}
+  m_Father: {fileID: 6983043169639503383}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 123.5, y: 76.5}
+  m_AnchoredPosition: {x: 73.5, y: 26.5}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &260620131318237159

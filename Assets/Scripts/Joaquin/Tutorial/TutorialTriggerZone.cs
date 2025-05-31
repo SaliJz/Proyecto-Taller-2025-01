@@ -5,16 +5,16 @@ using UnityEngine;
 public class TutorialTriggerZone : MonoBehaviour
 {
     public int sceneIndex;
-    private bool active = false;
+    private bool activated = false;
 
     void OnTriggerEnter(Collider other)
     {
-        if (active) return;
+        if (activated) return;
 
         if (other.CompareTag("Player"))
         {
             TutorialManager.Instance.StartScenarioByZone(sceneIndex);
-            active = true;
+            activated = true;
         }
     }
 }
