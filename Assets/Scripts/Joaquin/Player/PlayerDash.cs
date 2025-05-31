@@ -82,17 +82,11 @@ public class PlayerDash : MonoBehaviour
 
         if (Input.GetKeyDown(dashKey) && canDash && !isDashing && isMovingForward)
         {
-            Log("Iniciando dash...");
-
             Vector3 dashDirection = GetDashDirection();
             if (IsPathClear(dashDirection, dashCollisionCheckDistance))
             {
                 StartDashState(dashDirection);
                 StartCoroutine(DashFovEffect());
-            }
-            else
-            {
-                Log("Dash bloqueado por obstáculo.");
             }
         }
     }
@@ -185,7 +179,6 @@ public class PlayerDash : MonoBehaviour
 
         if (forwardSource == null)
         {
-            Log("playerCam u orientation no asignados.");
             return transform.forward;
         }
 
@@ -258,11 +251,4 @@ public class PlayerDash : MonoBehaviour
     {
         rb.velocity = -currentDashDirection * bounceSpeed;
     }
-
-#if UNITY_EDITOR
-    private void Log(string message)
-    {
-        Debug.Log("[PlayerDash]" + message);
-    }
-#endif
 }

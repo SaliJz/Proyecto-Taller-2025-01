@@ -47,15 +47,12 @@ public class SupplyBox : MonoBehaviour
     {
         if (playerInRange && Input.GetKeyDown(KeyCode.E))
         {
-            Log("Intentando recoger el objeto");
             TrySuplyBox();
         }
     }
 
     private void TrySuplyBox()
     {
-        Log("Recogiendo objeto");
-
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player == null) return;
 
@@ -77,8 +74,6 @@ public class SupplyBox : MonoBehaviour
                 weaponManager.TryAddAmmoToWeapon(Weapon.ShootingMode.Auto, actualAmount, out added);
                 break;
         }
-
-        Log($"Recogido {added} balas de tipo {supplyType}");
 
         actualAmount -= added;
         UpdateVisual();
@@ -182,11 +177,4 @@ public class SupplyBox : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, supplyRange);
         Gizmos.DrawLine(transform.position, transform.position + Vector3.up * 2f);
     }
-
-#if UNITY_EDITOR
-    private void Log(string message)
-    {
-        Debug.Log(message);
-    }
-#endif
 }

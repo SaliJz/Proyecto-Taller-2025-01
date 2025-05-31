@@ -33,7 +33,6 @@ public class MenuPausa : MonoBehaviour
 
         if (restartButton == null || mainMenuButton == null || settingsButton == null || quitButton == null)
         {
-            Log("Uno o más botones no están asignados en el inspector.");
             return;
         }
         restartButton.onClick.AddListener(RestartGame);
@@ -91,8 +90,6 @@ public class MenuPausa : MonoBehaviour
 
     public void QuitGame()
     {
-        Log("Saliendo del juego...");
-
         PlayButtonAudio();
         Application.Quit();
     }
@@ -109,8 +106,4 @@ public class MenuPausa : MonoBehaviour
             SFXSource.PlayOneShot(buttonClip);
         }
     }
-
-#if UNITY_EDITOR
-    private void Log(string message) => Debug.Log(message);
-#endif
 }

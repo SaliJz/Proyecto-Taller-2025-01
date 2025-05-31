@@ -161,7 +161,6 @@ public class AbilitySelectionUI : MonoBehaviour
             gameObject.SetActive(false);
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-            Log("No hay escena asignada para cargar después de la selección.");
             return;
         }
         else
@@ -169,11 +168,4 @@ public class AbilitySelectionUI : MonoBehaviour
             SceneManager.LoadScene(sceneName);
         }
     }
-
-#if UNITY_EDITOR
-    private void Log(string message)
-    {
-        Debug.Log(message);
-    }
-#endif
 }

@@ -22,10 +22,13 @@ public class EnemySpawner : MonoBehaviour
     {
         if (enemyPrefabs.Length == 0 || spawnPoints.Length == 0)
         {
-            Log("¡Faltan prefabs de enemigos o puntos de spawn!");
+            Debug.Log("¡Faltan prefabs de enemigos o puntos de spawn!");
             return;
         }
+    }
 
+    private void OnEnable()
+    {
         StartCoroutine(SpawnRoutine());
     }
 
@@ -64,13 +67,13 @@ public class EnemySpawner : MonoBehaviour
     {
         if (activeEnemies.Count >= maxEnemiesInScene)
         {
-            Log("Límite de enemigos alcanzado. Esperando espacio libre...");
+            Debug.Log("Límite de enemigos alcanzado. Esperando espacio libre...");
             return true; // Detener el spawn temporalmente
         }
 
         if (maxEnemiesInTotal >= 0 && totalEnemiesSpawned >= maxEnemiesInTotal)
         {
-            Log("Límite global de enemigos alcanzado.");
+            Debug.Log("Límite global de enemigos alcanzado.");
             return true; // Detener el spawn
         }
 
@@ -88,7 +91,7 @@ public class EnemySpawner : MonoBehaviour
 
         if (availableSpawnSlots <= 0)
         {
-            Log("No hay espacio para más enemigos.");
+            Debug.Log("No hay espacio para más enemigos.");
             return; // No hay espacio para más enemigos
         }
 
@@ -98,7 +101,7 @@ public class EnemySpawner : MonoBehaviour
             if (enemy != null)
             {
                 totalEnemiesSpawned++;
-                Log($"Enemigo {totalEnemiesSpawned} instanciado.");
+                Debug.Log($"Enemigo {totalEnemiesSpawned} instanciado.");
             }
         }
     }
@@ -120,14 +123,14 @@ public class EnemySpawner : MonoBehaviour
                 {
                     totalEnemiesSpawned++;
                     spawned++;
-                    Log($"Enemigo {totalEnemiesSpawned} instanciado.");
+                    Debug.Log($"Enemigo {totalEnemiesSpawned} instanciado.");
                 }
             }
         }
 
         if (spawned < totalEnemies)
         {
-            Log($"Solo se pudieron instanciar {spawned} de {totalEnemies} enemigos solicitados.");
+            Debug.Log($"Solo se pudieron instanciar {spawned} de {totalEnemies} enemigos solicitados.");
         }
     }
 
@@ -138,7 +141,6 @@ public class EnemySpawner : MonoBehaviour
 
         if (availablePoints.Count == 0)
         {
-            Log("No hay puntos de spawn disponibles para enemigos.");
             return null; // No hay puntos disponibles
         }
 
@@ -176,11 +178,4 @@ public class EnemySpawner : MonoBehaviour
             Gizmos.DrawSphere(point.transform.position, 0.2f);
         }
     }
-
-#if UNITY_EDITOR
-    private void Log(string message)
-    {
-        Debug.Log(message);
-    }
-#endif
 }

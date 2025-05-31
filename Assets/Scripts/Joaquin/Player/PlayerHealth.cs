@@ -134,10 +134,6 @@ public class PlayerHealth : MonoBehaviour
         {
             DeathManager.Instance.RegisterDeath(deathPrefab, transform.position);
         }
-        else
-        {
-            Log("El prefab de muerte no está asignado en PlayerHealth.");
-        }
 
         if (sceneTransition != null)
         {
@@ -148,12 +144,4 @@ public class PlayerHealth : MonoBehaviour
             SceneManager.LoadScene(gameOverSceneName);
         }
     }
-
-#if UNITY_EDITOR
-    private void Log(string message)
-    {
-        Debug.Log(message);
-    }
-#endif
-
 }

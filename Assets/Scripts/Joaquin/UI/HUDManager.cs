@@ -210,11 +210,8 @@ public class HUDManager : MonoBehaviour
     {
         timerText.gameObject?.SetActive(isTimer);
 
-        Log($"Mostrar misión: {message}");
-
         if (missionTextObject == null)
         {
-            Log("missionTextObject no está asignado en el HUDManager.");
             return;
         }
 
@@ -288,8 +285,6 @@ public class HUDManager : MonoBehaviour
 
     public void UpdateIcon(Sprite newIcon)
     {
-        Log($"Actualizar icono: {newIcon.name}");
-
         if (eventIcon != null && newIcon != null)
         {
             eventIcon.sprite = newIcon;
@@ -301,11 +296,4 @@ public class HUDManager : MonoBehaviour
     {
         if (eventIcon != null) eventIcon.gameObject.SetActive(false);
     }
-
-#if UNITY_EDITOR
-    private void Log(string message)
-    {
-        Debug.Log("[HUDManager]" + message);
-    }
-#endif
 }

@@ -66,7 +66,6 @@ public class UpgradeDataStore : MonoBehaviour
         foreach (var weapon in weapons)
         {
             weapon.ApplyPassiveUpgrades();
-            Log($"Arma actualizada: {weapon.name}");
         }
     }
 
@@ -89,14 +88,6 @@ public class UpgradeDataStore : MonoBehaviour
         foreach (var weapon in weapons)
         {
             weapon.ApplyPassiveUpgrades();
-            Log($"Arma actualizada: {weapon.name}");
         }
     }
-
-#if UNITY_EDITOR
-    private void Log(string message)
-    {
-        Debug.Log("[UpdateDataStore]" + message);
-    }
-#endif
 }

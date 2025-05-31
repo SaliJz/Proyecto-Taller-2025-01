@@ -124,17 +124,14 @@ public class WeaponManager : MonoBehaviour
     public bool TryAddAmmoToWeapon(Weapon.ShootingMode mode, int amountToAdd, out int amountActuallyAdded)
     {
         amountActuallyAdded = 0;
-        Log("Intentando agregar balas al modo: " + mode);
 
         foreach (Weapon weapon in weapons)
         {
-            Log("Revisando arma con modo: " + weapon.currentShootingMode);
             if (weapon != null && weapon.currentShootingMode == mode)
             {
                 if (weapon.TryAddAmmo(amountToAdd, out int added))
                 {
                     amountActuallyAdded = added;
-                    Log("Balas agregadas: " + added);
 
                     // Solo actualiza HUD si es el arma actualmente equipada
                     if (weapon == weapons[currentIndex])
@@ -148,11 +145,4 @@ public class WeaponManager : MonoBehaviour
 
         return false; // Devuelve falso si no hay armas coincidentes o no se pudo agregar munición
     }
-
-#if UNITY_EDITOR
-    private void Log(string message)
-    {
-        Debug.Log(message);
-    }
-#endif
 }

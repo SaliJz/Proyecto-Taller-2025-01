@@ -32,7 +32,6 @@ public class DeathManager : MonoBehaviour
         }
         else
         {
-            Log($"Se destruyó una instancia duplicada de DeathManager: {gameObject.name}");
             Destroy(gameObject);
         }
     }
@@ -65,7 +64,6 @@ public class DeathManager : MonoBehaviour
             {
                 if (bodyData.body != null)
                 {
-                    Log($"Eliminando cuerpo de la escena: {bodyData.sceneName}");
                     Destroy(bodyData.body);
                 }
             }
@@ -92,7 +90,6 @@ public class DeathManager : MonoBehaviour
 
             // Instanciar el DeathBody con la rotación calculada
             GameObject instance = Instantiate(prefab, hit.point, rotation);
-            Log($"Cuerpo registrado: {instance.name} en la posición {hit.point} en la escena {currentSceneName}");
             DontDestroyOnLoad(instance);
 
             // Incrementar el contador de cuerpos
@@ -104,10 +101,6 @@ public class DeathManager : MonoBehaviour
             {
                 controller.SetText($"Cuerpo #{bodyCounter}");
             }
-            else
-            {
-                Log("No se encontró el script DeathBodyController en el prefab.");
-            }
 
             // Agregar el cuerpo a la cola
             bodies.Enqueue(new BodyData { body = instance, sceneName = currentSceneName });
@@ -118,14 +111,9 @@ public class DeathManager : MonoBehaviour
                 BodyData oldest = bodies.Dequeue();
                 if (oldest.body != null)
                 {
-                    Log($"Cuerpo eliminado: {oldest.body.name} de la escena {oldest.sceneName}");
                     Destroy(oldest.body);
                 }
             }
-        }
-        else
-        {
-            Log("No se detectó ninguna superficie debajo del punto especificado.");
         }
     }
 
@@ -141,11 +129,4 @@ public class DeathManager : MonoBehaviour
         }
         bodies.Clear();
     }
-
-#if UNITY_EDITOR
-    private void Log(string message)
-    {
-        Debug.Log(message);
-    }
-#endif
 }

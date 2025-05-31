@@ -20,8 +20,6 @@ public class LayerHoverAnimator : MonoBehaviour, IPointerEnterHandler, IPointerE
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Log("Se detecto cursor");
-
         if (!hasHighlighted)
         {
             animator.SetBool("IsHighlighted", true);
@@ -37,8 +35,6 @@ public class LayerHoverAnimator : MonoBehaviour, IPointerEnterHandler, IPointerE
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        Log("Se quito cursor");
-
         if (hasHighlighted && exitCoroutine == null)
         {
             exitCoroutine = StartCoroutine(DelayedExit());
@@ -52,8 +48,4 @@ public class LayerHoverAnimator : MonoBehaviour, IPointerEnterHandler, IPointerE
         hasHighlighted = false;
         exitCoroutine = null;
     }
-
-#if UNITY_EDITOR
-    private void Log(string message) => Debug.Log(message);
-#endif
 }

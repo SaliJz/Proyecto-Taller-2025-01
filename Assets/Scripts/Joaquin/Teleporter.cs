@@ -6,6 +6,7 @@ public class Teleporter : MonoBehaviour
 {
     [SerializeField] private string sceneToLoad;
     [SerializeField] private string playerTag = "Player";
+    [SerializeField] private GameObject loadSceneObject;
 
     private bool hasTeleported = false;
 
@@ -24,8 +25,6 @@ public class Teleporter : MonoBehaviour
                 movement.enabled = false;
             }
 
-            // 2. Buscar el objeto que contiene el método de carga
-            GameObject loadSceneObject = GameObject.Find("LoadScene");
             if (loadSceneObject != null)
             {
                 var loader = loadSceneObject.GetComponent<SceneTransition>();

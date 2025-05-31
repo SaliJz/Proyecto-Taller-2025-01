@@ -12,7 +12,7 @@ public class TutorialEvents : MonoBehaviour
 
     [SerializeField] private WeaponManager weaponManager;
 
-    [SerializeField] private MissionManager missionManager;
+    [SerializeField] private GameObject missionManager;
 
     [SerializeField] private GameObject glitchDeathCinematic;
     [SerializeField] private GameObject[] normalEnemies;
@@ -26,7 +26,7 @@ public class TutorialEvents : MonoBehaviour
     private void Start()
     {
         if (weaponManager != null) weaponManager.enabled = false;
-        if (missionManager != null) missionManager.enabled = false;
+        if (missionManager != null) missionManager.SetActive(false);
 
         if (gun != null) gun.SetActive(false);
         if (weaponIcon != null) weaponIcon.SetActive(false);
@@ -68,8 +68,8 @@ public class TutorialEvents : MonoBehaviour
     public void ActiveGun()
     {
         if (weaponManager != null) weaponManager.enabled = false;
-        if (gun != null) gun.SetActive(true);
         if (weaponIcon != null) weaponIcon.SetActive(true);
+        if (gun != null) gun.SetActive(true);
     }
 
     public void ActiveRifleAndShotgun()
@@ -114,7 +114,7 @@ public class TutorialEvents : MonoBehaviour
 
         if (spawners != null) spawners.SetActive(true);
         if (spawnerManager != null) spawnerManager.SetActive(true);
-        if (missionManager != null) missionManager.enabled = true;
+        if (missionManager != null) missionManager.SetActive(true);
     }
 
     public void ActivateAbilitySelector()

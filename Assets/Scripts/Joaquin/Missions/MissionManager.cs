@@ -59,7 +59,7 @@ public class MissionManager : MonoBehaviour
 
     }
 
-    private void Start()
+    private void OnEnable()
     {
         ResetAllMissions();
         BeginMission();
@@ -122,7 +122,6 @@ public class MissionManager : MonoBehaviour
     {
         if (currentMissionIndex >= baseMissions.Count)
         {
-            Log("No hay más misiones.");
             return;
         }
 
@@ -154,10 +153,6 @@ public class MissionManager : MonoBehaviour
                     HUDManager.Instance.ShowMission(message);
                 }
             }
-            else
-            {
-                Log("HUDManager no encontrado.");
-            }
 
             CompleteMission();
         }
@@ -174,20 +169,13 @@ public class MissionManager : MonoBehaviour
                     HUDManager.Instance.ShowMission(message);
                 }
             }
-            else
-            {
-                Log("HUDManager no encontrado.");
-            }
         }
     }
 
     // Comienza la misión actual 
     private void BeginMission()
     {
-        Log($"Comenzando misión: {baseMissions[currentMissionIndex].missionName}");
-
         currentMode = SelectModeByLevel();
-        Log($"Modo de misión: {currentMode}");
 
         if (currentMissionIndex >= baseMissions.Count) return;
 
@@ -256,18 +244,10 @@ public class MissionManager : MonoBehaviour
             if (lvl == 1) return MissionMode.Purgador;
             else if (lvl == 2) return MissionMode.ElUnico;
             else if (lvl == 3) return MissionMode.JSS;
-            else Log($"Nivel {lvl} detectado. Selección aleatoria.");
-        }
-        else
-        {
-            // Cuando nombre no coincide con NivelX se elige al azar
-            Log($"Nombre de escena '{sceneName}' no tiene nivel. Modo al azar.");
         }
 
         // Si no se detecta número, o es 4 o más, selecciona aleatoriamente
         MissionMode randomMode = (MissionMode)UnityEngine.Random.Range(0, 3);
-
-        Log($"Modo aleatorio seleccionado: {randomMode}");
 
         return randomMode;
     }
@@ -320,7 +300,6 @@ public class MissionManager : MonoBehaviour
 
         if (selectedZone != null)
         {
-            Log($"Zona segura seleccionada: {selectedZone.name}");
             selectedZone.SetActive(true);
             CaptureZone captureZone = selectedZone.GetComponent<CaptureZone>();
             if (captureZone != null)
@@ -329,16 +308,12 @@ public class MissionManager : MonoBehaviour
             }
             HUDManager.Instance?.ShowMission($"Dirígete a la zona segura: {selectedZone.name}", true);
         }
-        else
-        {
-            Log("Zona segura no encontrada.");
-        }
 
         activeMission = true;
     }
 
     private void SelectTeleporter()
-            {
+    {
         if (teleporters == null || teleporters.Length == 0) return;
         // Desactiva todos los teleportadores primero
         foreach (var teleporter in teleporters)
@@ -350,13 +325,8 @@ public class MissionManager : MonoBehaviour
         GameObject selectedTeleporter = teleporters[randomIndex];
         if (selectedTeleporter != null)
         {
-            Log($"Teletransportador seleccionado: {selectedTeleporter.name}");
             selectedTeleporter.SetActive(true);
             HUDManager.Instance?.ShowMission($"Dirígete al teletransportador: {selectedTeleporter.name}", true);
-        }
-        else
-        {
-            Log("Teletransportador no encontrado.");
         }
     }
 
@@ -377,14 +347,11 @@ public class MissionManager : MonoBehaviour
         else
         {
             FailedMission();
-            Log("¡Tiempo agotado! Misión JSS fallida.");
         }
     }
 
     private void FailedMission()
     {
-        Log("Misión fallida.");
-
         activeMission = false;
 
         PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
@@ -392,16 +359,10 @@ public class MissionManager : MonoBehaviour
         {
             playerHealth.TakeDamage(1000); // O el daño que desees
         }
-        else
-        {
-            Log("PlayerHealth no encontrado.");
-        }
     }
 
     private void CompleteMission()
     {
-        Log($"¡Misión completada!: {baseMissions[currentMissionIndex].missionName}");
-
         activeMission = false;
 
         SelectTeleporter();
@@ -422,7 +383,6 @@ public class MissionManager : MonoBehaviour
             }
             else
             {
-                Log("No se puede cambiar de escena.");
                 return; // No cambiar de escena
             }
         }
@@ -480,16 +440,9 @@ public class MissionManager : MonoBehaviour
 
         if (elapsedTime >= timeout)
         {
-            Log("Timeout alcanzado. Cambiando de escena de todos modos.");
+            Debug.LogWarning("Tiempo de espera agotado para el teletransportador. Cambiando de escena de todos modos.");
         }
         // Luego cambiar de escena
         SceneManager.LoadScene(nextSceneName);
     }
-
-#if UNITY_EDITOR
-    private void Log(string message)
-    {
-        Debug.Log("[MissionManager]" + message);
-    }
-#endif
 }

@@ -118,8 +118,6 @@ public class SettingsController : MonoBehaviour
 
     private void LoadSettings()
     {
-        Log("Cargando configuraciones...");
-
         SettingsService.Load();
         tempSettings = SettingsService.Clone();
 
@@ -144,8 +142,6 @@ public class SettingsController : MonoBehaviour
 
     private void ApplySettings()
     {
-        Log("Aplicando configuraciones...");
-
         PlayButtonAudio();
 
         SettingsService.MasterVolume = masterVolumeSlider.value;
@@ -165,8 +161,6 @@ public class SettingsController : MonoBehaviour
 
     private void ResetSettings()
     {
-        Log("Restaurando configuraciones a valores predeterminados...");
-
         PlayButtonAudio();
 
         SettingsService.ResetToDefault();
@@ -212,8 +206,4 @@ public class SettingsController : MonoBehaviour
             mainMenuPanel.SetActive(true);
         }
     }
-
-#if UNITY_EDITOR
-    private void Log(string message) => Debug.Log(message);
-#endif
 }

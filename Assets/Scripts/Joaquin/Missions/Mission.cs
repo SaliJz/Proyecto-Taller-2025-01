@@ -58,12 +58,12 @@ public class KillCondition
         if (CheckMatch(tag, name, tipo))
         {
             currentAmount++;
-            Log($"[Misión] Se registró un kill válido. Actual: " +
+            Debug.Log($"[Misión] Se registró un kill válido. Actual: " +
                 $"{currentAmount}/{requiredAmount} ({conditionType}, valor esperado: {value})");
         }
         else
         {
-            Log($"[Misión] Kill no coincide. tag: " +
+            Debug.Log($"[Misión] Kill no coincide. tag: " +
                 $"{tag}, name: {name}, tipo: {tipo} - Esperado: {conditionType} = {value}");
         }
     }
@@ -72,11 +72,4 @@ public class KillCondition
     {
         currentAmount = 0;
     }
-
-#if UNITY_EDITOR
-    private void Log(string message)
-    {
-        Debug.Log(message);
-    }
-#endif
 }
