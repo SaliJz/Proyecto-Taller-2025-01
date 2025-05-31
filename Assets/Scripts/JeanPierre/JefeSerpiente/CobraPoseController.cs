@@ -56,7 +56,7 @@ public class CobraPoseController : MonoBehaviour
 
         // Medir distancia desde la cabeza móvil, no desde el pivot
         float dist = Vector3.Distance(snake.Segmentos[0].position, player.position);
-        Debug.Log($"[Cobra] dist={dist:F2}, umbral={distanciaActivacion:F2}");
+        //Debug.Log($"[Cobra] dist={dist:F2}, umbral={distanciaActivacion:F2}");
 
         if (dist <= distanciaActivacion && !hasTriggered && !sequenceRunning)
         {

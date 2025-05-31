@@ -1,3 +1,6 @@
+
+
+
 // ColumnWrapOnInput.cs
 // Controla la serpiente, viaja hacia la columna y la enrolla al presionar 'I'
 
