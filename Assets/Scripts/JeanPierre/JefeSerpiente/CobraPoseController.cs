@@ -1,4 +1,9 @@
-﻿// CobraPoseController.cs
+﻿
+
+
+
+
+// CobraPoseController.cs
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -43,6 +48,10 @@ public class CobraPoseController : MonoBehaviour
 
     void Update()
     {
+        // Evita errores si todavía no hay segmentos instanciados
+        if (snake == null || snake.Segmentos == null || snake.Segmentos.Count == 0)
+            return;
+
         if (player == null) return;
 
         // Medir distancia desde la cabeza móvil, no desde el pivot
@@ -194,6 +203,30 @@ public class CobraPoseController : MonoBehaviour
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
