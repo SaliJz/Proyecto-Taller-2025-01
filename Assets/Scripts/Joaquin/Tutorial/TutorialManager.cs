@@ -15,15 +15,17 @@ public class TutorialManager : MonoBehaviour
     [System.Serializable]
     public class RuntimeSceneData
     {
-        public SceneTutorial sceneData;
+        public SceneTutorial sceneData; 
         public UnityEvent onSceneStart;
         [HideInInspector] public bool isActive = false;
     }
-
-    [SerializeField] private List<RuntimeSceneData> scenes;
+     
+    public List<RuntimeSceneData> scenes; //Ahora es publica
+    public int currentIndex = 0; //Para saber en que indice estamos , me sirve para la escena 2 en adelante
     [SerializeField] private TextMeshProUGUI dialoguesText;
     [SerializeField] private AudioSource voicesSource;
     [SerializeField] private float speedText = 0.04f;
+    
 
     private int[] killsByScenario;
     private int[] fragmentsByScenario;
@@ -59,7 +61,9 @@ public class TutorialManager : MonoBehaviour
             Debug.Log($"Kills para escenario {index}: {killsByScenario[index]}/{scenes[index].sceneData.necessarykills}");
             if (killsByScenario[index] >= scenes[index].sceneData.necessarykills)
             {
-                StartScenario(index);
+                StartScenario(index++);
+                Debug.Log("Conseguiste las kills necesarias");
+
             }
         }
     }
@@ -80,7 +84,7 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
-    public void StartScenarioByFragments(int index)
+    public void StartScenarioByFragments(int index) //E
     {
         if (!scenes[index].isActive && scenes[index].sceneData.activationType == ActivationType.ByFragments)
         {
@@ -88,7 +92,7 @@ public class TutorialManager : MonoBehaviour
             Debug.Log($"Fragmentos para escenario {index}: {fragmentsByScenario[index]}/{scenes[index].sceneData.necessaryFragments}");
             if (fragmentsByScenario[index] >= scenes[index].sceneData.necessaryFragments)
             {
-                StartScenario(index);
+                StartScenario(index++);
             }
         }
     }
@@ -98,16 +102,20 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitForSeconds(time);
         if (!scenes[index].isActive)
         {
-            StartScenario(index);
+            StartScenario(index++);
         }
     }
 
     private void StartScenario(int index)
     {
+        Debug.Log("El indice actual es:" + index);
         if (scenes[index].isActive) return;
         scenes[index].isActive = true;
         StopAllCoroutines();
         StartCoroutine(RunScenario(index));
+        currentIndex++;
+
+
     }
 
     private IEnumerator RunScenario(int index)
@@ -120,11 +128,19 @@ public class TutorialManager : MonoBehaviour
 
         foreach (var dialogue in runtimeScene.sceneData.dialogues)
         {
-            if (dialogue.dialogueVoice) voicesSource.PlayOneShot(dialogue.dialogueVoice);
-            yield return StartCoroutine(TypeText(dialogue.dialogueText));
+            if (dialogue.dialogueVoice != null) voicesSource.PlayOneShot(dialogue.dialogueVoice);
+            yield return StartCoroutine(TypeText(dialogue.dialogueText));    
         }
 
-        OnScenarioEnded(index);
+        int nextIndex = currentIndex;
+        /*Veriifca que la siguiente escena sea de tipo de activacion por tiempo y ejecuta su funcion al terminar
+         el dialogo actual*/
+        if (scenes[nextIndex].sceneData.activationType == ActivationType.ForTime && !scenes[currentIndex++].isActive)
+        {
+            StartScenario(nextIndex);  
+        }
+            
+        //OnScenarioEnded(index);
     }
 
     private void OnScenarioEnded(int finishedIndex)
@@ -139,6 +155,25 @@ public class TutorialManager : MonoBehaviour
                 // Inicia el temporizador solo ahora
                 StartScenarioByTime(nextIndex, nextScene.sceneData.necessaryTime);
             }
+
+            //else if (nextScene.sceneData.activationType == ActivationType.ByEventoManual && !nextScene.isActive)
+            //{
+            //     // Inicia el temporizador solo ahora
+            //     StartScenarioByManual(nextIndex);
+            //}
+
+            //else if (nextScene.sceneData.activationType == ActivationType.ByKills && !nextScene.isActive)
+            //{  
+            //    StartScenarioByKills(nextIndex);
+            //}
+
+            // else if (nextScene.sceneData.activationType == ActivationType.ByKills && !nextScene.isActive)
+            // {
+            //     // Inicia el temporizador solo ahora
+            //     StartScenarioByManual(nextIndex);
+            // }
+
+
         }
     }
 
@@ -153,4 +188,5 @@ public class TutorialManager : MonoBehaviour
             yield return new WaitForSeconds(speedText);
         }
     }
+
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class TutorialFragments : MonoBehaviour
 {
     [SerializeField] private int indexScene = 7;
-    [SerializeField] private float activationDelay = 5f; // Tiempo antes de poder activarse
+    [SerializeField] private float activationDelay = 7f; // Tiempo antes de poder activarse
 
     private bool isActive = false;
 
@@ -13,6 +13,7 @@ public class TutorialFragments : MonoBehaviour
     {
         if (TutorialManager.Instance != null)
         {
+            
             StartCoroutine(DelayedActivation());
         }
         else

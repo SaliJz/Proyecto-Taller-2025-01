@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -54,7 +55,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
     void Start()
     {
-        tipo = (TipoEnemigo)Random.Range(0, 3);
+        tipo = (TipoEnemigo)UnityEngine.Random.Range(0, 3);
 #if UNITY_EDITOR
         Debug.Log($"[VidaEnemigo] Tipo: {tipo}");
 #endif
@@ -129,17 +130,25 @@ public class VidaEnemigoGeneral : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        TutorialEnemies tutorial = GetComponent<TutorialEnemies>();
-        if (tutorial != null)
+        //TutorialEnemies tutorial = GetComponent<TutorialEnemies>();
+        //if (tutorial != null)
+        //{
+        //    foreach (int index in tutorial.IndexScenes)
+        //    {
+        //        TutorialManager.Instance.StartScenarioByKills(index);
+        //    }
+        //}
+
+        //Ahora la deteccion lo hace por el indice actual del TutorialManager
+        int index = TutorialManager.Instance.currentIndex;
+        if (TutorialManager.Instance.scenes[index].sceneData.activationType == ActivationType.ByKills)
         {
-            foreach (int index in tutorial.IndexScenes)
-            {
-                TutorialManager.Instance.StartScenarioByKills(index);
-            }
+            TutorialManager.Instance.StartScenarioByKills(index);
         }
 
-        if (prefabsAlMorir != null && prefabsAlMorir.Length > 0)
-            Instantiate(prefabsAlMorir[Random.Range(0, prefabsAlMorir.Length)], transform.position, transform.rotation);
+
+            if (prefabsAlMorir != null && prefabsAlMorir.Length > 0)
+            Instantiate(prefabsAlMorir[UnityEngine.Random.Range(0, prefabsAlMorir.Length)], transform.position, transform.rotation);
 
         HUDManager.Instance?.AddInfoFragment(fragments);
         MissionManager.Instance?.RegisterKill(gameObject.tag, name, tipo.ToString());
