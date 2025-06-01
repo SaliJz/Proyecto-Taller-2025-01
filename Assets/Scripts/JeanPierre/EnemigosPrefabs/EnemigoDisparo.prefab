@@ -319,7 +319,7 @@ MonoBehaviour:
   danioAltoPistola: 13
   danioAltoEscopeta: 17
   headshotMultiplier: 2
-  headCollider: {fileID: 0}
+  headCollider: {fileID: 1698982434487816537}
   bodyColliders:
   - {fileID: 6963322664671768031}
   hdrColorAmetralladora: {r: 0, g: 0, b: 0.8207547, a: 1}
@@ -397,7 +397,7 @@ MonoBehaviour:
   contactDamage: 10
   attackCooldown: 1
   attackRange: 20
-  baseSpeed: 5
+  baseSpeed: 3
 --- !u!114 &7723565866553249891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -415,7 +415,7 @@ MonoBehaviour:
   distanciaMaxima: 15
   margen: 0.5
   velocidadMovimiento: 1.2
-  velocidadCirculo: 6
+  velocidadCirculo: 4
   sentidoHorario: 1
 --- !u!114 &-5007632262281444201
 MonoBehaviour:
@@ -450,7 +450,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1.02, z: 1.17}
+  m_Size: {x: 1.37, y: 1.02, z: 1.17}
   m_Center: {x: 0, y: 0.78, z: 0.01}
 --- !u!65 &6963322664671768031
 BoxCollider:
@@ -471,7 +471,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.45, y: 1.21, z: 1.82}
+  m_Size: {x: 2.03, y: 1.21, z: 1.82}
   m_Center: {x: 0.0045194626, y: -0.29, z: 0}
 --- !u!114 &4903496702232755476
 MonoBehaviour:
