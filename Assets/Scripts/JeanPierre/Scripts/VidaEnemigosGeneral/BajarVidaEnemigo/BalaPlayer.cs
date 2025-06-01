@@ -51,15 +51,15 @@ public class BalaPlayer : MonoBehaviour
             return;
         }
 
-        // 5) Si en el futuro necesitas VidaEnemigoGeneral, puedes habilitar esto:
-        // VidaEnemigoGeneral enemigoGeneral = other.GetComponent<VidaEnemigoGeneral>();
-        // if (enemigoGeneral != null)
-        // {
-        //     hasHit = true;
-        //     enemigoGeneral.RecibirDanioPorBala(tipoBala, other);
-        //     Destroy(gameObject);
-        //     return;
-        // }
+        // 5) Buscar VidaEnemigoGeneral directamente en el objeto golpeado
+        VidaEnemigoGeneral enemigoGeneral = other.GetComponent<VidaEnemigoGeneral>();
+        if (enemigoGeneral != null)
+        {
+            hasHit = true;
+            enemigoGeneral.RecibirDanioPorBala(tipoBala, other);
+            Destroy(gameObject);
+            return;
+        }
     }
 
     // Busca un componente T en este transform o cualquiera de sus padres
@@ -76,7 +76,6 @@ public class BalaPlayer : MonoBehaviour
         return null;
     }
 }
-
 
 //using UnityEngine;
 
