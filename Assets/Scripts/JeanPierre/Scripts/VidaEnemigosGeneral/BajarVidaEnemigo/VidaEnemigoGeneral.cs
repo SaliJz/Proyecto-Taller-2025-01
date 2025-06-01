@@ -92,6 +92,9 @@ public class VidaEnemigoGeneral : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Aplica daño directo (e.g., por explosion o efecto) y dispara parpadeo HDR.
+    /// </summary>
     public void RecibirDanio(float d)
     {
         if (isDead) return;
@@ -110,28 +113,43 @@ public class VidaEnemigoGeneral : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Método que maneja el daño proveniente de una bala del jugador.
+    /// Si el tipo de la bala coincide con el tipo del enemigo, no hace nada.
+    /// </summary>
     public void RecibirDanioPorBala(BalaPlayer.TipoBala tb, Collider hitCollider)
     {
+        // Si el tipo de bala coincide con el tipo de enemigo, no hay daño ni parpadeo
+        if ((tb == BalaPlayer.TipoBala.Ametralladora && tipo == TipoEnemigo.Ametralladora) ||
+            (tb == BalaPlayer.TipoBala.Pistola && tipo == TipoEnemigo.Pistola) ||
+            (tb == BalaPlayer.TipoBala.Escopeta && tipo == TipoEnemigo.Escopeta))
+        {
+            return;
+        }
+
+        // Si no coincide, calculamos el daño “alto”
         float d;
         switch (tb)
         {
             case BalaPlayer.TipoBala.Ametralladora:
-                d = (tipo == TipoEnemigo.Ametralladora) ? danioBajoAmetralladora : danioAltoAmetralladora;
+                d = danioAltoAmetralladora;
                 break;
             case BalaPlayer.TipoBala.Pistola:
-                d = (tipo == TipoEnemigo.Pistola) ? danioBajoPistola : danioAltoPistola;
+                d = danioAltoPistola;
                 break;
             case BalaPlayer.TipoBala.Escopeta:
-                d = (tipo == TipoEnemigo.Escopeta) ? danioBajoEscopeta : danioAltoEscopeta;
+                d = danioAltoEscopeta;
                 break;
             default:
                 d = 0f;
                 break;
         }
 
+        // Si headshot, multiplicamos
         if (hitCollider == headCollider)
             d *= headshotMultiplier;
 
+        // Aplicamos daño normal (que a su vez dispara parpadeo HDR)
         RecibirDanio(d);
     }
 
@@ -158,6 +176,16 @@ public class VidaEnemigoGeneral : MonoBehaviour
         Destroy(gameObject);
     }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -210,9 +238,14 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //    private TipoEnemigo tipo;
 //    private bool isDead = false;
 
+//    // Referencia al controlador de parpadeo HDR
+//    private TipoColorHDRController colorController;
+
 //    void Awake()
 //    {
 //        meshRenderers = GetComponentsInChildren<MeshRenderer>();
+//        // Obtenemos componente para disparar el parpadeo cuando haya daño
+//        colorController = GetComponent<TipoColorHDRController>();
 //    }
 
 //    void Start()
@@ -231,7 +264,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //        {
 //            Material mat = mr.material;
 
-//            // Base Color
+//            // Base Color (según shader)
 //            if (mat.HasProperty("_BaseColor"))
 //                mat.SetColor("_BaseColor", finalColor);
 //            else if (mat.HasProperty("_Color"))
@@ -253,6 +286,12 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //    public void RecibirDanio(float d)
 //    {
 //        if (isDead) return;
+
+//        // Disparar parpadeo HDR
+//        if (colorController != null)
+//            colorController.RecibirDanio(d);
+
+//        // Aplicar resta de vida
 //        vida -= d;
 //        if (sliderVida != null) sliderVida.value = vida;
 //        if (vida <= 0f)
@@ -310,5 +349,30 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //        Destroy(gameObject);
 //    }
 //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
