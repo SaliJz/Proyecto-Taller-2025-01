@@ -1,9 +1,9 @@
-// TipoColorController.cs
+// TipoColorHDRController.cs
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class TipoColorController : MonoBehaviour
+public class TipoColorHDRController : MonoBehaviour
 {
     public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
 
@@ -88,38 +88,47 @@ public class TipoColorController : MonoBehaviour
     private IEnumerator Parpadeo()
     {
         isBlinking = true;
-        Color baseColor = meshRenderers.Count > 0 ? meshRenderers[0].material.color : Color.white;
+
+        // Guardamos los colores base (difuso) y HDR (emisión) de cada MeshRenderer
+        List<Color> baseColors = new List<Color>();
+        List<Color> baseHDR = new List<Color>();
+
+        foreach (var rend in meshRenderers)
+        {
+            // Color difuso
+            baseColors.Add(rend.material.color);
+
+            // Color HDR (emisión); si no existe la propiedad, guardamos negro
+            if (rend.material.HasProperty("_EmissionColor"))
+                baseHDR.Add(rend.material.GetColor("_EmissionColor"));
+            else
+                baseHDR.Add(Color.black);
+        }
+
         float half = blinkInterval * 0.5f;
 
         for (int i = 0; i < blinkCount; i++)
         {
+            // 1) Ponemos difuso = blanco y HDR = blanco
             foreach (var rend in meshRenderers)
+            {
                 rend.material.color = Color.white;
+                if (rend.material.HasProperty("_EmissionColor"))
+                    rend.material.SetColor("_EmissionColor", Color.white);
+            }
             yield return new WaitForSeconds(half);
-            foreach (var rend in meshRenderers)
-                rend.material.color = baseColor;
+
+            // 2) Restauramos difuso y HDR originales
+            for (int idx = 0; idx < meshRenderers.Count; idx++)
+            {
+                var rend = meshRenderers[idx];
+                rend.material.color = baseColors[idx];
+                if (rend.material.HasProperty("_EmissionColor"))
+                    rend.material.SetColor("_EmissionColor", baseHDR[idx]);
+            }
             yield return new WaitForSeconds(half);
         }
 
         isBlinking = false;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
