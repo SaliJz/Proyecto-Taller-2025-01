@@ -1,23 +1,20 @@
-Ôªøusing System.Linq;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class VidaEnemigoGeneral : MonoBehaviour
+public class EnemigoPistolaTutorial : MonoBehaviour
 {
-    public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
+    public enum TipoEnemigo { Pistola }
 
-    [Header("Configuraci√≥n de vida")]
+    [Header("ConfiguraciÛn de vida")]
     public float vida = 100f;
     public Slider sliderVida;
 
-    [Header("Da√±o BAJO (coincide) por tipo de bala")]
-    public float danioBajoAmetralladora = 5f;
+    [Header("DaÒo BAJO (coincide) por tipo de bala")]
     public float danioBajoPistola = 5f;
-    public float danioBajoEscopeta = 5f;
 
-    [Header("Da√±o ALTO (no coincide) por tipo de bala")]
+    [Header("DaÒo ALTO (no coincide) por tipo de bala")]
     public float danioAltoAmetralladora = 20f;
-    public float danioAltoPistola = 20f;
     public float danioAltoEscopeta = 20f;
 
     [Header("Multiplicador por headshot")]
@@ -29,13 +26,9 @@ public class VidaEnemigoGeneral : MonoBehaviour
     [Tooltip("Colliders que corresponden al cuerpo")]
     public Collider[] bodyColliders;
 
-    [Header("Colores HDR por tipo")]
-    [ColorUsage(true, true)]
-    public Color hdrColorAmetralladora = Color.blue;
+    [Header("Colores HDR")]
     [ColorUsage(true, true)]
     public Color hdrColorPistola = Color.red;
-    [ColorUsage(true, true)]
-    public Color hdrColorEscopeta = Color.green;
 
     [Header("Renderizado")]
     public MeshRenderer[] meshRenderers;
@@ -53,27 +46,25 @@ public class VidaEnemigoGeneral : MonoBehaviour
     void Awake()
     {
         meshRenderers = GetComponentsInChildren<MeshRenderer>();
-        // Obtenemos componente para disparar el parpadeo cuando haya da√±o
         colorController = GetComponent<TipoColorHDRController>();
     }
 
     void Start()
     {
-        tipo = (TipoEnemigo)Random.Range(0, 3);
+        // Forzar siempre ìPistolaî
+        tipo = TipoEnemigo.Pistola;
 #if UNITY_EDITOR
-        Debug.Log($"[VidaEnemigo] Tipo: {tipo}");
+        Debug.Log($"[EnemigoPistolaTutorial] Tipo: {tipo}");
 #endif
 
-        // Seleccionamos el color HDR directamente
-        Color finalColor = tipo == TipoEnemigo.Ametralladora ? hdrColorAmetralladora
-                        : tipo == TipoEnemigo.Pistola ? hdrColorPistola
-                        : hdrColorEscopeta;
+        // Seleccionamos el color HDR de Pistola
+        Color finalColor = hdrColorPistola;
 
         foreach (var mr in meshRenderers)
         {
             Material mat = mr.material;
 
-            // Base Color (seg√∫n shader)
+            // Base Color (seg˙n shader)
             if (mat.HasProperty("_BaseColor"))
                 mat.SetColor("_BaseColor", finalColor);
             else if (mat.HasProperty("_Color"))
@@ -93,7 +84,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
     }
 
     /// <summary>
-    /// Aplica da√±o directo (e.g., por explosion o efecto) y dispara parpadeo HDR.
+    /// Aplica daÒo directo (e.j., por explosiÛn o efecto) y dispara parpadeo HDR.
     /// </summary>
     public void RecibirDanio(float d)
     {
@@ -114,28 +105,23 @@ public class VidaEnemigoGeneral : MonoBehaviour
     }
 
     /// <summary>
-    /// M√©todo que maneja el da√±o proveniente de una bala del jugador.
-    /// Si el tipo de la bala coincide con el tipo del enemigo, no hace nada.
+    /// Maneja el daÒo proveniente de una bala del jugador.
+    /// Si la bala es de tipo Pistola, no recibe daÒo.
     /// </summary>
     public void RecibirDanioPorBala(BalaPlayer.TipoBala tb, Collider hitCollider)
     {
-        // Si el tipo de bala coincide con el tipo de enemigo, no hay da√±o ni parpadeo
-        if ((tb == BalaPlayer.TipoBala.Ametralladora && tipo == TipoEnemigo.Ametralladora) ||
-            (tb == BalaPlayer.TipoBala.Pistola && tipo == TipoEnemigo.Pistola) ||
-            (tb == BalaPlayer.TipoBala.Escopeta && tipo == TipoEnemigo.Escopeta))
+        // Si la bala es Pistola (˙nico tipo), no hay daÒo ni parpadeo
+        if (tb == BalaPlayer.TipoBala.Pistola)
         {
             return;
         }
 
-        // Si no coincide, calculamos el da√±o ‚Äúalto‚Äù
+        // Si no coincide, calculamos el daÒo ìaltoî
         float d;
         switch (tb)
         {
             case BalaPlayer.TipoBala.Ametralladora:
                 d = danioAltoAmetralladora;
-                break;
-            case BalaPlayer.TipoBala.Pistola:
-                d = danioAltoPistola;
                 break;
             case BalaPlayer.TipoBala.Escopeta:
                 d = danioAltoEscopeta;
@@ -149,7 +135,6 @@ public class VidaEnemigoGeneral : MonoBehaviour
         if (hitCollider == headCollider)
             d *= headshotMultiplier;
 
-        // Aplicamos da√±o normal (que a su vez dispara parpadeo HDR)
         RecibirDanio(d);
     }
 
@@ -176,58 +161,3 @@ public class VidaEnemigoGeneral : MonoBehaviour
         Destroy(gameObject);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
