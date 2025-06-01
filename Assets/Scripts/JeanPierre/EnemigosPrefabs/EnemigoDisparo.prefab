@@ -213,15 +213,16 @@ GameObject:
   - component: {fileID: 2342328109317131280}
   - component: {fileID: 108647613264695250}
   - component: {fileID: 1586382037334543058}
-  - component: {fileID: 6601771850978330811}
   - component: {fileID: 6378987150485078684}
   - component: {fileID: 3594408424444352700}
   - component: {fileID: 7193954085930714274}
   - component: {fileID: 7723565866553249891}
   - component: {fileID: -5007632262281444201}
+  - component: {fileID: 1698982434487816537}
   - component: {fileID: 6963322664671768031}
   - component: {fileID: 4903496702232755476}
   - component: {fileID: -7787485087883272279}
+  - component: {fileID: 5178660707149039149}
   m_Layer: 6
   m_Name: EnemigoDisparo
   m_TagString: Enemy
@@ -319,7 +320,7 @@ MonoBehaviour:
   danioAltoPistola: 13
   danioAltoEscopeta: 17
   headshotMultiplier: 2
-  headCollider: {fileID: 6601771850978330811}
+  headCollider: {fileID: 1698982434487816537}
   bodyColliders:
   - {fileID: 6963322664671768031}
   hdrColorAmetralladora: {r: 0, g: 0, b: 0.8207547, a: 1}
@@ -336,29 +337,6 @@ MonoBehaviour:
   - {fileID: 3206890931059546896, guid: 7fc3418ba54185644942d523878dbe0d, type: 3}
   - {fileID: 7583714264058374518, guid: 8b926fcb8a2af1445bb60147a2693b48, type: 3}
   fragments: 50
---- !u!136 &6601771850978330811
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3775705321392681890}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 0.39
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.67, z: 0}
 --- !u!54 &6378987150485078684
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -420,7 +398,7 @@ MonoBehaviour:
   contactDamage: 10
   attackCooldown: 1
   attackRange: 20
-  baseSpeed: 5
+  baseSpeed: 3
 --- !u!114 &7723565866553249891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,8 +415,8 @@ MonoBehaviour:
   distanciaMinima: 7
   distanciaMaxima: 15
   margen: 0.5
-  velocidadMovimiento: 3
-  velocidadCirculo: 6
+  velocidadMovimiento: 1.2
+  velocidadCirculo: 4
   sentidoHorario: 1
 --- !u!114 &-5007632262281444201
 MonoBehaviour:
@@ -454,6 +432,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   separationRadius: 3.5
   separationStrength: 4
+--- !u!65 &1698982434487816537
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3775705321392681890}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.37, y: 1.02, z: 1.17}
+  m_Center: {x: 0, y: 0.78, z: 0.01}
 --- !u!65 &6963322664671768031
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -473,8 +472,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.1355801, y: 1.3492129, z: 1}
-  m_Center: {x: 0.0045194626, y: -0.370587, z: 0}
+  m_Size: {x: 2.03, y: 1.21, z: 1.82}
+  m_Center: {x: 0.0045194626, y: -0.29, z: 0}
 --- !u!114 &4903496702232755476
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -504,10 +503,27 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1.61, y: 2, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5178660707149039149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3775705321392681890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a095fac495bae6f44aa8b55f62c19d44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  intervaloCambio: 10
+  duracionTransicionColor: 1
+  blinkCount: 4
+  blinkInterval: 0.1
+  delayInicial: 0.6
 --- !u!1 &6177287622287384025
 GameObject:
   m_ObjectHideFlags: 0

@@ -396,6 +396,7 @@ GameObject:
   - component: {fileID: 7750208852716804292}
   - component: {fileID: -2804150367015730761}
   - component: {fileID: 7170101365556741992}
+  - component: {fileID: 3574586187406627060}
   m_Layer: 6
   m_Name: EnemigoExplosion
   m_TagString: Enemy
@@ -492,7 +493,7 @@ MonoBehaviour:
   danioAltoAmetralladora: 10
   danioAltoPistola: 13
   danioAltoEscopeta: 17
-  headshotMultiplier: 100
+  headshotMultiplier: 4
   headCollider: {fileID: 1268450203785874081}
   bodyColliders:
   - {fileID: 7170101365556741992}
@@ -573,9 +574,11 @@ MonoBehaviour:
   triggerDistance: 2
   reopenDistance: 4
   enemyRenderer: {fileID: 7280533851858509494}
-  warningMaterial: {fileID: 2100000, guid: 071baf0dfed5b9b4695fa8009fa4f8c5, type: 2}
+  warningMaterial: {fileID: 2100000, guid: 3729fa611ec999e48a8528ca96f00ba5, type: 2}
   blinkInterval: 0.2
   warningDuration: 0.9
+  hdrRenderer: {fileID: 5792919439211522533}
+  warningHDRMaterial: {fileID: 2100000, guid: 7d64daee313527742b3bf148f10aa448, type: 2}
   bulletPrefab: {fileID: 7127249950028823837, guid: d24c60bb608165342afd67e0715ce466,
     type: 3}
   finalBulletScale: {x: 30, y: 30, z: 30}
@@ -661,6 +664,23 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.38, y: 2.3226388, z: 0.89}
   m_Center: {x: -0.24000001, y: 0.08131921, z: -0.25}
+--- !u!114 &3574586187406627060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4394272956414374065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a095fac495bae6f44aa8b55f62c19d44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  intervaloCambio: 10
+  duracionTransicionColor: 1
+  blinkCount: 4
+  blinkInterval: 0.1
+  delayInicial: 0.6
 --- !u!1 &6482934429859103929
 GameObject:
   m_ObjectHideFlags: 0
