@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7220047792563096247}
   - component: {fileID: 1477856477335368320}
   - component: {fileID: 3084105754383291019}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: CodeFragmentPickUpTest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -75,6 +75,7 @@ MonoBehaviour:
   flySpeed: 15
   rotationSpeed: 10
   positionOffset: -0.8
+  lifetime: 60
   playerInRange: 0
 --- !u!1 &6387777877836959050
 GameObject:
@@ -89,7 +90,7 @@ GameObject:
   - component: {fileID: 343766523490378997}
   - component: {fileID: 7909575670616786449}
   - component: {fileID: 5020050466037743105}
-  m_Layer: 5
+  m_Layer: 16
   m_Name: CanvasVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -202,7 +203,7 @@ GameObject:
   - component: {fileID: 7263890370936924640}
   - component: {fileID: 3519526726795584992}
   - component: {fileID: 4059139503853197148}
-  m_Layer: 5
+  m_Layer: 16
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -338,7 +339,7 @@ GameObject:
   - component: {fileID: 7539510471807385591}
   - component: {fileID: 1293456842258834343}
   - component: {fileID: 8800218049779874308}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
