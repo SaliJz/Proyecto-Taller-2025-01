@@ -52,6 +52,9 @@ public class VidaEnemigoGeneral : MonoBehaviour
     // Referencia al controlador de parpadeo HDR
     private TipoColorHDRController colorController;
 
+    // Textura 1×1 que usaremos como BaseMap sólido
+    private Texture2D baseTexture;
+
     void Awake()
     {
         meshRenderers = GetComponentsInChildren<MeshRenderer>();
@@ -67,8 +70,11 @@ public class VidaEnemigoGeneral : MonoBehaviour
 #endif
         Color finalColor = ObtenerColorPorTipo(tipo);
 
-        // 2) Asignamos color de BaseColor (sin cambiar Base Map) y Emission a materiales existentes
-        AsignarColorYEmissionAMateriales(finalColor);
+        // 2) Creamos una textura 1×1 con ese color
+        baseTexture = CrearTexturaSolida(finalColor);
+
+        // 3) Asignamos BaseMap + Emission a todos los materiales existentes
+        AsignarBaseMapYEmissionAMateriales(finalColor, baseTexture);
 
         if (sliderVida != null)
         {
@@ -76,8 +82,19 @@ public class VidaEnemigoGeneral : MonoBehaviour
             sliderVida.value = vida;
         }
 
-        // 3) Durante los próximos 0.5 seg, detectamos y aplicamos color a nuevos materiales
-        StartCoroutine(DetectarYAsignarColorANuevosMateriales(finalColor, 0.5f));
+        // 4) Durante los próximos 0.5 seg, detectamos si aparecen nuevos materiales
+        StartCoroutine(DetectarYAsignarNuevosMateriales(finalColor, baseTexture, 0.5f));
+    }
+
+    /// <summary>
+    /// Crea una textura 1×1 del color dado.
+    /// </summary>
+    private Texture2D CrearTexturaSolida(Color color)
+    {
+        Texture2D tex = new Texture2D(1, 1);
+        tex.SetPixel(0, 0, color);
+        tex.Apply();
+        return tex;
     }
 
     /// <summary>
@@ -99,11 +116,11 @@ public class VidaEnemigoGeneral : MonoBehaviour
     }
 
     /// <summary>
-    /// Asigna a cada material existente:
-    ///   - "_BaseColor" (o "_Color") = color del tipo de enemigo
-    ///   - Activa _EMISSION y asigna "_EmissionColor" = HDR correspondiente
+    /// Asigna a cada material:
+    ///   - BaseMap = textura sólida (1×1) del color indicado
+    ///   - Habilita _EMISSION y setea _EmissionColor = color HDR
     /// </summary>
-    private void AsignarColorYEmissionAMateriales(Color color)
+    private void AsignarBaseMapYEmissionAMateriales(Color color, Texture2D baseTex)
     {
         foreach (var mr in meshRenderers)
         {
@@ -112,27 +129,27 @@ public class VidaEnemigoGeneral : MonoBehaviour
             {
                 Material mat = mats[i];
 
-                // 1) Tinte del albedo: BaseColor (URP) o _Color (legacy)
-                if (mat.HasProperty("_BaseColor"))
-                    mat.SetColor("_BaseColor", color);
-                else if (mat.HasProperty("_Color"))
-                    mat.SetColor("_Color", color);
+                // 1) BaseMap o MainTex (según shader)
+                if (mat.HasProperty("_BaseMap"))
+                    mat.SetTexture("_BaseMap", baseTex);
+                else if (mat.HasProperty("_MainTex"))
+                    mat.SetTexture("_MainTex", baseTex);
 
-                // 2) Activar emisión HDR y asignar color
+                // 2) Activar emisión HDR
                 mat.EnableKeyword("_EMISSION");
                 if (mat.HasProperty("_EmissionColor"))
                     mat.SetColor("_EmissionColor", color);
             }
-            // Reasignamos el array completo para asegurar que Unity reconozca las instancias
+            // Reasignamos el array completo para asegurar que Unity use las instancias modificadas
             mr.materials = mats;
         }
     }
 
     /// <summary>
-    /// Coroutine que dura 'duracion' segundos y revisa cada frame si aparecen nuevos materiales;
-    /// si hay, aplica el mismo color y emisión.
+    /// Coroutine que durante 'duracion' segundos revisa cada frame si hay nuevos materiales
+    /// en los MeshRenderers, y les aplica el mismo BaseMap + Emission.
     /// </summary>
-    private IEnumerator DetectarYAsignarColorANuevosMateriales(Color color, float duracion)
+    private IEnumerator DetectarYAsignarNuevosMateriales(Color color, Texture2D baseTex, float duracion)
     {
         float timer = 0f;
         // Guardamos cuántos materiales tenía cada renderer al inicio
@@ -154,13 +171,13 @@ public class VidaEnemigoGeneral : MonoBehaviour
                     {
                         Material mat = currentMats[i];
 
-                        // 1) Tintar albedo, sin tocar la Base Map
-                        if (mat.HasProperty("_BaseColor"))
-                            mat.SetColor("_BaseColor", color);
-                        else if (mat.HasProperty("_Color"))
-                            mat.SetColor("_Color", color);
+                        // 1) Asignamos BaseMap o MainTex
+                        if (mat.HasProperty("_BaseMap"))
+                            mat.SetTexture("_BaseMap", baseTex);
+                        else if (mat.HasProperty("_MainTex"))
+                            mat.SetTexture("_MainTex", baseTex);
 
-                        // 2) Activar emisión HDR y asignar color
+                        // 2) Activar emisión
                         mat.EnableKeyword("_EMISSION");
                         if (mat.HasProperty("_EmissionColor"))
                             mat.SetColor("_EmissionColor", color);
@@ -256,7 +273,6 @@ public class VidaEnemigoGeneral : MonoBehaviour
         Destroy(gameObject);
     }
 }
-
 
 
 //using System;
