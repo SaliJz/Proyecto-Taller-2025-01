@@ -12,6 +12,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform weaponModelTransform;
     [SerializeField] private WeaponStats stats;
+    [SerializeField] private ShootingMode baseMode;
 
     [Header("Balas")]
     [SerializeField] private float bulletSpeed = 20f;
@@ -29,6 +30,7 @@ public class Weapon : MonoBehaviour
     public enum ShootingMode { Single, SemiAuto, Auto }
 
     public ShootingMode CurrentMode { get; private set; }
+    public ShootingMode BaseMode => baseMode;
     public WeaponStats Stats => stats;
     public int CurrentAmmo => currentAmmo;
     public int TotalAmmo => totalAmmo;

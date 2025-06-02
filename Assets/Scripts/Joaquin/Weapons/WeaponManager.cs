@@ -127,7 +127,7 @@ public class WeaponManager : MonoBehaviour
 
         foreach (Weapon weapon in weapons)
         {
-            if (weapon != null && weapon.CurrentMode == mode)
+            if (weapon != null && weapon.BaseMode == mode)
             {
                 if (weapon.TryAddAmmo(amountToAdd, out int added))
                 {
