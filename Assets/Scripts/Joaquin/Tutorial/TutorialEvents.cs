@@ -44,19 +44,18 @@ public class TutorialEvents : MonoBehaviour
     {
         if (!waitForCinematic) return;
 
-        timeToWait -= Time.deltaTime;
+        timeToWait -= Time.fixedUnscaledDeltaTime;
 
         if (timeToWait <= 0)
         {
-            Time.timeScale = 0;
+           
             waitForCinematic = false;
 
             if (glitchDeathCinematic != null && glitchDeathCinematic.activeSelf)
             {
-                Time.timeScale = 1;
                 Debug.Log("[TutorialEvents] Terminó la espera, desactivando cinematic y avanzando el tutorial.");
                 glitchDeathCinematic.SetActive(false);
-
+                Time.timeScale = 1f;
                 // Inicia el siguiente escenario (escena 5)
                 TutorialManager.Instance.StartScenarioByManual(5);
             }
@@ -95,6 +94,7 @@ public class TutorialEvents : MonoBehaviour
     {
         timeToWait = 5f;
         waitForCinematic = true;
+        Time.timeScale = 0;
 
         if (glitchDeathCinematic != null)
         {

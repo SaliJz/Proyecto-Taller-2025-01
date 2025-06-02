@@ -148,7 +148,7 @@ public class TutorialManager : MonoBehaviour
             if (dialogue.dialogueVoice != null) voicesSource.PlayOneShot(dialogue.dialogueVoice);
             yield return StartCoroutine(TypeText(dialogue.dialogueText));
         }
-
+       
         OnScenarioEnded(index); 
     }
 
