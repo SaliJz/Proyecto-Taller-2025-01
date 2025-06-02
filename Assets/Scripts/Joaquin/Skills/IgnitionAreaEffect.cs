@@ -31,8 +31,8 @@ public class IgnitionAreaEffect : MonoBehaviour
         while (elapsedTime < duration)
         {
             ApplyIgnition(transform.position);
-            elapsedTime += Time.deltaTime;
-            yield return null;
+            yield return new WaitForSeconds(1f);
+            elapsedTime += 1f;
         }
         Destroy(gameObject); // Destruir el efecto después de la duración
     }

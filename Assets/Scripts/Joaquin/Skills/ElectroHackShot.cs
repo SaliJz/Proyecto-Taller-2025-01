@@ -45,11 +45,11 @@ public class ElectroHackShot : MonoBehaviour
                     enemy.ApplySlow(slowMultiplier, ticks * tickInterval);
                     affectedEnemies.Add(enemy);
                     affected++;
+
+                    Destroy(gameObject);
                 }
             }
         }
-
-        Destroy(gameObject);
     }
 
     private void OnDrawGizmos()

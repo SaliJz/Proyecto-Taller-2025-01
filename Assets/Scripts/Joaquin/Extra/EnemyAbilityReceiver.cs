@@ -77,6 +77,8 @@ public class EnemyAbilityReceiver : MonoBehaviour
 
         for (int i = 0; i < ticks; i++)
         {
+            if (vida == null || vida.vida <= 0) yield break;
+
             TakeDamage(tickDamage);
             yield return new WaitForSeconds(tickInterval);
         }
@@ -85,7 +87,6 @@ public class EnemyAbilityReceiver : MonoBehaviour
     public void ApplyIgnition(float damagePerSecond, float duration)
     {
         if (isIgnited) return;
-        isIgnited = true;
 
         if (ignitionCoroutine != null)
         {
@@ -96,13 +97,26 @@ public class EnemyAbilityReceiver : MonoBehaviour
 
     private IEnumerator IgnitionRoutine(float damagePerSecond, float duration)
     {
-        int ticks = Mathf.FloorToInt(duration);
-        for (int i = 0; i < ticks; i++)
+        isIgnited = true;
+        float elapsed = 0f;
+
+        while (elapsed + 1f <= duration)
         {
             TakeDamage(damagePerSecond);
             yield return new WaitForSeconds(1f);
+            elapsed += 1f;
         }
+
+        float remaining = duration - elapsed;
+
+        if (remaining > 0f)
+        {
+            yield return new WaitForSeconds(remaining);
+            TakeDamage(damagePerSecond * remaining);
+        }
+
         isIgnited = false;
+        ignitionCoroutine = null;
     }
 
     public void ApplyMindjack(float damagePerSecond, float duration)

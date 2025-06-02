@@ -21,9 +21,8 @@ public class GlitchShot : MonoBehaviour
             if (enemy != null)
             {
                 enemy.ApplySlow(slowMultiplier, slowDuration);
+                Destroy(gameObject);
             }
         }
-
-        Destroy(gameObject);
     }
 }
