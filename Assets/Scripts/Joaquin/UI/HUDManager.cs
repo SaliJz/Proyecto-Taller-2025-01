@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -33,6 +34,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI abilityNameText;
     [SerializeField] private TextMeshProUGUI abilityStatusText;
     [SerializeField] private Image abilityIcon;
+    [SerializeField] private Image abilityCooldownFill;
 
     [Header("Info Fragments")]
     [SerializeField] private RectTransform floatingTextObject;
@@ -41,12 +43,17 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private Vector2 floatingEndPos = new Vector2(-10, 0f);      // editable desde el inspector
 
     [Header("Mission UI")]
-    [SerializeField] private bool animateMission = false;
     [SerializeField] private RectTransform missionTextObject;
+    [SerializeField] private bool animateMission = false;
     [SerializeField] private float missionDisplayTime = 2f;
     [SerializeField] private Vector2 missionStartPos = new Vector2(480f, 0f); // editable desde el inspector
     [SerializeField] private Vector2 missionEndPos = new Vector2(-10f, 0f); // editable desde el inspector
+    [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private Slider missionProgressSlider;
+    [SerializeField] private TextMeshProUGUI missionProgressText;
 
+    [Header("Events")]
+    [SerializeField] private Image eventIcon;
 
     private Coroutine floatingTextCoroutine;
     private Coroutine missionCoroutine;
@@ -156,12 +163,55 @@ public class HUDManager : MonoBehaviour
         floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: - {amount} -> {infoFragments}"));
     }
 
-    public void ShowMission(string message)
+    public void UpdateTimer(float time)
     {
-        Debug.Log($"Mostrar misión: {message}");
+        if (timerText != null)
+        {
+            time = Mathf.Max(time, 0f);
+            int hours = (int)(time / 3600);
+            int minutes = (int)((time % 3600) / 60);
+            int seconds = (int)(time % 60);
+            timerText.text = $"{hours:00}:{minutes:00}:{seconds:00}";
+        }
+    }
+
+    public void UpdateMissionProgress(float progress, float totalProgress, bool isEnemy = false)
+    {
+        missionProgressSlider?.gameObject.SetActive(true);
+        float normalizedProgress = Mathf.Clamp01(progress / totalProgress) * 100;
+
+        if (missionProgressSlider != null)
+        {
+            missionProgressSlider.value = normalizedProgress;
+        }
+
+        if (missionProgressText != null)
+        {
+            missionProgressText.text = $"{normalizedProgress:F0}%";
+        }
+
+        if (isEnemy)
+        {
+            missionProgressSlider.fillRect.GetComponent<Image>().color = Color.red; // Cambiar color a rojo si es enemigo
+        }
+        else
+        {
+            missionProgressSlider.fillRect.GetComponent<Image>().color = Color.green; // Cambiar color a verde si no es enemigo
+        }
+    }
+
+    public void HideMission()
+    {
+        missionTextObject.gameObject?.SetActive(false);
+        timerText.gameObject?.SetActive(false); 
+    }
+
+    public void ShowMission(string message, bool isTimer = false)
+    {
+        timerText.gameObject?.SetActive(isTimer);
+
         if (missionTextObject == null)
         {
-            Debug.LogError("missionTextObject no está asignado en el HUDManager.");
             return;
         }
 
@@ -203,15 +253,23 @@ public class HUDManager : MonoBehaviour
         missionTextObject.anchoredPosition = missionStartPos;
     }
 
-    public void UpdateAbilityStatus(string abilityName, float cooldownRemaining, bool isReady)
+    public void UpdateAbilityStatus(string abilityName, float cooldownRemaining, bool isReady, float cooldownTotal = 1f)
     {
         if (isReady)
         {
             abilityStatusText.text = $"¡Listo!";
+            if (abilityCooldownFill != null)
+            {
+                abilityCooldownFill.fillAmount = 0f;
+            }
         }
         else
         {
             abilityStatusText.text = $"Cooldown - {Mathf.Ceil(cooldownRemaining)}s";
+            if (abilityCooldownFill != null)
+            {
+                abilityCooldownFill.fillAmount = cooldownRemaining / cooldownTotal;
+            }
         }
     }
 
@@ -223,5 +281,19 @@ public class HUDManager : MonoBehaviour
             abilityIcon.sprite = info.icon;
             abilityNameText.text = info.abilityName;
         }
+    }
+
+    public void UpdateIcon(Sprite newIcon)
+    {
+        if (eventIcon != null && newIcon != null)
+        {
+            eventIcon.sprite = newIcon;
+            eventIcon.gameObject.SetActive(true);
+        }
+    }
+
+    public void HideIcon()
+    {
+        if (eventIcon != null) eventIcon.gameObject.SetActive(false);
     }
 }

@@ -205,7 +205,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abilityName: GlitchTime
-  icon: {fileID: 21300000, guid: ec068bea046d24740b45a81b097b6673, type: 3}
+  icon: {fileID: -87169099, guid: d2c51b25bf25d9c43814a3ef47217d89, type: 3}
 --- !u!1 &650507068087206632
 GameObject:
   m_ObjectHideFlags: 0
@@ -384,7 +384,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abilityName: ElectroHack
-  icon: {fileID: 21300000, guid: b08827b95ff182d438e2dfaaca108233, type: 3}
+  icon: {fileID: 1135544967, guid: d2c51b25bf25d9c43814a3ef47217d89, type: 3}
 --- !u!1 &1586848620660913248
 GameObject:
   m_ObjectHideFlags: 0
@@ -562,10 +562,10 @@ MonoBehaviour:
   playerCamera: {fileID: 0}
   isShooting: 0
   lastShotTime: 0
-  fireRate: 0.5
-  maxAmmoPerClip: 10
-  currentAmmo: 0
-  totalAmmo: 30
+  fireRate: 2
+  maxAmmoPerClip: 8
+  currentAmmo: 8
+  totalAmmo: 32
   reloadTime: 1.5
   isReloading: 0
   bulletPerBurst: 1
@@ -576,7 +576,7 @@ MonoBehaviour:
   bulletSpawnPoint: {fileID: 5558488596238011167}
   bulletDamage: 10
   bulletSpeed: 50
-  bulletLifetime: 2
+  bulletLifetime: 3
   stats: {fileID: 11400000, guid: fff0d78dec47c3748b957fa36ff8ffbe, type: 2}
   originalLocalPosition: {x: 0, y: 0, z: 0}
   weaponModelTransform: {fileID: 2754702622615627308}
@@ -724,7 +724,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abilityName: Mindjack
-  icon: {fileID: 21300000, guid: 54f232a85b495294eb8b2a6546d60b0b, type: 3}
+  icon: {fileID: -53119497, guid: d2c51b25bf25d9c43814a3ef47217d89, type: 3}
 --- !u!1 &3193621507321664050
 GameObject:
   m_ObjectHideFlags: 0
@@ -877,7 +877,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 2
+  m_CollisionDetection: 1
 --- !u!136 &8419800157772650935
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -916,9 +916,9 @@ MonoBehaviour:
   orientation: {fileID: 4119031220400882466}
   jumpKey: 32
   speedWalk: 10
-  groundDrag: 5
-  jumpForce: 7
-  jumpCooldown: 0.25
+  groundDrag: 0
+  jumpForce: 6
+  jumpCooldown: 0
   jumpAirControl: 0.5
   maxGroundAngle: 45
 --- !u!114 &2451992749232496777
@@ -934,19 +934,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dashKey: 304
-  dashForce: 20
-  dashUpwardForce: 2
-  dashDuration: 0.5
+  dashDistance: 10
+  dashDuration: 0.25
   dashCooldown: 1
-  useCameraForward: 1
+  minPostDashSpeed: 10
   dashCollisionCheckDistance: 2
+  bounceSpeed: 0
+  useCameraForward: 1
+  flattenDashDirection: 0
   orientation: {fileID: 4119031220400882466}
   playerCam: {fileID: 686485627115121037}
-  rb: {fileID: 2458910862583098416}
-  dashEffectForward: {fileID: 5798362838202825472}
+  dashEffect: {fileID: 5798362838202825472}
   virtualCam: {fileID: 1958301674197250255}
   dashFov: 65
-  fovTransitionSpeed: 8
+  fovTransitionSpeed: 5
 --- !u!114 &5704334828699022002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -963,7 +964,7 @@ MonoBehaviour:
   maxShield: 20
   shieldRegenRate: 4
   gameOverSceneName: GameOver
-  deathPrefab: {fileID: 6210460054218925196, guid: 34ca9467ed1cd764cb04f1e5962ef127,
+  deathPrefab: {fileID: 7498592250925711304, guid: fe1c6d946147de64f9736581d624fd19,
     type: 3}
   sceneTransition: {fileID: 0}
 --- !u!1 &3820181279776040069
@@ -978,6 +979,7 @@ GameObject:
   - component: {fileID: 5798362838202825472}
   - component: {fileID: 2559406640471680209}
   - component: {fileID: 1616205543270935574}
+  - component: {fileID: 3489507362094163263}
   m_Layer: 0
   m_Name: DashGlitchVFX
   m_TagString: Untagged
@@ -993,13 +995,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3820181279776040069}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: -0.5}
+  m_LocalRotation: {x: -1, y: -0, z: -0, w: 0}
+  m_LocalPosition: {x: -0, y: 0, z: 3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 303526157926382377}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Father: {fileID: 5866483386157149759}
+  m_LocalEulerAnglesHint: {x: 180, y: 0, z: 0}
 --- !u!198 &5798362838202825472
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -1073,7 +1075,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 1
+  moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: -204161947
@@ -1631,7 +1633,7 @@ ParticleSystem:
   ShapeModule:
     serializedVersion: 6
     enabled: 1
-    type: 18
+    type: 5
     angle: 30
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
@@ -5812,6 +5814,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   orientation: {fileID: 4119031220400882466}
   rotationSpeed: 10
+--- !u!54 &3489507362094163263
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3820181279776040069}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!1 &4031085736701839370
 GameObject:
   m_ObjectHideFlags: 0
@@ -5843,6 +5872,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 7989821213297080153}
   - {fileID: 686485627115121037}
   - {fileID: 7995055033124870633}
   - {fileID: 8160491215323087203}
@@ -6087,7 +6117,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abilityName: IgnitionCode
-  icon: {fileID: 21300000, guid: 2817647478dfa6e498ed3489e5d65254, type: 3}
+  icon: {fileID: -107528273, guid: d2c51b25bf25d9c43814a3ef47217d89, type: 3}
 --- !u!1 &4841268610612793011
 GameObject:
   m_ObjectHideFlags: 0
@@ -6212,10 +6242,10 @@ MonoBehaviour:
   isShooting: 0
   lastShotTime: 0
   fireRate: 0.5
-  maxAmmoPerClip: 15
-  currentAmmo: 0
-  totalAmmo: 60
-  reloadTime: 1.5
+  maxAmmoPerClip: 5
+  currentAmmo: 5
+  totalAmmo: 15
+  reloadTime: 5
   isReloading: 0
   bulletPerBurst: 3
   spreadIntensity: 1
@@ -6224,7 +6254,7 @@ MonoBehaviour:
     type: 3}
   bulletSpawnPoint: {fileID: 5466654700999651388}
   bulletDamage: 20
-  bulletSpeed: 40
+  bulletSpeed: 490
   bulletLifetime: 0.4
   stats: {fileID: 11400000, guid: fd6132aebfaca9a4282ced406f929a09, type: 2}
   originalLocalPosition: {x: 0, y: 0, z: 0}
@@ -6441,7 +6471,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &303526157926382377
 Transform:
   m_ObjectHideFlags: 0
@@ -6454,8 +6484,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 7989821213297080153}
+  m_Children: []
   m_Father: {fileID: 8557461592789821262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8303624827461931493
@@ -6582,10 +6611,10 @@ MonoBehaviour:
   isShooting: 0
   lastShotTime: 0
   fireRate: 0.5
-  maxAmmoPerClip: 30
-  currentAmmo: 0
-  totalAmmo: 90
-  reloadTime: 5
+  maxAmmoPerClip: 20
+  currentAmmo: 20
+  totalAmmo: 80
+  reloadTime: 3
   isReloading: 0
   bulletPerBurst: 1
   spreadIntensity: 0
@@ -6594,7 +6623,7 @@ MonoBehaviour:
     type: 3}
   bulletSpawnPoint: {fileID: 3588772922881117681}
   bulletDamage: 8
-  bulletSpeed: 60
+  bulletSpeed: 2580
   bulletLifetime: 3
   stats: {fileID: 11400000, guid: b98f2fed250d9c54e8d14bef92cc258e, type: 2}
   originalLocalPosition: {x: 0, y: 0, z: 0}

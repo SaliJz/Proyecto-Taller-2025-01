@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class WeaponManager : MonoBehaviour
 {
     [SerializeField] private Weapon[] weapons;
     [SerializeField] private Transform weaponHolder;
-    [SerializeField] private TMPro.TMP_Text weaponNameText;
-    [SerializeField] private UnityEngine.UI.Image weaponIconImage;
+    [SerializeField] private TMP_Text weaponNameText;
+    [SerializeField] private Image weaponIconImage;
 
     private int currentIndex = 0;
 
@@ -122,17 +124,14 @@ public class WeaponManager : MonoBehaviour
     public bool TryAddAmmoToWeapon(Weapon.ShootingMode mode, int amountToAdd, out int amountActuallyAdded)
     {
         amountActuallyAdded = 0;
-        Debug.Log("Intentando agregar balas al modo: " + mode);
 
         foreach (Weapon weapon in weapons)
         {
-            Debug.Log("Revisando arma con modo: " + weapon.currentShootingMode);
             if (weapon != null && weapon.currentShootingMode == mode)
             {
                 if (weapon.TryAddAmmo(amountToAdd, out int added))
                 {
                     amountActuallyAdded = added;
-                    Debug.Log("Balas agregadas: " + added);
 
                     // Solo actualiza HUD si es el arma actualmente equipada
                     if (weapon == weapons[currentIndex])

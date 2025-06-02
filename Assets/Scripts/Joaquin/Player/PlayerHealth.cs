@@ -120,15 +120,21 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    private void Die()
+    public void Die()
     {
         EnemySpawner enemySpawner = FindObjectOfType<EnemySpawner>();
         if (enemySpawner != null)
         {
             enemySpawner.ResetSpawner();
         }
+
         UpgradeDataStore.Instance.ResetTemporaryUpgrades();
-        DeathManager.Instance.RegisterDeath(deathPrefab, transform.position);
+
+        if (deathPrefab != null)
+        {
+            DeathManager.Instance.RegisterDeath(deathPrefab, transform.position);
+        }
+
         if (sceneTransition != null)
         {
             sceneTransition.LoadSceneWithFade(gameOverSceneName);

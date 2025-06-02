@@ -151,6 +151,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e33e06e4faf88384ab7d2281c56e3756, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bulletImpactPrefab: {fileID: 2565243337857972180, guid: 09e79ec5440c0f94087ab8389a5c9d21,
+    type: 3}
 --- !u!96 &-6769974325797880343
 TrailRenderer:
   serializedVersion: 3
@@ -283,7 +285,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.98
+  m_Radius: 1.98
   m_Height: 3.08
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}

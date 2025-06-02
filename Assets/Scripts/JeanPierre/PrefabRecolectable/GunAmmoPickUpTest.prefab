@@ -209,6 +209,7 @@ MonoBehaviour:
   flySpeed: 15
   rotationSpeed: 10
   positionOffset: 1
+  lifetime: 60
   playerInRange: 0
 --- !u!1 &6154051164474008441
 GameObject:
@@ -311,7 +312,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
