@@ -2449,7 +2449,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 55.86022
+  field of view: 55.86037
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -4590,6 +4590,8 @@ MonoBehaviour:
   - {fileID: 42560501}
   totalCaptureTime: 120
   currentTimeCapture: 30
+  baseMissionMode: 0
+  useBaseMissionMode: 0
 --- !u!4 &900092539
 Transform:
   m_ObjectHideFlags: 0
@@ -9911,7 +9913,7 @@ PrefabInstance:
     - target: {fileID: 1958301674197250255, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: m_Lens.FieldOfView
-      value: 55.86022
+      value: 55.86037
       objectReference: {fileID: 0}
     - target: {fileID: 2868914639831439354, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
