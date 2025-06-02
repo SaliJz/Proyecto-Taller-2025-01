@@ -56,7 +56,7 @@ Transform:
   m_GameObject: {fileID: 505301042325473914}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1, y: 1.1999998, z: 0.79}
+  m_LocalPosition: {x: 1, y: 1.1999998, z: 0.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -560,27 +560,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 0}
-  isShooting: 0
-  lastShotTime: 0
-  fireRate: 2
-  maxAmmoPerClip: 8
-  currentAmmo: 8
-  totalAmmo: 32
-  reloadTime: 1.5
-  isReloading: 0
-  bulletPerBurst: 1
-  spreadIntensity: 0
-  spreadAngle: 1
+  bulletSpawnPoint: {fileID: 5558488596238011167}
   bulletPrefab: {fileID: 1052289049260168198, guid: 1609838cd9cde6041b1074c7a6b3f780,
     type: 3}
-  bulletSpawnPoint: {fileID: 5558488596238011167}
-  bulletDamage: 10
+  weaponModelTransform: {fileID: 2754702622615627308}
+  stats: {fileID: 11400000, guid: fff0d78dec47c3748b957fa36ff8ffbe, type: 2}
   bulletSpeed: 50
   bulletLifetime: 3
-  stats: {fileID: 11400000, guid: fff0d78dec47c3748b957fa36ff8ffbe, type: 2}
-  originalLocalPosition: {x: 0, y: 0, z: 0}
-  weaponModelTransform: {fileID: 2754702622615627308}
-  currentShootingMode: 0
+  spreadIntensity: 0
+  spreadAngle: 1
+  shotgunPellets: 3
 --- !u!1 &3100109939946986989
 GameObject:
   m_ObjectHideFlags: 0
@@ -5807,7 +5796,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3820181279776040069}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df3386f7bb18bee44b57bf6cd313364d, type: 3}
   m_Name: 
@@ -6239,27 +6228,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 0}
-  isShooting: 0
-  lastShotTime: 0
-  fireRate: 0.5
-  maxAmmoPerClip: 5
-  currentAmmo: 5
-  totalAmmo: 15
-  reloadTime: 5
-  isReloading: 0
-  bulletPerBurst: 3
-  spreadIntensity: 1
-  spreadAngle: 1
+  bulletSpawnPoint: {fileID: 5466654700999651388}
   bulletPrefab: {fileID: 6931188823011488847, guid: ab545e48b5558b4499379105b4a94662,
     type: 3}
-  bulletSpawnPoint: {fileID: 5466654700999651388}
-  bulletDamage: 20
-  bulletSpeed: 490
-  bulletLifetime: 0.4
-  stats: {fileID: 11400000, guid: fd6132aebfaca9a4282ced406f929a09, type: 2}
-  originalLocalPosition: {x: 0, y: 0, z: 0}
   weaponModelTransform: {fileID: 7732561493241444904}
-  currentShootingMode: 1
+  stats: {fileID: 11400000, guid: fd6132aebfaca9a4282ced406f929a09, type: 2}
+  bulletSpeed: 50
+  bulletLifetime: 0.4
+  spreadIntensity: 1
+  spreadAngle: 1
+  shotgunPellets: 3
 --- !u!1 &4870134526752997112
 GameObject:
   m_ObjectHideFlags: 0
@@ -6316,7 +6294,7 @@ Transform:
   m_GameObject: {fileID: 5391034880052984008}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.6666665, y: 2, z: 0.5}
+  m_LocalPosition: {x: 1.6666665, y: 2, z: 0.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6450,7 +6428,7 @@ Transform:
   m_GameObject: {fileID: 7440466605676802474}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.67, y: 2, z: 0.69}
+  m_LocalPosition: {x: 1.67, y: 2, z: 1.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6608,27 +6586,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 0}
-  isShooting: 0
-  lastShotTime: 0
-  fireRate: 0.5
-  maxAmmoPerClip: 20
-  currentAmmo: 20
-  totalAmmo: 80
-  reloadTime: 3
-  isReloading: 0
-  bulletPerBurst: 1
-  spreadIntensity: 0
-  spreadAngle: 1
+  bulletSpawnPoint: {fileID: 3588772922881117681}
   bulletPrefab: {fileID: 6514547203563394288, guid: dac74eadbd49a2e4a89e8eb3d452d79d,
     type: 3}
-  bulletSpawnPoint: {fileID: 3588772922881117681}
-  bulletDamage: 8
-  bulletSpeed: 2580
-  bulletLifetime: 3
-  stats: {fileID: 11400000, guid: b98f2fed250d9c54e8d14bef92cc258e, type: 2}
-  originalLocalPosition: {x: 0, y: 0, z: 0}
   weaponModelTransform: {fileID: 7833964585978310834}
-  currentShootingMode: 2
+  stats: {fileID: 11400000, guid: b98f2fed250d9c54e8d14bef92cc258e, type: 2}
+  bulletSpeed: 100
+  bulletLifetime: 3
+  spreadIntensity: 0
+  spreadAngle: 1
+  shotgunPellets: 3
 --- !u!1 &8578866387906994893
 GameObject:
   m_ObjectHideFlags: 0
@@ -6710,7 +6677,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8806232066008393302}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1

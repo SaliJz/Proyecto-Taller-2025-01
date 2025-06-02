@@ -167,34 +167,6 @@ public class PickupItem : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    /*
-    private Weapon FindWeaponNearby(Vector3 origin, float radius)
-    {
-        int weaponLayer = LayerMask.NameToLayer("Weapon");
-
-        // Recorremos todos los colliders del radio
-        Collider[] colliders = Physics.OverlapSphere(origin, radius);
-
-        float shortestDistance = Mathf.Infinity;
-        Weapon nearestWeapon = null;
-
-        foreach (var col in colliders)
-        {
-            Weapon weapon = col.GetComponent<Weapon>();
-            if (weapon != null)
-            {
-                float distance = Vector3.Distance(origin, col.transform.position);
-                if (distance < shortestDistance)
-                {
-                    shortestDistance = distance;
-                    nearestWeapon = weapon;
-                }
-            }
-        }
-
-        return nearestWeapon;
-    }
-    */
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<PlayerHealth>() != null)
@@ -241,7 +213,6 @@ public class PickupItem : MonoBehaviour
             }
         }
     }
-
     private void DestroyPickup()
     {
         Destroy(gameObject);
