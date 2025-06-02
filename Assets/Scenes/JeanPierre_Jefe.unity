@@ -1365,6 +1365,7 @@ GameObject:
   - component: {fileID: 561226457}
   - component: {fileID: 561226461}
   - component: {fileID: 561226455}
+  - component: {fileID: 561226464}
   m_Layer: 0
   m_Name: SERPIENTE
   m_TagString: Untagged
@@ -1678,6 +1679,18 @@ MonoBehaviour:
   enemigosPorOla: 2
   intervaloSpawn: 23
   radioSpawn: 5
+--- !u!114 &561226464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561226448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78eedab936e1ab345901c9463fc014eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &571849479
 GameObject:
   m_ObjectHideFlags: 0
@@ -3799,6 +3812,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1678000841
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1678000843}
+  - component: {fileID: 1678000842}
+  m_Layer: 6
+  m_Name: ControladorDeEscenas
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1678000842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1678000841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22debf6915d67fc428e111974524c935, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  escenaParaTecla8: Nivel1
+  escenaParaTecla9: Nivel2
+  escenaParaTecla0: JeanPierre_Jefe
+--- !u!4 &1678000843
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1678000841}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 36.23845, y: -0.299999, z: 154.02061}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1715953091
 GameObject:
   m_ObjectHideFlags: 0
@@ -5382,4 +5442,5 @@ SceneRoots:
   - {fileID: 375515866}
   - {fileID: 631923801}
   - {fileID: 752167179}
+  - {fileID: 1678000843}
   - {fileID: 174555484}
