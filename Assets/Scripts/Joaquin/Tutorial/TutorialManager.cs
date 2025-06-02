@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -39,6 +39,12 @@ public class TutorialManager : MonoBehaviour
         fragmentsByScenario = new int[scenes.Count];
     }
 
+    //void ChangeIndex(int index)
+    //{
+    //   currentIndex= index+1;
+    //}
+
+    //ESCENAS 0 Y 1
     public void StartScenarioByZone(int index)
     {
         if (index < 0 || index >= scenes.Count)
@@ -53,7 +59,8 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
-    public void StartScenarioByKills(int index)
+    //ESCENAS 2 Y 3
+    public void StartScenarioByKills(int index)   //Es activado por los glitchs al morir
     {
         if (!scenes[index].isActive && scenes[index].sceneData.activationType == ActivationType.ByKills)
         {
@@ -61,13 +68,25 @@ public class TutorialManager : MonoBehaviour
             Debug.Log($"Kills para escenario {index}: {killsByScenario[index]}/{scenes[index].sceneData.necessarykills}");
             if (killsByScenario[index] >= scenes[index].sceneData.necessarykills)
             {
-                StartScenario(index++);
+                StartScenario(index);
+                //ChangeIndex(index);
+                killsByScenario[index]=0;
                 Debug.Log("Conseguiste las kills necesarias");
-
             }
+
+            int nextIndex = currentIndex+1;
+            var nextScene = scenes[nextIndex];
+            /*Veriifca que la siguiente escena sea de tipo de activacion por tiempo y ejecuta su funcion al terminar
+             el dialogo actual*/
+            if (scenes[nextIndex].sceneData.activationType == ActivationType.ForTime && !scenes[nextIndex].isActive && nextIndex < 10)
+            {
+                StartScenarioByTime(nextIndex, nextScene.sceneData.necessaryTime);              
+            }
+
         }
     }
 
+    //ESCENAS 4 , 9 Y 10
     public void StartScenarioByTime(int index, float time)
     {
         if (!scenes[index].isActive && scenes[index].sceneData.activationType == ActivationType.ForTime)
@@ -76,6 +95,16 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
+    private IEnumerator WaitForTime(int index, float time)
+    {
+        yield return new WaitForSeconds(time);
+        if (!scenes[index].isActive)
+        {
+            StartScenario(index);
+        }
+    }
+
+    //ESCENAS 5, 6 Y 8
     public void StartScenarioByManual(int index)
     {
         if (!scenes[index].isActive && scenes[index].sceneData.activationType == ActivationType.ByEventoManual)
@@ -83,7 +112,7 @@ public class TutorialManager : MonoBehaviour
             StartScenario(index);
         }
     }
-
+    //ESCENA 7
     public void StartScenarioByFragments(int index) 
     {
         if (!scenes[index].isActive && scenes[index].sceneData.activationType == ActivationType.ByFragments)
@@ -97,15 +126,8 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
-    private IEnumerator WaitForTime(int index, float time)
-    {
-        yield return new WaitForSeconds(time);
-        if (!scenes[index].isActive)
-        {
-            StartScenario(index++); 
-        }
-    }
 
+    // DETIENE CORRUTINAS 
     private void StartScenario(int index)
     {
         Debug.Log("El indice actual es:" + index);
@@ -113,67 +135,36 @@ public class TutorialManager : MonoBehaviour
         scenes[index].isActive = true;
         StopAllCoroutines();
         StartCoroutine(RunScenario(index));
-        currentIndex++;
-
-
     }
 
+    // ACTIVA TODAS LAS FUNCIONES ASOCIADAS AL ESCENARIO, Y REPRODUCE VOZ Y TEXOS
     private IEnumerator RunScenario(int index)
     {
         var runtimeScene = scenes[index];
         runtimeScene.onSceneStart?.Invoke();
 
-        Debug.Log($"RUN SCENARIO {index} Diálogos: {runtimeScene.sceneData.dialogues.Count}");
-
-
         foreach (var dialogue in runtimeScene.sceneData.dialogues)
         {
             if (dialogue.dialogueVoice != null) voicesSource.PlayOneShot(dialogue.dialogueVoice);
-            yield return StartCoroutine(TypeText(dialogue.dialogueText));    
+            yield return StartCoroutine(TypeText(dialogue.dialogueText));
         }
 
-        int nextIndex = currentIndex;
-        /*Veriifca que la siguiente escena sea de tipo de activacion por tiempo y ejecuta su funcion al terminar
-         el dialogo actual*/
-        if (scenes[nextIndex].sceneData.activationType == ActivationType.ForTime && !scenes[nextIndex].isActive && nextIndex<10)
-        {
-            StartScenario(nextIndex);  
-        }
-
-        //OnScenarioEnded(index);
+        OnScenarioEnded(index); 
     }
+
 
     private void OnScenarioEnded(int finishedIndex)
     {
-        // Busca el siguiente escenario (puedes ajustar la lógica si hay saltos)
-        int nextIndex = finishedIndex + 1;
-        if (nextIndex < scenes.Count)
+        currentIndex = finishedIndex + 1; 
+
+        if (currentIndex < scenes.Count)
         {
-            var nextScene = scenes[nextIndex];
+            var nextScene = scenes[currentIndex];
+
             if (nextScene.sceneData.activationType == ActivationType.ForTime && !nextScene.isActive)
             {
-                // Inicia el temporizador solo ahora
-                StartScenarioByTime(nextIndex, nextScene.sceneData.necessaryTime);
+                StartScenarioByTime(currentIndex, nextScene.sceneData.necessaryTime);
             }
-
-            //else if (nextScene.sceneData.activationType == ActivationType.ByEventoManual && !nextScene.isActive)
-            //{
-            //     // Inicia el temporizador solo ahora
-            //     StartScenarioByManual(nextIndex);
-            //}
-
-            //else if (nextScene.sceneData.activationType == ActivationType.ByKills && !nextScene.isActive)
-            //{  
-            //    StartScenarioByKills(nextIndex);
-            //}
-
-            // else if (nextScene.sceneData.activationType == ActivationType.ByKills && !nextScene.isActive)
-            // {
-            //     // Inicia el temporizador solo ahora
-            //     StartScenarioByManual(nextIndex);
-            // }
-
-
         }
     }
 

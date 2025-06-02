@@ -48,10 +48,12 @@ public class TutorialEvents : MonoBehaviour
 
         if (timeToWait <= 0)
         {
+            Time.timeScale = 0;
             waitForCinematic = false;
 
             if (glitchDeathCinematic != null && glitchDeathCinematic.activeSelf)
             {
+                Time.timeScale = 1;
                 Debug.Log("[TutorialEvents] Terminó la espera, desactivando cinematic y avanzando el tutorial.");
                 glitchDeathCinematic.SetActive(false);
 

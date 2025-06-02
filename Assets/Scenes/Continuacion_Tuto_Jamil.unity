@@ -1064,7 +1064,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &134238682
 Transform:
   m_ObjectHideFlags: 0
@@ -1100,7 +1100,7 @@ MonoBehaviour:
   spawnInterval: 1
   enemiesPerSpawn: 1
   spawnRadius: 1.5
-  maxEnemiesInScene: 10
+  maxEnemiesInScene: 3
   maxEnemiesInTotal: 20
   spawnPoints:
   - {fileID: 1684327061}
@@ -2449,7 +2449,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 55
+  field of view: 55.86022
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -9908,6 +9908,11 @@ PrefabInstance:
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 432355536}
+    - target: {fileID: 1958301674197250255, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: m_Lens.FieldOfView
+      value: 55.86022
+      objectReference: {fileID: 0}
     - target: {fileID: 2868914639831439354, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: baseMode
@@ -9918,6 +9923,11 @@ PrefabInstance:
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 432355536}
+    - target: {fileID: 3820181279776040069, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4187975560967645531, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: m_Name
