@@ -206,7 +206,7 @@ public class MissionManager : MonoBehaviour
             spawner.ResetSpawner();
 
             int simult = currentMission.killConditions[0].requiredAmount;
-            maxEnemiesInTotal = -1;
+            maxEnemiesInTotal = 5;
             spawnInterval= 2.5f;
             spawner.SpawnCondition(maxEnemiesInTotal, spawnInterval);
             spawner.SpawnWave(simult);
