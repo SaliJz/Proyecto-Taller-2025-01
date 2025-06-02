@@ -13,7 +13,6 @@ public class TutorialTeleporter : MonoBehaviour
         else
         {
             TutorialManager.Instance.StartScenarioByManual(indexScene);
-            Destroy(gameObject);
             activated = true;
         }
     }

@@ -721,7 +721,7 @@ GameObject:
   - component: {fileID: 92328192}
   - component: {fileID: 92328194}
   - component: {fileID: 92328193}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: TutorialTriggerZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -895,7 +895,7 @@ GameObject:
   - component: {fileID: 106486644}
   - component: {fileID: 106486645}
   - component: {fileID: 106486646}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Teleporter (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -934,7 +934,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -952,9 +952,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae503c43200c82e4da406035e1e82382, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneToLoad: '""'
+  sceneToLoad: 
   playerTag: Player
-  loadSceneObject: {fileID: 0}
+  loadSceneObject: {fileID: 861784908}
 --- !u!114 &106486646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1097,11 +1097,11 @@ MonoBehaviour:
   - {fileID: 4394272956414374065, guid: f3ca6ab5d5dde4c448a6f18caf6d353c, type: 3}
   - {fileID: 5120538479886475079, guid: 60a69db7658caea4097d98b236849d7b, type: 3}
   - {fileID: 1603735669551673134, guid: 1c4aa42d1bcc19c4aad679c27195ae2f, type: 3}
-  spawnInterval: 2
-  enemiesPerSpawn: 3
+  spawnInterval: 1
+  enemiesPerSpawn: 1
   spawnRadius: 1.5
-  maxEnemiesInScene: 20
-  maxEnemiesInTotal: 50
+  maxEnemiesInScene: 10
+  maxEnemiesInTotal: 20
   spawnPoints:
   - {fileID: 1684327061}
   - {fileID: 607272069}
@@ -1494,7 +1494,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 225630767}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: SupplyBoxes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2449,7 +2449,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 62.89432
+  field of view: 55
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -4379,6 +4379,12 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!1 &861784908 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4724230420306291819, guid: 6e69aeb3d45ad904ebf20cab082138f9,
+    type: 3}
+  m_PrefabInstance: {fileID: 9003196820129188591}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &868204380
 GameObject:
   m_ObjectHideFlags: 0
@@ -4430,7 +4436,7 @@ GameObject:
   - component: {fileID: 877035726}
   - component: {fileID: 877035727}
   - component: {fileID: 877035728}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Teleporter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4487,9 +4493,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae503c43200c82e4da406035e1e82382, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneToLoad: '""'
+  sceneToLoad: 
   playerTag: Player
-  loadSceneObject: {fileID: 0}
+  loadSceneObject: {fileID: 861784908}
 --- !u!114 &877035728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4564,7 +4570,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseMissions:
-  - {fileID: 11400000, guid: a2c65b3cc0e3e1e448626a0892008661, type: 2}
+  - {fileID: 11400000, guid: 44df5444034a7ae4db86badad6b69578, type: 2}
   teleporters:
   - {fileID: 877035723}
   - {fileID: 1432327909}
@@ -5256,7 +5262,7 @@ GameObject:
   - component: {fileID: 1140738393}
   - component: {fileID: 1140738394}
   - component: {fileID: 1140738395}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: TutorialTriggerZone (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6169,7 +6175,7 @@ GameObject:
   - component: {fileID: 1338193971}
   - component: {fileID: 1338193972}
   - component: {fileID: 1338193973}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Teleporter (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6226,9 +6232,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae503c43200c82e4da406035e1e82382, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneToLoad: '""'
+  sceneToLoad: 
   playerTag: Player
-  loadSceneObject: {fileID: 0}
+  loadSceneObject: {fileID: 861784908}
 --- !u!114 &1338193973
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6398,7 +6404,7 @@ GameObject:
   - component: {fileID: 1432327912}
   - component: {fileID: 1432327913}
   - component: {fileID: 1432327914}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Teleporter (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6455,9 +6461,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae503c43200c82e4da406035e1e82382, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneToLoad: '""'
+  sceneToLoad: 
   playerTag: Player
-  loadSceneObject: {fileID: 0}
+  loadSceneObject: {fileID: 861784908}
 --- !u!114 &1432327914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7797,7 +7803,7 @@ GameObject:
   - component: {fileID: 1785152197}
   - component: {fileID: 1785152198}
   - component: {fileID: 1785152199}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Teleporter (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7854,9 +7860,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae503c43200c82e4da406035e1e82382, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneToLoad: '""'
+  sceneToLoad: 
   playerTag: Player
-  loadSceneObject: {fileID: 0}
+  loadSceneObject: {fileID: 861784908}
 --- !u!114 &1785152199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9889,49 +9895,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 150223545839985364, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
-      propertyPath: currentAmmo
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 150223545839985364, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: bulletDamage
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 150223545839985364, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: maxAmmoPerClip
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 661557296630573712, guid: d7e6ddd8dcf450448b946a2962591afb,
+      propertyPath: playerCamera
+      value: 
+      objectReference: {fileID: 432355536}
+    - target: {fileID: 1623021693395869078, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 432355536}
-    - target: {fileID: 1599018760969602108, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: activeAbilities.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1599018760969602108, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: activeAbilities.Array.data[0]
-      value: 
-      objectReference: {fileID: 193196901}
-    - target: {fileID: 1623021693395869078, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: bulletDamage
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 1958301674197250255, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: m_Lens.FieldOfView
-      value: 62.89432
-      objectReference: {fileID: 0}
     - target: {fileID: 2868914639831439354, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
-      propertyPath: bulletDamage
-      value: 8
-      objectReference: {fileID: 0}
+      propertyPath: playerCamera
+      value: 
+      objectReference: {fileID: 432355536}
     - target: {fileID: 4187975560967645531, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: m_Name
