@@ -175,7 +175,7 @@ public class EnemySpawner : MonoBehaviour
         Gizmos.color = Color.red;
         foreach (var point in spawnPoints)
         {
-            Gizmos.DrawWireSphere(point.transform.position, spawnRadius);
+            Gizmos.DrawWireSphere(point.transform.position, spawnRadius);   
             Gizmos.color = point.IsAvailable ? Color.green : Color.gray;
             Gizmos.DrawSphere(point.transform.position, 0.2f);
         }

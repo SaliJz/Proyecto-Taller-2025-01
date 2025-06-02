@@ -91,6 +91,8 @@ public class Weapon : MonoBehaviour
         totalAmmo = stats.totalAmmo;
         currentAmmo = maxAmmoPerClip;
 
+        CurrentMode = stats.shootingMode;
+
         ApplyPassiveUpgrades();
     }
 
@@ -169,8 +171,6 @@ public class Weapon : MonoBehaviour
 
     private void Shoot()
     {
-        if (Time.timeScale == 0) return;
-
         currentAmmo --;
         HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
 
@@ -188,7 +188,6 @@ public class Weapon : MonoBehaviour
     {
         GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(direction));
         bullet.GetComponent<Rigidbody>().velocity = direction * bulletSpeed;
-        bullet.GetComponent<Bullet>().Initialize(bulletDamage);
         Destroy(bullet, bulletLifetime);
     }
 

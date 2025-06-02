@@ -113,11 +113,17 @@ public class HUDManager : MonoBehaviour
 
     public void UpdateWeaponName(string name)
     {
+        if (weaponNameText == null || name == null) return; // Asegura que el objeto no sea nulo
+
+        if (!weaponNameText.gameObject.activeSelf) weaponNameText.gameObject.SetActive(true);
         weaponNameText.text = name;
     }
 
     public void UpdateWeaponIcon(Sprite icon)
     {
+        if (weaponIcon == null || icon == null) return; // Asegura que el objeto y el icono no sean nulos
+        
+        if (!weaponIcon.gameObject.activeSelf) weaponIcon.gameObject.SetActive(true);
         weaponIcon.sprite = icon;
     }
     
@@ -278,7 +284,9 @@ public class HUDManager : MonoBehaviour
         AbilityInfo info = abilityObj.GetComponent<AbilityInfo>();
         if (info != null)
         {
+            if (!abilityIcon.gameObject.activeSelf) abilityIcon.gameObject.SetActive(true);
             abilityIcon.sprite = info.icon;
+            if (!abilityNameText.gameObject.activeSelf) abilityNameText.gameObject.SetActive(true);
             abilityNameText.text = info.abilityName;
         }
     }
@@ -287,13 +295,16 @@ public class HUDManager : MonoBehaviour
     {
         if (eventIcon != null && newIcon != null)
         {
+            if (!eventIcon.gameObject.activeSelf) eventIcon.gameObject.SetActive(true);
             eventIcon.sprite = newIcon;
-            eventIcon.gameObject.SetActive(true);
         }
     }
 
     public void HideIcon()
     {
-        if (eventIcon != null) eventIcon.gameObject.SetActive(false);
+        if (eventIcon != null)
+        {
+            if (eventIcon.gameObject.activeSelf) eventIcon.gameObject.SetActive(false);
+        }
     }
 }

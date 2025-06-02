@@ -82,7 +82,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4886150407191743147
 Transform:
   m_ObjectHideFlags: 0
@@ -437,7 +437,6 @@ MonoBehaviour:
   - {fileID: 633714095734062609}
   - {fileID: 1039618764485251716}
   - {fileID: 4701876041897125803}
-  - {fileID: 3100109939946986989}
   activeAbilities: []
 --- !u!1 &2027354105013685677
 GameObject:
@@ -565,6 +564,7 @@ MonoBehaviour:
     type: 3}
   weaponModelTransform: {fileID: 2754702622615627308}
   stats: {fileID: 11400000, guid: fff0d78dec47c3748b957fa36ff8ffbe, type: 2}
+  baseMode: 0
   bulletSpeed: 50
   bulletLifetime: 3
   spreadIntensity: 0
@@ -6233,6 +6233,7 @@ MonoBehaviour:
     type: 3}
   weaponModelTransform: {fileID: 7732561493241444904}
   stats: {fileID: 11400000, guid: fd6132aebfaca9a4282ced406f929a09, type: 2}
+  baseMode: 1
   bulletSpeed: 50
   bulletLifetime: 0.4
   spreadIntensity: 1
@@ -6591,6 +6592,7 @@ MonoBehaviour:
     type: 3}
   weaponModelTransform: {fileID: 7833964585978310834}
   stats: {fileID: 11400000, guid: b98f2fed250d9c54e8d14bef92cc258e, type: 2}
+  baseMode: 2
   bulletSpeed: 100
   bulletLifetime: 3
   spreadIntensity: 0
@@ -6640,7 +6642,7 @@ GameObject:
   - component: {fileID: 1668287378607185907}
   - component: {fileID: 7456640486865575947}
   - component: {fileID: 3276687160819411527}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: PlayerObj
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6677,7 +6679,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8806232066008393302}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1

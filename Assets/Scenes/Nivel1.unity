@@ -1726,18 +1726,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 255310436}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &256651631 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2025296941891026384, guid: 3bbd0b1778d491f4a871397c411ee851,
-    type: 3}
-  m_PrefabInstance: {fileID: 1232394381918650955}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &271325419
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1935,7 +1923,7 @@ GameObject:
   - component: {fileID: 330717008}
   - component: {fileID: 330717011}
   - component: {fileID: 330717010}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Teleporter (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1970,7 +1958,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae503c43200c82e4da406035e1e82382, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneToLoad: JeanPierre_Jefe
+  sceneToLoad: Nivel2
   playerTag: Player
   loadSceneObject: {fileID: 1865955853}
 --- !u!135 &330717011
@@ -2429,18 +2417,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gizmosRange: 5
---- !u!114 &366383813 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6747451302001116862, guid: 3bbd0b1778d491f4a871397c411ee851,
-    type: 3}
-  m_PrefabInstance: {fileID: 1232394381918650955}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &371983538
 GameObject:
   m_ObjectHideFlags: 0
@@ -4732,7 +4708,7 @@ GameObject:
   - component: {fileID: 754733579}
   - component: {fileID: 754733581}
   - component: {fileID: 754733580}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: SafeZone (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4784,7 +4760,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -5435,6 +5411,8 @@ MonoBehaviour:
   - {fileID: 754733578}
   totalCaptureTime: 120
   currentTimeCapture: 30
+  baseMissionMode: 0
+  useBaseMissionMode: 0
 --- !u!4 &900092539
 Transform:
   m_ObjectHideFlags: 0
@@ -5819,7 +5797,7 @@ GameObject:
   - component: {fileID: 967567620}
   - component: {fileID: 967567623}
   - component: {fileID: 967567622}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Teleporter (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5854,7 +5832,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae503c43200c82e4da406035e1e82382, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneToLoad: JeanPierre_Jefe
+  sceneToLoad: Nivel2
   playerTag: Player
   loadSceneObject: {fileID: 1865955853}
 --- !u!135 &967567623
@@ -5889,7 +5867,7 @@ GameObject:
   - component: {fileID: 968936641}
   - component: {fileID: 968936643}
   - component: {fileID: 968936642}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: SafeZone (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6535,7 +6513,7 @@ GameObject:
   - component: {fileID: 1206924654}
   - component: {fileID: 1206924657}
   - component: {fileID: 1206924656}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Teleporter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6570,7 +6548,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae503c43200c82e4da406035e1e82382, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneToLoad: JeanPierre_Jefe
+  sceneToLoad: Nivel2
   playerTag: Player
   loadSceneObject: {fileID: 1865955853}
 --- !u!135 &1206924657
@@ -7928,7 +7906,7 @@ GameObject:
   - component: {fileID: 1366496132}
   - component: {fileID: 1366496134}
   - component: {fileID: 1366496133}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: SafeZone (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8203,18 +8181,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 9607468}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1406257942 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8597470714718834061, guid: 6e69aeb3d45ad904ebf20cab082138f9,
-    type: 3}
-  m_PrefabInstance: {fileID: 9003196820129188591}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1865955853}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e4cfb8ac813ab149b5211ff19711b34, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1427516488
 GameObject:
   m_ObjectHideFlags: 0
@@ -9023,6 +8989,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7176520072903510462, guid: c6043f024523eea4895ce6359b9fe091,
+        type: 3}
+      propertyPath: sfxSource
+      value: 
+      objectReference: {fileID: 702318078}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9265,7 +9236,7 @@ GameObject:
   - component: {fileID: 1658055633}
   - component: {fileID: 1658055636}
   - component: {fileID: 1658055635}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Teleporter (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9300,7 +9271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae503c43200c82e4da406035e1e82382, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneToLoad: JeanPierre_Jefe
+  sceneToLoad: Nivel2
   playerTag: Player
   loadSceneObject: {fileID: 1865955853}
 --- !u!135 &1658055636
@@ -9318,7 +9289,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -11806,7 +11777,7 @@ GameObject:
   - component: {fileID: 1986413945}
   - component: {fileID: 1986413947}
   - component: {fileID: 1986413946}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: SafeZone (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11875,7 +11846,7 @@ GameObject:
   - component: {fileID: 1989982447}
   - component: {fileID: 1989982449}
   - component: {fileID: 1989982448}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: SafeZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12710,7 +12681,7 @@ GameObject:
   - component: {fileID: 2128060177}
   - component: {fileID: 2128060180}
   - component: {fileID: 2128060179}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Teleporter (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12745,7 +12716,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae503c43200c82e4da406035e1e82382, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneToLoad: JeanPierre_Jefe
+  sceneToLoad: Nivel2
   playerTag: Player
   loadSceneObject: {fileID: 1865955853}
 --- !u!135 &2128060180
@@ -13007,56 +12978,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 150223545839985364, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: playerCamera
-      value: 
-      objectReference: {fileID: 432355536}
-    - target: {fileID: 661557296630573712, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: playerCamera
-      value: 
-      objectReference: {fileID: 432355536}
-    - target: {fileID: 891735800876516052, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: playerCamera
-      value: 
-      objectReference: {fileID: 432355536}
-    - target: {fileID: 1623021693395869078, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: playerCamera
-      value: 
-      objectReference: {fileID: 432355536}
-    - target: {fileID: 2868914639831439354, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: playerCamera
-      value: 
-      objectReference: {fileID: 432355536}
     - target: {fileID: 4187975560967645531, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: m_Name
       value: PlayerWithCamera
       objectReference: {fileID: 0}
-    - target: {fileID: 5060233725945681973, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: playerCamera
-      value: 
-      objectReference: {fileID: 432355536}
-    - target: {fileID: 5704334828699022002, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: sceneTransition
-      value: 
-      objectReference: {fileID: 1406257942}
-    - target: {fileID: 6186703028947052587, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: weaponNameText
-      value: 
-      objectReference: {fileID: 256651631}
-    - target: {fileID: 6186703028947052587, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: weaponIconImage
-      value: 
-      objectReference: {fileID: 366383813}
     - target: {fileID: 8129634047586214791, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -13107,11 +13033,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8814230059228490687, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: playerCamera
-      value: 
-      objectReference: {fileID: 432355536}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

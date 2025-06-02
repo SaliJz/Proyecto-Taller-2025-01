@@ -29,6 +29,8 @@ public class MissionManager : MonoBehaviour
     [SerializeField] private GameObject[] safeZones;
     [SerializeField] private float totalCaptureTime = 120f;
     [SerializeField] private float currentTimeCapture = 30f;
+    [SerializeField] private MissionMode baseMissionMode;
+    [SerializeField] private bool useBaseMissionMode = false; // Si se usa el modo base configurado
 
     private bool isCapturing = false;
     private bool isEnemyInCaptureZone = false;
@@ -233,23 +235,33 @@ public class MissionManager : MonoBehaviour
 
     private MissionMode SelectModeByLevel()
     {
-        string sceneName = SceneManager.GetActiveScene().name;
-        int lvl;
-
-        // Extrae un número al final del nombre
-        // Busca dígitos consecutivos al final
-        Match match = Regex.Match(sceneName, @"(\d+)$");
-        if (match.Success && int.TryParse(match.Groups[1].Value, out lvl))
+        if (useBaseMissionMode)
         {
-            if (lvl == 1) return MissionMode.Purgador;
-            else if (lvl == 2) return MissionMode.ElUnico;
-            else if (lvl == 3) return MissionMode.JSS;
+            if (baseMissionMode == MissionMode.Purgador || baseMissionMode == MissionMode.ElUnico || baseMissionMode == MissionMode.JSS)
+            {
+                return baseMissionMode; // Si se ha configurado un modo base, usarlo
+            }
+        }
+        else
+        {
+            string sceneName = SceneManager.GetActiveScene().name;
+            int lvl;
+
+            // Extrae un número al final del nombre
+            // Busca dígitos consecutivos al final
+            Match match = Regex.Match(sceneName, @"(\d+)$");
+            if (match.Success && int.TryParse(match.Groups[1].Value, out lvl))
+            {
+                if (lvl == 1) return MissionMode.Purgador;
+                else if (lvl == 2) return MissionMode.ElUnico;
+                else if (lvl == 3) return MissionMode.JSS;
+            }
+
+            // Si no se detecta número, o es 4 o más, selecciona aleatoriamente
+            return (MissionMode)UnityEngine.Random.Range(0, 3);/* (MissionMode)UnityEngine.Random.Range(0, 3);*/
         }
 
-        // Si no se detecta número, o es 4 o más, selecciona aleatoriamente
-        MissionMode randomMode = MissionMode.Purgador;/* (MissionMode)UnityEngine.Random.Range(0, 3);*/
-
-        return randomMode;
+        return MissionMode.Purgador; // Por defecto, si no se ha configurado nada
     }
 
     public void SetActiveCapture(bool isActive)
