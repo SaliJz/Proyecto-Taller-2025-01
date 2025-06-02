@@ -84,7 +84,7 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
-    public void StartScenarioByFragments(int index) //E
+    public void StartScenarioByFragments(int index) 
     {
         if (!scenes[index].isActive && scenes[index].sceneData.activationType == ActivationType.ByFragments)
         {
@@ -92,7 +92,7 @@ public class TutorialManager : MonoBehaviour
             Debug.Log($"Fragmentos para escenario {index}: {fragmentsByScenario[index]}/{scenes[index].sceneData.necessaryFragments}");
             if (fragmentsByScenario[index] >= scenes[index].sceneData.necessaryFragments)
             {
-                StartScenario(index++);
+                StartScenario(index);
             }
         }
     }
@@ -102,7 +102,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitForSeconds(time);
         if (!scenes[index].isActive)
         {
-            StartScenario(index++);
+            StartScenario(index++); 
         }
     }
 
@@ -135,11 +135,11 @@ public class TutorialManager : MonoBehaviour
         int nextIndex = currentIndex;
         /*Veriifca que la siguiente escena sea de tipo de activacion por tiempo y ejecuta su funcion al terminar
          el dialogo actual*/
-        if (scenes[nextIndex].sceneData.activationType == ActivationType.ForTime && !scenes[currentIndex++].isActive)
+        if (scenes[nextIndex].sceneData.activationType == ActivationType.ForTime && !scenes[nextIndex].isActive && nextIndex<10)
         {
             StartScenario(nextIndex);  
         }
-            
+
         //OnScenarioEnded(index);
     }
 

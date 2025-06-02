@@ -168,19 +168,24 @@ public class VidaEnemigoGeneral : MonoBehaviour
         //    }
         //}
 
-        //Ahora la deteccion lo hace por el indice actual del TutorialManager
-        int index = TutorialManager.Instance.currentIndex;
-        if (TutorialManager.Instance.scenes[index].sceneData.activationType == ActivationType.ByKills)
+        if(TutorialManager.Instance!=null)
         {
-            TutorialManager.Instance.StartScenarioByKills(index);
+            //Ahora la deteccion lo hace por el indice actual del TutorialManager
+            int index = TutorialManager.Instance.currentIndex;
+
+            if (TutorialManager.Instance.scenes[index].sceneData.activationType == ActivationType.ByKills)
+            {
+                TutorialManager.Instance.StartScenarioByKills(index);
+            }
+
         }
 
 
-            if (prefabsAlMorir != null && prefabsAlMorir.Length > 0)
+        if (prefabsAlMorir != null && prefabsAlMorir.Length > 0)
             Instantiate(prefabsAlMorir[UnityEngine.Random.Range(0, prefabsAlMorir.Length)], transform.position, transform.rotation);
 
         HUDManager.Instance?.AddInfoFragment(fragments);
-        MissionManager.Instance?.RegisterKill(gameObject.tag, name, tipo.ToString());
+        MissionManager.Instance?.RegisterKill(gameObject.tag, name, tipo.ToString()); 
 
         Destroy(gameObject);
     }

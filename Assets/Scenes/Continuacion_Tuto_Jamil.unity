@@ -1097,7 +1097,7 @@ MonoBehaviour:
   - {fileID: 4394272956414374065, guid: f3ca6ab5d5dde4c448a6f18caf6d353c, type: 3}
   - {fileID: 5120538479886475079, guid: 60a69db7658caea4097d98b236849d7b, type: 3}
   - {fileID: 1603735669551673134, guid: 1c4aa42d1bcc19c4aad679c27195ae2f, type: 3}
-  spawnInterval: 20
+  spawnInterval: 2
   enemiesPerSpawn: 3
   spawnRadius: 1.5
   maxEnemiesInScene: 20
@@ -2449,7 +2449,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 62.8871
+  field of view: 62.89431
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -8506,7 +8506,7 @@ MonoBehaviour:
   spawners: {fileID: 334975317}
   abilitySelector: {fileID: 580174465}
   weaponManager: {fileID: 1212294222096492791}
-  missionManager: {fileID: 0}
+  missionManager: {fileID: 900092535}
   glitchDeathCinematic: {fileID: 436082704}
   normalEnemies:
   - {fileID: 5120538479886475079, guid: 60a69db7658caea4097d98b236849d7b, type: 3}
@@ -9925,7 +9925,7 @@ PrefabInstance:
     - target: {fileID: 1958301674197250255, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: m_Lens.FieldOfView
-      value: 62.8871
+      value: 62.89431
       objectReference: {fileID: 0}
     - target: {fileID: 2868914639831439354, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
@@ -10043,10 +10043,20 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1450412437593284207, guid: 3bbd0b1778d491f4a871397c411ee851,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1595159321107111394, guid: 3bbd0b1778d491f4a871397c411ee851,
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5162516802565191075, guid: 3bbd0b1778d491f4a871397c411ee851,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7643505716821022816, guid: 3bbd0b1778d491f4a871397c411ee851,
         type: 3}
