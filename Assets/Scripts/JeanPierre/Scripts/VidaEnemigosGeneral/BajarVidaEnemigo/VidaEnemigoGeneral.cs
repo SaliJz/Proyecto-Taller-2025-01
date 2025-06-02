@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -53,57 +55,136 @@ public class VidaEnemigoGeneral : MonoBehaviour
     void Awake()
     {
         meshRenderers = GetComponentsInChildren<MeshRenderer>();
-        // Obtenemos componente para disparar el parpadeo cuando haya daño
         colorController = GetComponent<TipoColorHDRController>();
     }
 
     void Start()
     {
-        tipo = (TipoEnemigo)Random.Range(0, 3);
+        // 1) Determinamos tipo al azar y su color HDR
+        tipo = (TipoEnemigo)UnityEngine.Random.Range(0, 3);
 #if UNITY_EDITOR
         Debug.Log($"[VidaEnemigo] Tipo: {tipo}");
 #endif
+        Color finalColor = ObtenerColorPorTipo(tipo);
 
-        // Seleccionamos el color HDR directamente
-        Color finalColor = tipo == TipoEnemigo.Ametralladora ? hdrColorAmetralladora
-                        : tipo == TipoEnemigo.Pistola ? hdrColorPistola
-                        : hdrColorEscopeta;
-
-        foreach (var mr in meshRenderers)
-        {
-            Material mat = mr.material;
-
-            // Base Color (según shader)
-            if (mat.HasProperty("_BaseColor"))
-                mat.SetColor("_BaseColor", finalColor);
-            else if (mat.HasProperty("_Color"))
-                mat.SetColor("_Color", finalColor);
-
-            // Emission Color
-            mat.EnableKeyword("_EMISSION");
-            if (mat.HasProperty("_EmissionColor"))
-                mat.SetColor("_EmissionColor", finalColor);
-        }
+        // 2) Asignamos color de BaseColor (sin cambiar Base Map) y Emission a materiales existentes
+        AsignarColorYEmissionAMateriales(finalColor);
 
         if (sliderVida != null)
         {
             sliderVida.maxValue = vida;
             sliderVida.value = vida;
         }
+
+        // 3) Durante los próximos 0.5 seg, detectamos y aplicamos color a nuevos materiales
+        StartCoroutine(DetectarYAsignarColorANuevosMateriales(finalColor, 0.5f));
     }
 
     /// <summary>
-    /// Aplica daño directo (e.g., por explosion o efecto) y dispara parpadeo HDR.
+    /// Devuelve el color HDR que corresponde al tipo de enemigo.
+    /// </summary>
+    private Color ObtenerColorPorTipo(TipoEnemigo t)
+    {
+        switch (t)
+        {
+            case TipoEnemigo.Ametralladora:
+                return hdrColorAmetralladora;
+            case TipoEnemigo.Pistola:
+                return hdrColorPistola;
+            case TipoEnemigo.Escopeta:
+                return hdrColorEscopeta;
+            default:
+                return Color.white;
+        }
+    }
+
+    /// <summary>
+    /// Asigna a cada material existente:
+    ///   - "_BaseColor" (o "_Color") = color del tipo de enemigo
+    ///   - Activa _EMISSION y asigna "_EmissionColor" = HDR correspondiente
+    /// </summary>
+    private void AsignarColorYEmissionAMateriales(Color color)
+    {
+        foreach (var mr in meshRenderers)
+        {
+            Material[] mats = mr.materials; // instancia cada material
+            for (int i = 0; i < mats.Length; i++)
+            {
+                Material mat = mats[i];
+
+                // 1) Tinte del albedo: BaseColor (URP) o _Color (legacy)
+                if (mat.HasProperty("_BaseColor"))
+                    mat.SetColor("_BaseColor", color);
+                else if (mat.HasProperty("_Color"))
+                    mat.SetColor("_Color", color);
+
+                // 2) Activar emisión HDR y asignar color
+                mat.EnableKeyword("_EMISSION");
+                if (mat.HasProperty("_EmissionColor"))
+                    mat.SetColor("_EmissionColor", color);
+            }
+            // Reasignamos el array completo para asegurar que Unity reconozca las instancias
+            mr.materials = mats;
+        }
+    }
+
+    /// <summary>
+    /// Coroutine que dura 'duracion' segundos y revisa cada frame si aparecen nuevos materiales;
+    /// si hay, aplica el mismo color y emisión.
+    /// </summary>
+    private IEnumerator DetectarYAsignarColorANuevosMateriales(Color color, float duracion)
+    {
+        float timer = 0f;
+        // Guardamos cuántos materiales tenía cada renderer al inicio
+        var conteoInicial = meshRenderers.ToDictionary(
+            mr => mr,
+            mr => mr.materials.Length
+        );
+
+        while (timer < duracion)
+        {
+            foreach (var mr in meshRenderers)
+            {
+                Material[] currentMats = mr.materials;
+                int inicial = conteoInicial[mr];
+                if (currentMats.Length > inicial)
+                {
+                    // Hay nuevos materiales desde 'inicial' hasta currentMats.Length
+                    for (int i = inicial; i < currentMats.Length; i++)
+                    {
+                        Material mat = currentMats[i];
+
+                        // 1) Tintar albedo, sin tocar la Base Map
+                        if (mat.HasProperty("_BaseColor"))
+                            mat.SetColor("_BaseColor", color);
+                        else if (mat.HasProperty("_Color"))
+                            mat.SetColor("_Color", color);
+
+                        // 2) Activar emisión HDR y asignar color
+                        mat.EnableKeyword("_EMISSION");
+                        if (mat.HasProperty("_EmissionColor"))
+                            mat.SetColor("_EmissionColor", color);
+                    }
+                    // Actualizamos conteo para no reprocesar estos materiales
+                    conteoInicial[mr] = currentMats.Length;
+                    mr.materials = currentMats;
+                }
+            }
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    /// <summary>
+    /// Aplica daño directo y parpadeo HDR.
     /// </summary>
     public void RecibirDanio(float d)
     {
         if (isDead) return;
-
-        // Disparar parpadeo HDR
         if (colorController != null)
             colorController.RecibirDanio(d);
 
-        // Aplicar resta de vida
         vida -= d;
         if (sliderVida != null) sliderVida.value = vida;
         if (vida <= 0f)
@@ -114,12 +195,11 @@ public class VidaEnemigoGeneral : MonoBehaviour
     }
 
     /// <summary>
-    /// Método que maneja el daño proveniente de una bala del jugador.
-    /// Si el tipo de la bala coincide con el tipo del enemigo, no hace nada.
+    /// Maneja daño por bala del jugador (ignora si coincide tipo-bala/tipo-enemigo).
     /// </summary>
     public void RecibirDanioPorBala(BalaPlayer.TipoBala tb, Collider hitCollider)
     {
-        // Si el tipo de bala coincide con el tipo de enemigo, no hay daño ni parpadeo
+        // Si tipos coinciden, no hay daño
         if ((tb == BalaPlayer.TipoBala.Ametralladora && tipo == TipoEnemigo.Ametralladora) ||
             (tb == BalaPlayer.TipoBala.Pistola && tipo == TipoEnemigo.Pistola) ||
             (tb == BalaPlayer.TipoBala.Escopeta && tipo == TipoEnemigo.Escopeta))
@@ -127,7 +207,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
             return;
         }
 
-        // Si no coincide, calculamos el daño “alto”
+        // Si no coincide, tomamos daño alto
         float d;
         switch (tb)
         {
@@ -145,11 +225,10 @@ public class VidaEnemigoGeneral : MonoBehaviour
                 break;
         }
 
-        // Si headshot, multiplicamos
+        // Headshot
         if (hitCollider == headCollider)
             d *= headshotMultiplier;
 
-        // Aplicamos daño normal (que a su vez dispara parpadeo HDR)
         RecibirDanio(d);
     }
 
@@ -158,17 +237,18 @@ public class VidaEnemigoGeneral : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        TutorialEnemies tutorial = GetComponent<TutorialEnemies>();
-        if (tutorial != null)
+        if (TutorialManager.Instance != null)
         {
-            foreach (int index in tutorial.IndexScenes)
+            int index = TutorialManager.Instance.currentIndex;
+            if (TutorialManager.Instance.scenes[index].sceneData.activationType == ActivationType.ByKills)
             {
                 TutorialManager.Instance.StartScenarioByKills(index);
             }
         }
 
         if (prefabsAlMorir != null && prefabsAlMorir.Length > 0)
-            Instantiate(prefabsAlMorir[Random.Range(0, prefabsAlMorir.Length)], transform.position, transform.rotation);
+            Instantiate(prefabsAlMorir[UnityEngine.Random.Range(0, prefabsAlMorir.Length)],
+                        transform.position, transform.rotation);
 
         HUDManager.Instance?.AddInfoFragment(fragments);
         MissionManager.Instance?.RegisterKill(gameObject.tag, name, tipo.ToString());
@@ -179,16 +259,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
 
 
-
-
-
-
-
-
-
-
-
-
+//using System;
 //using System.Linq;
 //using UnityEngine;
 //using UnityEngine.UI;
@@ -250,7 +321,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
 //    void Start()
 //    {
-//        tipo = (TipoEnemigo)Random.Range(0, 3);
+//        tipo = (TipoEnemigo)UnityEngine.Random.Range(0, 3);
 //#if UNITY_EDITOR
 //        Debug.Log($"[VidaEnemigo] Tipo: {tipo}");
 //#endif
@@ -283,6 +354,9 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //        }
 //    }
 
+//    /// <summary>
+//    /// Aplica daño directo (e.g., por explosion o efecto) y dispara parpadeo HDR.
+//    /// </summary>
 //    public void RecibirDanio(float d)
 //    {
 //        if (isDead) return;
@@ -301,28 +375,43 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //        }
 //    }
 
+//    /// <summary>
+//    /// Método que maneja el daño proveniente de una bala del jugador.
+//    /// Si el tipo de la bala coincide con el tipo del enemigo, no hace nada.
+//    /// </summary>
 //    public void RecibirDanioPorBala(BalaPlayer.TipoBala tb, Collider hitCollider)
 //    {
+//        // Si el tipo de bala coincide con el tipo de enemigo, no hay daño ni parpadeo
+//        if ((tb == BalaPlayer.TipoBala.Ametralladora && tipo == TipoEnemigo.Ametralladora) ||
+//            (tb == BalaPlayer.TipoBala.Pistola && tipo == TipoEnemigo.Pistola) ||
+//            (tb == BalaPlayer.TipoBala.Escopeta && tipo == TipoEnemigo.Escopeta))
+//        {
+//            return;
+//        }
+
+//        // Si no coincide, calculamos el daño “alto”
 //        float d;
 //        switch (tb)
 //        {
 //            case BalaPlayer.TipoBala.Ametralladora:
-//                d = (tipo == TipoEnemigo.Ametralladora) ? danioBajoAmetralladora : danioAltoAmetralladora;
+//                d = danioAltoAmetralladora;
 //                break;
 //            case BalaPlayer.TipoBala.Pistola:
-//                d = (tipo == TipoEnemigo.Pistola) ? danioBajoPistola : danioAltoPistola;
+//                d = danioAltoPistola;
 //                break;
 //            case BalaPlayer.TipoBala.Escopeta:
-//                d = (tipo == TipoEnemigo.Escopeta) ? danioBajoEscopeta : danioAltoEscopeta;
+//                d = danioAltoEscopeta;
 //                break;
 //            default:
 //                d = 0f;
 //                break;
 //        }
 
+//        // Si headshot, multiplicamos
 //        if (hitCollider == headCollider)
 //            d *= headshotMultiplier;
 
+//        // Aplicamos daño normal (que a su vez dispara parpadeo HDR)
 //        RecibirDanio(d);
 //    }
 
@@ -331,17 +420,30 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //        if (isDead) return;
 //        isDead = true;
 
-//        TutorialEnemies tutorial = GetComponent<TutorialEnemies>();
-//        if (tutorial != null)
+//        //TutorialEnemies tutorial = GetComponent<TutorialEnemies>();
+//        //if (tutorial != null)
+//        //{
+//        //    foreach (int index in tutorial.IndexScenes)
+//        //    {
+//        //        TutorialManager.Instance.StartScenarioByKills(index);
+//        //    }
+//        //}
+
+//        if (TutorialManager.Instance != null)
 //        {
-//            foreach (int index in tutorial.IndexScenes)
+//            //Ahora la deteccion lo hace por el indice actual del TutorialManager
+//            int index = TutorialManager.Instance.currentIndex;
+
+//            if (TutorialManager.Instance.scenes[index].sceneData.activationType == ActivationType.ByKills)
 //            {
 //                TutorialManager.Instance.StartScenarioByKills(index);
 //            }
+
 //        }
 
+
 //        if (prefabsAlMorir != null && prefabsAlMorir.Length > 0)
-//            Instantiate(prefabsAlMorir[Random.Range(0, prefabsAlMorir.Length)], transform.position, transform.rotation);
+//            Instantiate(prefabsAlMorir[UnityEngine.Random.Range(0, prefabsAlMorir.Length)], transform.position, transform.rotation);
 
 //        HUDManager.Instance?.AddInfoFragment(fragments);
 //        MissionManager.Instance?.RegisterKill(gameObject.tag, name, tipo.ToString());
@@ -349,6 +451,35 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //        Destroy(gameObject);
 //    }
 //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -243,7 +243,6 @@ public class EnemyFinalSequence : MonoBehaviour
     }
 }
 
-
 //using UnityEngine;
 //using System.Collections;
 

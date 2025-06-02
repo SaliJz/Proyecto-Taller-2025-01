@@ -25,6 +25,8 @@ public class EnemySpawner : MonoBehaviour
             Debug.Log("¡Faltan prefabs de enemigos o puntos de spawn!");
             return;
         }
+
+        Debug.Log("Iniciando Spawn");
     }
 
     private void OnEnable()

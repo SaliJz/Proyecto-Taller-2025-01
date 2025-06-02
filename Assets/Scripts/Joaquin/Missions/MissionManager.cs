@@ -247,7 +247,7 @@ public class MissionManager : MonoBehaviour
         }
 
         // Si no se detecta número, o es 4 o más, selecciona aleatoriamente
-        MissionMode randomMode = (MissionMode)UnityEngine.Random.Range(0, 3);
+        MissionMode randomMode = MissionMode.Purgador;/* (MissionMode)UnityEngine.Random.Range(0, 3);*/
 
         return randomMode;
     }
