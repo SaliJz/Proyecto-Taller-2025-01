@@ -10,6 +10,8 @@ public class TutorialEvents : MonoBehaviour
     [SerializeField] private GameObject spawnerManager;
     [SerializeField] private GameObject spawners;
     [SerializeField] private GameObject abilitySelector;
+    [SerializeField] private GameObject AbilityHolder;
+    [SerializeField] private GameObject abilityIcon;
 
     [SerializeField] private WeaponManager weaponManager;
 
@@ -24,13 +26,23 @@ public class TutorialEvents : MonoBehaviour
     [SerializeField] private float timeToWait = 5f;
     [SerializeField] private bool waitForCinematic = false; // Si se debe esperar por la cinemática de muerte glitch
 
+    private Weapon gunWeapon; // Referencia al componente Weapon del objeto gun
+
     private void Awake()
     {
-        Weapon gunWP = gun.GetComponentInChildren<Weapon>();
+        if (gun != null)
+        {
+            gunWeapon = gun.GetComponent<Weapon>();
+        }
     }
+
     private void Start()
     {
         if (weaponManager != null) weaponManager.enabled = false;
+
+        if (AbilityHolder != null) AbilityHolder.SetActive(false);
+        if (abilityIcon != null) abilityIcon.SetActive(false);
+
         if (missionManager != null) missionManager.SetActive(false);
 
         if (gun != null) gun.SetActive(false);
@@ -53,7 +65,6 @@ public class TutorialEvents : MonoBehaviour
 
         if (timeToWait <= 0)
         {
-           
             waitForCinematic = false;
 
             if (glitchDeathCinematic != null && glitchDeathCinematic.activeSelf)
@@ -73,12 +84,19 @@ public class TutorialEvents : MonoBehaviour
 
     public void ActiveGun()
     {
-        if (weaponManager != null) weaponManager.enabled = false;
         if (gun != null) gun.SetActive(true);
         if (weaponIcon != null) weaponIcon.SetActive(true);
-        //HUDManager.Instance.UpdateWeaponIcon(weaponIcon);
-        //HUDManager.Instance.UpdateWeaponName(gun.Stats.weaponName);
-        //HUDManager.Instance.UpdateAmmo(gun.CurrentAmmo, gun.TotalAmmo);
+
+        if (gunWeapon != null)
+        {
+            HUDManager.Instance.UpdateAmmo(gunWeapon.CurrentAmmo, gunWeapon.TotalAmmo);
+            HUDManager.Instance.UpdateWeaponIcon(gunWeapon.Stats.weaponIcon);
+            HUDManager.Instance.UpdateWeaponName(gunWeapon.Stats.weaponName);
+        }
+        else
+        {
+            Debug.LogWarning("[TutorialEvents] El componente Weapon no está asignado al objeto gun.");
+        }
     }
 
     public void ActiveRifleAndShotgun()
@@ -87,6 +105,9 @@ public class TutorialEvents : MonoBehaviour
         {
             weaponManager.enabled = true;
         }
+
+        if (AbilityHolder != null) AbilityHolder.SetActive(true);
+        if (abilityIcon != null) abilityIcon.SetActive(true);
     }
 
     public void SpawnNormalEnemies()

@@ -8679,6 +8679,8 @@ MonoBehaviour:
   spawnerManager: {fileID: 134238681}
   spawners: {fileID: 334975317}
   abilitySelector: {fileID: 580174465}
+  AbilityHolder: {fileID: 1832154927}
+  abilityIcon: {fileID: 2095444346}
   weaponManager: {fileID: 1212294222096492789}
   missionManager: {fileID: 900092535}
   glitchDeathCinematic: {fileID: 942252352}
@@ -9239,6 +9241,12 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1805917004}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1832154927 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1586848620660913248, guid: d7e6ddd8dcf450448b946a2962591afb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1212294222096492786}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1846278789
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10666,6 +10674,12 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2094644568}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &2095444346 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6455189589438262136, guid: 3bbd0b1778d491f4a871397c411ee851,
+    type: 3}
+  m_PrefabInstance: {fileID: 1232394381918650955}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2107109759
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10680,6 +10694,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4801807564617485238, guid: 12fb4266885dd134eae5c27fd7949446,
         type: 3}
+    - target: {fileID: 868387149062873187, guid: ec86778e78ba7cb41b83bc57ddf02221,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1804450955188515394, guid: ec86778e78ba7cb41b83bc57ddf02221,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -11215,16 +11234,6 @@ PrefabInstance:
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 432355536}
-    - target: {fileID: 1668287378607185907, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1958301674197250255, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: m_Lens.FieldOfView
-      value: 59.77794
-      objectReference: {fileID: 0}
     - target: {fileID: 2868914639831439354, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: playerCamera
@@ -11240,11 +11249,6 @@ PrefabInstance:
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 432355536}
-    - target: {fileID: 5484496777286721899, guid: d7e6ddd8dcf450448b946a2962591afb,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8129634047586214791, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -11341,11 +11345,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1143808376200139882, guid: 3bbd0b1778d491f4a871397c411ee851,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1193290821996871817, guid: 3bbd0b1778d491f4a871397c411ee851,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -11360,50 +11359,10 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMin.x
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1450412437593284207, guid: 3bbd0b1778d491f4a871397c411ee851,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1595159321107111394, guid: 3bbd0b1778d491f4a871397c411ee851,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3381197282521601226, guid: 3bbd0b1778d491f4a871397c411ee851,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3381197282521601226, guid: 3bbd0b1778d491f4a871397c411ee851,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5162516802565191075, guid: 3bbd0b1778d491f4a871397c411ee851,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5288492194304610052, guid: 3bbd0b1778d491f4a871397c411ee851,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7282565048176588477, guid: 3bbd0b1778d491f4a871397c411ee851,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7282565048176588477, guid: 3bbd0b1778d491f4a871397c411ee851,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7282565048176588477, guid: 3bbd0b1778d491f4a871397c411ee851,
-        type: 3}
-      propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7643505716821022816, guid: 3bbd0b1778d491f4a871397c411ee851,
@@ -11535,6 +11494,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1215588828924167393, guid: 7c976d521131d754a912369e31821219,
+        type: 3}
+      propertyPath: allAbilities.Array.size
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 1215588828924167393, guid: 7c976d521131d754a912369e31821219,
         type: 3}
       propertyPath: allAbilities.Array.data[0]

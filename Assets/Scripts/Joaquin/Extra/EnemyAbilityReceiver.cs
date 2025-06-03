@@ -7,6 +7,7 @@ public class EnemyAbilityReceiver : MonoBehaviour
 {
     // Referencia a VidaEnemigoGeneral
     private VidaEnemigoGeneral vida;
+    private EnemigoRosa enemigoRosa;
 
     [Header("Attack")]
     [SerializeField] private float contactDamage = 10f;
@@ -32,9 +33,15 @@ public class EnemyAbilityReceiver : MonoBehaviour
     private void Awake()
     {
         vida = GetComponent<VidaEnemigoGeneral>();
+        enemigoRosa = GetComponent<EnemigoRosa>();
+
         if (vida == null)
         {
             Debug.LogWarning("VidaEnemigoGeneral no encontrada en el enemigo.");
+        }
+        if (enemigoRosa == null)
+        {
+            Debug.LogWarning("EnemigoRosa no encontrado en el enemigo.");
         }
 
         // Inicializar velocidad
@@ -44,6 +51,7 @@ public class EnemyAbilityReceiver : MonoBehaviour
     public void TakeDamage(float dmg)
     {
         vida?.RecibirDanio(dmg);
+        enemigoRosa?.RecibirDanio(dmg);
     }
 
     public void ApplySlow(float multiplier, float duration)
@@ -77,7 +85,7 @@ public class EnemyAbilityReceiver : MonoBehaviour
 
         for (int i = 0; i < ticks; i++)
         {
-            if (vida == null || vida.vida <= 0) yield break;
+            if (vida == null || vida.vida <= 0 || enemigoRosa == null || enemigoRosa.vida <= 0) yield break;
 
             TakeDamage(tickDamage);
             yield return new WaitForSeconds(tickInterval);
