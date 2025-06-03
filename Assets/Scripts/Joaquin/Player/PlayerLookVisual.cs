@@ -18,4 +18,11 @@ public class PlayerLookVisual : MonoBehaviour
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
     }
+    public class DetectarObjetosEnContacto : MonoBehaviour
+    {
+        private void OnCollisionStay(Collision collision)
+        {
+            Debug.Log($"Tocando: {collision.gameObject.name}");
+        }
+    }
 }
