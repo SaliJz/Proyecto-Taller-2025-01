@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,6 +24,10 @@ public class TutorialEvents : MonoBehaviour
     [SerializeField] private float timeToWait = 5f;
     [SerializeField] private bool waitForCinematic = false; // Si se debe esperar por la cinemática de muerte glitch
 
+    private void Awake()
+    {
+        Weapon gunWP = gun.GetComponentInChildren<Weapon>();
+    }
     private void Start()
     {
         if (weaponManager != null) weaponManager.enabled = false;
@@ -69,8 +74,11 @@ public class TutorialEvents : MonoBehaviour
     public void ActiveGun()
     {
         if (weaponManager != null) weaponManager.enabled = false;
-        if (weaponIcon != null) weaponIcon.SetActive(true);
         if (gun != null) gun.SetActive(true);
+        if (weaponIcon != null) weaponIcon.SetActive(true);
+        //HUDManager.Instance.UpdateWeaponIcon(weaponIcon);
+        //HUDManager.Instance.UpdateWeaponName(gun.Stats.weaponName);
+        //HUDManager.Instance.UpdateAmmo(gun.CurrentAmmo, gun.TotalAmmo);
     }
 
     public void ActiveRifleAndShotgun()

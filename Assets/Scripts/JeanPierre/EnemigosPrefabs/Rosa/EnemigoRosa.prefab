@@ -428,8 +428,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   comportamientoA: {fileID: 7383150821052817112}
   comportamientoB: {fileID: 2423154323901580609}
-  activarA: 1
-  activarB: 0
+  activarA: 0
+  activarB: 1
 --- !u!114 &2680167343051568405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -461,14 +461,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vida: 100
   sliderVida: {fileID: 3905491031144004348}
-  danioPorBala: 10
+  danioBajoPistola: 5
+  danioAltoAmetralladora: 20
+  danioAltoEscopeta: 20
+  headshotMultiplier: 2
   headCollider: {fileID: 3125961083804489156}
   bodyColliders:
   - {fileID: 3703288869107495435}
   hdrColorPistola: {r: 1, g: 0, b: 0.79818773, a: 1}
   meshRenderers:
   - {fileID: 3134601914816984523}
-  prefabsAlMorir: []
+  prefabsAlMorir:
+  - {fileID: 0}
   fragments: 50
 --- !u!1 &3142425083351287613
 GameObject:
