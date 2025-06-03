@@ -399,13 +399,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 757494378}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.27618787, y: -0, z: -0, w: 0.96110374}
+  m_LocalRotation: {x: 0.29025725, y: -0, z: -0, w: 0.9569487}
   m_LocalPosition: {x: -3.51, y: 2.471, z: -0.59}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 32.066, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 33.747, y: 0, z: 0}
 --- !u!114 &757494382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -814,10 +814,55 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5451691738925964817, guid: fa86bf77496a34c439acbdca7c51a286,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.11427681
+      objectReference: {fileID: 0}
+    - target: {fileID: 5451691738925964817, guid: fa86bf77496a34c439acbdca7c51a286,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.11618747
+      objectReference: {fileID: 0}
+    - target: {fileID: 5451691738925964817, guid: fa86bf77496a34c439acbdca7c51a286,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.11427681
+      objectReference: {fileID: 0}
     - target: {fileID: 6491080496814781354, guid: fa86bf77496a34c439acbdca7c51a286,
         type: 3}
       propertyPath: m_Name
       value: Dexal
+      objectReference: {fileID: 0}
+    - target: {fileID: 7802899296799824070, guid: fa86bf77496a34c439acbdca7c51a286,
+        type: 3}
+      propertyPath: ShapeModule.type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7802899296799824070, guid: fa86bf77496a34c439acbdca7c51a286,
+        type: 3}
+      propertyPath: ShapeModule.arc.mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7802899296799824070, guid: fa86bf77496a34c439acbdca7c51a286,
+        type: 3}
+      propertyPath: ShapeModule.arc.value
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 7802899296799824070, guid: fa86bf77496a34c439acbdca7c51a286,
+        type: 3}
+      propertyPath: ShapeModule.arc.spread
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7802899296799824070, guid: fa86bf77496a34c439acbdca7c51a286,
+        type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7802899296799824070, guid: fa86bf77496a34c439acbdca7c51a286,
+        type: 3}
+      propertyPath: ShapeModule.radiusThickness
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
