@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-[RequireComponent(typeof(Light), typeof(SphereCollider))]
 public class MovingSpotlightEvent : MonoBehaviour
 {
     private Dictionary<PlayerHealth, Coroutine> damageCoroutines = new Dictionary<PlayerHealth, Coroutine>();

@@ -4,7 +4,6 @@ using UnityEngine;
 using Cinemachine;
 using Unity.VisualScripting;
 
-[RequireComponent(typeof(Rigidbody), typeof(PlayerMovement))]
 public class PlayerDash : MonoBehaviour
 {
     [Header("Key input")]

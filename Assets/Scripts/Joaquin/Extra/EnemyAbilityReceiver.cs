@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Collider))] // Asegúrate de que el objeto tenga un Collider
 public class EnemyAbilityReceiver : MonoBehaviour
 {
     // Referencia a VidaEnemigoGeneral
