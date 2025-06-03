@@ -102,7 +102,7 @@ public class WeaponManager : MonoBehaviour
         model.localPosition = targetPosition;
     }
 
-    private void EquipWeaponInstant(int index)
+    public void EquipWeaponInstant(int index)
     {
         for (int i = 0; i < weapons.Length; i++)
         {
