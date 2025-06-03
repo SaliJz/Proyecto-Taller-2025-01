@@ -144,4 +144,11 @@ public class PlayerHealth : MonoBehaviour
             SceneManager.LoadScene(gameOverSceneName);
         }
     }
+    public class DetectarObjetosEnContacto : MonoBehaviour
+    {
+        private void OnCollisionStay(Collision collision)
+        {
+            Debug.Log($"Tocando: {collision.gameObject.name}");
+        }
+    }
 }
