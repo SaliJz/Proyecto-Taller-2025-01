@@ -2442,6 +2442,19 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2107109759}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &358499085
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358499068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aa4b39c1f18d5e4aae967f75f76989b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  indexScenes: 0000000000000000
 --- !u!1 &359070823
 GameObject:
   m_ObjectHideFlags: 0
@@ -2971,7 +2984,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 59.50587
+  field of view: 59.77794
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -3675,7 +3688,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: fee7c4b0750db0b40b1ca4c62db11d96,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: fee7c4b0750db0b40b1ca4c62db11d96,
         type: 3}
@@ -5288,6 +5301,16 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9125930810330233677, guid: ec86778e78ba7cb41b83bc57ddf02221,
+        type: 3}
+      propertyPath: activarA
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9125930810330233677, guid: ec86778e78ba7cb41b83bc57ddf02221,
+        type: 3}
+      propertyPath: activarB
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6494,6 +6517,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9125930810330233677, guid: ec86778e78ba7cb41b83bc57ddf02221,
+        type: 3}
+      propertyPath: activarA
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9125930810330233677, guid: ec86778e78ba7cb41b83bc57ddf02221,
+        type: 3}
+      propertyPath: activarB
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -12748,7 +12781,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1845618267771254268, guid: ec86778e78ba7cb41b83bc57ddf02221,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 358499085}
   m_SourcePrefab: {fileID: 100100000, guid: ec86778e78ba7cb41b83bc57ddf02221, type: 3}
 --- !u!1 &2110329605
 GameObject:
@@ -13194,7 +13231,7 @@ PrefabInstance:
     - target: {fileID: 1958301674197250255, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: m_Lens.FieldOfView
-      value: 59.50587
+      value: 59.77794
       objectReference: {fileID: 0}
     - target: {fileID: 2868914639831439354, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}

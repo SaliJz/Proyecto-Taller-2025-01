@@ -72,16 +72,7 @@ public class TutorialManager : MonoBehaviour
                 //ChangeIndex(index);
                 killsByScenario[index]=0;
                 Debug.Log("Conseguiste las kills necesarias");
-            }
-
-            int nextIndex = currentIndex+1;
-            var nextScene = scenes[nextIndex];
-            /*Veriifca que la siguiente escena sea de tipo de activacion por tiempo y ejecuta su funcion al terminar
-             el dialogo actual*/
-            if (scenes[nextIndex].sceneData.activationType == ActivationType.ForTime && !scenes[nextIndex].isActive && nextIndex < 10)
-            {
-                StartScenarioByTime(nextIndex, nextScene.sceneData.necessaryTime);              
-            }
+            }           
 
         }
     }

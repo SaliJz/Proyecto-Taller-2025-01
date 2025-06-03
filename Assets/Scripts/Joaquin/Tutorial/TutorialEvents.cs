@@ -100,7 +100,7 @@ public class TutorialEvents : MonoBehaviour
 
     public void PlayGlitchDeathCinematic()
     {
-        timeToWait = 5f;
+        timeToWait = 6.5f;
         waitForCinematic = true;
         Time.timeScale = 0;
 

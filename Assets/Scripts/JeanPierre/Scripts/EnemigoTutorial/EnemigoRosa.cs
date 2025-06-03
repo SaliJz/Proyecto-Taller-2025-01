@@ -138,24 +138,25 @@ public class EnemigoRosa : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        TutorialEnemies tutorial = GetComponent<TutorialEnemies>();
-        if (tutorial != null)
+        if (TutorialManager.Instance != null)
         {
-            foreach (int index in tutorial.IndexScenes)
+            int index = TutorialManager.Instance.currentIndex;
+            if (TutorialManager.Instance.scenes[index].sceneData.activationType == ActivationType.ByKills)
             {
                 TutorialManager.Instance.StartScenarioByKills(index);
             }
         }
 
-        // Instanciar un prefab al azar al morir (si existe)
         if (prefabsAlMorir != null && prefabsAlMorir.Length > 0)
-            Instantiate(prefabsAlMorir[Random.Range(0, prefabsAlMorir.Length)], transform.position, transform.rotation);
+            Instantiate(prefabsAlMorir[UnityEngine.Random.Range(0, prefabsAlMorir.Length)],
+                        transform.position, transform.rotation);
 
         HUDManager.Instance?.AddInfoFragment(fragments);
         MissionManager.Instance?.RegisterKill(gameObject.tag, name, tipo.ToString());
 
         Destroy(gameObject);
     }
+
 }
 
 
