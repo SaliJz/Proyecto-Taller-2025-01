@@ -58,7 +58,7 @@ public class HUDManager : MonoBehaviour
     private Coroutine floatingTextCoroutine;
     private Coroutine missionCoroutine;
 
-    private int infoFragments = 0;
+    private int infoFragments = 100;
     public int CurrentFragments => infoFragments;
 
     private void Awake()
