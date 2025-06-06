@@ -2,12 +2,28 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "WeaponMenu/New Card")]
-public class Weapons_Cards : ScriptableObject
+public class Weapons_Cards: ScriptableObject
 {
+    public enum UpgradeType
+    {
+        WeaponDamage,
+        FireRate,
+        ReloadSpeed,
+        AmmoBonus
+    }
+
+    public enum CurrentState
+    {
+       InUse,
+       Waiting,
+       Used,
+    }
+
+    public int ID;
+    public CurrentState currentState= CurrentState.Waiting;
+    public UpgradeType upgradeType;
     public string buffDescriptionText;
     public int price;
-    public int upgradeDamage;
-    public int upgradeFireRate;
-    public int upgradeReloadSpeed;
-    public int upgradeAmmoBonus;
+    public int upgrade;
+   
 }

@@ -10,12 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f7b74b2e6d7029e4b888cf7c8cb242ae, type: 3}
-  m_Name: Gun_01
+  m_Name: Gun_Dmg_00
   m_EditorClassIdentifier: 
-  weaponType: 0
-  buffDescriptionText: +10% danio por arma
-  price: 12
-  upgradeDamage: 10
-  upgradeFireRate: 0
-  upgradeReloadSpeed: 0
-  upgradeAmmoBonus: 0
+  ID: 0
+  currentState: 1
+  upgradeType: 0
+  buffDescriptionText: "+10% de da\xF1o base"
+  price: 50
+  upgrade: 10
