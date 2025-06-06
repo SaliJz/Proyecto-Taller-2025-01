@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -34,7 +35,7 @@ public class Weapons_Menu : MonoBehaviour
     public class Weapon_List_Buff_UI
     {
         public List<Weapons_Cards> listDamageBuff = new List<Weapons_Cards>();
-        public List<Weapons_Cards> listtRatioFireBuff = new List<Weapons_Cards>();
+        public List<Weapons_Cards> listRatioFireBuff = new List<Weapons_Cards>();
         public List<Weapons_Cards> listReloadSpeedBuff = new List<Weapons_Cards>();
         public List<Weapons_Cards> listAmmoBonusBuff = new List<Weapons_Cards>();
 
@@ -46,7 +47,7 @@ public class Weapons_Menu : MonoBehaviour
         public void GenerateBuffList(List<Weapons_Cards> weaponList)
         {
             listDamageBuff.Clear();
-            listtRatioFireBuff.Clear();
+            listRatioFireBuff.Clear();
             listReloadSpeedBuff.Clear();
             listAmmoBonusBuff.Clear();
 
@@ -55,7 +56,7 @@ public class Weapons_Menu : MonoBehaviour
                 if (newCard.upgradeType == Weapons_Cards.UpgradeType.WeaponDamage)
                     listDamageBuff.Add(newCard);
                 else if (newCard.upgradeType == Weapons_Cards.UpgradeType.FireRate)
-                    listtRatioFireBuff.Add(newCard);
+                    listRatioFireBuff.Add(newCard);
                 else if (newCard.upgradeType == Weapons_Cards.UpgradeType.ReloadSpeed)
                     listReloadSpeedBuff.Add(newCard);
                 else if (newCard.upgradeType == Weapons_Cards.UpgradeType.AmmoBonus)
@@ -89,6 +90,20 @@ public class Weapons_Menu : MonoBehaviour
                 }
             }
         }
+
+        public Weapons_Cards SelectedCardUI()
+        {
+            int randomIndex = Random.Range(0,listInUse.Count);
+            return listInUse[randomIndex];
+        }
+
+        public void UpdateCard(TextMeshProUGUI description, TextMeshProUGUI price)
+        {
+            var card = SelectedCardUI();
+            description.text = card.buffDescriptionText;
+            price.text = card.price.ToString();
+        }
+
     }
 
     public Weapon_List_Buff_UI gun = new Weapon_List_Buff_UI();
@@ -104,7 +119,6 @@ public class Weapons_Menu : MonoBehaviour
         rifle.GenerateBuffList(rifleAllCards);
         shotgun.GenerateBuffList(shotgunAllCards);
 
-
         gun.GroupIndexes0(gunAllCards);
         rifle.GroupIndexes0(rifleAllCards);
         shotgun.GroupIndexes0(shotgunAllCards);
@@ -113,6 +127,9 @@ public class Weapons_Menu : MonoBehaviour
         rifle.GroupWaitingState(rifleAllCards);
         shotgun.GroupWaitingState(shotgunAllCards);
 
+        gun.UpdateCard(gunBuffDescriptionTMP, gunPriceTMP);
+        rifle.UpdateCard(rifleBuffDescriptionTMP, riflePriceTMP);
+        shotgun.UpdateCard(shotgunBuffDescriptionTMP, shotgunPriceTMP);
 
     }
 
@@ -123,65 +140,38 @@ public class Weapons_Menu : MonoBehaviour
         //UpdateCard(shotgunAllCards);
     }
   
-
+     
     public void ManageCards(Weapon_List_Buff_UI WLB)
     {
        
         //if(WLB.)
     }
-    //private void UpdateCard(List<Weapons_Cards> weaponList)
-    //{
-
-        
-    //    var card = weaponList[0];
 
 
+    public void BuyGunCard() => BuyCard(gunAllCards);
+    public void BuyRifleCard() => BuyCard(rifleAllCards);
+    public void BuyShotgunCard() => BuyCard(shotgunAllCards);
 
+    private void BuyCard(Weapons_Cards weaponCard)
+    {
+        if (playerFragments >= current.price)
+        {
+            playerFragments -= current.price;
+            HUDManager.Instance.AddInfoFragment(-current.price);
+            used.Add(current);
+            waiting.RemoveAt(0);
 
-    //    if (weaponList.Count > 0)
-    //    {
-    //        var card = weaponList[0];
-    //        description.text = card.buffDescriptionText;
-    //        price.text = card.price.ToString();
-    //        button.interactable = playerFragments >= card.price;
-    //    }
-    //    else
-    //    {
-    //        description.text = "Sin cartas disponibles";
-    //        price.text = "";
-    //        price.color = Color.gray;
-    //        button.interactable = false;
-    //    }
-    //}
+            // Reemplazo: buscar una carta del mismo tipo que no esté en uso ni usada
+            foreach (var card in weaponList)
+            {
+                if (card.upgradeType == current.upgradeType && !waiting.Contains(card) && !used.Contains(card))
+                {
+                    waiting.Add(card);
+                    break;
+                }
+            }
 
-    //public void BuyGunCard() => BuyCard(gunAllCards, gunWaiting, gunUsed, gunBuffDescriptionTMP, gunPriceTMP, gunBuyButton);
-    //public void BuyRifleCard() => BuyCard(rifleAllCards, rifleWaiting, rifleUsed, rifleBuffDescriptionTMP, riflePriceTMP, rifleBuyButton);
-    //public void BuyShotgunCard() => BuyCard(shotgunAllCards, shotgunWaiting, shotgunUsed, shotgunBuffDescriptionTMP, shotgunPriceTMP, shotgunBuyButton);
-
-    //private void BuyCard(List<Weapons_Cards> allCards, List<Weapons_Cards> waiting, List<Weapons_Cards> used,
-    //                     TextMeshProUGUI desc, TextMeshProUGUI price, Button button)
-    //{
-    //    if (waiting.Count == 0) return;
-
-    //    var current = waiting[0];
-    //    if (playerFragments >= current.price)
-    //    {
-    //        playerFragments -= current.price;
-    //        HUDManager.Instance.AddInfoFragment(-current.price);
-    //        used.Add(current);
-    //        waiting.RemoveAt(0);
-
-    //        // Reemplazo: buscar una carta del mismo tipo que no esté en uso ni usada
-    //        foreach (var card in allCards)
-    //        {
-    //            if (card.upgradeType == current.upgradeType && !waiting.Contains(card) && !used.Contains(card))
-    //            {
-    //                waiting.Add(card);
-    //                break;
-    //            }
-    //        }
-
-    //        ShowCard(waiting, desc, price, button);
-    //    }
-    //}
+            ShowCard(waiting, desc, price, button);
+        }
+    }
 }

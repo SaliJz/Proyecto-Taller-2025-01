@@ -14,6 +14,7 @@ public class Weapons_Cards: ScriptableObject
 
     public enum CurrentState
     {
+       Selected,
        InUse,
        Waiting,
        Used,
