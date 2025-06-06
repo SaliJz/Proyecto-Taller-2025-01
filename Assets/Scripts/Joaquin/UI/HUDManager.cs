@@ -41,6 +41,8 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private float displayDuration = 2f;
     [SerializeField] private Vector2 floatingStartPos = new Vector2(480f, 0f); // editable desde el inspector
     [SerializeField] private Vector2 floatingEndPos = new Vector2(-10, 0f);      // editable desde el inspector
+    [SerializeField] private TextMeshProUGUI currentFragmentsText;
+    [SerializeField] private bool isNivel1 = false;
 
     [Header("Mission UI")]
     [SerializeField] private RectTransform missionTextObject;
@@ -58,7 +60,7 @@ public class HUDManager : MonoBehaviour
     private Coroutine floatingTextCoroutine;
     private Coroutine missionCoroutine;
 
-    private int infoFragments = 100;
+    private static int infoFragments = 100;
     public int CurrentFragments => infoFragments;
 
     private void Awake()
@@ -75,6 +77,11 @@ public class HUDManager : MonoBehaviour
 
     private void Start()
     {
+        if (isNivel1)
+        {             
+            infoFragments = 100;
+        }
+
         floatingTextObject.gameObject.SetActive(false);
 
         if (!animateMission)
@@ -130,13 +137,27 @@ public class HUDManager : MonoBehaviour
     public void AddInfoFragment(int amount)
     {
         infoFragments += amount;
-
+        infoFragments = Mathf.Max(0, infoFragments);
         if (floatingTextCoroutine != null)
         {
             StopCoroutine(floatingTextCoroutine);
         }
 
         floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: + {amount} -> {infoFragments}"));
+        Debug.Log($"F. Cod.: + {amount} -> {infoFragments}");
+    }
+
+    public void DiscountInfoFragment(int amount)
+    {
+        infoFragments -= amount;
+        infoFragments = Mathf.Max(0, infoFragments);
+        if (floatingTextCoroutine != null)
+        {
+            StopCoroutine(floatingTextCoroutine);
+        }
+
+        floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: - {amount} -> {infoFragments}"));
+        Debug.Log($"F. Cod.: - {amount} -> {infoFragments}");
     }
 
     private IEnumerator ShowFloatingText(string message)
@@ -261,6 +282,24 @@ public class HUDManager : MonoBehaviour
 
     public void UpdateAbilityStatus(string abilityName, float cooldownRemaining, bool isReady, float cooldownTotal = 1f)
     {
+        if (abilityNameText != null && !string.IsNullOrEmpty(abilityName))
+        {
+            if (!abilityNameText.gameObject.activeSelf) abilityNameText.gameObject.SetActive(true);
+            abilityNameText.text = abilityName;
+        }
+        else
+        {
+            if (abilityNameText != null && abilityNameText.gameObject.activeSelf)
+            {
+                abilityNameText.gameObject.SetActive(false);
+            }
+        }
+
+        if (abilityCooldownFill != null && cooldownRemaining <= 0)
+        {
+            abilityCooldownFill.gameObject.SetActive(false);
+        }
+
         if (isReady)
         {
             abilityStatusText.text = $"¡Listo!";
@@ -281,7 +320,13 @@ public class HUDManager : MonoBehaviour
 
     public void UpdateAbilityUI(GameObject abilityObj)
     {
+        if (abilityIcon != null && abilityObj != null)
+        {
+            if (abilityIcon.gameObject.activeSelf) abilityIcon.gameObject.SetActive(false);
+        }
+
         AbilityInfo info = abilityObj.GetComponent<AbilityInfo>();
+
         if (info != null)
         {
             if (!abilityIcon.gameObject.activeSelf) abilityIcon.gameObject.SetActive(true);
