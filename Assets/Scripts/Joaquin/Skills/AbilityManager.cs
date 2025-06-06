@@ -6,8 +6,11 @@ public class AbilityManager : MonoBehaviour
 {
     [Header("Todas las habilidades posibles")]
     [SerializeField] private List<GameObject> allAbilities;
+
     [Header("Habilidades activas")]
     [SerializeField] private List<GameObject> activeAbilities = new List<GameObject>();
+
+    [SerializeField] private bool allowFirstAbility = false;
     private int currentIndex = 0;
 
     public List<GameObject> activedAbilities => activeAbilities;
@@ -22,12 +25,15 @@ public class AbilityManager : MonoBehaviour
 
         LoadFromDataStore();
 
-        if (activeAbilities.Count == 0 && allAbilities.Count > 0)
+        if (allowFirstAbility)
         {
-            GameObject random = allAbilities[Random.Range(0, allAbilities.Count)];
-            activeAbilities.Add(random);
-            currentIndex = 0;
-            SaveToDataStore();
+            if (activeAbilities.Count == 0 && allAbilities.Count > 0)
+            {
+                GameObject random = allAbilities[Random.Range(0, allAbilities.Count)];
+                activeAbilities.Add(random);
+                currentIndex = 0;
+                SaveToDataStore();
+            }
         }
 
         UpdateAbilitiesActiveState();
@@ -69,6 +75,8 @@ public class AbilityManager : MonoBehaviour
 
     private void UpdateAbilitiesActiveState()
     {
+        if (activeAbilities.Count <= 0) return;
+
         foreach (var ability in allAbilities)
         {
             ability.SetActive(false);
@@ -97,13 +105,14 @@ public class AbilityManager : MonoBehaviour
     {
         if (AbilityDataStore.Instance == null) return;
 
-        AbilityDataStore.Instance.abilityNames.Clear();
+        AbilityDataStore.Instance.AbilityNames.Clear();
         foreach (var a in activeAbilities)
         {
-            AbilityDataStore.Instance.abilityNames.Add(a.name);
+            AbilityDataStore.Instance.AbilityNames.Add(a.name);
         }
 
-        AbilityDataStore.Instance.currentIndex = currentIndex;
+        // Fix for CS0200: Use a method or alternative approach to update CurrentIndex
+        AbilityDataStore.Instance.SetCurrentIndex(currentIndex);
     }
 
     private void LoadFromDataStore()
@@ -112,13 +121,13 @@ public class AbilityManager : MonoBehaviour
 
         if (AbilityDataStore.Instance == null) return;
 
-        foreach (string abilityName in AbilityDataStore.Instance.abilityNames)
+        foreach (string abilityName in AbilityDataStore.Instance.AbilityNames)
         {
             GameObject ability = allAbilities.Find(a => a.name == abilityName);
             if (ability != null) activeAbilities.Add(ability);
         }
 
-        currentIndex = AbilityDataStore.Instance.currentIndex;
+        currentIndex = AbilityDataStore.Instance.CurrentIndex;
         currentIndex = Mathf.Clamp(currentIndex, 0, activeAbilities.Count - 1);
     }
 }
