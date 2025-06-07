@@ -147,7 +147,7 @@ public class Weapons_Menu : MonoBehaviour
         //if(WLB.)
     }
 
-
+    /*
     public void BuyGunCard() => BuyCard(gunAllCards);
     public void BuyRifleCard() => BuyCard(rifleAllCards);
     public void BuyShotgunCard() => BuyCard(shotgunAllCards);
@@ -174,4 +174,5 @@ public class Weapons_Menu : MonoBehaviour
             ShowCard(waiting, desc, price, button);
         }
     }
+    */
 }

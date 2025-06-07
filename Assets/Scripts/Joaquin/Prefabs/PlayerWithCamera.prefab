@@ -206,6 +206,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityName: GlitchTime
   icon: {fileID: -87169099, guid: d2c51b25bf25d9c43814a3ef47217d89, type: 3}
+  description: 'Disparo que ralentiza a los enemigos al impactarlos.
+
+'
 --- !u!1 &650507068087206632
 GameObject:
   m_ObjectHideFlags: 0
@@ -385,6 +388,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityName: ElectroHack
   icon: {fileID: 1135544967, guid: d2c51b25bf25d9c43814a3ef47217d89, type: 3}
+  description: "Disparo que electrocuta a los enemigos cercanos dentro de un \xE1rea
+    de efecto.\r\n"
 --- !u!1 &1586848620660913248
 GameObject:
   m_ObjectHideFlags: 0
@@ -437,7 +442,9 @@ MonoBehaviour:
   - {fileID: 633714095734062609}
   - {fileID: 1039618764485251716}
   - {fileID: 4701876041897125803}
+  - {fileID: 3100109939946986989}
   activeAbilities: []
+  allowFirstAbility: 1
 --- !u!1 &2027354105013685677
 GameObject:
   m_ObjectHideFlags: 0
@@ -714,6 +721,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityName: Mindjack
   icon: {fileID: -53119497, guid: d2c51b25bf25d9c43814a3ef47217d89, type: 3}
+  description: 'Disparo que convierte a un enemigo en aliado temporal, reduciendo
+    su vida progresivamente.
+
+'
 --- !u!1 &3193621507321664050
 GameObject:
   m_ObjectHideFlags: 0
@@ -723,7 +734,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7995055033124870633}
-  - component: {fileID: 6186703028947052587}
+  - component: {fileID: 2727218027592351518}
+  - component: {fileID: 7367639962973085236}
   m_Layer: 0
   m_Name: WeaponHolder
   m_TagString: Untagged
@@ -749,7 +761,7 @@ Transform:
   - {fileID: 7732561493241444904}
   m_Father: {fileID: 5866483386157149759}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6186703028947052587
+--- !u!114 &2727218027592351518
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -758,7 +770,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 3193621507321664050}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 334d05fea796a0649aeadf585d9aae4b, type: 3}
+  m_Script: {fileID: 11500000, guid: 7cd1cfa48767f2f499634afa279da75d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weapons: []
+  weaponHolder: {fileID: 7995055033124870633}
+  weaponNameText: {fileID: 0}
+  weaponIconImage: {fileID: 0}
+--- !u!114 &7367639962973085236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3193621507321664050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cd1cfa48767f2f499634afa279da75d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   weapons:
@@ -967,7 +995,6 @@ GameObject:
   - component: {fileID: 7989821213297080153}
   - component: {fileID: 5798362838202825472}
   - component: {fileID: 2559406640471680209}
-  - component: {fileID: 1616205543270935574}
   - component: {fileID: 3489507362094163263}
   m_Layer: 0
   m_Name: DashGlitchVFX
@@ -5789,20 +5816,6 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!114 &1616205543270935574
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3820181279776040069}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df3386f7bb18bee44b57bf6cd313364d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  orientation: {fileID: 4119031220400882466}
-  rotationSpeed: 10
 --- !u!54 &3489507362094163263
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6107,6 +6120,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityName: IgnitionCode
   icon: {fileID: -107528273, guid: d2c51b25bf25d9c43814a3ef47217d89, type: 3}
+  description: "Disparo que quema a los enemigos en un \xE1rea por un periodo de
+    tiempo.\r\n"
 --- !u!1 &4841268610612793011
 GameObject:
   m_ObjectHideFlags: 0
@@ -6295,7 +6310,7 @@ Transform:
   m_GameObject: {fileID: 5391034880052984008}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.6666665, y: 2, z: 0.75}
+  m_LocalPosition: {x: 1.67, y: 2, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6355,7 +6370,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
   m_Lens:
-    FieldOfView: 59.77794
+    FieldOfView: 55
     OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
