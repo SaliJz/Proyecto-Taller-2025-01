@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Weapons_Menu : MonoBehaviour
@@ -116,6 +117,14 @@ public class Weapons_Menu : MonoBehaviour
             price.text = selectedCard.price.ToString();
         }
 
+        public bool AreAllBuffListsEmpty()
+        {
+            return listDamageBuff.Count == 0 &&
+                   listRatioFireBuff.Count == 0 &&
+                   listReloadSpeedBuff.Count == 0 &&
+                   listAmmoBonusBuff.Count == 0;
+        }
+
     }
 
     public Weapon_List_Buff_UI gun = new Weapon_List_Buff_UI();
@@ -145,11 +154,29 @@ public class Weapons_Menu : MonoBehaviour
 
     }
 
-    public void ShowCurrentCard()
+    private void CheckAndDisableUI(Weapon_List_Buff_UI wLB, Button button, TextMeshProUGUI description, TextMeshProUGUI price)
     {
-        //UpdateCard(gunAllCards);
-        //UpdateCard(rifleAllCards);
-        //UpdateCard(shotgunAllCards);
+        if (wLB.AreAllBuffListsEmpty())
+        {
+            button.interactable = false;
+            button.image.color = Color.gray;
+            description.text = "Nivel máximo alcanzado";
+            price.text = "-";
+        }
+        else
+        {
+            // Hay cartas, verificamos si tiene suficientes fragmentos
+            if (HUDManager.Instance.CurrentFragments >= wLB.selectedCard.price)
+            {
+                button.interactable = true;
+                button.image.color = Color.white; // O el color original que uses
+            }
+            else
+            {
+                button.interactable = false;
+                button.image.color = Color.gray;
+            }
+        }
     }
 
     public void BuyGunCard() => BuyCard(gun);
@@ -175,7 +202,7 @@ public class Weapons_Menu : MonoBehaviour
             wLB.listDamageBuff.Remove(selectedCard);
             
             int index = wLB.listInUse.IndexOf(selectedCard);
-            if (index != -1)
+            if (index != -1 && wLB.listDamageBuff.Count > 0)
             {
                 wLB.listInUse[index] = wLB.listDamageBuff[0];
             }
@@ -185,7 +212,7 @@ public class Weapons_Menu : MonoBehaviour
             wLB.listRatioFireBuff.Remove(selectedCard);
            
             int index = wLB.listInUse.IndexOf(selectedCard);
-            if (index != -1)
+            if (index != -1 && wLB.listRatioFireBuff.Count > 0)
             {
                 wLB.listInUse[index] = wLB.listRatioFireBuff[0];
             }
@@ -195,7 +222,7 @@ public class Weapons_Menu : MonoBehaviour
             wLB.listReloadSpeedBuff.Remove(selectedCard);
             
             int index = wLB.listInUse.IndexOf(selectedCard);
-            if (index != -1)
+            if (index != -1 && wLB.listReloadSpeedBuff.Count > 0)
             {
                 wLB.listInUse[index] = wLB.listReloadSpeedBuff[0];
             }
@@ -205,7 +232,7 @@ public class Weapons_Menu : MonoBehaviour
             wLB.listAmmoBonusBuff.Remove(selectedCard);
           
             int index = wLB.listInUse.IndexOf(selectedCard);
-            if (index != -1)
+            if (index != -1 && wLB.listAmmoBonusBuff.Count > 0)
             {
                 wLB.listInUse[index] = wLB.listAmmoBonusBuff[0];
             }
@@ -225,15 +252,18 @@ public class Weapons_Menu : MonoBehaviour
         {
             shotgun.UpdateCard(shotgunBuffDescriptionTMP, shotgunPriceTMP);
         }
-           
+
+        CheckAndDisableUI(gun, gunBuyButton, gunBuffDescriptionTMP, gunPriceTMP);
+        CheckAndDisableUI(rifle, rifleBuyButton, rifleBuffDescriptionTMP, riflePriceTMP);
+        CheckAndDisableUI(shotgun, shotgunBuyButton, shotgunBuffDescriptionTMP, shotgunPriceTMP);
 
         /*wLB.listInUse.Add(); *///Añadimmos a la lista de en uso el primero en waiting
                                  //wLB.listWaiting.RemoveAt(0);//Eliminamos ahora el primero de waiting
     }
 
-
-    public void UpdateIndexInUse()
+    public void LoadSceneByName(string sceneName)
     {
-     
+        SceneManager.LoadScene("Nivel1");
     }
+
 }
