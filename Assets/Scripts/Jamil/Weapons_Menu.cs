@@ -1,6 +1,6 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -42,6 +42,7 @@ public class Weapons_Menu : MonoBehaviour
         public List<Weapons_Cards> listInUse = new List<Weapons_Cards>();
         public List<Weapons_Cards> listWaiting = new List<Weapons_Cards>();
         public List<Weapons_Cards> listUsed = new List<Weapons_Cards>();
+        public Weapons_Cards selectedCard;
 
 
         public void GenerateBuffList(List<Weapons_Cards> weaponList)
@@ -91,17 +92,28 @@ public class Weapons_Menu : MonoBehaviour
             }
         }
 
-        public Weapons_Cards SelectedCardUI()
+        public Weapons_Cards GetRandomCard(Weapon_List_Buff_UI wLB)
         {
-            int randomIndex = Random.Range(0,listInUse.Count);
-            return listInUse[randomIndex];
+            // Restaurar el estado de todas las cartas que no están seleccionadas
+            foreach (Weapons_Cards card in wLB.listInUse)
+            {
+                if (card.currentState != Weapons_Cards.CurrentState.Selected)
+                {
+                    card.currentState = Weapons_Cards.CurrentState.InUse;
+                }
+            }
+
+            int randomIndex = Random.Range(0, wLB.listInUse.Count);
+            wLB.listInUse[randomIndex].currentState = Weapons_Cards.CurrentState.Selected;
+
+            return wLB.listInUse[randomIndex];
         }
 
         public void UpdateCard(TextMeshProUGUI description, TextMeshProUGUI price)
         {
-            var card = SelectedCardUI();
-            description.text = card.buffDescriptionText;
-            price.text = card.price.ToString();
+            selectedCard = GetRandomCard(this);
+            description.text = selectedCard.buffDescriptionText;
+            price.text = selectedCard.price.ToString();
         }
 
     }
@@ -139,40 +151,89 @@ public class Weapons_Menu : MonoBehaviour
         //UpdateCard(rifleAllCards);
         //UpdateCard(shotgunAllCards);
     }
-  
-     
-    public void ManageCards(Weapon_List_Buff_UI WLB)
+
+    public void BuyGunCard() => BuyCard(gun);
+    public void BuyRifleCard() => BuyCard(rifle);
+    public void BuyShotgunCard() => BuyCard(shotgun);
+
+    public void BuyCard(Weapon_List_Buff_UI wLB)
     {
-       
-        //if(WLB.)
-    }
+            Weapons_Cards selectedCard = wLB.selectedCard; //Usa la misma carta seleccionada en la clase
 
-    /*
-    public void BuyGunCard() => BuyCard(gunAllCards);
-    public void BuyRifleCard() => BuyCard(rifleAllCards);
-    public void BuyShotgunCard() => BuyCard(shotgunAllCards);
-
-    private void BuyCard(Weapons_Cards weaponCard)
-    {
-        if (playerFragments >= current.price)
-        {
-            playerFragments -= current.price;
-            HUDManager.Instance.AddInfoFragment(-current.price);
-            used.Add(current);
-            waiting.RemoveAt(0);
-
-            // Reemplazo: buscar una carta del mismo tipo que no esté en uso ni usada
-            foreach (var card in weaponList)
-            {
-                if (card.upgradeType == current.upgradeType && !waiting.Contains(card) && !used.Contains(card))
-                {
-                    waiting.Add(card);
-                    break;
-                }
-            }
-
-            ShowCard(waiting, desc, price, button);
+        if (HUDManager.Instance.CurrentFragments >= selectedCard.price)
+        {          
+            HUDManager.Instance.DiscountInfoFragment(selectedCard.price);
         }
+
+        //Ahora removemos y agregamos
+        //wLB.listInUse.RemoveAll(card => card.currentState == Weapons_Cards.CurrentState.Selected);
+        var cardUpgradeType = selectedCard.upgradeType;
+        UnityEngine.Debug.Log(cardUpgradeType.ToString());
+
+        if (cardUpgradeType==Weapons_Cards.UpgradeType.WeaponDamage)
+        {
+            wLB.listDamageBuff.Remove(selectedCard);
+            
+            int index = wLB.listInUse.IndexOf(selectedCard);
+            if (index != -1)
+            {
+                wLB.listInUse[index] = wLB.listDamageBuff[0];
+            }
+        }
+        else if (selectedCard.upgradeType == Weapons_Cards.UpgradeType.FireRate)
+        {
+            wLB.listRatioFireBuff.Remove(selectedCard);
+           
+            int index = wLB.listInUse.IndexOf(selectedCard);
+            if (index != -1)
+            {
+                wLB.listInUse[index] = wLB.listRatioFireBuff[0];
+            }
+        }
+        else if (selectedCard.upgradeType == Weapons_Cards.UpgradeType.ReloadSpeed)
+        {
+            wLB.listReloadSpeedBuff.Remove(selectedCard);
+            
+            int index = wLB.listInUse.IndexOf(selectedCard);
+            if (index != -1)
+            {
+                wLB.listInUse[index] = wLB.listReloadSpeedBuff[0];
+            }
+        }
+        else if (selectedCard.upgradeType == Weapons_Cards.UpgradeType.AmmoBonus)
+        {
+            wLB.listAmmoBonusBuff.Remove(selectedCard);
+          
+            int index = wLB.listInUse.IndexOf(selectedCard);
+            if (index != -1)
+            {
+                wLB.listInUse[index] = wLB.listAmmoBonusBuff[0];
+            }
+        }
+
+        if (wLB == gun)
+        {
+            gun.UpdateCard(gunBuffDescriptionTMP, gunPriceTMP);
+        }
+          
+        else if (wLB == rifle)
+        {
+            rifle.UpdateCard(rifleBuffDescriptionTMP, riflePriceTMP);
+        }
+          
+        else if (wLB == shotgun)
+        {
+            shotgun.UpdateCard(shotgunBuffDescriptionTMP, shotgunPriceTMP);
+        }
+           
+
+        /*wLB.listInUse.Add(); *///Añadimmos a la lista de en uso el primero en waiting
+                                 //wLB.listWaiting.RemoveAt(0);//Eliminamos ahora el primero de waiting
     }
-    */
+
+
+    public void UpdateIndexInUse()
+    {
+     
+    }
 }
