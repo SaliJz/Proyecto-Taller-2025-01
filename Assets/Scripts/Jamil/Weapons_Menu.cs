@@ -263,7 +263,7 @@ public class Weapons_Menu : MonoBehaviour
 
     public void LoadSceneByName(string sceneName)
     {
-        SceneManager.LoadScene("Nivel1");
+        SceneManager.LoadScene("sceneName");
     }
 
 }
