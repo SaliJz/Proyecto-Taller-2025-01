@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 8111632047607269920}
   - component: {fileID: 2370255263232292570}
   - component: {fileID: 7924006323616801040}
-  - component: {fileID: 1763472515554101068}
+  - component: {fileID: -4607345181132855021}
   m_Layer: 0
-  m_Name: HitPartycles-Green
+  m_Name: HitPartycle_Rosa
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -224,7 +224,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.069517374, g: 1, b: 0, a: 1}
+      maxColor: {r: 1, g: 0, b: 0.80021286, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -1367,7 +1367,7 @@ ParticleSystem:
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 1, g: 1, b: 1, a: 1}
+        key0: {r: 1, g: 0, b: 0.6570525, a: 1}
         key1: {r: 1, g: 1, b: 1, a: 0}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
@@ -4889,7 +4889,7 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!114 &1763472515554101068
+--- !u!114 &-4607345181132855021
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
