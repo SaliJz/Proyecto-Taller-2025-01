@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 3643646396661249054}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -0.17999983, y: -0.27999997, z: -0.27705717}
+  m_LocalPosition: {x: 0, y: -0.48, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -287,8 +287,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 2
-      minScalar: 1
+      scalar: 1.5
+      minScalar: 0.3
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -611,7 +611,7 @@ ParticleSystem:
     gravityModifier:
       serializedVersion: 2
       minMaxState: 0
-      scalar: -1
+      scalar: -0.2
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -751,7 +751,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 0.33
+      value: 0.1
       mode: 0
       spread: 0
       speed:
@@ -870,7 +870,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 25
+      scalar: 35
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -1308,16 +1308,16 @@ ParticleSystem:
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 1, g: 0.92615026, b: 0, a: 1}
-        key1: {r: 1, g: 0.64744824, b: 0, a: 1}
-        key2: {r: 1, g: 0.07371545, b: 0, a: 0}
-        key3: {r: 1, g: 0, b: 0.41492462, a: 1}
+        key0: {r: 1, g: 0.9722346, b: 0.6273585, a: 0}
+        key1: {r: 1, g: 0.75332725, b: 0, a: 0.67058825}
+        key2: {r: 1, g: 0.07371545, b: 0, a: 1}
+        key3: {r: 1, g: 0, b: 0.41492462, a: 0}
         key4: {r: 1, g: 0, b: 0.41492462, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
-        ctime0: 7517
-        ctime1: 20817
+        ctime0: 4968
+        ctime1: 15667
         ctime2: 37779
         ctime3: 54356
         ctime4: 49344
@@ -1325,8 +1325,8 @@ ParticleSystem:
         ctime6: 0
         ctime7: 0
         atime0: 0
-        atime1: 47995
-        atime2: 65535
+        atime1: 7834
+        atime2: 47995
         atime3: 65535
         atime4: 0
         atime5: 0
@@ -1335,7 +1335,7 @@ ParticleSystem:
         m_Mode: 0
         m_ColorSpace: 0
         m_NumColorKeys: 4
-        m_NumAlphaKeys: 3
+        m_NumAlphaKeys: 4
       minGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -4842,7 +4842,7 @@ GameObject:
   - component: {fileID: 3137421173199620101}
   - component: {fileID: 6599058697213996301}
   m_Layer: 0
-  m_Name: Fire (1)
+  m_Name: Trazador
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9674,7 +9674,7 @@ GameObject:
   - component: {fileID: 5492903113513831782}
   - component: {fileID: 8646663785634973374}
   m_Layer: 0
-  m_Name: Trazador_Ignition_Code
+  m_Name: Proyectil_Ignition_Code
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9688,7 +9688,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5242009311749679352}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 9.984724, y: -2.4192863, z: 0.16}
   m_LocalScale: {x: 0.3624826, y: 0.33378485, z: 0.3030971}
   m_ConstrainProportionsScale: 0
