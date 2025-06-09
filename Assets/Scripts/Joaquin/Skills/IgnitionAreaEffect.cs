@@ -31,8 +31,8 @@ public class IgnitionAreaEffect : MonoBehaviour
         while (elapsedTime < duration)
         {
             ApplyIgnition(transform.position);
-            elapsedTime += Time.deltaTime;
-            yield return null;
+            yield return new WaitForSeconds(1f);
+            elapsedTime += 1f;
         }
         Destroy(gameObject); // Destruir el efecto después de la duración
     }
@@ -40,7 +40,7 @@ public class IgnitionAreaEffect : MonoBehaviour
     private void ApplyIgnition(Vector3 center)
     {
         Collider[] hits = Physics.OverlapSphere(center, radius, enemyLayer);
-        Debug.Log($"[IgnitionArea] Objetos encontrados: {hits.Length}");
+        //Debug.Log($"[IgnitionArea] Objetos encontrados: {hits.Length}");
 
         foreach (Collider col in hits)
         {
@@ -67,7 +67,7 @@ public class IgnitionAreaEffect : MonoBehaviour
         {
             if (enemy != null)
             {
-                Debug.Log($"Aplicando daño por ignición a: {enemy.name}");
+                //Debug.Log($"Aplicando daño por ignición a: {enemy.name}");
                 enemy.TakeDamage(damagePerSecond);
             }
         }

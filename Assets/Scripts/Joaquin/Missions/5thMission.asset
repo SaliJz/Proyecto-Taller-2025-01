@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: 5thMission
   m_EditorClassIdentifier: 
   missionName: Matar 50 enemigos
-  enemyTag: Enemy
-  targetAmount: 50
-  currentAmount: 0
+  killConditions:
+  - conditionType: 0
+    value: Any
+    requiredAmount: 50
+    currentAmount: 0

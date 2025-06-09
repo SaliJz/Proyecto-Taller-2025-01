@@ -1,81 +1,207 @@
+Ôªøusing System;
+using System.Linq;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class VidaEnemigoGeneral : MonoBehaviour
 {
-    public enum TipoEnemigo { Ametralladora = 0, Pistola = 1, Escopeta = 2 }
+    public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
 
-    [Header("Configuracion de vida")]
+    [Header("Configuraci√≥n de vida")]
     public float vida = 100f;
     public Slider sliderVida;
 
-    [Header("Danio por bala")]
-    public float danioAlto = 20f;   // Danio si la bala NO coincide con el tipo
-    public float danioBajo = 5f;    // Danio si la bala coincide con el tipo
+    [Header("Da√±o BAJO (coincide) por tipo de bala")]
+    public float danioBajoAmetralladora = 5f;
+    public float danioBajoPistola = 5f;
+    public float danioBajoEscopeta = 5f;
+
+    [Header("Da√±o ALTO (no coincide) por tipo de bala")]
+    public float danioAltoAmetralladora = 20f;
+    public float danioAltoPistola = 20f;
+    public float danioAltoEscopeta = 20f;
+
+    [Header("Multiplicador por headshot")]
+    public float headshotMultiplier = 2f;
+
+    [Header("Colliders")]
+    [Tooltip("Collider que corresponde a la cabeza")]
+    public Collider headCollider;
+    [Tooltip("Colliders que corresponden al cuerpo")]
+    public Collider[] bodyColliders;
+
+    [Header("Colores HDR por tipo")]
+    [ColorUsage(true, true)]
+    public Color hdrColorAmetralladora = Color.blue;
+    [ColorUsage(true, true)]
+    public Color hdrColorPistola = Color.red;
+    [ColorUsage(true, true)]
+    public Color hdrColorEscopeta = Color.green;
 
     [Header("Renderizado")]
-    [Tooltip("Arrastra aqui el MeshRenderer de tu enemigo")]
-    public MeshRenderer meshRenderer;
+    public MeshRenderer[] meshRenderers;
 
-    [Header("Prefabs al morir")]
-    [Tooltip("Arrastra aqui los prefabs que pueden generarse al morir")]
-    public GameObject[] prefabsAlMorir;
+    [Header("Prefabs al morir por tipo")]
+    [Tooltip("Prefab a instanciar cuando muere un enemigo tipo Ametralladora")]
+    public GameObject prefabMuerteAmetralladora;
+    [Tooltip("Prefab a instanciar cuando muere un enemigo tipo Pistola")]
+    public GameObject prefabMuertePistola;
+    [Tooltip("Prefab a instanciar cuando muere un enemigo tipo Escopeta")]
+    public GameObject prefabMuerteEscopeta;
 
-    [SerializeField] private int fragments = 50; // Fragmentos de informacion que suelta el enemigo
-    private bool isDead = false; // Para evitar multiples muertes
+    [Header("Fragmentos y HUD")]
+    public int fragments = 50;
 
     private TipoEnemigo tipo;
+    private bool isDead = false;
+
+    // Color final que se determin√≥ al inicio y que no debe cambiar
+    private Color finalColor;
+
+    // Referencia al controlador de parpadeo HDR
+    private TipoColorHDRController colorController;
+
+    void Awake()
+    {
+        meshRenderers = GetComponentsInChildren<MeshRenderer>();
+        colorController = GetComponent<TipoColorHDRController>();
+    }
 
     void Start()
     {
-        // 1) Elegir tipo al azar
-        tipo = (TipoEnemigo)Random.Range(0, 3);
-        Debug.Log("[VidaEnemigo] Tipo asignado: " + tipo);
+        // 1) Determinamos tipo al azar y su color HDR
+        tipo = (TipoEnemigo)UnityEngine.Random.Range(0, 3);
+#if UNITY_EDITOR
+        Debug.Log($"[VidaEnemigo] Tipo: {tipo}");
+#endif
+        finalColor = ObtenerColorPorTipo(tipo);
 
-        // 2) Determinar color segun el tipo
-        Color colorAsignado = Color.white;
-        switch (tipo)
-        {
-            case TipoEnemigo.Ametralladora:
-                colorAsignado = Color.blue;
-                break;
-            case TipoEnemigo.Pistola:
-                colorAsignado = Color.red;
-                break;
-            case TipoEnemigo.Escopeta:
-                colorAsignado = Color.green;
-                break;
-        }
+        // 2) Asignamos Color y Emission a todos los materiales existentes
+        AsignarColorYEmissionAMateriales(finalColor);
 
-        // 3) Aplicar el color al MeshRenderer asignado
-        if (meshRenderer != null)
-        {
-            meshRenderer.material.color = colorAsignado;
-        }
-        else
-        {
-            Debug.LogWarning("[VidaEnemigo] No se ha asignado el MeshRenderer en el Inspector.");
-        }
-
-        // 4) Inicializar slider de vida
         if (sliderVida != null)
         {
             sliderVida.maxValue = vida;
             sliderVida.value = vida;
         }
+
+        // 3) Durante los pr√≥ximos 0.5 seg, detectamos si aparecen nuevos materiales
+        StartCoroutine(DetectarYAsignarNuevosMateriales(finalColor, 0.5f));
     }
 
-    /// <summary>
-    /// Aplica danio generico y actualiza el slider.
-    /// </summary>
-    public void RecibirDanio(float danio)
+    void Update()
     {
-        if (isDead) return; // No hacer nada si ya esta muerto
+        // Reaplicamos el color en cada frame para evitar que Unity lo sobreescriba:
+        ReaplicarColorYEmissionAMateriales(finalColor);
+    }
 
-        vida -= danio;
-        if (sliderVida != null)
-            sliderVida.value = vida;
+    private Color ObtenerColorPorTipo(TipoEnemigo t)
+    {
+        switch (t)
+        {
+            case TipoEnemigo.Ametralladora:
+                return hdrColorAmetralladora;
+            case TipoEnemigo.Pistola:
+                return hdrColorPistola;
+            case TipoEnemigo.Escopeta:
+                return hdrColorEscopeta;
+            default:
+                return Color.white;
+        }
+    }
 
+    private void AsignarColorYEmissionAMateriales(Color color)
+    {
+        foreach (var mr in meshRenderers)
+        {
+            Material[] mats = mr.materials;
+            for (int i = 0; i < mats.Length; i++)
+            {
+                Material mat = mats[i];
+
+                if (mat.HasProperty("_BaseColor"))
+                    mat.SetColor("_BaseColor", color);
+                else if (mat.HasProperty("_Color"))
+                    mat.SetColor("_Color", color);
+
+                mat.EnableKeyword("_EMISSION");
+                if (mat.HasProperty("_EmissionColor"))
+                    mat.SetColor("_EmissionColor", color);
+            }
+            mr.materials = mats;
+        }
+    }
+
+    private void ReaplicarColorYEmissionAMateriales(Color color)
+    {
+        foreach (var mr in meshRenderers)
+        {
+            var mats = mr.materials;
+            for (int i = 0; i < mats.Length; i++)
+            {
+                Material mat = mats[i];
+
+                if (mat.HasProperty("_BaseColor"))
+                    mat.SetColor("_BaseColor", color);
+                else if (mat.HasProperty("_Color"))
+                    mat.SetColor("_Color", color);
+
+                mat.EnableKeyword("_EMISSION");
+                if (mat.HasProperty("_EmissionColor"))
+                    mat.SetColor("_EmissionColor", color);
+            }
+            mr.materials = mats;
+        }
+    }
+
+    private IEnumerator DetectarYAsignarNuevosMateriales(Color color, float duracion)
+    {
+        float timer = 0f;
+        var conteoInicial = meshRenderers.ToDictionary(
+            mr => mr,
+            mr => mr.materials.Length
+        );
+
+        while (timer < duracion)
+        {
+            foreach (var mr in meshRenderers)
+            {
+                Material[] currentMats = mr.materials;
+                int inicial = conteoInicial[mr];
+                if (currentMats.Length > inicial)
+                {
+                    for (int i = inicial; i < currentMats.Length; i++)
+                    {
+                        Material mat = currentMats[i];
+
+                        if (mat.HasProperty("_BaseColor"))
+                            mat.SetColor("_BaseColor", color);
+                        else if (mat.HasProperty("_Color"))
+                            mat.SetColor("_Color", color);
+
+                        mat.EnableKeyword("_EMISSION");
+                        if (mat.HasProperty("_EmissionColor"))
+                            mat.SetColor("_EmissionColor", color);
+                    }
+                    conteoInicial[mr] = currentMats.Length;
+                    mr.materials = currentMats;
+                }
+            }
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    public void RecibirDanio(float d)
+    {
+        if (isDead) return;
+        if (colorController != null)
+            colorController.RecibirDanio(d);
+
+        vida -= d;
+        if (sliderVida != null) sliderVida.value = vida;
         if (vida <= 0f)
         {
             vida = 0f;
@@ -83,39 +209,74 @@ public class VidaEnemigoGeneral : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Aplica danio segun el tipo de bala (usa enum)
-    /// </summary>
-    public void RecibirDanioPorBala(BalaPlayer.TipoBala tipoBala)
+    public void RecibirDanioPorBala(BalaPlayer.TipoBala tb, Collider hitCollider)
     {
-        float danioAAplicar = danioAlto;
-
-        // Si el enum coincide con el tipo de enemigo, aplicamos danio bajo
-        if ((tipo == TipoEnemigo.Ametralladora && tipoBala == BalaPlayer.TipoBala.Ametralladora) ||
-            (tipo == TipoEnemigo.Pistola && tipoBala == BalaPlayer.TipoBala.Pistola) ||
-            (tipo == TipoEnemigo.Escopeta && tipoBala == BalaPlayer.TipoBala.Escopeta))
+        if ((tb == BalaPlayer.TipoBala.Ametralladora && tipo == TipoEnemigo.Ametralladora) ||
+            (tb == BalaPlayer.TipoBala.Pistola && tipo == TipoEnemigo.Pistola) ||
+            (tb == BalaPlayer.TipoBala.Escopeta && tipo == TipoEnemigo.Escopeta))
         {
-            danioAAplicar = danioBajo;
+            return;
         }
 
-        RecibirDanio(danioAAplicar);
+        float d;
+        switch (tb)
+        {
+            case BalaPlayer.TipoBala.Ametralladora:
+                d = danioAltoAmetralladora;
+                break;
+            case BalaPlayer.TipoBala.Pistola:
+                d = danioAltoPistola;
+                break;
+            case BalaPlayer.TipoBala.Escopeta:
+                d = danioAltoEscopeta;
+                break;
+            default:
+                d = 0f;
+                break;
+        }
+
+        if (hitCollider == headCollider)
+            d *= headshotMultiplier;
+
+        RecibirDanio(d);
     }
 
-    /// <summary>
-    /// Maneja la muerte: instancia prefab (si hay) y destruye el objeto.
-    /// </summary>
     void Morir()
     {
-        if (!isDead) isDead = true;
+        if (isDead) return;
+        isDead = true;
 
-        if (prefabsAlMorir != null && prefabsAlMorir.Length > 0)
+        // L√≥gica de tutorial
+        if (TutorialManager.Instance != null)
         {
-            int idx = Random.Range(0, prefabsAlMorir.Length);
-            Instantiate(prefabsAlMorir[idx], transform.position, transform.rotation);
+            int index = TutorialManager.Instance.currentIndex;
+            if (TutorialManager.Instance.scenes[index].sceneData.activationType == ActivationType.ByKills)
+            {
+                TutorialManager.Instance.StartScenarioByKills(index);
+            }
         }
 
-        HUDManager.Instance.AddInfoFragment(fragments); // Actualiza los fragments de informacion
-        FindObjectOfType<MissionManager>().RegisterKill(gameObject.tag); // Actualiza la mision
+        // Instanciar el prefab correspondiente al tipo
+        GameObject prefabAMorir = null;
+        switch (tipo)
+        {
+            case TipoEnemigo.Ametralladora:
+                prefabAMorir = prefabMuerteAmetralladora;
+                break;
+            case TipoEnemigo.Pistola:
+                prefabAMorir = prefabMuertePistola;
+                break;
+            case TipoEnemigo.Escopeta:
+                prefabAMorir = prefabMuerteEscopeta;
+                break;
+        }
+
+        if (prefabAMorir != null)
+            Instantiate(prefabAMorir, transform.position, transform.rotation);
+
+        // Fragmentos y registro de muerte
+        HUDManager.Instance?.AddInfoFragment(fragments);
+        MissionManager.Instance?.RegisterKill(gameObject.tag, name, tipo.ToString());
 
         Destroy(gameObject);
     }
@@ -123,89 +284,227 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
 
 
-
-
-
-
+//using System;
+//using System.Linq;
+//using System.Collections;
 //using UnityEngine;
 //using UnityEngine.UI;
 
 //public class VidaEnemigoGeneral : MonoBehaviour
 //{
-//    public enum TipoEnemigo { Ametralladora = 0, Pistola = 1, Escopeta = 2 }
+//    public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
 
-//    [Header("ConfiguraciÛn de vida")]
+//    [Header("Configuraci√≥n de vida")]
 //    public float vida = 100f;
 //    public Slider sliderVida;
 
-//    [Header("DaÒo por bala")]
-//    public float danioAlto = 20f;   // DaÒo si la bala NO coincide con el tipo
-//    public float danioBajo = 5f;    // DaÒo si la bala coincide con el tipo
+//    [Header("Da√±o BAJO (coincide) por tipo de bala")]
+//    public float danioBajoAmetralladora = 5f;
+//    public float danioBajoPistola = 5f;
+//    public float danioBajoEscopeta = 5f;
+
+//    [Header("Da√±o ALTO (no coincide) por tipo de bala")]
+//    public float danioAltoAmetralladora = 20f;
+//    public float danioAltoPistola = 20f;
+//    public float danioAltoEscopeta = 20f;
+
+//    [Header("Multiplicador por headshot")]
+//    public float headshotMultiplier = 2f;
+
+//    [Header("Colliders")]
+//    [Tooltip("Collider que corresponde a la cabeza")]
+//    public Collider headCollider;
+//    [Tooltip("Colliders que corresponden al cuerpo")]
+//    public Collider[] bodyColliders;
+
+//    [Header("Colores HDR por tipo")]
+//    [ColorUsage(true, true)]
+//    public Color hdrColorAmetralladora = Color.blue;
+//    [ColorUsage(true, true)]
+//    public Color hdrColorPistola = Color.red;
+//    [ColorUsage(true, true)]
+//    public Color hdrColorEscopeta = Color.green;
 
 //    [Header("Renderizado")]
-//    [Tooltip("Arrastra aquÌ el MeshRenderer de tu enemigo")]
-//    public MeshRenderer meshRenderer;
+//    public MeshRenderer[] meshRenderers;
 
 //    [Header("Prefabs al morir")]
-//    [Tooltip("Arrastra aquÌ los prefabs que pueden generarse al morir")]
 //    public GameObject[] prefabsAlMorir;
-
-//    // Nuevo agregado
-//    [SerializeField] private int fragments = 50; // Fragmentos de informaciÛn que suelta el enemigo
-//    private bool isDead = false; // Para evitar m˙ltiples muertes
+//    public int fragments = 50;
 
 //    private TipoEnemigo tipo;
+//    private bool isDead = false;
+
+//    // Color final que se determin√≥ al inicio y que no debe cambiar
+//    private Color finalColor;
+
+//    // Referencia al controlador de parpadeo HDR
+//    private TipoColorHDRController colorController;
+
+//    void Awake()
+//    {
+//        meshRenderers = GetComponentsInChildren<MeshRenderer>();
+//        colorController = GetComponent<TipoColorHDRController>();
+//    }
 
 //    void Start()
 //    {
-//        // 1) Elegir tipo al azar
-//        tipo = (TipoEnemigo)Random.Range(0, 3);
-//        Debug.Log("[VidaEnemigo] Tipo asignado: " + tipo);
+//        // 1) Determinamos tipo al azar y su color HDR
+//        tipo = (TipoEnemigo)UnityEngine.Random.Range(0, 3);
+//#if UNITY_EDITOR
+//        Debug.Log($"[VidaEnemigo] Tipo: {tipo}");
+//#endif
+//        finalColor = ObtenerColorPorTipo(tipo);
 
-//        // 2) Determinar color seg˙n el tipo
-//        Color colorAsignado = Color.white;
-//        switch (tipo)
-//        {
-//            case TipoEnemigo.Ametralladora:
-//                colorAsignado = Color.blue;
-//                break;
-//            case TipoEnemigo.Pistola:
-//                colorAsignado = Color.red;
-//                break;
-//            case TipoEnemigo.Escopeta:
-//                colorAsignado = Color.green;
-//                break;
-//        }
+//        // 2) Asignamos Color y Emission a todos los materiales existentes
+//        AsignarColorYEmissionAMateriales(finalColor);
 
-//        // 3) Aplicar el color al MeshRenderer asignado
-//        if (meshRenderer != null)
-//        {
-//            meshRenderer.material.color = colorAsignado;
-//        }
-//        else
-//        {
-//            Debug.LogWarning("[VidaEnemigo] No se ha asignado el MeshRenderer en el Inspector.");
-//        }
-
-//        // 4) Inicializar slider de vida
 //        if (sliderVida != null)
 //        {
 //            sliderVida.maxValue = vida;
 //            sliderVida.value = vida;
 //        }
+
+//        // 3) Durante los pr√≥ximos 0.5 seg, detectamos si aparecen nuevos materiales
+//        StartCoroutine(DetectarYAsignarNuevosMateriales(finalColor, 0.5f));
+//    }
+
+//    void Update()
+//    {
+//        // Reaplicamos el color en cada frame para evitar que Unity lo sobreescriba:
+//        ReaplicarColorYEmissionAMateriales(finalColor);
 //    }
 
 //    /// <summary>
-//    /// Aplica daÒo genÈrico y actualiza el slider.
+//    /// Devuelve el color HDR que corresponde al tipo de enemigo.
 //    /// </summary>
-//    public void RecibirDanio(float danio)
+//    private Color ObtenerColorPorTipo(TipoEnemigo t)
 //    {
-//        if (isDead) return; // No hacer nada si ya est· muerto
+//        switch (t)
+//        {
+//            case TipoEnemigo.Ametralladora:
+//                return hdrColorAmetralladora;
+//            case TipoEnemigo.Pistola:
+//                return hdrColorPistola;
+//            case TipoEnemigo.Escopeta:
+//                return hdrColorEscopeta;
+//            default:
+//                return Color.white;
+//        }
+//    }
 
-//        vida -= danio;
-//        if (sliderVida != null)
-//            sliderVida.value = vida;
+//    /// <summary>
+//    /// Asigna a cada material:
+//    ///   - Color (‚Äú_BaseColor‚Äù) igual al color indicado
+//    ///   - Habilita _EMISSION y setea _EmissionColor = color HDR
+//    /// </summary>
+//    private void AsignarColorYEmissionAMateriales(Color color)
+//    {
+//        foreach (var mr in meshRenderers)
+//        {
+//            Material[] mats = mr.materials; // instancia cada material
+//            for (int i = 0; i < mats.Length; i++)
+//            {
+//                Material mat = mats[i];
 
+//                // 1) Asignar Color (tint) en lugar de BaseMap:
+//                if (mat.HasProperty("_BaseColor"))
+//                    mat.SetColor("_BaseColor", color);
+//                else if (mat.HasProperty("_Color"))
+//                    mat.SetColor("_Color", color);
+
+//                // 2) Activar emisi√≥n HDR
+//                mat.EnableKeyword("_EMISSION");
+//                if (mat.HasProperty("_EmissionColor"))
+//                    mat.SetColor("_EmissionColor", color);
+//            }
+//            mr.materials = mats;
+//        }
+//    }
+
+//    /// <summary>
+//    /// Reaplica el mismo color y emisi√≥n sin reasignar materiales,
+//    /// para evitar que Unity los restablezca en alg√∫n momento.
+//    /// </summary>
+//    private void ReaplicarColorYEmissionAMateriales(Color color)
+//    {
+//        foreach (var mr in meshRenderers)
+//        {
+//            var mats = mr.materials; // esto ya garantiza instancias
+//            for (int i = 0; i < mats.Length; i++)
+//            {
+//                Material mat = mats[i];
+
+//                if (mat.HasProperty("_BaseColor"))
+//                    mat.SetColor("_BaseColor", color);
+//                else if (mat.HasProperty("_Color"))
+//                    mat.SetColor("_Color", color);
+
+//                mat.EnableKeyword("_EMISSION");
+//                if (mat.HasProperty("_EmissionColor"))
+//                    mat.SetColor("_EmissionColor", color);
+//            }
+//            // Reasignamos para asegurarnos de que la instancia permanezca activa
+//            mr.materials = mats;
+//        }
+//    }
+
+//    /// <summary>
+//    /// Coroutine que durante 'duracion' segundos revisa cada frame si hay nuevos materiales
+//    /// y les aplica Color + Emission, sin tocar BaseMap.
+//    /// </summary>
+//    private IEnumerator DetectarYAsignarNuevosMateriales(Color color, float duracion)
+//    {
+//        float timer = 0f;
+//        var conteoInicial = meshRenderers.ToDictionary(
+//            mr => mr,
+//            mr => mr.materials.Length
+//        );
+
+//        while (timer < duracion)
+//        {
+//            foreach (var mr in meshRenderers)
+//            {
+//                Material[] currentMats = mr.materials;
+//                int inicial = conteoInicial[mr];
+//                if (currentMats.Length > inicial)
+//                {
+//                    for (int i = inicial; i < currentMats.Length; i++)
+//                    {
+//                        Material mat = currentMats[i];
+
+//                        // Asignar Color:
+//                        if (mat.HasProperty("_BaseColor"))
+//                            mat.SetColor("_BaseColor", color);
+//                        else if (mat.HasProperty("_Color"))
+//                            mat.SetColor("_Color", color);
+
+//                        // Activar emisi√≥n HDR:
+//                        mat.EnableKeyword("_EMISSION");
+//                        if (mat.HasProperty("_EmissionColor"))
+//                            mat.SetColor("_EmissionColor", color);
+//                    }
+//                    conteoInicial[mr] = currentMats.Length;
+//                    mr.materials = currentMats;
+//                }
+//            }
+
+//            timer += Time.deltaTime;
+//            yield return null;
+//        }
+//    }
+
+//    /// <summary>
+//    /// Aplica da√±o directo y parpadeo HDR.
+//    /// </summary>
+//    public void RecibirDanio(float d)
+//    {
+//        if (isDead) return;
+//        if (colorController != null)
+//            colorController.RecibirDanio(d);
+
+//        vida -= d;
+//        if (sliderVida != null) sliderVida.value = vida;
 //        if (vida <= 0f)
 //        {
 //            vida = 0f;
@@ -214,42 +513,117 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //    }
 
 //    /// <summary>
-//    /// Aplica daÒo seg˙n el tipo de bala (usa tags).
+//    /// Maneja da√±o por bala del jugador (ignora si coincide tipo-bala/tipo-enemigo).
 //    /// </summary>
-//    public void RecibirDanioPorBala(string tagBala)
+//    public void RecibirDanioPorBala(BalaPlayer.TipoBala tb, Collider hitCollider)
 //    {
-//        float danioAAplicar = danioAlto;
-
-//        // Si el tag coincide con el tipo de enemigo, aplicamos daÒo bajo
-//        if ((tipo == TipoEnemigo.Ametralladora && tagBala == "BalaAmetralladora") ||
-//            (tipo == TipoEnemigo.Pistola && tagBala == "BalaPistola") ||
-//            (tipo == TipoEnemigo.Escopeta && tagBala == "BalaEscopeta"))
+//        // Si tipos coinciden, no hay da√±o
+//        if ((tb == BalaPlayer.TipoBala.Ametralladora && tipo == TipoEnemigo.Ametralladora) ||
+//            (tb == BalaPlayer.TipoBala.Pistola && tipo == TipoEnemigo.Pistola) ||
+//            (tb == BalaPlayer.TipoBala.Escopeta && tipo == TipoEnemigo.Escopeta))
 //        {
-//            danioAAplicar = danioBajo;
+//            return;
 //        }
 
-//        RecibirDanio(danioAAplicar);
+//        // Si no coincide, tomamos da√±o alto
+//        float d;
+//        switch (tb)
+//        {
+//            case BalaPlayer.TipoBala.Ametralladora:
+//                d = danioAltoAmetralladora;
+//                break;
+//            case BalaPlayer.TipoBala.Pistola:
+//                d = danioAltoPistola;
+//                break;
+//            case BalaPlayer.TipoBala.Escopeta:
+//                d = danioAltoEscopeta;
+//                break;
+//            default:
+//                d = 0f;
+//                break;
+//        }
+
+//        // Headshot
+//        if (hitCollider == headCollider)
+//            d *= headshotMultiplier;
+
+//        RecibirDanio(d);
 //    }
 
-//    /// <summary>
-//    /// Maneja la muerte: instancia prefab (si hay) y destruye el objeto.
-//    /// </summary>
 //    void Morir()
 //    {
-//        // Ya fue marcado como muerto en RecibirDanio, asÌ que esta verificaciÛn puede quedar opcional
-//        if (isDead == false) isDead = true;
+//        if (isDead) return;
+//        isDead = true;
 
-//        if (prefabsAlMorir != null && prefabsAlMorir.Length > 0)
+//        if (TutorialManager.Instance != null)
 //        {
-//            int idx = Random.Range(0, prefabsAlMorir.Length);
-//            Instantiate(prefabsAlMorir[idx], transform.position, transform.rotation);
+//            int index = TutorialManager.Instance.currentIndex;
+//            if (TutorialManager.Instance.scenes[index].sceneData.activationType == ActivationType.ByKills)
+//            {
+//                TutorialManager.Instance.StartScenarioByKills(index);
+//            }
 //        }
 
-//        HUDManager.Instance.AddInfoFragment(fragments); // Actualiza los fragmentos de informaciÛn
-//        FindObjectOfType<MissionManager>().RegisterKill(gameObject.tag); // Actualiza la misiÛn
+//        if (prefabsAlMorir != null && prefabsAlMorir.Length > 0)
+//            Instantiate(prefabsAlMorir[UnityEngine.Random.Range(0, prefabsAlMorir.Length)],
+//                        transform.position, transform.rotation);
+
+//        HUDManager.Instance?.AddInfoFragment(fragments);
+//        MissionManager.Instance?.RegisterKill(gameObject.tag, name, tipo.ToString());
 
 //        Destroy(gameObject);
 //    }
 //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

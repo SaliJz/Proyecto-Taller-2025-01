@@ -6,19 +6,16 @@ using UnityEngine.SceneManagement;
 
 public class CreditosController : MonoBehaviour
 {
-    // Variable pública para el nombre de la escena del menú
-    public string nombreEscenaMenu = "MenuPrincipalJesus";       // Puedes cambiarlo en el Inspector
-
-
-    // Referencia pública al botón en el Inspector
+    public string nombreEscenaMenu = "MenuPrincipalJesus";
     public Button volverButton;
 
     void Start()
     {
-        // Verificar que el botón esté asignado desde el Inspector
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
         if (volverButton != null)
         {
-            // Asignamos la función que se ejecutará cuando se haga clic en el botón
             volverButton.onClick.AddListener(VolverAlMenu);
         }
         else
@@ -27,10 +24,8 @@ public class CreditosController : MonoBehaviour
         }
     }
 
-
-    // Método para volver al menú principal
     public void VolverAlMenu()
     {
-        SceneManager.LoadScene(nombreEscenaMenu); // Carga la escena del menú
+        SceneManager.LoadScene(nombreEscenaMenu);
     }
 }

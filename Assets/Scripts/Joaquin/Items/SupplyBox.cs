@@ -47,15 +47,12 @@ public class SupplyBox : MonoBehaviour
     {
         if (playerInRange && Input.GetKeyDown(KeyCode.E))
         {
-            Debug.Log("Intentando recoger el objeto");
             TrySuplyBox();
         }
     }
 
     private void TrySuplyBox()
     {
-        Debug.Log("Recogiendo objeto");
-
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player == null) return;
 
@@ -77,8 +74,6 @@ public class SupplyBox : MonoBehaviour
                 weaponManager.TryAddAmmoToWeapon(Weapon.ShootingMode.Auto, actualAmount, out added);
                 break;
         }
-
-        Debug.Log($"Recogido {added} balas de tipo {supplyType}");
 
         actualAmount -= added;
         UpdateVisual();

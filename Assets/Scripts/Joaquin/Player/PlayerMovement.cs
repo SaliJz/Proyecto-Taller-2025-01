@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody), typeof(CapsuleCollider))]
 public class PlayerMovement : MonoBehaviour
 {
     [Header("References")]
@@ -24,22 +23,15 @@ public class PlayerMovement : MonoBehaviour
     private float jumpBuffer = 0.15f;
     private float lastJumpPressedTime;
 
-    /*
-    [Header("GroundCheck")]
-    [SerializeField] private Transform groundCheckPoint;
-    [SerializeField] private float groundCheckDistance = 0.5f;
-    [SerializeField] private LayerMask groundMask;
-    */
-
-    // Ángulo máximo permitido desde la vertical para considerar el suelo
     [Header("Ground Normal Check")]
     [SerializeField] private float maxGroundAngle = 45f;
     private bool isGrounded = true;
     public bool IsGrounded => isGrounded;
+    public float SpeedWalk => speedWalk;
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        if (rb == null) rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
     }
 
@@ -154,22 +146,4 @@ public class PlayerMovement : MonoBehaviour
     {
         isGrounded = false;
     }
-
-    /*
-    private void CheckGround()
-    {
-        Ray ray = new Ray(groundCheckPoint.position, Vector3.down);
-        isGrounded = Physics.Raycast(ray, groundCheckDistance, groundMask);
-
-        Debug.DrawRay(ray.origin, ray.direction * groundCheckDistance, isGrounded ? Color.green : Color.red);
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (groundCheckPoint == null) return;
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(groundCheckPoint.position, groundCheckPoint.position + Vector3.down * groundCheckDistance);
-    }
-    */
 }

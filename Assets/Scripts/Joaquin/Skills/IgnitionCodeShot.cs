@@ -24,14 +24,14 @@ public class IgnitionCodeShot : MonoBehaviour
         if (collision.gameObject.CompareTag("Enemy"))
         {
             ApplyIgnition(transform.position);
+            Destroy(gameObject);
         }
 
         if (collision.gameObject.CompareTag("Ground"))
         {
             ApplyIgnitionArea(transform.position);
+            Destroy(gameObject);
         }
-
-        Destroy(gameObject);
     }
 
     private void ApplyIgnition(Vector3 center)

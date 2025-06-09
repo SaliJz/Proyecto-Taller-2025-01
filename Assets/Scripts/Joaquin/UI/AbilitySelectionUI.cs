@@ -161,7 +161,6 @@ public class AbilitySelectionUI : MonoBehaviour
             gameObject.SetActive(false);
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-            Debug.Log("No hay escena asignada para cargar después de la selección.");
             return;
         }
         else

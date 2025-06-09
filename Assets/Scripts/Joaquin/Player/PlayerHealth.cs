@@ -120,15 +120,21 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    private void Die()
+    public void Die()
     {
         EnemySpawner enemySpawner = FindObjectOfType<EnemySpawner>();
         if (enemySpawner != null)
         {
             enemySpawner.ResetSpawner();
         }
+
         UpgradeDataStore.Instance.ResetTemporaryUpgrades();
-        DeathManager.Instance.RegisterDeath(deathPrefab, transform.position);
+
+        if (deathPrefab != null)
+        {
+            DeathManager.Instance.RegisterDeath(deathPrefab, transform.position);
+        }
+
         if (sceneTransition != null)
         {
             sceneTransition.LoadSceneWithFade(gameOverSceneName);
@@ -136,6 +142,13 @@ public class PlayerHealth : MonoBehaviour
         else
         {
             SceneManager.LoadScene(gameOverSceneName);
+        }
+    }
+    public class DetectarObjetosEnContacto : MonoBehaviour
+    {
+        private void OnCollisionStay(Collision collision)
+        {
+            Debug.Log($"Tocando: {collision.gameObject.name}");
         }
     }
 }

@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5912694656358705130}
   - component: {fileID: -7048947099269417133}
   - component: {fileID: 1109452761944806096}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Sphere (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -162,7 +162,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edc83c97b1a494844abe958b8488dc86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosionForce: 200
+  explosionForce: 30
   explosionRadius: 30
   upwardModifier: 40
 --- !u!114 &1109452761944806096
@@ -177,3 +177,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e39d21f2d5621064f84abd4913e9b6d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  danio: 1000

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8111632047607269920}
   - component: {fileID: 2370255263232292570}
   - component: {fileID: 7924006323616801040}
+  - component: {fileID: 1763472515554101068}
   m_Layer: 0
   m_Name: HitPartycles-Green
   m_TagString: Untagged
@@ -50,7 +51,7 @@ ParticleSystem:
   emitterVelocityMode: 1
   looping: 0
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -4888,3 +4889,16 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &1763472515554101068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7597145721601309270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 409d19d0bf1bb744087281751d4f3685, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lifeTime: 3

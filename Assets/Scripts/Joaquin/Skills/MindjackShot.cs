@@ -21,9 +21,8 @@ public class MindjackShot : MonoBehaviour
             if (enemy != null)
             {
                 enemy.ApplyMindjack(damagePerSecond, duration);
+                Destroy(gameObject);
             }
         }
-
-        Destroy(gameObject);
     }
 }

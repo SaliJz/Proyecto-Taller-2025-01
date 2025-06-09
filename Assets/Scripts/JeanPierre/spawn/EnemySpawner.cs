@@ -12,66 +12,137 @@ public class EnemySpawner : MonoBehaviour
     public float spawnRadius = 2f;          // Radio de dispersión alrededor del punto
 
     [SerializeField] private int maxEnemiesInScene = 20; // Máximo de enemigos en la escena
-    [SerializeField] private int maxEnemiesTotal = 50; // Máximo de enemigos totales 
+    [SerializeField] private int maxEnemiesInTotal = 50; // Máximo de enemigos totales 
     [SerializeField] private SpawnPoint[] spawnPoints; // Lista de puntos con disponibilidad
 
-    private List<GameObject> activeEnemies = new List<GameObject>();
+    private HashSet<GameObject> activeEnemies = new HashSet<GameObject>();
     private int totalEnemiesSpawned = 0; // Contador de enemigos totales creados
 
-    void Start()
+    private void Start()
     {
         if (enemyPrefabs.Length == 0 || spawnPoints.Length == 0)
         {
-            Debug.LogError("¡Faltan prefabs de enemigos o puntos de spawn!");
+            Debug.Log("¡Faltan prefabs de enemigos o puntos de spawn!");
             return;
         }
 
+        Debug.Log("Iniciando Spawn");
+    }
+
+    private void OnEnable()
+    {
         StartCoroutine(SpawnRoutine());
     }
 
-    IEnumerator SpawnRoutine()
+    public void SpawnCondition(int maxEnemiesInTotal, float spawnInterval)
+    {
+        this.maxEnemiesInTotal = maxEnemiesInTotal;
+        this.spawnInterval = spawnInterval;
+    }
+
+    public void EnemiesKilledCount(int count)
+    {
+        totalEnemiesSpawned -= count;
+        if (totalEnemiesSpawned < 0) totalEnemiesSpawned = 0; // Evitar números negativos
+    }
+
+    private IEnumerator SpawnRoutine()
     {
         while (true)
         {
             yield return new WaitForSeconds(spawnInterval);
 
-            // Limpia referencias nulas de enemigos muertos
-            activeEnemies.RemoveAll(e => e == null);
+            CleanUpInactiveEnemies();
 
-            if (activeEnemies.Count >= maxEnemiesInScene)
+            if (ShouldStopSpawning()) yield break;
+
+            SpawnEnemies();
+        }
+    }
+
+    private void CleanUpInactiveEnemies()
+    {
+        activeEnemies.RemoveWhere(e => e == null);
+    }
+
+    private bool ShouldStopSpawning()
+    {
+        if (activeEnemies.Count >= maxEnemiesInScene)
+        {
+            Debug.Log("Límite de enemigos alcanzado. Esperando espacio libre...");
+            return true; // Detener el spawn temporalmente
+        }
+
+        if (maxEnemiesInTotal >= 0 && totalEnemiesSpawned >= maxEnemiesInTotal)
+        {
+            Debug.Log("Límite global de enemigos alcanzado.");
+            return true; // Detener el spawn
+        }
+
+        return false; // Continuar spawn
+    }
+
+    private void SpawnEnemies()
+    {
+        int availableByTotal = (maxEnemiesInTotal >= 0) ? (maxEnemiesInTotal - totalEnemiesSpawned) : enemiesPerSpawn;
+        int availableSpawnSlots = Mathf.Min(
+        enemiesPerSpawn,
+        maxEnemiesInScene - activeEnemies.Count,
+        availableByTotal
+        );
+
+        if (availableSpawnSlots <= 0)
+        {
+            Debug.Log("No hay espacio para más enemigos.");
+            return; // No hay espacio para más enemigos
+        }
+
+        for (int i = 0; i < availableSpawnSlots; i++)
+        {
+            var enemy = SpawnSingleEnemy();
+            if (enemy != null)
             {
-                Debug.Log("Límite de enemigos alcanzado. Esperando espacio libre...");
-                continue; // Esperar hasta que haya espacio
+                totalEnemiesSpawned++;
+                Debug.Log($"Enemigo {totalEnemiesSpawned} instanciado.");
             }
+        }
+    }
 
-            if (totalEnemiesSpawned >= maxEnemiesTotal)
-            {
-                Debug.Log("Límite global de enemigos alcanzado.");
-                yield break; // Se detiene el spawn
-            }
-            // Calcula cuántos enemigos se pueden crear
-            int availableSpawnSlots = Mathf.Min(enemiesPerSpawn, maxEnemiesInScene - activeEnemies.Count, maxEnemiesTotal - totalEnemiesSpawned);
+    public void SpawnWave(int totalEnemies)
+    {
+        int spawnerCount = Mathf.Min(spawnPoints.Length, 5);
+        int perSpawner = totalEnemies / spawnerCount;
+        int extra = totalEnemies % spawnerCount;
+        int spawned = 0;
 
-            for (int i = 0; i < availableSpawnSlots; i++)
+        for (int i = 0; i < spawnerCount; i++)
+        {
+            int toSpawn = perSpawner + (i < extra ? 1 : 0);
+            for (int j = 0; j < toSpawn; j++)
             {
                 var enemy = SpawnSingleEnemy();
                 if (enemy != null)
                 {
                     totalEnemiesSpawned++;
+                    spawned++;
                     Debug.Log($"Enemigo {totalEnemiesSpawned} instanciado.");
                 }
             }
         }
+
+        if (spawned < totalEnemies)
+        {
+            Debug.Log($"Solo se pudieron instanciar {spawned} de {totalEnemies} enemigos solicitados.");
+        }
     }
 
-    GameObject SpawnSingleEnemy()
+    private GameObject SpawnSingleEnemy()
     {
         // Filtrar solo los puntos habilitados
         var availablePoints = spawnPoints.Where(spawnPoint => spawnPoint.IsAvailable).ToList();
 
         if (availablePoints.Count == 0)
         {
-            Debug.LogWarning("No hay puntos de spawn disponibles para enemigos.");
             return null; // No hay puntos disponibles
         }
 
@@ -92,17 +163,21 @@ public class EnemySpawner : MonoBehaviour
     {
         totalEnemiesSpawned = 0;
         activeEnemies.Clear();
+        StopAllCoroutines(); // Por si acaso
+        StartCoroutine(SpawnRoutine()); // Reinicia el spawn
     }
 
     // Visualizar el radio de spawn en el editor
-    void OnDrawGizmosSelected()
+    private void OnDrawGizmosSelected()
     {
         if (spawnPoints == null) return;
 
         Gizmos.color = Color.red;
         foreach (var point in spawnPoints)
         {
-            Gizmos.DrawWireSphere(point.transform.position, spawnRadius);
+            Gizmos.DrawWireSphere(point.transform.position, spawnRadius);   
+            Gizmos.color = point.IsAvailable ? Color.green : Color.gray;
+            Gizmos.DrawSphere(point.transform.position, 0.2f);
         }
     }
 }

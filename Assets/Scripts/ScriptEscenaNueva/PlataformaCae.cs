@@ -6,6 +6,7 @@ public class PlataformaCae : MonoBehaviour
 {
 
     private Rigidbody rb;
+    [SerializeField] private float delayAntesDeCaer = 0.5f;
 
     private void Start()
     {
@@ -21,9 +22,16 @@ public class PlataformaCae : MonoBehaviour
 
             if (collision.contacts[0].point.y > transform.position.y + 0.2f)
             {
-                rb.isKinematic = false;
-                Debug.Log("¡Jugador encima! Plataforma caerá.");
+                
+                Debug.Log("¡Jugador encima! Plataforma caerá después de " + delayAntesDeCaer + " segundos.");
+                StartCoroutine(CaerConRetardo());
             }
         }
+    }
+
+    private IEnumerator CaerConRetardo()
+    {
+        yield return new WaitForSeconds(delayAntesDeCaer);
+        rb.isKinematic = false;
     }
 }

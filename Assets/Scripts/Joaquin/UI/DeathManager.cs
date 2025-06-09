@@ -2,14 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
+using TMPro;
 
 public class DeathManager : MonoBehaviour
 {
     public static DeathManager Instance { get; private set; }
 
     [SerializeField] private int maxBodies = 5;
-    [SerializeField] private string menuSceneName = "MenuPrincipal"; // Nombre de la escena del menú principal
-    private Queue<GameObject> bodies = new Queue<GameObject>();
+    [SerializeField] private string gameOverSceneName = "GameOver";
+
+    // Estructura para almacenar el cuerpo y la escena donde murió
+    private class BodyData
+    {
+        public GameObject body;
+        public string sceneName;
+    }
+
+    private Queue<BodyData> bodies = new Queue<BodyData>();
+    private int bodyCounter = 0; // Contador global para los cuerpos
 
     private void Awake()
     {
@@ -19,48 +30,102 @@ public class DeathManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
-        else Destroy(gameObject);
-    }
-
-    // Este método se llama cuando se carga una nueva escena
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.name == menuSceneName) // Usa el nombre exacto de tu escena de menú
+        else
         {
-            ClearAll();
+            Destroy(gameObject);
         }
     }
 
     // Este método se llama cuando el objeto es destruido
     private void OnDestroy()
     {
+        // Desuscribirse del evento de carga de escena
         if (Instance == this)
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
     }
 
+    // Este método se llama cuando se carga una nueva escena
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Filtrar los cuerpos para que solo permanezcan los de la escena actual o la de derrota
+        string currentSceneName = scene.name;
+        var remainingBodies = new Queue<BodyData>();
+
+        foreach (var bodyData in bodies)
+        {
+            // Si el cuerpo pertenece a la escena actual o es la escena de derrota, lo mantenemos
+            if (bodyData.sceneName == currentSceneName || currentSceneName == gameOverSceneName)
+            {
+                remainingBodies.Enqueue(bodyData);
+            }
+            else
+            {
+                if (bodyData.body != null)
+                {
+                    Destroy(bodyData.body);
+                }
+            }
+        }
+
+        bodies = remainingBodies;
+    }
+
     // Este método se llama para registrar una muerte
     public void RegisterDeath(GameObject prefab, Vector3 position)
     {
-        GameObject instance = Instantiate(prefab, position, Quaternion.identity);
-        DontDestroyOnLoad(instance);
+        string currentSceneName = SceneManager.GetActiveScene().name;
 
-        bodies.Enqueue(instance);
-
-        if (bodies.Count > maxBodies)
+        // Realizar un raycast hacia abajo para detectar la superficie
+        RaycastHit hit;
+        Vector3 rayOrigin = position + Vector3.up; // Lanza el raycast desde un poco más arriba
+        if (Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity))
         {
-            GameObject oldest = bodies.Dequeue();
-            if (oldest != null) Destroy(oldest);
+            // Obtener la normal de la superficie
+            Vector3 surfaceNormal = hit.normal;
+
+            // Calcular la rotación del DeathBody para alinearlo con la superficie
+            Quaternion rotation = Quaternion.FromToRotation(Vector3.up, surfaceNormal);
+
+            // Instanciar el DeathBody con la rotación calculada
+            GameObject instance = Instantiate(prefab, hit.point, rotation);
+            DontDestroyOnLoad(instance);
+
+            // Incrementar el contador de cuerpos
+            bodyCounter++;
+
+            // Actualizar el texto del cuerpo
+            DeathBodyController controller = instance.GetComponent<DeathBodyController>();
+            if (controller != null)
+            {
+                controller.SetText($"Cuerpo #{bodyCounter}");
+            }
+
+            // Agregar el cuerpo a la cola
+            bodies.Enqueue(new BodyData { body = instance, sceneName = currentSceneName });
+
+            // Eliminar el cuerpo más antiguo si se excede el límite
+            if (bodies.Count > maxBodies)
+            {
+                BodyData oldest = bodies.Dequeue();
+                if (oldest.body != null)
+                {
+                    Destroy(oldest.body);
+                }
+            }
         }
     }
 
     // Este método se llama para eliminar todos los cuerpos
     public void ClearAll()
     {
-        foreach (var obj in bodies)
+        foreach (var bodyData in bodies)
         {
-            if (obj != null) Destroy(obj);
+            if (bodyData.body != null)
+            {
+                Destroy(bodyData.body);
+            }
         }
         bodies.Clear();
     }

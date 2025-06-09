@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: 4thMission
   m_EditorClassIdentifier: 
   missionName: Matar 40 enemigos
-  enemyTag: Enemy
-  targetAmount: 40
-  currentAmount: 0
+  killConditions:
+  - conditionType: 0
+    value: Any
+    requiredAmount: 40
+    currentAmount: 0

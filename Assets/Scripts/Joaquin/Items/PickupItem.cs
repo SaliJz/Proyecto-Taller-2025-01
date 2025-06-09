@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using static SupplyBox;
 
 public class PickupItem : MonoBehaviour
 {
@@ -167,34 +166,6 @@ public class PickupItem : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    /*
-    private Weapon FindWeaponNearby(Vector3 origin, float radius)
-    {
-        int weaponLayer = LayerMask.NameToLayer("Weapon");
-
-        // Recorremos todos los colliders del radio
-        Collider[] colliders = Physics.OverlapSphere(origin, radius);
-
-        float shortestDistance = Mathf.Infinity;
-        Weapon nearestWeapon = null;
-
-        foreach (var col in colliders)
-        {
-            Weapon weapon = col.GetComponent<Weapon>();
-            if (weapon != null)
-            {
-                float distance = Vector3.Distance(origin, col.transform.position);
-                if (distance < shortestDistance)
-                {
-                    shortestDistance = distance;
-                    nearestWeapon = weapon;
-                }
-            }
-        }
-
-        return nearestWeapon;
-    }
-    */
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<PlayerHealth>() != null)
@@ -202,6 +173,19 @@ public class PickupItem : MonoBehaviour
             if (pickupType != PickupType.CodeFragment)
             {
                 playerInRange = true;
+                Debug.Log("Jugador dentro del rango de recogida.");
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            if (pickupType != PickupType.CodeFragment)
+            {
+                playerInRange = false;
+                Debug.Log("Jugador fuera del rango de recogida.");
             }
         }
     }
@@ -228,7 +212,6 @@ public class PickupItem : MonoBehaviour
             }
         }
     }
-
     private void DestroyPickup()
     {
         Destroy(gameObject);

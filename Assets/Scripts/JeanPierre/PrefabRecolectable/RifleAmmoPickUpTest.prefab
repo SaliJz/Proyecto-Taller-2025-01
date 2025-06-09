@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 9011941846568555658}
   - component: {fileID: 4749078865023077453}
   - component: {fileID: 1379775115353678530}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,7 +132,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 122
   m_CollisionDetection: 0
 --- !u!1 &3206890931059546896
 GameObject:
@@ -209,6 +209,7 @@ MonoBehaviour:
   flySpeed: 15
   rotationSpeed: 10
   positionOffset: 1
+  lifetime: 60
   playerInRange: 0
 --- !u!1 &3858989903083988550
 GameObject:
@@ -223,7 +224,7 @@ GameObject:
   - component: {fileID: 8089063545429676133}
   - component: {fileID: 2796092135678030657}
   - component: {fileID: 5438729032099477711}
-  m_Layer: 5
+  m_Layer: 16
   m_Name: CanvasVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -336,7 +337,7 @@ GameObject:
   - component: {fileID: 1870975994505194480}
   - component: {fileID: 6526547866821795278}
   - component: {fileID: 756511700268834230}
-  m_Layer: 5
+  m_Layer: 16
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class WeaponManager : MonoBehaviour
 {
     [SerializeField] private Weapon[] weapons;
     [SerializeField] private Transform weaponHolder;
-    [SerializeField] private TMPro.TMP_Text weaponNameText;
-    [SerializeField] private UnityEngine.UI.Image weaponIconImage;
+    [SerializeField] private TMP_Text weaponNameText;
+    [SerializeField] private Image weaponIconImage;
 
     private int currentIndex = 0;
 
@@ -39,7 +41,7 @@ public class WeaponManager : MonoBehaviour
         if (index == currentIndex) return;
         PlayerPrefs.SetInt("LastWeaponIndex", index);
 
-        if (weapons[currentIndex].isReloading)
+        if (weapons[currentIndex].IsReloading)
         {
             weapons[currentIndex].CancelReload();
         }
@@ -50,8 +52,8 @@ public class WeaponManager : MonoBehaviour
     private IEnumerator SwitchWeaponAnimation(int newIndex)
     {
         Weapon oldWeapon = weapons[currentIndex];
-        Transform oldModel = oldWeapon.weaponModelTransform;
-        Vector3 oldOriginal = oldWeapon.originalLocalPosition;
+        Transform oldModel = oldWeapon.WeaponModelTransform;
+        Vector3 oldOriginal = oldWeapon.OriginalLocalPosition;
         Vector3 oldDown = oldOriginal + new Vector3(0, -0.2f, 0);
         float t = 0f;
         float duration = 0.15f;
@@ -74,9 +76,9 @@ public class WeaponManager : MonoBehaviour
 
         currentIndex = newIndex;
         Weapon newWeapon = weapons[currentIndex];
-        Transform newModel = newWeapon.weaponModelTransform;
+        Transform newModel = newWeapon.WeaponModelTransform;
 
-        StartCoroutine(SlideUpWeapon(newModel, newWeapon.originalLocalPosition));
+        StartCoroutine(SlideUpWeapon(newModel, newWeapon.OriginalLocalPosition));
 
         // Actualizar HUD
         HUDManager.Instance.UpdateAmmo(newWeapon.CurrentAmmo, newWeapon.TotalAmmo);
@@ -100,7 +102,7 @@ public class WeaponManager : MonoBehaviour
         model.localPosition = targetPosition;
     }
 
-    private void EquipWeaponInstant(int index)
+    public void EquipWeaponInstant(int index)
     {
         for (int i = 0; i < weapons.Length; i++)
         {
@@ -111,7 +113,7 @@ public class WeaponManager : MonoBehaviour
         Weapon currentWeapon = weapons[currentIndex];
 
         // Asegura que el arma esté en su posición base desde el inicio
-        currentWeapon.weaponModelTransform.localPosition = currentWeapon.originalLocalPosition;
+        currentWeapon.WeaponModelTransform.localPosition = currentWeapon.OriginalLocalPosition;
 
         HUDManager.Instance.UpdateAmmo(currentWeapon.CurrentAmmo, currentWeapon.TotalAmmo);
         HUDManager.Instance.UpdateWeaponIcon(currentWeapon.Stats.weaponIcon);
@@ -122,17 +124,14 @@ public class WeaponManager : MonoBehaviour
     public bool TryAddAmmoToWeapon(Weapon.ShootingMode mode, int amountToAdd, out int amountActuallyAdded)
     {
         amountActuallyAdded = 0;
-        Debug.Log("Intentando agregar balas al modo: " + mode);
 
         foreach (Weapon weapon in weapons)
         {
-            Debug.Log("Revisando arma con modo: " + weapon.currentShootingMode);
-            if (weapon != null && weapon.currentShootingMode == mode)
+            if (weapon != null && weapon.BaseMode == mode)
             {
                 if (weapon.TryAddAmmo(amountToAdd, out int added))
                 {
                     amountActuallyAdded = added;
-                    Debug.Log("Balas agregadas: " + added);
 
                     // Solo actualiza HUD si es el arma actualmente equipada
                     if (weapon == weapons[currentIndex])

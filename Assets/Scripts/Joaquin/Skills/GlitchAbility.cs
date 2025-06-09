@@ -22,6 +22,7 @@ public class GlitchAbility : MonoBehaviour
 
     private bool canUse = true;
     private float currentCooldown = 0;
+    private float lastCooldownDisplay = -1f;
 
     private void Start()
     {
@@ -32,15 +33,19 @@ public class GlitchAbility : MonoBehaviour
     {
         if (playerCamera == null)
         {
-            Debug.LogError("Player Camera no está asignada en MindjackAbility.");
+            playerCamera = Camera.main;
+            if (playerCamera == null)
+            {
+                Debug.LogError("No se encontró la cámara principal. Asegúrate de que haya una cámara con la etiqueta 'MainCamera' en la escena.");
+            }
         }
         if (projectileSpawnPoint == null)
         {
-            Debug.LogError("Projectile Spawn Point no está asignado en MindjackAbility.");
+            Debug.LogError("Projectile Spawn Point no está asignado en GlitchTime.");
         }
         if (projectilePrefab == null)
         {
-            Debug.LogError("Projectile Prefab no está asignado en MindjackAbility.");
+            Debug.LogError("Projectile Prefab no está asignado en GlitchTime.");
         }
     }
 
@@ -54,10 +59,19 @@ public class GlitchAbility : MonoBehaviour
         if (!canUse)
         {
             currentCooldown -= Time.deltaTime;
+            currentCooldown = Mathf.Max(0f, currentCooldown);
+
+            // Solo actualiza si hay diferencia perceptible
+            if (Mathf.Ceil(currentCooldown) != Mathf.Ceil(lastCooldownDisplay))
+            {
+                HUDManager.Instance.UpdateAbilityStatus("GlitchTime", currentCooldown, canUse, cooldown);
+                lastCooldownDisplay = currentCooldown;
+            }
 
             if (currentCooldown <= 0f)
             {
                 canUse = true;
+                HUDManager.Instance.UpdateAbilityStatus("GlitchTime", 0f, canUse, cooldown);
             }
         }
     }

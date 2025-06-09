@@ -4,12 +4,24 @@ using UnityEngine;
 
 public class AbilityDataStore : MonoBehaviour
 {
-    public static AbilityDataStore Instance;
+    public static AbilityDataStore Instance { get; private set; }
 
-    public List<string> abilityNames = new List<string>();
-    public int currentIndex = 0;
+    private List<string> abilityNames = new List<string>();
+    private int currentIndex = 0;
 
-    // Almacena los nombres de las habilidades en el orden en que se desbloquean
+    [SerializeField] private bool allowClear = false;
+
+    public List<string> AbilityNames => abilityNames;
+    public int CurrentIndex => currentIndex;
+
+    private void Start()
+    {
+        if (allowClear)
+        {
+            Clear();
+        }
+    }
+
     private void Awake()
     {
         if (Instance == null)
@@ -23,7 +35,11 @@ public class AbilityDataStore : MonoBehaviour
         }
     }
 
-    // Método para agregar un nombre de habilidad
+    public void SetCurrentIndex(int index)
+    {
+        currentIndex = index;
+    }
+
     public void Clear()
     {
         abilityNames.Clear();
