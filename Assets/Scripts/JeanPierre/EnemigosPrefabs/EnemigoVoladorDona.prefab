@@ -231,11 +231,12 @@ MonoBehaviour:
   hdrColorEscopeta: {r: 0, g: 0.8113208, b: 0, a: 1}
   meshRenderers:
   - {fileID: 8705609896779285962}
-  prefabsAlMorir:
-  - {fileID: 4688980061749175599, guid: 71fa26f444887dd47908328e632687b4, type: 3}
-  - {fileID: 4801807564617485238, guid: 12fb4266885dd134eae5c27fd7949446, type: 3}
-  - {fileID: 3206890931059546896, guid: 7fc3418ba54185644942d523878dbe0d, type: 3}
-  - {fileID: 7583714264058374518, guid: 8b926fcb8a2af1445bb60147a2693b48, type: 3}
+  prefabMuerteAmetralladora: {fileID: 7597145721601309270, guid: 5c64e1320daef804f813dfca3682d4ae,
+    type: 3}
+  prefabMuertePistola: {fileID: 7597145721601309270, guid: 33004dd31ce07794d8c3fde64d803892,
+    type: 3}
+  prefabMuerteEscopeta: {fileID: 7597145721601309270, guid: 1799a004841c0c84487e26a08eadb035,
+    type: 3}
   fragments: 50
 --- !u!136 &4516381978773922137
 CapsuleCollider:
@@ -300,7 +301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objetoADestruir: {fileID: 6086510206101937207}
-  prefabAviso: {fileID: 5646449055244728217, guid: 91cd875bc5d908c49b1d5d6bc98c44b3,
+  prefabAviso: {fileID: 2961634004161347876, guid: 4c4d42440be0ca540b6972dd1de4f3a7,
     type: 3}
   prefabImpacto: {fileID: 4722550662299864377, guid: 6c3f6eb06631c784696def3260b344ab,
     type: 3}

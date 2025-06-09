@@ -27,6 +27,10 @@ public class EnemyFinalSequence : MonoBehaviour
     public float scaleDuration = 1f;
     public float finalDelay = 1f;
 
+    [Header("Nuevo Prefab")]
+    [Tooltip("Prefab adicional a instanciar al destruirse este objeto")]
+    public GameObject newPrefab;
+
     [Header("Temblor de cámara (explosión)")]
     public float cameraShakeDuration = 0.5f;
     public float cameraShakeMagnitude = 0.5f;
@@ -54,9 +58,7 @@ public class EnemyFinalSequence : MonoBehaviour
         originalMaterial = enemyRenderer.material;
 
         if (hdrRenderer != null)
-        {
             originalHDRMaterial = hdrRenderer.material;
-        }
 
         explosionScript = GetComponent<EnemigoExplosion>();
         if (explosionScript != null)
@@ -122,25 +124,15 @@ public class EnemyFinalSequence : MonoBehaviour
         {
             if (toggle)
             {
-                // Asigna el material de advertencia al enemigo
                 enemyRenderer.material = warningMaterial;
-
-                // Cambia al material HDR blanco
                 if (hdrRenderer != null && warningHDRMaterial != null)
-                {
                     hdrRenderer.material = warningHDRMaterial;
-                }
             }
             else
             {
-                // Restaurar material original del enemigo
                 enemyRenderer.material = originalMaterial;
-
-                // Restaurar material HDR original
                 if (hdrRenderer != null && originalHDRMaterial != null)
-                {
                     hdrRenderer.material = originalHDRMaterial;
-                }
             }
 
             toggle = !toggle;
@@ -159,14 +151,9 @@ public class EnemyFinalSequence : MonoBehaviour
 
     void ResetMaterials()
     {
-        // Restaurar material original del enemigo
         enemyRenderer.material = originalMaterial;
-
-        // Restaurar material HDR original
         if (hdrRenderer != null && originalHDRMaterial != null)
-        {
             hdrRenderer.material = originalHDRMaterial;
-        }
     }
 
     void TriggerFinalSequence()
@@ -181,15 +168,9 @@ public class EnemyFinalSequence : MonoBehaviour
 
     IEnumerator FinalSequence()
     {
-        // Instanciamos y escalamos la bala
         SpawnBulletInstantly();
-
-        // Temblor de cámara
         StartCoroutine(CameraShake(cameraShakeDuration, cameraShakeMagnitude));
-
-        // Destruimos este enemigo
         Destroy(gameObject);
-
         yield return null;
     }
 
@@ -220,6 +201,15 @@ public class EnemyFinalSequence : MonoBehaviour
             SpawnBulletInstantly();
     }
 
+    void OnDestroy()
+    {
+        if (!isQuitting)
+        {
+            // Instancia el prefab adicional al destruirse este objeto
+            Instantiate(newPrefab, transform.position, Quaternion.identity);
+        }
+    }
+
     private void SpawnBulletInstantly()
     {
         var bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
@@ -243,6 +233,12 @@ public class EnemyFinalSequence : MonoBehaviour
     }
 }
 
+
+
+
+
+
+
 //using UnityEngine;
 //using System.Collections;
 
@@ -260,6 +256,12 @@ public class EnemyFinalSequence : MonoBehaviour
 //    public float blinkInterval = 0.2f;
 //    public float warningDuration = 2f;
 
+//    [Header("Material HDR")]
+//    [Tooltip("Renderer del GameObject que tiene el material HDR original")]
+//    public Renderer hdrRenderer;
+//    [Tooltip("Material HDR blanco para advertencia")]
+//    public Material warningHDRMaterial;
+
 //    [Header("Bala final")]
 //    public GameObject bulletPrefab;
 //    public Vector3 finalBulletScale = new Vector3(2f, 2f, 2f);
@@ -276,6 +278,7 @@ public class EnemyFinalSequence : MonoBehaviour
 //    private Coroutine warningCoroutine;
 //    private Coroutine blinkCoroutine;
 //    private Material originalMaterial;
+//    private Material originalHDRMaterial;
 //    private EnemigoExplosion explosionScript;
 
 //    void Awake()
@@ -284,13 +287,21 @@ public class EnemyFinalSequence : MonoBehaviour
 //            playerTransform = GameObject.FindWithTag("Player")?.transform;
 //        if (enemyRenderer == null)
 //            enemyRenderer = GetComponent<Renderer>();
+//        // hdrRenderer y warningHDRMaterial deben asignarse en el Inspector
 //    }
 
 //    void Start()
 //    {
 //        originalMaterial = enemyRenderer.material;
+
+//        if (hdrRenderer != null)
+//        {
+//            originalHDRMaterial = hdrRenderer.material;
+//        }
+
 //        explosionScript = GetComponent<EnemigoExplosion>();
-//        explosionScript.enabled = true;
+//        if (explosionScript != null)
+//            explosionScript.enabled = true;
 //    }
 
 //    void Update()
@@ -301,7 +312,7 @@ public class EnemyFinalSequence : MonoBehaviour
 
 //        if (dist <= triggerDistance)
 //        {
-//            if (explosionScript.enabled)
+//            if (explosionScript != null && explosionScript.enabled)
 //                explosionScript.enabled = false;
 //            if (!isWarning)
 //                warningCoroutine = StartCoroutine(WarningAndCheck());
@@ -312,10 +323,10 @@ public class EnemyFinalSequence : MonoBehaviour
 //            {
 //                StopCoroutine(warningCoroutine);
 //                StopBlinking();
-//                ResetMaterial();
+//                ResetMaterials();
 //                isWarning = false;
 //            }
-//            if (!explosionScript.enabled)
+//            if (explosionScript != null && !explosionScript.enabled)
 //                explosionScript.enabled = true;
 //        }
 //    }
@@ -323,7 +334,7 @@ public class EnemyFinalSequence : MonoBehaviour
 //    IEnumerator WarningAndCheck()
 //    {
 //        isWarning = true;
-//        blinkCoroutine = StartCoroutine(BlinkMaterial());
+//        blinkCoroutine = StartCoroutine(BlinkMaterials());
 
 //        float elapsed = 0f;
 //        while (elapsed < warningDuration)
@@ -331,7 +342,7 @@ public class EnemyFinalSequence : MonoBehaviour
 //            if (Vector3.Distance(transform.position, playerTransform.position) > triggerDistance)
 //            {
 //                StopBlinking();
-//                ResetMaterial();
+//                ResetMaterials();
 //                isWarning = false;
 //                yield break;
 //            }
@@ -340,17 +351,39 @@ public class EnemyFinalSequence : MonoBehaviour
 //        }
 
 //        StopBlinking();
-//        ResetMaterial();
+//        ResetMaterials();
 //        isWarning = false;
 //        TriggerFinalSequence();
 //    }
 
-//    IEnumerator BlinkMaterial()
+//    IEnumerator BlinkMaterials()
 //    {
 //        bool toggle = false;
 //        while (true)
 //        {
-//            enemyRenderer.material = toggle ? warningMaterial : originalMaterial;
+//            if (toggle)
+//            {
+//                // Asigna el material de advertencia al enemigo
+//                enemyRenderer.material = warningMaterial;
+
+//                // Cambia al material HDR blanco
+//                if (hdrRenderer != null && warningHDRMaterial != null)
+//                {
+//                    hdrRenderer.material = warningHDRMaterial;
+//                }
+//            }
+//            else
+//            {
+//                // Restaurar material original del enemigo
+//                enemyRenderer.material = originalMaterial;
+
+//                // Restaurar material HDR original
+//                if (hdrRenderer != null && originalHDRMaterial != null)
+//                {
+//                    hdrRenderer.material = originalHDRMaterial;
+//                }
+//            }
+
 //            toggle = !toggle;
 //            yield return new WaitForSeconds(blinkInterval);
 //        }
@@ -365,17 +398,25 @@ public class EnemyFinalSequence : MonoBehaviour
 //        }
 //    }
 
-//    void ResetMaterial()
+//    void ResetMaterials()
 //    {
+//        // Restaurar material original del enemigo
 //        enemyRenderer.material = originalMaterial;
+
+//        // Restaurar material HDR original
+//        if (hdrRenderer != null && originalHDRMaterial != null)
+//        {
+//            hdrRenderer.material = originalHDRMaterial;
+//        }
 //    }
 
 //    void TriggerFinalSequence()
 //    {
 //        finalSequenceTriggered = true;
 //        StopAllCoroutines();
-//        ResetMaterial();
-//        explosionScript.enabled = false;
+//        ResetMaterials();
+//        if (explosionScript != null)
+//            explosionScript.enabled = false;
 //        StartCoroutine(FinalSequence());
 //    }
 
@@ -442,6 +483,18 @@ public class EnemyFinalSequence : MonoBehaviour
 //        yield return new WaitForSeconds(finalDelay);
 //    }
 //}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
