@@ -111,7 +111,7 @@ public class MovimientoConAtaque : MonoBehaviour
 
     IEnumerator SecuenciaAtaques()
     {
-        animator.SetBool("isMoving", false);
+        if (animator != null) animator.SetBool("isMoving", false);
 
         int numAtaques = Random.Range(minAtaques, maxAtaques + 1);
 

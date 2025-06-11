@@ -100,7 +100,7 @@ public class MovimientoZigzag : MonoBehaviour
 
             // Mueve el objeto en la dirección final calculada.
             transform.position += direccionFinal * velocidad * Time.deltaTime;
-            animator.SetBool("isMoving", true);
+            if (animator != null) animator.SetBool("isMoving", true);
         }
         else
         {

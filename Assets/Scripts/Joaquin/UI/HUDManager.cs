@@ -37,6 +37,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI abilityStatusText;
     [SerializeField] private Image abilityIcon;
     [SerializeField] private Image abilityCooldownFill;
+    [SerializeField] private bool showAbilityUI = false; // Si se debe mostrar la UI de habilidades
 
     [Header("Info Fragments")]
     [SerializeField] private RectTransform floatingInfoFragmentsText;
@@ -102,7 +103,10 @@ public class HUDManager : MonoBehaviour
 
         if (eventIcon != null) eventIcon.gameObject.SetActive(false);
 
-        if (abilityIcon != null) abilityIcon.gameObject.SetActive(false);
+        if (!showAbilityUI)
+        {
+            if (abilityIcon != null) abilityIcon.gameObject.SetActive(false);
+        }
         if (abilityCooldownFill != null) abilityCooldownFill.gameObject.SetActive(false);
         if (abilityNameText != null) abilityNameText.gameObject.SetActive(false);
         if (abilityStatusText != null) abilityStatusText.gameObject.SetActive(false);
@@ -382,7 +386,7 @@ public class HUDManager : MonoBehaviour
     {
         if (abilityIcon != null || abilityObj != null)
         {
-            if (abilityIcon.gameObject.activeSelf) abilityIcon.gameObject.SetActive(false);
+            if (!abilityIcon.gameObject.activeSelf) abilityIcon.gameObject.SetActive(true);
         }
 
         AbilityInfo info = abilityObj.GetComponent<AbilityInfo>();

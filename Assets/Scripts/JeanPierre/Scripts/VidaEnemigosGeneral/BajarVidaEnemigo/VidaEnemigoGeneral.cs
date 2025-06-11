@@ -63,6 +63,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
     private TipoColorHDRController colorController;
 
     Animator animator;
+
     void Awake()
     {
         meshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -285,7 +286,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
     IEnumerator TimeToDead()
     {
-        animator.SetBool("isDead", true);
+        if (animator != null) animator.SetBool("isDead", true);
         yield return new WaitForSeconds(2);
         Destroy(gameObject);
     }

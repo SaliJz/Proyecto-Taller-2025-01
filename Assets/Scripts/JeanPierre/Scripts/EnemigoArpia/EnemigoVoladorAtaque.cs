@@ -78,8 +78,8 @@ public class EnemigoVolador : MonoBehaviour
                 break;
             case Estado.Picando:
                 MoverPicada();
-                animator.SetBool("isMoving", false);
-                animator.SetTrigger("isAttack");
+                if (animator != null) animator.SetBool("isMoving", false);
+                if (animator != null) animator.SetTrigger("isAttack");
                 break;
             case Estado.EnTierra:
                 MirarAlPlayer();
