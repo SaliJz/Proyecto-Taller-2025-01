@@ -41,11 +41,15 @@ public class EnemigoVolador : MonoBehaviour
     private List<GameObject> instanciasEfectos = new List<GameObject>();
     private EnemyAbilityReceiver abilityReceiver;
 
+    Animator animator;
+
+
     void Start()
     {
         abilityReceiver = GetComponent<EnemyAbilityReceiver>();
         if (abilityReceiver == null)
             Debug.LogWarning("No se encontró EnemyAbilityReceiver en " + name);
+        animator = GetComponentInChildren<Animator>();
 
         var jugador = GameObject.FindGameObjectWithTag("Player");
         if (jugador != null)
@@ -64,12 +68,18 @@ public class EnemigoVolador : MonoBehaviour
         {
             case Estado.Acercarse:
                 MoverAcercarse();
+                if (animator != null)
+                {
+                    animator.SetBool("isMoving", true);
+                }
                 break;
             case Estado.Avisando:
                 MirarAlPlayer();
                 break;
             case Estado.Picando:
                 MoverPicada();
+                animator.SetBool("isMoving", false);
+                animator.SetTrigger("isAttack");
                 break;
             case Estado.EnTierra:
                 MirarAlPlayer();
@@ -99,7 +109,6 @@ public class EnemigoVolador : MonoBehaviour
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
 
         AjustarAlturaFluida();
-
         if (distXZ <= distanciaPicada)
         {
             objetivoPicada = player.position;
@@ -112,12 +121,18 @@ public class EnemigoVolador : MonoBehaviour
             estadoActual = Estado.Avisando;
             StartCoroutine(EsperarYCaer());
         }
+        
     }
 
     IEnumerator EsperarYCaer()
     {
         yield return new WaitForSeconds(tiempoAntesDeCaer);
         estadoActual = Estado.Picando;
+        if (animator != null)
+        {
+            animator.SetBool("isMoving", false);
+            animator.SetTrigger("isAttack");
+        }
     }
 
     void MoverPicada()

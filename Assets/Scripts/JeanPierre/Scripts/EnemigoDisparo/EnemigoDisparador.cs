@@ -16,6 +16,8 @@ public class EnemigoDisparador : MonoBehaviour
     public float intervaloDisparo = 3f;
     private float temporizadorDisparo = 0f;
 
+    Animator animator;
+
     private void Awake()
     {
         if (jugador == null)
@@ -24,12 +26,14 @@ public class EnemigoDisparador : MonoBehaviour
             if (jugadorGO) jugador = jugadorGO.transform;
             else Debug.LogWarning($"No se encontró Player en {name}");
         }
+        animator = GetComponentInChildren<Animator>();
+
     }
 
     private void Update()
     {
         if (jugador == null) return;
-
+        
         temporizadorDisparo += Time.deltaTime;
         if (temporizadorDisparo >= intervaloDisparo &&
             Vector3.Distance(transform.position, jugador.position) <= distanciaDisparo)
@@ -42,7 +46,11 @@ public class EnemigoDisparador : MonoBehaviour
     private void DispararBala()
     {
         if (balaPrefab == null) return;
-
+        if (animator != null)
+        {
+            animator.SetBool("isMoving", false);
+            animator.SetTrigger("Disparar");
+        }
         // 1) Instancia la bala COMO HIJA de puntoDisparo
         Vector3 spawnPos = puntoDisparo.position;
         GameObject bala = Instantiate(balaPrefab, spawnPos, puntoDisparo.rotation, puntoDisparo);

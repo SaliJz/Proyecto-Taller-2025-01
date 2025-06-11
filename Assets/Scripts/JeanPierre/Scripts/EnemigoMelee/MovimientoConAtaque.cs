@@ -29,8 +29,12 @@ public class MovimientoConAtaque : MonoBehaviour
     Vector3 posicionObjetivoAtaque;
     GameObject coliderActual;
 
+    Animator animator;
+
     void Start()
     {
+                animator = GetComponentInChildren<Animator>();
+
         if (playerTransform == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
@@ -107,6 +111,8 @@ public class MovimientoConAtaque : MonoBehaviour
 
     IEnumerator SecuenciaAtaques()
     {
+        animator.SetBool("isMoving", false);
+
         int numAtaques = Random.Range(minAtaques, maxAtaques + 1);
 
         for (int i = 0; i < numAtaques; i++)

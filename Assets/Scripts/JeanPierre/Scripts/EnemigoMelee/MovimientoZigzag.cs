@@ -26,8 +26,13 @@ public class MovimientoZigzag : MonoBehaviour
 
     private EnemyAbilityReceiver abilityReceiver;
 
+    Animator animator;
+
+
     void Start()
     {
+        animator = GetComponentInChildren<Animator>();
+
         if (abilityReceiver == null)
         {
             abilityReceiver = GetComponent<EnemyAbilityReceiver>();
@@ -95,6 +100,7 @@ public class MovimientoZigzag : MonoBehaviour
 
             // Mueve el objeto en la dirección final calculada.
             transform.position += direccionFinal * velocidad * Time.deltaTime;
+            animator.SetBool("isMoving", true);
         }
         else
         {

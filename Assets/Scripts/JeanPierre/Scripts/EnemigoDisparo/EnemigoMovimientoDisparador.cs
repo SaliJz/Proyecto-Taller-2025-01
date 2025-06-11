@@ -23,9 +23,12 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
     private EnemyAbilityReceiver abilityReceiver;
     private float distanciaDeseada;
 
+    Animator animator;
+
     private void Awake()
     {
         abilityReceiver = GetComponent<EnemyAbilityReceiver>();
+        animator = GetComponentInChildren<Animator>();
 
         // Busca jugador si no está asignado
         if (jugador == null)
@@ -44,6 +47,7 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
     private void Update()
     {
         if (jugador == null) return;
+        bool estaMoviendose = false;
 
         float speed = abilityReceiver.CurrentSpeed;
         Vector3 dir = jugador.position - transform.position;
@@ -59,6 +63,7 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
                 transform.position + moveDir,
                 speed * Time.deltaTime
             );
+            estaMoviendose = true;
         }
         else if (dist < distanciaDeseada - margen)
         {
@@ -68,6 +73,7 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
                 transform.position - moveDir,
                 speed * Time.deltaTime
             );
+            estaMoviendose = true;
         }
         else
         {
@@ -77,18 +83,13 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
                 : Quaternion.Euler(0, -90f, 0) * moveDir;
 
             transform.position += perp.normalized * velocidadCirculo * Time.deltaTime;
+            estaMoviendose = true;
+        }
+        if (animator != null)
+        {
+            animator.SetBool("isMoving", estaMoviendose);
         }
 
-        // Giro suave hacia el jugador
-        if (dir != Vector3.zero)
-        {
-            Quaternion targetRot = Quaternion.LookRotation(dir);
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                targetRot,
-                speed * Time.deltaTime
-            );
-        }
     }
 
     /// <summary>

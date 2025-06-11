@@ -40,7 +40,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
     public Color hdrColorEscopeta = Color.green;
 
     [Header("Renderizado")]
-    public MeshRenderer[] meshRenderers;
+    public SkinnedMeshRenderer[] meshRenderers;
 
     [Header("Prefabs al morir por tipo")]
     [Tooltip("Prefab a instanciar cuando muere un enemigo tipo Ametralladora")]
@@ -62,10 +62,13 @@ public class VidaEnemigoGeneral : MonoBehaviour
     // Referencia al controlador de parpadeo HDR
     private TipoColorHDRController colorController;
 
+    Animator animator;
     void Awake()
     {
-        meshRenderers = GetComponentsInChildren<MeshRenderer>();
+        meshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
         colorController = GetComponent<TipoColorHDRController>();
+        animator = GetComponentInChildren<Animator>();
+
     }
 
     void Start()
@@ -277,7 +280,13 @@ public class VidaEnemigoGeneral : MonoBehaviour
         // Fragmentos y registro de muerte
         HUDManager.Instance?.AddInfoFragment(fragments);
         MissionManager.Instance?.RegisterKill(gameObject.tag, name, tipo.ToString());
+        StartCoroutine(TimeToDead());
+    }
 
+    IEnumerator TimeToDead()
+    {
+        animator.SetBool("isDead", true);
+        yield return new WaitForSeconds(2);
         Destroy(gameObject);
     }
 }
