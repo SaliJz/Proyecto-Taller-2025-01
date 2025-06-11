@@ -14,7 +14,6 @@ public class AbilityShopController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI currentInfoFragments;
     [SerializeField] private TextMeshProUGUI descriptionPanel;
     [SerializeField] private TextMeshProUGUI confirmationText;
-    [SerializeField] private float descriptionDelay = 0.05f;
     [SerializeField] private float confirmationDelay = 1.5f;
     [SerializeField] private Button finalizeButton;
     [SerializeField] private Button returnButton;
@@ -165,7 +164,6 @@ public class AbilityShopController : MonoBehaviour
         return GetComponentsInChildren<AbilityButtonController>()
             .FirstOrDefault(button => button.GetAbilityObject() == ability);
     }
-
 
     public bool PlayerHasAbility(GameObject ability)
     {

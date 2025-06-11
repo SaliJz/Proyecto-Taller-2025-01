@@ -7,16 +7,28 @@ using UnityEngine.UI;
 public class WeaponManager : MonoBehaviour
 {
     [SerializeField] private Weapon[] weapons;
+    [SerializeField] private GameObject[] weaponModels;
+    [SerializeField] private Transform[] weaponModelsTransform;
     [SerializeField] private Transform weaponHolder;
     [SerializeField] private TMP_Text weaponNameText;
     [SerializeField] private Image weaponIconImage;
+
+    [SerializeField] private bool canInstantEquipFirstWeapon = false;
 
     private int currentIndex = 0;
 
     private void Start()
     {
         int savedIndex = PlayerPrefs.GetInt("LastWeaponIndex", 0);
-        EquipWeaponInstant(savedIndex); // Equipar al inicio sin animación
+
+        if (canInstantEquipFirstWeapon)
+        {
+            EquipWeaponInstant(0); // Equipar el primer arma al inicio sin animación
+        }
+        else
+        {
+            EquipWeaponInstant(savedIndex); // Equipar al inicio sin animación
+        }
     }
 
     private void Update()
@@ -52,6 +64,8 @@ public class WeaponManager : MonoBehaviour
     private IEnumerator SwitchWeaponAnimation(int newIndex)
     {
         Weapon oldWeapon = weapons[currentIndex];
+        GameObject oldWeaponModel = weaponModels[currentIndex];
+
         Transform oldModel = oldWeapon.WeaponModelTransform;
         Vector3 oldOriginal = oldWeapon.OriginalLocalPosition;
         Vector3 oldDown = oldOriginal + new Vector3(0, -0.2f, 0);
@@ -62,31 +76,38 @@ public class WeaponManager : MonoBehaviour
         while (t < duration)
         {
             oldModel.localPosition = Vector3.Lerp(oldOriginal, oldDown, t / duration);
+            oldWeaponModel.transform.localPosition = Vector3.Lerp(oldOriginal, oldDown, t / duration);
             t += Time.deltaTime;
             yield return null;
         }
 
         oldWeapon.gameObject.SetActive(false);
+        oldWeaponModel.SetActive(false);
 
         // Activar nueva arma
         for (int i = 0; i < weapons.Length; i++)
         {
             weapons[i].gameObject.SetActive(i == newIndex);
+            weaponModels[i].SetActive(i == newIndex);
         }
 
         currentIndex = newIndex;
         Weapon newWeapon = weapons[currentIndex];
         Transform newModel = newWeapon.WeaponModelTransform;
+        GameObject newWeaponModel = weaponModels[currentIndex];
 
-        StartCoroutine(SlideUpWeapon(newModel, newWeapon.OriginalLocalPosition));
+        StartCoroutine(SlideUpWeapon(newModel, newWeapon.OriginalLocalPosition, newWeaponModel));
 
         // Actualizar HUD
-        HUDManager.Instance.UpdateAmmo(newWeapon.CurrentAmmo, newWeapon.TotalAmmo);
-        HUDManager.Instance.UpdateWeaponIcon(newWeapon.Stats.weaponIcon);
-        HUDManager.Instance.UpdateWeaponName(newWeapon.Stats.weaponName);
+        if (HUDManager.Instance != null)
+        {
+            HUDManager.Instance.UpdateAmmo(newWeapon.CurrentAmmo, newWeapon.TotalAmmo);
+            HUDManager.Instance.UpdateWeaponIcon(newWeapon.Stats.weaponIcon);
+            HUDManager.Instance.UpdateWeaponName(newWeapon.Stats.weaponName);
+        }
     }
 
-    private IEnumerator SlideUpWeapon(Transform model, Vector3 targetPosition)
+    private IEnumerator SlideUpWeapon(Transform model, Vector3 targetPosition, GameObject newModel)
     {
         Vector3 startPos = model.localPosition;
         float duration = 0.15f;
@@ -95,6 +116,7 @@ public class WeaponManager : MonoBehaviour
         while (elapsed < duration)
         {
             model.localPosition = Vector3.Lerp(startPos, targetPosition, elapsed / duration);
+            newModel.transform.localPosition = Vector3.Lerp(startPos, targetPosition, elapsed / duration);
             elapsed += Time.deltaTime;
             yield return null;
         }
@@ -107,13 +129,16 @@ public class WeaponManager : MonoBehaviour
         for (int i = 0; i < weapons.Length; i++)
         {
             weapons[i].gameObject.SetActive(i == index);
+            weaponModels[i].SetActive(i == index);
         }
 
         currentIndex = index;
         Weapon currentWeapon = weapons[currentIndex];
+        GameObject currentWeaponModel = weaponModels[currentIndex];
 
         // Asegura que el arma esté en su posición base desde el inicio
         currentWeapon.WeaponModelTransform.localPosition = currentWeapon.OriginalLocalPosition;
+        currentWeaponModel.transform.localPosition = currentWeapon.OriginalLocalPosition;
 
         HUDManager.Instance.UpdateAmmo(currentWeapon.CurrentAmmo, currentWeapon.TotalAmmo);
         HUDManager.Instance.UpdateWeaponIcon(currentWeapon.Stats.weaponIcon);

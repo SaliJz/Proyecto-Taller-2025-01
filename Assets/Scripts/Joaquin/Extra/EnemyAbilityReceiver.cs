@@ -131,16 +131,6 @@ public class EnemyAbilityReceiver : MonoBehaviour
         if (isMindjacked) return;
         isMindjacked = true;
 
-        MindjackAbility mindjackAbility = FindObjectOfType<MindjackAbility>();
-        if (mindjackAbility != null)
-        {
-            mindjackAbility.EnemyMindjacked(true);
-        }
-        else
-        {
-            Debug.LogError("No se encontró la habilidad MindjackAbility.");
-        }
-
         if (mindjackCoroutine != null)
         {
             StopCoroutine(mindjackCoroutine);
@@ -184,18 +174,7 @@ public class EnemyAbilityReceiver : MonoBehaviour
             elapsed += damageInterval;
         }
 
-        // Fin del efecto Mindjack
         isMindjacked = false;
-
-        MindjackAbility mindjackAbility = FindObjectOfType<MindjackAbility>();
-        if (mindjackAbility != null)
-        {
-            mindjackAbility.EnemyMindjacked(false);
-        }
-        else
-        {
-            Debug.LogError("No se encontró la habilidad MindjackAbility.");
-        }
     }
 
     private GameObject FindNearestEnemy()

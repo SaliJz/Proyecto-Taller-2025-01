@@ -29,6 +29,10 @@ public class PlayerDash : MonoBehaviour
     [SerializeField] private float dashFov = 45f;
     [SerializeField] private float fovTransitionSpeed = 8f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioClip dashSound;
+
     private Rigidbody rb;
     private PlayerMovement playerMovement;
 
@@ -59,6 +63,15 @@ public class PlayerDash : MonoBehaviour
         {
             defaultFov = virtualCam.m_Lens.FieldOfView;
             targetFov = defaultFov;
+        }
+
+        if (sfxSource == null)
+        {
+            sfxSource = GameObject.Find("SFXSource")?.GetComponent<AudioSource>();
+            if (sfxSource == null)
+            {
+                Debug.LogError("No se encontró el AudioSource para efectos de sonido. Asegúrate de que haya un GameObject llamado 'SFXSource' con un AudioSource en la escena.");
+            }
         }
 
         rb.useGravity = true;
@@ -131,6 +144,7 @@ public class PlayerDash : MonoBehaviour
     private void StartDashState(Vector3 dashDirection)
     {
         PlayDashEffect();
+        PlayClip();
 
         isDashing = true;
         canDash = false;
@@ -249,5 +263,13 @@ public class PlayerDash : MonoBehaviour
     private void ApplyBounce()
     {
         rb.velocity = -currentDashDirection * bounceSpeed;
+    }
+
+    private void PlayClip()
+    {
+        if (sfxSource != null && dashSound != null)
+        {
+            sfxSource.PlayOneShot(dashSound);
+        }
     }
 }

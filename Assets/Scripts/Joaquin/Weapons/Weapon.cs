@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Weapon : MonoBehaviour
@@ -23,9 +24,14 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float spreadAngle = 1f;
     [SerializeField] private int shotgunPellets = 3;
 
+    [Header("SFX")]
+    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioClip shootClip;
+    [SerializeField] private AudioClip reloadClip;
+
     #endregion
 
-    #region Propiedades y Estados
+    #region Properties and States
 
     public enum ShootingMode { Single, SemiAuto, Auto }
 
@@ -60,7 +66,24 @@ public class Weapon : MonoBehaviour
 
     private void Awake()
     {
-        playerCamera ??= Camera.main;
+        if (playerCamera == null)
+        {
+            playerCamera = Camera.main;
+            if (playerCamera == null)
+            {
+                Debug.LogError("No se encontró la cámara principal. Asegúrate de que haya una cámara con la etiqueta 'MainCamera' en la escena.");
+            }
+        }
+
+        if (sfxSource == null)
+        {
+            sfxSource = GameObject.Find("SFXSource")?.GetComponent<AudioSource>();
+            if (sfxSource == null)
+            {
+                Debug.LogError("No se encontró el AudioSource para efectos de sonido. Asegúrate de que haya un GameObject llamado 'SFXSource' con un AudioSource en la escena.");
+            }
+        }
+
         originalLocalPosition = weaponModelTransform.localPosition;
     }
 
@@ -182,6 +205,8 @@ public class Weapon : MonoBehaviour
         {
             ShootBullet(CalculateDirectionAndSpread());
         }
+
+        PlayShotAudio();
     }
 
     private void ShootBullet(Vector3 direction)
@@ -213,6 +238,8 @@ public class Weapon : MonoBehaviour
         return (spread * direction).normalized;
     }
 
+    public void PlayShotAudio() => PlayClip(shootClip);
+
     #endregion
 
     #region Reloading
@@ -232,6 +259,8 @@ public class Weapon : MonoBehaviour
         for (int i = 0; i < ammoToReload; i++)
         {
             if (!isReloading) yield break;
+
+            PlayReloadAudio();
 
             currentAmmo++;
             totalAmmo--;
@@ -292,6 +321,8 @@ public class Weapon : MonoBehaviour
         weaponModelTransform.localPosition = originalLocalPosition;
     }
 
+    public void PlayReloadAudio() => PlayClip(reloadClip);
+
     #endregion
 
     #region Munición
@@ -311,6 +342,14 @@ public class Weapon : MonoBehaviour
         totalAmmo += added;
         HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
         return true;
+    }
+
+    #endregion
+
+    #region Audio
+    private void PlayClip(AudioClip clip)
+    {
+        if (sfxSource != null && clip != null) sfxSource.PlayOneShot(clip);
     }
 
     #endregion

@@ -7,8 +7,6 @@ public class MindjackAbility : MonoBehaviour
 {
     [Header("Camera")]
     [SerializeField] private Camera playerCamera;
-    //private const float CenterScreenX = 0.5f;
-    //private const float CenterScreenY = 0.5f;
     [SerializeField] private Transform projectileSpawnPoint;
     [SerializeField] private GameObject projectilePrefab;
 
@@ -23,7 +21,6 @@ public class MindjackAbility : MonoBehaviour
     [SerializeField] private float spreadIntensity;
 
     private bool canUse = true;
-    private bool alreadyUsedOnEnemy = false;
     private float currentCooldown = 0;
     private float lastCooldownDisplay = -1f;
 
@@ -56,10 +53,7 @@ public class MindjackAbility : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse1) && canUse)
         {
-            if (!alreadyUsedOnEnemy)
-            {
-                ActivateAbility();
-            }
+            ActivateAbility();
         }
 
         if (!canUse)
@@ -67,7 +61,6 @@ public class MindjackAbility : MonoBehaviour
             currentCooldown -= Time.deltaTime;
             currentCooldown = Mathf.Max(0f, currentCooldown);
 
-            // Solo actualiza si hay diferencia perceptible
             if (Mathf.Ceil(currentCooldown) != Mathf.Ceil(lastCooldownDisplay))
             {
                 HUDManager.Instance.UpdateAbilityStatus("Mindjack", currentCooldown, canUse, cooldown);
@@ -94,43 +87,5 @@ public class MindjackAbility : MonoBehaviour
         canUse = false;
         currentCooldown = cooldown;
         HUDManager.Instance.UpdateAbilityStatus("Mindjack", currentCooldown, canUse);
-    }
-    /*
-    private Vector3 CalculateDirectionAndSpread()
-    {
-        Ray ray = playerCamera.ViewportPointToRay(new Vector3(CenterScreenX, CenterScreenY));
-        RaycastHit hit;
-        Vector3 targetPoint = Physics.Raycast(ray, out hit) ? hit.point : ray.GetPoint(100);
-        Vector3 direction = (targetPoint - projectileSpawnPoint.position).normalized;
-
-        // Añadir dispersión
-        float spreadX = Random.Range(-spreadIntensity, spreadIntensity);
-        float spreadY = Random.Range(-spreadIntensity, spreadIntensity);
-        Vector3 spread = playerCamera.transform.right * spreadX + playerCamera.transform.up * spreadY;
-
-        return (direction + spread).normalized;
-    }
-
-    private IEnumerator CooldownRoutine()
-    {
-        canUse = false;
-        currentCooldown = cooldown;
-        HUDManager.Instance.UpdateAbilityStatus("Mindjack", currentCooldown, canUse);
-
-        while (currentCooldown > 0)
-        {
-            yield return new WaitForSeconds(1f);
-            currentCooldown -= 1f;
-            HUDManager.Instance.UpdateAbilityStatus("Mindjack", currentCooldown, canUse);
-        }
-
-        canUse = true;
-        HUDManager.Instance.UpdateAbilityStatus("Mindjack", currentCooldown, canUse);
-    }
-    */
-
-    public void EnemyMindjacked(bool estate)
-    {
-        alreadyUsedOnEnemy = estate;
     }
 }

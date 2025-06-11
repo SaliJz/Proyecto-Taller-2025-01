@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class HUDManager : MonoBehaviour
 {
+    #region Datos
+
     public static HUDManager Instance 
     { 
         get; 
@@ -37,19 +39,22 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private Image abilityCooldownFill;
 
     [Header("Info Fragments")]
-    [SerializeField] private RectTransform floatingTextObject;
+    [SerializeField] private RectTransform floatingInfoFragmentsText;
+    [SerializeField] private TextMeshProUGUI floatingInfoFragmentsTextContent;
+    [SerializeField] private TextMeshProUGUI currentInfoFragments;
     [SerializeField] private float displayDuration = 2f;
-    [SerializeField] private Vector2 floatingStartPos = new Vector2(480f, 0f); // editable desde el inspector
-    [SerializeField] private Vector2 floatingEndPos = new Vector2(-10, 0f);      // editable desde el inspector
-    [SerializeField] private TextMeshProUGUI currentFragmentsText;
+    [SerializeField] private Vector2 floatingStartPos = new Vector2(480f, 0f);
+    [SerializeField] private Vector2 floatingEndPos = new Vector2(-10, 0f);
     [SerializeField] private bool isNivel1 = false;
 
     [Header("Mission UI")]
     [SerializeField] private RectTransform missionTextObject;
+    [SerializeField] private GameObject missionPanel;
+    [SerializeField] private TextMeshProUGUI missionText;
     [SerializeField] private bool animateMission = false;
     [SerializeField] private float missionDisplayTime = 2f;
-    [SerializeField] private Vector2 missionStartPos = new Vector2(480f, 0f); // editable desde el inspector
-    [SerializeField] private Vector2 missionEndPos = new Vector2(-10f, 0f); // editable desde el inspector
+    [SerializeField] private Vector2 missionStartPos = new Vector2(480f, 0f);
+    [SerializeField] private Vector2 missionEndPos = new Vector2(-10f, 0f);
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private Slider missionProgressSlider;
     [SerializeField] private TextMeshProUGUI missionProgressText;
@@ -62,6 +67,10 @@ public class HUDManager : MonoBehaviour
 
     private static int infoFragments = 10000;
     public int CurrentFragments => infoFragments;
+
+    #endregion
+
+    #region Unity Lifecycle
 
     private void Awake()
     {
@@ -82,7 +91,24 @@ public class HUDManager : MonoBehaviour
             infoFragments = 100;
         }
 
-        floatingTextObject.gameObject.SetActive(false);
+        if (ammoText !=null) ammoText.gameObject.SetActive(false);
+        if (floatingInfoFragmentsText != null) floatingInfoFragmentsText.gameObject.SetActive(false);
+
+        if (missionPanel != null) missionPanel.SetActive(false);
+        if (missionText != null) missionText.gameObject.SetActive(false);
+        if (timerText != null) timerText.gameObject.SetActive(false);
+        if (missionProgressSlider != null) missionProgressSlider.gameObject.SetActive(false);
+        if (missionProgressText != null) missionProgressText.gameObject.SetActive(false);
+
+        if (eventIcon != null) eventIcon.gameObject.SetActive(false);
+
+        if (abilityIcon != null) abilityIcon.gameObject.SetActive(false);
+        if (abilityCooldownFill != null) abilityCooldownFill.gameObject.SetActive(false);
+        if (abilityNameText != null) abilityNameText.gameObject.SetActive(false);
+        if (abilityStatusText != null) abilityStatusText.gameObject.SetActive(false);
+
+        if (weaponIcon != null) weaponIcon.gameObject.SetActive(false);
+        if (weaponNameText != null) weaponNameText.gameObject.SetActive(false);
 
         if (!animateMission)
         {
@@ -95,45 +121,70 @@ public class HUDManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        currentInfoFragments.text = $"F. Cod. {infoFragments.ToString("N0")}"; // Formatear con separador de miles
+    }
+
+    #endregion
+
+    #region Bars and Text Updates
+
     public void UpdateHealth(int current, int max)
     {
-        healthBar.value = (float)current / max;
-        healthBarText.text = $"{current}";
+        if (healthBar != null && healthBarText != null)
+        {
+            float healthPercentage = (float)current / max;
+            healthBar.value = healthPercentage;
+            healthBarText.text = $"{healthPercentage * 100} %";
+        }
     }
 
     public void UpdateShield(int current, int max)
     {
-        if (shieldBar != null)
+        if (shieldBar != null && shieldText != null)
         {
-            shieldBar.value = (float)current / max;
-        }
-        if (shieldText != null)
-        {
-            shieldText.text = $"{current}";
+            float shieldPercentage = (float)current / max;
+            shieldBar.value = shieldPercentage;
+            shieldText.text = $"{shieldPercentage * 100} %";
         }
     }
 
+    #endregion
+
+    #region Weapon and Ammo Updates
+
     public void UpdateAmmo(int current, int total)
     {
-        ammoText.text = $"{current} / {total}";
+        if (ammoText != null) 
+        {
+            if (!ammoText.gameObject.activeSelf) ammoText.gameObject.SetActive(true);
+            ammoText.text = $"{current} / {total}";
+        }
     }
 
     public void UpdateWeaponName(string name)
     {
-        if (weaponNameText == null || name == null) return; // Asegura que el objeto no sea nulo
-
-        if (!weaponNameText.gameObject.activeSelf) weaponNameText.gameObject.SetActive(true);
-        weaponNameText.text = name;
+        if (weaponNameText != null || name != null)
+        {
+            if (!weaponNameText.gameObject.activeSelf) weaponNameText.gameObject.SetActive(true);
+            weaponNameText.text = name;
+        }
     }
 
     public void UpdateWeaponIcon(Sprite icon)
     {
-        if (weaponIcon == null || icon == null) return; // Asegura que el objeto y el icono no sean nulos
-        
-        if (!weaponIcon.gameObject.activeSelf) weaponIcon.gameObject.SetActive(true);
-        weaponIcon.sprite = icon;
+        if (weaponIcon != null || icon != null)
+        {
+            if (!weaponIcon.gameObject.activeSelf) weaponIcon.gameObject.SetActive(true);
+            weaponIcon.sprite = icon;
+        }
     }
-    
+
+    #endregion 
+
+    #region Info Fragments
+
     public void AddInfoFragment(int amount)
     {
         infoFragments += amount;
@@ -162,25 +213,25 @@ public class HUDManager : MonoBehaviour
 
     private IEnumerator ShowFloatingText(string message)
     {
-        if (floatingTextObject == null) yield break; // Asegura que el objeto no sea nulo
+        if (floatingInfoFragmentsText == null) yield break; // Asegura que el objeto no sea nulo
 
-        TextMeshProUGUI text = floatingTextObject.GetComponentInChildren<TextMeshProUGUI>();
-        floatingTextObject.gameObject.SetActive(true);
+        TextMeshProUGUI text = floatingInfoFragmentsText.GetComponentInChildren<TextMeshProUGUI>();
+        floatingInfoFragmentsText.gameObject.SetActive(true);
         text.text = message;
 
         // Setear posición inicial editable
-        floatingTextObject.anchoredPosition = floatingStartPos;
+        floatingInfoFragmentsText.anchoredPosition = floatingStartPos;
 
         float elapsed = 0f;
         while (elapsed < displayDuration)
         {
             elapsed += Time.deltaTime;
-            floatingTextObject.anchoredPosition = Vector2.Lerp(floatingStartPos, floatingEndPos, elapsed / displayDuration);
+            floatingInfoFragmentsText.anchoredPosition = Vector2.Lerp(floatingStartPos, floatingEndPos, elapsed / displayDuration);
             yield return null;
         }
 
-        floatingTextObject.gameObject.SetActive(false);
-        floatingTextObject.anchoredPosition = floatingStartPos;
+        floatingInfoFragmentsText.gameObject.SetActive(false);
+        floatingInfoFragmentsText.anchoredPosition = floatingStartPos;
     }
 
     public void SpendFragments(int amount)
@@ -189,6 +240,10 @@ public class HUDManager : MonoBehaviour
         infoFragments = Mathf.Max(0, infoFragments);
         floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: - {amount} -> {infoFragments}"));
     }
+
+    #endregion
+
+    #region Mission UI
 
     public void UpdateTimer(float time)
     {
@@ -205,7 +260,7 @@ public class HUDManager : MonoBehaviour
     public void UpdateMissionProgress(float progress, float totalProgress, bool isEnemy = false)
     {
         missionProgressSlider?.gameObject.SetActive(true);
-        float normalizedProgress = Mathf.Clamp01(progress / totalProgress) * 100;
+        float normalizedProgress = Mathf.Clamp01(progress / totalProgress);
 
         if (missionProgressSlider != null)
         {
@@ -214,7 +269,7 @@ public class HUDManager : MonoBehaviour
 
         if (missionProgressText != null)
         {
-            missionProgressText.text = $"{normalizedProgress:F0}%";
+            missionProgressText.text = $"{normalizedProgress * 100:F0}%";
         }
 
         if (isEnemy)
@@ -235,6 +290,8 @@ public class HUDManager : MonoBehaviour
 
     public void ShowMission(string message, bool isTimer = false)
     {
+        missionPanel?.SetActive(true);
+        missionText.gameObject?.SetActive(true);
         timerText.gameObject?.SetActive(isTimer);
 
         if (missionTextObject == null)
@@ -261,9 +318,8 @@ public class HUDManager : MonoBehaviour
     {
         if (missionTextObject == null) yield break; // Asegura que el objeto no sea nulo
 
-        TextMeshProUGUI text = missionTextObject.GetComponentInChildren<TextMeshProUGUI>();
         missionTextObject.gameObject.SetActive(true);
-        text.text = message;
+        floatingInfoFragmentsTextContent.text = message;
 
         // Setear posición inicial editable
         missionTextObject.anchoredPosition = missionStartPos;
@@ -280,39 +336,43 @@ public class HUDManager : MonoBehaviour
         missionTextObject.anchoredPosition = missionStartPos;
     }
 
+    #endregion
+
+    #region Ability and Text Updates
+
     public void UpdateAbilityStatus(string abilityName, float cooldownRemaining, bool isReady, float cooldownTotal = 1f)
     {
-        if (abilityNameText != null && !string.IsNullOrEmpty(abilityName))
+        if (abilityNameText != null || abilityName != null)
         {
             if (!abilityNameText.gameObject.activeSelf) abilityNameText.gameObject.SetActive(true);
             abilityNameText.text = abilityName;
         }
-        else
-        {
-            if (abilityNameText != null && abilityNameText.gameObject.activeSelf)
-            {
-                abilityNameText.gameObject.SetActive(false);
-            }
-        }
-
-        if (abilityCooldownFill != null && cooldownRemaining <= 0)
-        {
-            abilityCooldownFill.gameObject.SetActive(false);
-        }
 
         if (isReady)
         {
-            abilityStatusText.text = $"¡Listo!";
+            if (abilityNameText != null)
+            {
+                if (!abilityStatusText.gameObject.activeSelf) abilityStatusText.gameObject.SetActive(true);
+                abilityStatusText.text = $"¡Listo!";
+            }
+
             if (abilityCooldownFill != null)
             {
                 abilityCooldownFill.fillAmount = 0f;
+                if (abilityCooldownFill.gameObject.activeSelf) abilityCooldownFill.gameObject.SetActive(false);
             }
         }
         else
         {
-            abilityStatusText.text = $"Cooldown - {Mathf.Ceil(cooldownRemaining)}s";
+            if (abilityNameText != null)
+            {
+                if (!abilityStatusText.gameObject.activeSelf) abilityStatusText.gameObject.SetActive(true);
+                abilityStatusText.text = $"Cooldown - {Mathf.Ceil(cooldownRemaining)}s";
+            }
+
             if (abilityCooldownFill != null)
             {
+                if (!abilityCooldownFill.gameObject.activeSelf) abilityCooldownFill.gameObject.SetActive(true);
                 abilityCooldownFill.fillAmount = cooldownRemaining / cooldownTotal;
             }
         }
@@ -320,7 +380,7 @@ public class HUDManager : MonoBehaviour
 
     public void UpdateAbilityUI(GameObject abilityObj)
     {
-        if (abilityIcon != null && abilityObj != null)
+        if (abilityIcon != null || abilityObj != null)
         {
             if (abilityIcon.gameObject.activeSelf) abilityIcon.gameObject.SetActive(false);
         }
@@ -330,15 +390,19 @@ public class HUDManager : MonoBehaviour
         if (info != null)
         {
             if (!abilityIcon.gameObject.activeSelf) abilityIcon.gameObject.SetActive(true);
-            abilityIcon.sprite = info.icon;
+            if (abilityIcon != null) abilityIcon.sprite = info.icon;
             if (!abilityNameText.gameObject.activeSelf) abilityNameText.gameObject.SetActive(true);
-            abilityNameText.text = info.abilityName;
+            if (abilityNameText != null) abilityNameText.text = info.abilityName;
         }
     }
 
+    #endregion
+
+    #region Events
+
     public void UpdateIcon(Sprite newIcon)
     {
-        if (eventIcon != null && newIcon != null)
+        if (eventIcon != null || newIcon != null)
         {
             if (!eventIcon.gameObject.activeSelf) eventIcon.gameObject.SetActive(true);
             eventIcon.sprite = newIcon;
@@ -352,4 +416,6 @@ public class HUDManager : MonoBehaviour
             if (eventIcon.gameObject.activeSelf) eventIcon.gameObject.SetActive(false);
         }
     }
+
+    #endregion
 }
