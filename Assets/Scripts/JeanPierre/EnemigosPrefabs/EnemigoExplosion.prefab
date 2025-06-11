@@ -458,6 +458,8 @@ MonoBehaviour:
   hdrColorPistola: {r: 0.8207547, g: 0, b: 0, a: 1}
   hdrColorEscopeta: {r: 0, g: 0.8113208, b: 0, a: 1}
   meshRenderers:
+  - {fileID: 0}
+  staticMeshRenderers:
   - {fileID: 5738866789442600206}
   prefabMuerteAmetralladora: {fileID: 7597145721601309270, guid: 5c64e1320daef804f813dfca3682d4ae,
     type: 3}
@@ -531,7 +533,7 @@ MonoBehaviour:
   playerTransform: {fileID: 0}
   triggerDistance: 2
   reopenDistance: 4
-  enemyRenderer: {fileID: 7280533851858509494}
+  enemyRenderer: {fileID: 5738866789442600206}
   warningMaterial: {fileID: 2100000, guid: 3729fa611ec999e48a8528ca96f00ba5, type: 2}
   blinkInterval: 0.2
   warningDuration: 0.9
@@ -622,8 +624,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.38, y: 2.3226388, z: 0.89}
-  m_Center: {x: -0.24000001, y: 0.08131921, z: -0.01}
+  m_Size: {x: 1.241951, y: 2.2880063, z: 0.89}
+  m_Center: {x: 0.02658844, y: 0.17037469, z: -0.00999999}
 --- !u!114 &3574586187406627060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -853,7 +855,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 60de63c2a5514d7448b3620daa620b11, type: 2}
+      objectReference: {fileID: 2100000, guid: 754bd0a12d8baf041a5c2a20c18e14f6, type: 2}
     - target: {fileID: 919132149155446097, guid: 6656ff0d42f90b549a7fef146380d28b,
         type: 3}
       propertyPath: m_Name
