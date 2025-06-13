@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-726591562755612293
+--- !u!114 &-4211008288389962522
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,14 +20,14 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Tile-Mat
-  m_Shader: {fileID: -6465566751694194690, guid: df206ee1ad557c342b069f9863353d41,
+  m_Name: Holograma
+  m_Shader: {fileID: -6465566751694194690, guid: b5d703728da95e64891486ec32e0d0b5,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
-  m_LightmapFlags: 2
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -37,20 +37,20 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _Base_Map:
-        m_Texture: {fileID: 2800000, guid: 66eb3ef978cefd84a8e4b584f4f4763d, type: 3}
+    - _Line_Pattern:
+        m_Texture: {fileID: 2800000, guid: 19c41b3e2a7d9744f885abc0710ed6a4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Emissive_Map:
+    - _SampleTexture2DLOD_47ec25a76b0a45b58b316c66c7a86584_Texture_1_Texture2D:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Main_Tex:
-        m_Texture: {fileID: 2800000, guid: 66eb3ef978cefd84a8e4b584f4f4763d, type: 3}
+    - _Texture2DAsset_bb422c2aca554e8f8b805ab9069fb329_Out_0_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 19c41b3e2a7d9744f885abc0710ed6a4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Main_Texture:
-        m_Texture: {fileID: 2800000, guid: 66eb3ef978cefd84a8e4b584f4f4763d, type: 3}
+    - _Texture2DAsset_d3278bc184114af094fb2112501e3976_Out_0_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 19c41b3e2a7d9744f885abc0710ed6a4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -67,14 +67,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Ambient_Occlussion: 1
-    - _Blend: 200
-    - _Metallic: 0
+    - _Fresnel_Power: 3
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Smoothness: 0.5
-    - _Tile: 0.5
+    - _Vertex_Offset: 0.04
     m_Colors:
-    - _Color_Multiplier: {r: 1, g: 1, b: 1, a: 1}
-    - _Emission_Color: {r: 0, g: 0, b: 0, a: 0}
+    - _Fresnel_Color: {r: 0.91615367, g: 10.293257, b: 5.0013924, a: 1}
+    - _Lines_Speed: {r: 0, g: 0.5, b: 0, a: 0}
+    - _Lines_Tilling: {r: 1, g: 16, b: 0, a: 0}
   m_BuildTextureStacks: []
