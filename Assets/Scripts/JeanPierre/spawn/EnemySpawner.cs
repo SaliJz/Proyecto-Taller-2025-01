@@ -10,11 +10,9 @@ public class EnemySpawner : MonoBehaviour
     public float spawnInterval = 3f;        // Tiempo entre oleadas
     public float spawnRadius = 2f;          // Radio de dispersión alrededor del punto
 
-    [Header("Progresión de dificultad")]
-    public float levelDuration = 60f;       // Tiempo (segundos) para aumentar nivel
-    private float levelTimer = 0f;
-    private int currentLevel = 1;           // Nivel 1 => 2 enemigos únicos
-    private int maxLevel = 3;               // Nivel 3 => 4 enemigos únicos
+    [Header("Cantidad variable de spawn")]
+    [Tooltip("Número de enemigos únicos a generar por oleada (1 a 4)")]
+    public int enemiesPerWaveUnique = 2;    // Variable: 1,2,3 o 4
 
     [SerializeField] private int maxEnemiesInScene = 20;
     [SerializeField] private int maxEnemiesInTotal = 50;
@@ -27,28 +25,16 @@ public class EnemySpawner : MonoBehaviour
     {
         if (enemyPrefabs.Length < 4 || spawnPoints.Length == 0)
         {
-            Debug.Log("¡Se requieren al menos 4 prefabs de enemigos y puntos de spawn!");
+            Debug.Log("¡Se requieren 4 prefabs de enemigos y puntos de spawn!");
             return;
         }
+        enemiesPerWaveUnique = Mathf.Clamp(enemiesPerWaveUnique, 1, 4);
         Debug.Log("Iniciando Spawn");
     }
 
     private void OnEnable()
     {
-        levelTimer = 0f;
-        currentLevel = 1;
         StartCoroutine(SpawnRoutine());
-    }
-
-    private void Update()
-    {
-        levelTimer += Time.deltaTime;
-        if (levelTimer >= levelDuration && currentLevel < maxLevel)
-        {
-            levelTimer -= levelDuration;
-            currentLevel++;
-            Debug.Log($"Nivel aumentado a {currentLevel} => {currentLevel + 1} enemigos distintos");
-        }
     }
 
     private IEnumerator SpawnRoutine()
@@ -79,11 +65,11 @@ public class EnemySpawner : MonoBehaviour
         return false;
     }
 
-    // Nuevo método: elige N índices únicos basados en currentLevel
+    // Generate a wave with a variable number of unique random enemies
     private void SpawnWaveUnique()
     {
-        int uniqueCount = Mathf.Clamp(currentLevel + 1, 2, 4);
-        // Preparar índices únicos de prefab
+        int uniqueCount = Mathf.Clamp(enemiesPerWaveUnique, 1, 4);
+        // Select unique indices
         var indices = Enumerable.Range(0, enemyPrefabs.Length)
                                 .OrderBy(x => Random.value)
                                 .Take(uniqueCount)
@@ -125,7 +111,6 @@ public class EnemySpawner : MonoBehaviour
 
     public void SpawnWave(int totalEnemies)
     {
-        // Mantener vieja funcionalidad si se llama explícitamente
         StartCoroutine(CustomWave(totalEnemies));
     }
 
@@ -135,7 +120,7 @@ public class EnemySpawner : MonoBehaviour
         while (spawned < totalEnemies && !ShouldStopSpawning())
         {
             SpawnWaveUnique();
-            spawned += Mathf.Clamp(currentLevel + 1, 2, 4);
+            spawned += Mathf.Clamp(enemiesPerWaveUnique, 1, 4);
             yield return new WaitForSeconds(spawnInterval);
         }
     }
@@ -160,6 +145,177 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 }
+
+
+
+
+
+
+
+
+
+//using UnityEngine;
+//using System.Collections;
+//using System.Linq;
+//using System.Collections.Generic;
+
+//public class EnemySpawner : MonoBehaviour
+//{
+//    [Header("Configuración de Spawn")]
+//    public GameObject[] enemyPrefabs;       // Prefabs de enemigos
+//    public float spawnInterval = 3f;        // Tiempo entre oleadas
+//    public float spawnRadius = 2f;          // Radio de dispersión alrededor del punto
+
+//    [Header("Progresión de dificultad")]
+//    public float levelDuration = 60f;       // Tiempo (segundos) para aumentar nivel
+//    private float levelTimer = 0f;
+//    private int currentLevel = 1;           // Nivel 1 => 2 enemigos únicos
+//    private int maxLevel = 3;               // Nivel 3 => 4 enemigos únicos
+
+//    [SerializeField] private int maxEnemiesInScene = 20;
+//    [SerializeField] private int maxEnemiesInTotal = 50;
+//    [SerializeField] private SpawnPoint[] spawnPoints;
+
+//    private HashSet<GameObject> activeEnemies = new HashSet<GameObject>();
+//    private int totalEnemiesSpawned = 0;
+
+//    private void Start()
+//    {
+//        if (enemyPrefabs.Length < 4 || spawnPoints.Length == 0)
+//        {
+//            Debug.Log("¡Se requieren al menos 4 prefabs de enemigos y puntos de spawn!");
+//            return;
+//        }
+//        Debug.Log("Iniciando Spawn");
+//    }
+
+//    private void OnEnable()
+//    {
+//        levelTimer = 0f;
+//        currentLevel = 1;
+//        StartCoroutine(SpawnRoutine());
+//    }
+
+//    private void Update()
+//    {
+//        levelTimer += Time.deltaTime;
+//        if (levelTimer >= levelDuration && currentLevel < maxLevel)
+//        {
+//            levelTimer -= levelDuration;
+//            currentLevel++;
+//            Debug.Log($"Nivel aumentado a {currentLevel} => {currentLevel + 1} enemigos distintos");
+//        }
+//    }
+
+//    private IEnumerator SpawnRoutine()
+//    {
+//        while (true)
+//        {
+//            yield return new WaitForSeconds(spawnInterval);
+//            CleanUpInactiveEnemies();
+//            if (ShouldStopSpawning()) continue;
+//            SpawnWaveUnique();
+//        }
+//    }
+
+//    private void CleanUpInactiveEnemies() => activeEnemies.RemoveWhere(e => e == null);
+
+//    private bool ShouldStopSpawning()
+//    {
+//        if (activeEnemies.Count >= maxEnemiesInScene)
+//        {
+//            Debug.Log("Límite de enemigos en escena alcanzado.");
+//            return true;
+//        }
+//        if (maxEnemiesInTotal >= 0 && totalEnemiesSpawned >= maxEnemiesInTotal)
+//        {
+//            Debug.Log("Límite global de enemigos alcanzado.");
+//            return true;
+//        }
+//        return false;
+//    }
+
+//    // Nuevo método: elige N índices únicos basados en currentLevel
+//    private void SpawnWaveUnique()
+//    {
+//        int uniqueCount = Mathf.Clamp(currentLevel + 1, 2, 4);
+//        // Preparar índices únicos de prefab
+//        var indices = Enumerable.Range(0, enemyPrefabs.Length)
+//                                .OrderBy(x => Random.value)
+//                                .Take(uniqueCount)
+//                                .ToList();
+
+//        foreach (int idx in indices)
+//        {
+//            if (ShouldStopSpawning()) break;
+//            SpawnEnemyAtIndex(idx);
+//        }
+//    }
+
+//    private void SpawnEnemyAtIndex(int prefabIndex)
+//    {
+//        var points = spawnPoints.Where(sp => sp.IsAvailable).ToList();
+//        if (points.Count == 0) return;
+
+//        var point = points[Random.Range(0, points.Count)];
+//        Vector2 offset = Random.insideUnitCircle * spawnRadius;
+//        Vector3 pos = point.transform.position + new Vector3(offset.x, 0, offset.y);
+
+//        var enemy = Instantiate(enemyPrefabs[prefabIndex], pos, point.transform.rotation);
+//        activeEnemies.Add(enemy);
+//        totalEnemiesSpawned++;
+//        Debug.Log($"Enemigo {totalEnemiesSpawned} instanciado (prefab {prefabIndex}).");
+//    }
+
+//    // Compatibilidad con MissionManager
+//    public void EnemiesKilledCount(int count)
+//    {
+//        totalEnemiesSpawned = Mathf.Max(0, totalEnemiesSpawned - count);
+//    }
+
+//    public void SpawnCondition(int maxTotal, float interval)
+//    {
+//        maxEnemiesInTotal = maxTotal;
+//        spawnInterval = interval;
+//    }
+
+//    public void SpawnWave(int totalEnemies)
+//    {
+//        // Mantener vieja funcionalidad si se llama explícitamente
+//        StartCoroutine(CustomWave(totalEnemies));
+//    }
+
+//    private IEnumerator CustomWave(int totalEnemies)
+//    {
+//        int spawned = 0;
+//        while (spawned < totalEnemies && !ShouldStopSpawning())
+//        {
+//            SpawnWaveUnique();
+//            spawned += Mathf.Clamp(currentLevel + 1, 2, 4);
+//            yield return new WaitForSeconds(spawnInterval);
+//        }
+//    }
+
+//    public void ResetSpawner()
+//    {
+//        totalEnemiesSpawned = 0;
+//        activeEnemies.Clear();
+//        StopAllCoroutines();
+//        OnEnable();
+//    }
+
+//    private void OnDrawGizmosSelected()
+//    {
+//        if (spawnPoints == null) return;
+//        Gizmos.color = Color.red;
+//        foreach (var p in spawnPoints)
+//        {
+//            Gizmos.DrawWireSphere(p.transform.position, spawnRadius);
+//            Gizmos.color = p.IsAvailable ? Color.green : Color.gray;
+//            Gizmos.DrawSphere(p.transform.position, 0.2f);
+//        }
+//    }
+//}
 
 
 

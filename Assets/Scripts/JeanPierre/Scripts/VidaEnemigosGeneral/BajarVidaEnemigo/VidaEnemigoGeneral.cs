@@ -35,9 +35,9 @@ public class VidaEnemigoGeneral : MonoBehaviour
     [ColorUsage(true, true)]
     public Color hdrColorAmetralladora = Color.blue;
     [ColorUsage(true, true)]
-    public Color hdrColorPistola = Color.red;
+    public Color hdrColorPistola = Color.green;    // antes rojo, ahora verde
     [ColorUsage(true, true)]
-    public Color hdrColorEscopeta = Color.green;
+    public Color hdrColorEscopeta = Color.red;     // antes verde, ahora rojo
 
     [Header("Renderizado")]
     // Para mallas con skin
@@ -262,13 +262,12 @@ public class VidaEnemigoGeneral : MonoBehaviour
     }
 
     IEnumerator TimeToDead()
-    {
+    { 
         if (animator != null) animator.SetBool("isDead", true);
         yield return new WaitForSeconds(2f);
         Destroy(gameObject);
     }
 }
-
 
 
 
@@ -314,7 +313,10 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //    public Color hdrColorEscopeta = Color.green;
 
 //    [Header("Renderizado")]
+//    // Para mallas con skin
 //    public SkinnedMeshRenderer[] meshRenderers;
+//    // Para mallas estáticas
+//    public MeshRenderer[] staticMeshRenderers;
 
 //    [Header("Prefabs al morir por tipo")]
 //    [Tooltip("Prefab a instanciar cuando muere un enemigo tipo Ametralladora")]
@@ -336,26 +338,26 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //    // Referencia al controlador de parpadeo HDR
 //    private TipoColorHDRController colorController;
 
-//    Animator animator;
+//    private Animator animator;
 
 //    void Awake()
 //    {
+//        // Obtener ambos tipos de renderers de los hijos
 //        meshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+//        staticMeshRenderers = GetComponentsInChildren<MeshRenderer>();
 //        colorController = GetComponent<TipoColorHDRController>();
 //        animator = GetComponentInChildren<Animator>();
-
 //    }
 
 //    void Start()
 //    {
-//        // 1) Determinamos tipo al azar y su color HDR
 //        tipo = (TipoEnemigo)UnityEngine.Random.Range(0, 3);
 //#if UNITY_EDITOR
 //        Debug.Log($"[VidaEnemigo] Tipo: {tipo}");
 //#endif
 //        finalColor = ObtenerColorPorTipo(tipo);
 
-//        // 2) Asignamos Color y Emission a todos los materiales existentes
+//        // Asignar color y emisión a todos los materiales
 //        AsignarColorYEmissionAMateriales(finalColor);
 
 //        if (sliderVida != null)
@@ -364,13 +366,13 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //            sliderVida.value = vida;
 //        }
 
-//        // 3) Durante los próximos 0.5 seg, detectamos si aparecen nuevos materiales
+//        // Detectar nuevos materiales durante 0.5 seg
 //        StartCoroutine(DetectarYAsignarNuevosMateriales(finalColor, 0.5f));
 //    }
 
 //    void Update()
 //    {
-//        // Reaplicamos el color en cada frame para evitar que Unity lo sobreescriba:
+//        // Reaplicar color cada frame
 //        ReaplicarColorYEmissionAMateriales(finalColor);
 //    }
 
@@ -391,79 +393,76 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
 //    private void AsignarColorYEmissionAMateriales(Color color)
 //    {
+//        // SkinnedMeshRenderers
 //        foreach (var mr in meshRenderers)
-//        {
-//            Material[] mats = mr.materials;
-//            for (int i = 0; i < mats.Length; i++)
-//            {
-//                Material mat = mats[i];
+//            AplicarColorAListaDeMateriales(mr.materials, color, mats => mr.materials = mats);
 
-//                if (mat.HasProperty("_BaseColor"))
-//                    mat.SetColor("_BaseColor", color);
-//                else if (mat.HasProperty("_Color"))
-//                    mat.SetColor("_Color", color);
-
-//                mat.EnableKeyword("_EMISSION");
-//                if (mat.HasProperty("_EmissionColor"))
-//                    mat.SetColor("_EmissionColor", color);
-//            }
-//            mr.materials = mats;
-//        }
+//        // MeshRenderers
+//        foreach (var mr in staticMeshRenderers)
+//            AplicarColorAListaDeMateriales(mr.materials, color, mats => mr.materials = mats);
 //    }
 
 //    private void ReaplicarColorYEmissionAMateriales(Color color)
 //    {
+//        // SkinnedMeshRenderers
 //        foreach (var mr in meshRenderers)
+//            AplicarColorAListaDeMateriales(mr.materials, color, mats => mr.materials = mats);
+
+//        // MeshRenderers
+//        foreach (var mr in staticMeshRenderers)
+//            AplicarColorAListaDeMateriales(mr.materials, color, mats => mr.materials = mats);
+//    }
+
+//    private void AplicarColorAListaDeMateriales(Material[] materials, Color color, Action<Material[]> asignarMats)
+//    {
+//        for (int i = 0; i < materials.Length; i++)
 //        {
-//            var mats = mr.materials;
-//            for (int i = 0; i < mats.Length; i++)
-//            {
-//                Material mat = mats[i];
+//            var mat = materials[i];
+//            if (mat.HasProperty("_BaseColor"))
+//                mat.SetColor("_BaseColor", color);
+//            else if (mat.HasProperty("_Color"))
+//                mat.SetColor("_Color", color);
 
-//                if (mat.HasProperty("_BaseColor"))
-//                    mat.SetColor("_BaseColor", color);
-//                else if (mat.HasProperty("_Color"))
-//                    mat.SetColor("_Color", color);
-
-//                mat.EnableKeyword("_EMISSION");
-//                if (mat.HasProperty("_EmissionColor"))
-//                    mat.SetColor("_EmissionColor", color);
-//            }
-//            mr.materials = mats;
+//            mat.EnableKeyword("_EMISSION");
+//            if (mat.HasProperty("_EmissionColor"))
+//                mat.SetColor("_EmissionColor", color);
 //        }
+//        asignarMats(materials);
 //    }
 
 //    private IEnumerator DetectarYAsignarNuevosMateriales(Color color, float duracion)
 //    {
 //        float timer = 0f;
-//        var conteoInicial = meshRenderers.ToDictionary(
-//            mr => mr,
-//            mr => mr.materials.Length
-//        );
+//        // Conteos iniciales
+//        var conteoSkinned = meshRenderers.ToDictionary(mr => mr, mr => mr.materials.Length);
+//        var conteoStatic = staticMeshRenderers.ToDictionary(mr => mr, mr => mr.materials.Length);
 
 //        while (timer < duracion)
 //        {
+//            // Nuevos en Skinned
 //            foreach (var mr in meshRenderers)
 //            {
-//                Material[] currentMats = mr.materials;
-//                int inicial = conteoInicial[mr];
-//                if (currentMats.Length > inicial)
+//                var mats = mr.materials;
+//                int inicial = conteoSkinned[mr];
+//                if (mats.Length > inicial)
 //                {
-//                    for (int i = inicial; i < currentMats.Length; i++)
-//                    {
-//                        Material mat = currentMats[i];
-
-//                        if (mat.HasProperty("_BaseColor"))
-//                            mat.SetColor("_BaseColor", color);
-//                        else if (mat.HasProperty("_Color"))
-//                            mat.SetColor("_Color", color);
-
-//                        mat.EnableKeyword("_EMISSION");
-//                        if (mat.HasProperty("_EmissionColor"))
-//                            mat.SetColor("_EmissionColor", color);
-//                    }
-//                    conteoInicial[mr] = currentMats.Length;
-//                    mr.materials = currentMats;
+//                    for (int i = inicial; i < mats.Length; i++)
+//                        AplicarColorAListaDeMateriales(new[] { mats[i] }, color, _ => { });
+//                    conteoSkinned[mr] = mats.Length;
+//                    mr.materials = mats;
+//                }
+//            }
+//            // Nuevos en Static
+//            foreach (var mr in staticMeshRenderers)
+//            {
+//                var mats = mr.materials;
+//                int inicial = conteoStatic[mr];
+//                if (mats.Length > inicial)
+//                {
+//                    for (int i = inicial; i < mats.Length; i++)
+//                        AplicarColorAListaDeMateriales(new[] { mats[i] }, color, _ => { });
+//                    conteoStatic[mr] = mats.Length;
+//                    mr.materials = mats;
 //                }
 //            }
 
@@ -475,8 +474,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //    public void RecibirDanio(float d)
 //    {
 //        if (isDead) return;
-//        if (colorController != null)
-//            colorController.RecibirDanio(d);
+//        colorController?.RecibirDanio(d);
 
 //        vida -= d;
 //        if (sliderVida != null) sliderVida.value = vida;
@@ -492,26 +490,15 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //        if ((tb == BalaPlayer.TipoBala.Ametralladora && tipo == TipoEnemigo.Ametralladora) ||
 //            (tb == BalaPlayer.TipoBala.Pistola && tipo == TipoEnemigo.Pistola) ||
 //            (tb == BalaPlayer.TipoBala.Escopeta && tipo == TipoEnemigo.Escopeta))
-//        {
 //            return;
-//        }
 
-//        float d;
-//        switch (tb)
+//        float d = tb switch
 //        {
-//            case BalaPlayer.TipoBala.Ametralladora:
-//                d = danioAltoAmetralladora;
-//                break;
-//            case BalaPlayer.TipoBala.Pistola:
-//                d = danioAltoPistola;
-//                break;
-//            case BalaPlayer.TipoBala.Escopeta:
-//                d = danioAltoEscopeta;
-//                break;
-//            default:
-//                d = 0f;
-//                break;
-//        }
+//            BalaPlayer.TipoBala.Ametralladora => danioAltoAmetralladora,
+//            BalaPlayer.TipoBala.Pistola => danioAltoPistola,
+//            BalaPlayer.TipoBala.Escopeta => danioAltoEscopeta,
+//            _ => 0f
+//        };
 
 //        if (hitCollider == headCollider)
 //            d *= headshotMultiplier;
@@ -524,35 +511,24 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //        if (isDead) return;
 //        isDead = true;
 
-//        // Lógica de tutorial
 //        if (TutorialManager.Instance != null)
 //        {
 //            int index = TutorialManager.Instance.currentIndex;
 //            if (TutorialManager.Instance.scenes[index].sceneData.activationType == ActivationType.ByKills)
-//            {
 //                TutorialManager.Instance.StartScenarioByKills(index);
-//            }
 //        }
 
-//        // Instanciar el prefab correspondiente al tipo
-//        GameObject prefabAMorir = null;
-//        switch (tipo)
+//        GameObject prefabAMorir = tipo switch
 //        {
-//            case TipoEnemigo.Ametralladora:
-//                prefabAMorir = prefabMuerteAmetralladora;
-//                break;
-//            case TipoEnemigo.Pistola:
-//                prefabAMorir = prefabMuertePistola;
-//                break;
-//            case TipoEnemigo.Escopeta:
-//                prefabAMorir = prefabMuerteEscopeta;
-//                break;
-//        }
+//            TipoEnemigo.Ametralladora => prefabMuerteAmetralladora,
+//            TipoEnemigo.Pistola => prefabMuertePistola,
+//            TipoEnemigo.Escopeta => prefabMuerteEscopeta,
+//            _ => null
+//        };
 
 //        if (prefabAMorir != null)
 //            Instantiate(prefabAMorir, transform.position, transform.rotation);
 
-//        // Fragmentos y registro de muerte
 //        HUDManager.Instance?.AddInfoFragment(fragments);
 //        MissionManager.Instance?.RegisterKill(gameObject.tag, name, tipo.ToString());
 //        StartCoroutine(TimeToDead());
@@ -561,13 +537,10 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //    IEnumerator TimeToDead()
 //    {
 //        if (animator != null) animator.SetBool("isDead", true);
-//        yield return new WaitForSeconds(2);
+//        yield return new WaitForSeconds(2f);
 //        Destroy(gameObject);
 //    }
 //}
-
-
-
 
 
 
