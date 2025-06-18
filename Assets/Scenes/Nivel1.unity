@@ -4553,10 +4553,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyPrefabs:
+  - {fileID: 3775705321392681890, guid: 949378dbd6b7b9f46bdb905d67e7579e, type: 3}
+  - {fileID: 4394272956414374065, guid: f3ca6ab5d5dde4c448a6f18caf6d353c, type: 3}
   - {fileID: 5120538479886475079, guid: 60a69db7658caea4097d98b236849d7b, type: 3}
-  spawnInterval: 3
-  enemiesPerSpawn: 1
+  - {fileID: 1603735669551673134, guid: 1c4aa42d1bcc19c4aad679c27195ae2f, type: 3}
+  spawnInterval: 10
   spawnRadius: 1.5
+  levelDuration: 45
   maxEnemiesInScene: 10
   maxEnemiesInTotal: 10
   spawnPoints:
