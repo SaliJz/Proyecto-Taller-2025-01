@@ -66,7 +66,7 @@ public class HUDManager : MonoBehaviour
     private Coroutine floatingTextCoroutine;
     private Coroutine missionCoroutine;
 
-    private static int infoFragments = 10000;
+    private static int infoFragments = 2000;
     public int CurrentFragments => infoFragments;
 
     #endregion

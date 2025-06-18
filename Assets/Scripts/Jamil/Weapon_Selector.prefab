@@ -121,7 +121,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3572044977548726987}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5727505786640688905}
+        m_TargetAssemblyTypeName: Weapon_Menu_Corregido, Assembly-CSharp
+        m_MethodName: Update_Shotgun_Card_UI
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1055274181631911939
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,7 +209,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -432,8 +444,8 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_SelectedColor: {r: 0.08627451, g: 0.9607843, b: 0.16862746, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -452,7 +464,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5861601988407285229}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5727505786640688905}
+        m_TargetAssemblyTypeName: Weapon_Menu_Corregido, Assembly-CSharp
+        m_MethodName: Update_Gun_Card_UI
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3568505986765255693
 GameObject:
   m_ObjectHideFlags: 0
@@ -679,15 +703,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -715,7 +739,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: 0, w: 14.856598}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -867,7 +891,7 @@ GameObject:
   - component: {fileID: 2420903211849931801}
   - component: {fileID: 2077260102361539273}
   - component: {fileID: 5481924084583801702}
-  - component: {fileID: 3786463421223269274}
+  - component: {fileID: 5727505786640688905}
   m_Layer: 5
   m_Name: Weapon_Selector
   m_TagString: Untagged
@@ -966,7 +990,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &3786463421223269274
+--- !u!114 &5727505786640688905
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -975,10 +999,48 @@ MonoBehaviour:
   m_GameObject: {fileID: 4722166011011013835}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61e1d579a729eeb43a9221e85d771931, type: 3}
+  m_Script: {fileID: 11500000, guid: 82801946f5920344aa4c8f97e0b1b1b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buffDescriptionTMP: {fileID: 4320126539453475818}
+  gunAllCards:
+  - {fileID: 11400000, guid: 51d6c17f6f84d494fa18c438089749ba, type: 2}
+  - {fileID: 11400000, guid: ab08d992cccd14c45a956f3dd683ba0f, type: 2}
+  - {fileID: 11400000, guid: aed71d381b7b3c54c9eb1402e52c2def, type: 2}
+  - {fileID: 11400000, guid: bc4660fd59a99214384b3735df2a86de, type: 2}
+  - {fileID: 11400000, guid: 7fa777af9f136904f9622756e26fd873, type: 2}
+  - {fileID: 11400000, guid: 46fb9cb290b06694392c1fcf7671678a, type: 2}
+  - {fileID: 11400000, guid: a468cc5cac132884eb7c2471eaa0150a, type: 2}
+  - {fileID: 11400000, guid: aa4620bafdcec35428257338e79b3d27, type: 2}
+  - {fileID: 11400000, guid: b36ce33abe3542c46b35a98f6e2ecac6, type: 2}
+  - {fileID: 11400000, guid: f1d6d64f355e9b4498161f969d9f527d, type: 2}
+  rifleAllCards:
+  - {fileID: 11400000, guid: e01e30448c3d75f47a81cb8c18bb3b74, type: 2}
+  - {fileID: 11400000, guid: 0561030f064abc7428a9d19c73b9ff88, type: 2}
+  - {fileID: 11400000, guid: 87a39353d2bad9b43bac6f4e3ec19d10, type: 2}
+  - {fileID: 11400000, guid: 47db07d22168c394fa3a0d06990cba6d, type: 2}
+  - {fileID: 11400000, guid: 03fdaa3d39833e04aa83b31d89bf25d5, type: 2}
+  - {fileID: 11400000, guid: 1438bf8e9863c3441bc1fc69f053a2d9, type: 2}
+  - {fileID: 11400000, guid: c064dbdc5f7d7194b988d66704cbbfff, type: 2}
+  - {fileID: 11400000, guid: a13584e5e2722c44380226d6de79d33a, type: 2}
+  - {fileID: 11400000, guid: d5575f544c214f5409b4bf75dc97c3ff, type: 2}
+  - {fileID: 11400000, guid: 7e06181bfb8f5aa4d93ed27568ff7e42, type: 2}
+  shotgunAllCards:
+  - {fileID: 11400000, guid: 066c7ab3d6f5eae449cc137bc27e5e0a, type: 2}
+  - {fileID: 11400000, guid: bc678f18e66fca042a5a688a20258685, type: 2}
+  - {fileID: 11400000, guid: 815d00e60b346074094eb782b5877c4c, type: 2}
+  - {fileID: 11400000, guid: 15a9a830384c4d64aaae05a855471262, type: 2}
+  - {fileID: 11400000, guid: 61491506619086e4aa0cdbae86579627, type: 2}
+  - {fileID: 11400000, guid: e9be4fccc9b80cf4c83202391a4f06df, type: 2}
+  - {fileID: 11400000, guid: fc41279580eb2a24e9224eafd5d121db, type: 2}
+  - {fileID: 11400000, guid: a2bf622f55d0b084b8ee063c80c1e2ce, type: 2}
+  - {fileID: 11400000, guid: 0e0d72119f6c6c64f99e247682b6fd01, type: 2}
+  - {fileID: 11400000, guid: baa782fb4ca278349be18d8991564b8c, type: 2}
+  gunDescription_UI_TMP: {fileID: 4320126539453475818}
+  gunPrice_UI_TMP: {fileID: 7627150258146767954}
+  rifleDescription_UI_TMP: {fileID: 8137318026558190741}
+  riflePrice_UI_TMP: {fileID: 1300413473055373072}
+  shotgunDescription_UI_TMP: {fileID: 3199066789486222386}
+  shotgunPrice_UI_TMP: {fileID: 8623259396785017397}
 --- !u!1 &5128451798721080930
 GameObject:
   m_ObjectHideFlags: 0
@@ -1071,15 +1133,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1107,7 +1169,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: 0, w: 14.692032}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -1124,8 +1186,9 @@ GameObject:
   - component: {fileID: 5066949806976657785}
   - component: {fileID: 4465247378202238834}
   - component: {fileID: 7962722999032722153}
+  - component: {fileID: 1042786399451618989}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Regresar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1189,6 +1252,62 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1042786399451618989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5256765255895345835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 7962722999032722153}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: Weapons_Menu, Assembly-CSharp
+        m_MethodName: LoadSceneByName
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Nivel1
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6924389267898309242
 GameObject:
   m_ObjectHideFlags: 0
@@ -1310,7 +1429,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5319627911814523756}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5727505786640688905}
+        m_TargetAssemblyTypeName: Weapon_Menu_Corregido, Assembly-CSharp
+        m_MethodName: Update_Rifle_Card_UI
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &7348941960974889224
 GameObject:
   m_ObjectHideFlags: 0
@@ -1403,15 +1534,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1439,7 +1570,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: 0, w: 15.478294}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -1520,7 +1651,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

@@ -74,7 +74,7 @@ public class AbilitySelectionUI : MonoBehaviour
     {
         passiveUpgradeButton.GetComponentInChildren<TextMeshProUGUI>().text = upgrade.upgradeName;
         passiveUpgradeButton.onClick.RemoveAllListeners();
-        passiveUpgradeButton.onClick.AddListener(() => ApplyUpgrade(upgrade));
+        //passiveUpgradeButton.onClick.AddListener(() => ApplyUpgrade(upgrade));
     }
 
     private void UpdateAbilityButton(GameObject ability)
@@ -85,11 +85,11 @@ public class AbilitySelectionUI : MonoBehaviour
         abilityButton.onClick.AddListener(() => ApplyAbility(ability));
     }
 
-    private void ApplyUpgrade(PassiveUpgradeStats upgrade)
-    {
-        UpgradeDataStore.Instance.ApplyUpgrade(upgrade);
-        GoToNextScene();
-    }
+    //private void ApplyUpgrade(PassiveUpgradeStats upgrade)
+    //{
+    //    UpgradeDataStore.Instance.ApplyUpgrade(upgrade);
+    //    GoToNextScene();
+    //}
 
     private void ApplyAbility(GameObject ability)
     {
