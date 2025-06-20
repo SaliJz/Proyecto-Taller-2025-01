@@ -2082,8 +2082,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63573bcaa788498488b602764647060f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityNames: []
-  currentIndex: 0
+  allowClear: 0
 --- !u!114 &358285464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7760,6 +7759,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1044540101058521862, guid: 0c3262416d173a742a6909b27de1c324,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 87f9b1b3c1fe57040b67cbd357583bd8, type: 2}
+    - target: {fileID: 2176891652556296297, guid: 0c3262416d173a742a6909b27de1c324,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -743
+      objectReference: {fileID: 0}
     - target: {fileID: 8987426986684945262, guid: 0c3262416d173a742a6909b27de1c324,
         type: 3}
       propertyPath: m_Name
@@ -8681,7 +8690,7 @@ MonoBehaviour:
   abilitySelector: {fileID: 580174465}
   AbilityHolder: {fileID: 1832154927}
   abilityIcon: {fileID: 2095444346}
-  weaponManager: {fileID: 1212294222096492789}
+  weaponManager: {fileID: 0}
   missionManager: {fileID: 900092535}
   glitchDeathCinematic: {fileID: 942252352}
   normalEnemies:
@@ -11320,18 +11329,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1212294222096492786}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1212294222096492789 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6186703028947052587, guid: d7e6ddd8dcf450448b946a2962591afb,
-    type: 3}
-  m_PrefabInstance: {fileID: 1212294222096492786}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 334d05fea796a0649aeadf585d9aae4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1232394381918650955
 PrefabInstance:
   m_ObjectHideFlags: 0
