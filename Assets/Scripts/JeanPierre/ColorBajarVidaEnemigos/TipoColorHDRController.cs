@@ -42,9 +42,10 @@ public class TipoColorHDRController : MonoBehaviour
         int rand = Random.Range(0, System.Enum.GetValues(typeof(TipoEnemigo)).Length);
         currentTipo = (TipoEnemigo)rand;
 
+        // Ametralladora = azul, Pistola = verde, Escopeta = rojo
         Color targetColor = currentTipo == TipoEnemigo.Ametralladora ? Color.blue
-                          : currentTipo == TipoEnemigo.Pistola ? Color.red
-                          : Color.green;
+                          : currentTipo == TipoEnemigo.Pistola ? Color.green
+                          : /* Escopeta */                         Color.red;
 
         if (colorRoutine != null)
             StopCoroutine(colorRoutine);
@@ -123,6 +124,17 @@ public class TipoColorHDRController : MonoBehaviour
         isBlinking = false;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 //// TipoColorHDRController.cs
