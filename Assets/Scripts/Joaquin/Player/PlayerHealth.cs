@@ -20,12 +20,17 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private GameObject deathPrefab;
     [SerializeField] private SceneTransition sceneTransition;
 
+    [SerializeField] private bool isNivel1 = false;
+
     private bool isIgnited = false;
     private Coroutine ignitionCoroutine;
 
     private void Start()
     {
-        maxHealth = UpgradeDataStore.Instance.playerMaxHealth;
+        if (isNivel1) GeneralUpgradeManager.ResetUpgrades();
+
+        UpdateMaxStats();
+
         currentHealth = maxHealth;
         currentShield = maxShield;
 
@@ -33,9 +38,35 @@ public class PlayerHealth : MonoBehaviour
         HUDManager.Instance.UpdateShield(currentShield, maxShield);
     }
 
+    private void OnEnable()
+    {
+        GeneralUpgradeManager.OnPlayerStatsChanged += UpdateMaxStats;
+    }
+
+    private void OnDisable()
+    {
+        GeneralUpgradeManager.OnPlayerStatsChanged -= UpdateMaxStats;
+    }
+
+    private void UpdateMaxStats()
+    {
+        float healthPercent = (float)currentHealth / maxHealth;
+        float shieldPercent = (float)currentShield / maxShield;
+
+        maxHealth = GeneralUpgradeManager.CurrentMaxHealth;
+        maxShield = GeneralUpgradeManager.CurrentMaxShield;
+
+        currentHealth = Mathf.RoundToInt(maxHealth * healthPercent);
+        currentShield = Mathf.RoundToInt(maxShield * shieldPercent);
+
+        HUDManager.Instance.UpdateHealth(currentHealth, maxHealth);
+        HUDManager.Instance.UpdateShield(currentShield, maxShield);
+
+        Debug.Log($"Stats actualizadas: Vida Máx: {maxHealth}, Escudo Máx: {maxShield}");
+    }
+
     private void Update()
     {
-        // Regeneración del escudo
         if (currentShield < maxShield && !isRegenShield)
         {
             StartCoroutine(RegenShield());

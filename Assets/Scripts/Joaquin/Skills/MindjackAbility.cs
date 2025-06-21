@@ -7,27 +7,27 @@ public class MindjackAbility : MonoBehaviour
 {
     [Header("Camera")]
     [SerializeField] private Camera playerCamera;
-    [SerializeField] private Transform projectileSpawnPoint;
     [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private Transform projectileSpawnPoint;
 
     [Header("Settings")]
-    [SerializeField] private float projectileSpeed = 40f;
+    [SerializeField] private float baseCooldown = 15f;
     [SerializeField] private float projectileLifeTime = 2f;
+    [SerializeField] private float projectileSpeed = 40f;
     [SerializeField] private float damagePerSecond = 20f;
-    [SerializeField] private float duration = 3f;
-    [SerializeField] private float cooldown = 15f;
+    [SerializeField] private float baseDuration = 3f;
+    [SerializeField] private float baseRadius = 5f;
 
-    [Header("Spread")]
-    [SerializeField] private float spreadIntensity;
+    [SerializeField] private bool isNivel1 = false; 
+
+    private float currentCooldown;
+    private float currentDuration;
+    private float currentRadius;
 
     private bool canUse = true;
-    private float currentCooldown = 0;
+    private float currentCooldownTimer = 0;
     private float lastCooldownDisplay = -1f;
-
-    private void Start()
-    {
-        HUDManager.Instance.UpdateAbilityStatus("Mindjack", currentCooldown, canUse);
-    }
+    private AbilityInfo abilityInfo;
 
     private void Awake()
     {
@@ -39,14 +39,60 @@ public class MindjackAbility : MonoBehaviour
                 Debug.LogError("No se encontró la cámara principal. Asegúrate de que haya una cámara con la etiqueta 'MainCamera' en la escena.");
             }
         }
+
         if (projectileSpawnPoint == null)
         {
             Debug.LogError("Projectile Spawn Point no está asignado en MindjackAbility.");
         }
+
         if (projectilePrefab == null)
         {
             Debug.LogError("Projectile Prefab no está asignado en MindjackAbility.");
         }
+
+        if (abilityInfo == null)
+        {
+            abilityInfo = GetComponent<AbilityInfo>();
+            if (abilityInfo == null)
+            {
+                Debug.LogError("AbilityInfo no está asignado en MindjackAbility.");
+            }
+        }
+
+        if (isNivel1) AbilityUpgradeManager.ResetUpgrades();
+        ApplyUpgrades();
+    }
+
+    private void Start()
+    {
+        HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0f, true, currentCooldown);
+    }
+
+    private void OnEnable()
+    {
+        AbilityUpgradeManager.OnUpgradesChanged += ApplyUpgrades;
+    }
+
+    private void OnDisable()
+    {
+        AbilityUpgradeManager.OnUpgradesChanged -= ApplyUpgrades;
+    }
+
+    private void ApplyUpgrades()
+    {
+        // Cooldown
+        float cooldownReduction = AbilityUpgradeManager.CooldownLevel * AbilityUpgradeManager.COOLDOWN_REDUCTION;
+        currentCooldown = baseCooldown - (cooldownReduction);
+
+        // Duración
+        float durationBonus = AbilityUpgradeManager.EffectDurationLevel * AbilityUpgradeManager.DURATION_INCREASE_PERCENT;
+        currentDuration = baseDuration * (1 + durationBonus);
+
+        // Rango
+        float rangeBonus = AbilityUpgradeManager.EffectRangeLevel * AbilityUpgradeManager.RANGE_INCREASE_PERCENT;
+        currentRadius = baseRadius * (1 + rangeBonus);
+
+        Debug.Log($"Stats de {abilityInfo.abilityName} actualizados!");
     }
 
     private void Update()
@@ -58,34 +104,34 @@ public class MindjackAbility : MonoBehaviour
 
         if (!canUse)
         {
-            currentCooldown -= Time.deltaTime;
-            currentCooldown = Mathf.Max(0f, currentCooldown);
+            currentCooldownTimer -= Time.deltaTime;
+            currentCooldownTimer = Mathf.Max(0f, currentCooldownTimer);
 
-            if (Mathf.Ceil(currentCooldown) != Mathf.Ceil(lastCooldownDisplay))
+            if (Mathf.Ceil(currentCooldownTimer) != Mathf.Ceil(lastCooldownDisplay))
             {
-                HUDManager.Instance.UpdateAbilityStatus("Mindjack", currentCooldown, canUse, cooldown);
-                lastCooldownDisplay = currentCooldown;
+                HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
+                lastCooldownDisplay = currentCooldownTimer;
             }
 
-            if (currentCooldown <= 0f)
+            if (currentCooldownTimer <= 0f)
             {
                 canUse = true;
-                HUDManager.Instance.UpdateAbilityStatus("Mindjack", 0f, canUse, cooldown);
+                HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0f, canUse, currentCooldown);
             }
         }
     }
 
     private void ActivateAbility()
     {
+        canUse = false;
+        currentCooldownTimer = currentCooldown;
+        HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
+
         Vector3 direction = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f)).direction;
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));
         projectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
 
-        projectile.GetComponent<MindjackShot>().Initialize(damagePerSecond, duration);
+        projectile.GetComponent<MindjackShot>().Initialize(currentRadius, damagePerSecond, currentDuration);
         Destroy(projectile, projectileLifeTime);
-
-        canUse = false;
-        currentCooldown = cooldown;
-        HUDManager.Instance.UpdateAbilityStatus("Mindjack", currentCooldown, canUse);
     }
 }

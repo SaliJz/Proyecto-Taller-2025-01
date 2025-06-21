@@ -19,6 +19,16 @@ public class IgnitionCodeShot : MonoBehaviour
         this.enemyLayer = enemyLayer;
     }
 
+    private void Start()
+    {
+        if (ignitionAreaEffectPrefab == null)
+        {
+            Debug.LogError("Ignition Area Effect Prefab no está asignado en IgnitionCodeShot.");
+        }
+
+        gameObject.transform.localScale = new Vector3(radius, radius, radius);
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
@@ -53,7 +63,6 @@ public class IgnitionCodeShot : MonoBehaviour
 
     private void ApplyIgnitionArea(Vector3 center)
     {
-        // Instanciar el efecto visual de ascuas
         if (ignitionAreaEffectPrefab != null)
         {
             GameObject ignitionEffect = Instantiate(ignitionAreaEffectPrefab, center, Quaternion.identity);

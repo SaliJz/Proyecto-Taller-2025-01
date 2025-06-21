@@ -14,12 +14,17 @@ public class ElectroHackShot : MonoBehaviour
 
     public void Initialize(float radius, int maxTargets, float tickDamage, float tickInterval, int ticks, float slowMultiplier)
     {
-        this.radius = Mathf.Max(0.1f, radius);
+        this.radius = Mathf.Max(0.1f, radius); 
         this.maxTargets = Mathf.Max(1, maxTargets);
         this.tickDamage = Mathf.Max(0f, tickDamage);
         this.tickInterval = Mathf.Max(0.01f, tickInterval);
         this.ticks = Mathf.Max(1, ticks);
         this.slowMultiplier = Mathf.Clamp(slowMultiplier, 0f, 1f);
+    }
+
+    private void Start()
+    {
+        gameObject.transform.localScale = new Vector3(radius, radius, radius);
     }
 
     private void OnCollisionEnter(Collision collision)

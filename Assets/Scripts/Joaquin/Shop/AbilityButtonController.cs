@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -13,7 +11,7 @@ public class AbilityButtonController : MonoBehaviour, IPointerEnterHandler, IPoi
     [SerializeField] private Image buttonImage;
     [SerializeField] private int cost;
 
-    private AbilityShopController abilityShop;
+    private AbilityShopController shopController;
     private AbilityInfo abilityInfo;
     private Color lastColor;
 
@@ -21,6 +19,10 @@ public class AbilityButtonController : MonoBehaviour, IPointerEnterHandler, IPoi
 
     private void Awake()
     {
+        shopController = GetComponentInParent<AbilityShopController>();
+        abilityInfo = abilityObj.GetComponent<AbilityInfo>();
+        buttonImage = abilityButton.GetComponent<Image>();
+
         if (abilityObj == null)
         {
             Debug.LogError("[AbilityButtonController] Ability Object is not assigned in the AbilityButtonController.");
@@ -33,28 +35,31 @@ public class AbilityButtonController : MonoBehaviour, IPointerEnterHandler, IPoi
         abilityButton.onClick.AddListener(OnClick);
     }
 
-    private void Start()
-    {
-
-
-        abilityShop = GetComponentInParent<AbilityShopController>();
-        abilityInfo = abilityObj.GetComponent<AbilityInfo>();
-        buttonImage = abilityButton.GetComponent<Image>();
-    }
-
     private void Update()
     {
         Color targetColor;
 
-        if (abilityShop.PlayerHasAbility(abilityObj))
-        {
-            targetColor = Color.red;
-            abilityCostText.text = "Habilidad ya obtenida";
-        }
-        else if (abilityShop.IsAbilitySelected(abilityObj))
+        if (shopController.IsAbilitySelected(abilityObj))
         {
             targetColor = Color.green;
-            abilityCostText.text = $"Costo: <b>{cost}</b> F. Cod. ";
+            if (shopController.IsAbilityPurchased(abilityObj))
+            {
+                abilityCostText.text = "Seleccionado";
+            }
+            else
+            {
+                abilityCostText.text = $"Costo: <b>{cost}</b> F. Cod. ";
+            }
+        }
+        else if (shopController.IsAbilityEquipped(abilityObj))
+        {
+            targetColor = Color.blue;
+            abilityCostText.text = "Habilidad equipada";
+        }
+        else if (shopController.IsAbilityPurchased(abilityObj))
+        {
+            targetColor = Color.red;
+            abilityCostText.text = "Habilidad comprada";
         }
         else
         {
@@ -71,24 +76,16 @@ public class AbilityButtonController : MonoBehaviour, IPointerEnterHandler, IPoi
 
     public void OnClick()
     {
-        if (abilityShop.PlayerHasAbility(abilityObj))
-        {
-            abilityShop.ShowConfirmation("\n\nHabilidad ya obtenida.");
-            return;
-        }
-
-        bool isNowSelected = abilityShop.TrySelectAbility(abilityObj, cost);
+        bool isNowSelected = shopController.TrySelectAbility(abilityObj, cost);
 
         if (isNowSelected)
         {
-            abilityShop.ShowConfirmation("\n\nHabilidad seleccionada: " + abilityInfo.abilityName);
+            shopController.ShowConfirmation("Habilidad seleccionada: " + abilityInfo.abilityName);
         }
         else
         {
-            abilityShop.ShowConfirmation("\n\nHabilidad deseleccionada: " + abilityInfo.abilityName);
+            shopController.ShowConfirmation("Habilidad deseleccionada: " + abilityInfo.abilityName);
         }
-
-        buttonImage.color = isNowSelected ? Color.green : Color.white;
     }
 
     public GameObject GetAbilityObject()
@@ -98,12 +95,11 @@ public class AbilityButtonController : MonoBehaviour, IPointerEnterHandler, IPoi
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        abilityShop.ShowDescription(abilityInfo.description);
-        Debug.Log($"[AbilityButtonController] Monstrando descripción por habilidad: {abilityInfo.description}");
+        shopController.ShowDescription(abilityInfo.description);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        abilityShop.HideDescription();
+        shopController.HideDescription();
     }
 }
