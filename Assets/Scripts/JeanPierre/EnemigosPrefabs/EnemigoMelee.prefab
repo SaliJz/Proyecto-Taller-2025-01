@@ -444,6 +444,7 @@ GameObject:
   - component: {fileID: 2588779043328187818}
   - component: {fileID: -3286658116488342559}
   - component: {fileID: 3247441937836668493}
+  - component: {fileID: 4966090092420306200}
   m_Layer: 6
   m_Name: EnemigoMelee
   m_TagString: Enemy
@@ -506,7 +507,7 @@ MonoBehaviour:
   hdrColorPistola: {r: 0.8207547, g: 0, b: 0, a: 1}
   hdrColorEscopeta: {r: 0, g: 0.7924528, b: 0, a: 1}
   meshRenderers:
-  - {fileID: 5914450955045766349}
+  - {fileID: 786921279410816824}
   staticMeshRenderers: []
   prefabMuerteAmetralladora: {fileID: 7597145721601309270, guid: 5c64e1320daef804f813dfca3682d4ae,
     type: 3}
@@ -753,6 +754,28 @@ MonoBehaviour:
   comportamientoB: {fileID: 2588779043328187818}
   activarA: 1
   activarB: 0
+--- !u!195 &4966090092420306200
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5120538479886475079}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 1.02
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &6642947135343746201
 GameObject:
   m_ObjectHideFlags: 0
@@ -906,6 +929,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 5344498671121969871}
   m_SourcePrefab: {fileID: 100100000, guid: bc4fc5b8e38745d4398ee5e81acc7c60, type: 3}
+--- !u!137 &786921279410816824 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1167526030735642716, guid: bc4fc5b8e38745d4398ee5e81acc7c60,
+    type: 3}
+  m_PrefabInstance: {fileID: 1934390627038877540}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1592374136463845941 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: bc4fc5b8e38745d4398ee5e81acc7c60,
@@ -1035,12 +1064,6 @@ PrefabInstance:
 --- !u!4 &4782670049811300258 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: d60144ae1bdc9a74a801e9a7d45d4b6c,
-    type: 3}
-  m_PrefabInstance: {fileID: 5032152937554221129}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &5914450955045766349 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: d60144ae1bdc9a74a801e9a7d45d4b6c,
     type: 3}
   m_PrefabInstance: {fileID: 5032152937554221129}
   m_PrefabAsset: {fileID: 0}
