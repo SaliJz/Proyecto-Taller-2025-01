@@ -16,7 +16,7 @@ public class GeneralUpgradeShopController : MonoBehaviour
     [SerializeField] private float confirmationDelay = 1.5f;
 
     [SerializeField] private GameObject returnPanel;
-    [SerializeField] private GameObject mainAbilityMenu;
+    [SerializeField] private GameObject mainShopMenu;
     [SerializeField] private TextMeshProUGUI confirmationPanelText;
     [SerializeField] private Button confirmationButton;
     [SerializeField] private Button cancelButton;
@@ -136,7 +136,7 @@ public class GeneralUpgradeShopController : MonoBehaviour
     {
         if (generalUpgradeMenu != null) generalUpgradeMenu.SetActive(false);
         if (returnPanel != null) returnPanel.SetActive(false);
-        if (mainAbilityMenu != null) mainAbilityMenu.SetActive(true);
+        if (mainShopMenu != null) mainShopMenu.SetActive(true);
 
         selectedUpgrades.Clear();
         totalCost = 0;

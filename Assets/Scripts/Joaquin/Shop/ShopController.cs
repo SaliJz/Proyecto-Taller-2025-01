@@ -27,19 +27,15 @@ public class ShopController : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI currentInfoFragments;
 
-    [SerializeField] private KeyCode activeMenuKey = KeyCode.Escape;
-
-    private bool pauseGame = false;
-
     private void Start()
     {
-        if (mainShopMenu != null)
+        if (mainAbilityMenu != null)
         {
-            mainShopMenu.SetActive(false);
+            mainAbilityMenu.SetActive(false);
         }
         else
         {
-            Debug.LogError("[ShopController] Main Shop Menu is not assigned in the ShopController.");
+            Debug.LogError("[ShopController] Main Ability Menu is not assigned in the ShopController.");
         }
 
         if (abilitySelectorMenu != null)
@@ -78,15 +74,6 @@ public class ShopController : MonoBehaviour
             Debug.LogError("[ShopController] Shield Upgrade Menu is not assigned in the ShopController.");
         }
 
-        if (currentInfoFragments != null)
-        {
-            currentInfoFragments.gameObject.SetActive(false);
-        }
-        else
-        {
-            Debug.LogError("[ShopController] Current Info Fragments Text is not assigned in the ShopController.");
-        }
-
         if (hudManager == null)
         {
             hudManager = FindObjectOfType<HUDManager>();
@@ -110,14 +97,17 @@ public class ShopController : MonoBehaviour
         skipButton.onClick.AddListener(CloseToShopMainMenu);
     }
 
+    private void OnEnable()
+    {
+        Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        mainShopMenu.SetActive(true);
+        currentInfoFragments.gameObject.SetActive(true);
+    }
+
     private void Update()
     {
-        if (Input.GetKeyDown(activeMenuKey))
-        {
-            if (!pauseGame) PauseGame();
-            else RestartGame();
-        }
-
         if (hudManager != null && currentInfoFragments != null)
         {
             if (HUDManager.Instance != null)
@@ -125,26 +115,6 @@ public class ShopController : MonoBehaviour
                 currentInfoFragments.text = $"Cantidad actual: <b>{HUDManager.Instance.CurrentFragments}</b> F. Cod.";
             }
         }
-    }
-
-    private void PauseGame()
-    {
-        Time.timeScale = 0f;
-        pauseGame = true;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        mainShopMenu.SetActive(true);
-        currentInfoFragments.gameObject.SetActive(true);
-    }
-
-    private void RestartGame()
-    {
-        Time.timeScale = 1f;
-        pauseGame = false;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        mainShopMenu.SetActive(false);
-        currentInfoFragments.gameObject.SetActive(false);
     }
 
     public void OpenMainAbilityMenu()
@@ -169,6 +139,7 @@ public class ShopController : MonoBehaviour
     {
         if (abilitySelectorMenu != null)
         {
+            mainShopMenu.SetActive(false);
             mainAbilityMenu.SetActive(false);
             abilitySelectorMenu.SetActive(true);
         }
@@ -178,6 +149,7 @@ public class ShopController : MonoBehaviour
     {
         if (abilityUpgradeMenu != null)
         {
+            mainShopMenu.SetActive(false);
             mainAbilityMenu.SetActive(false);
             abilityUpgradeMenu.SetActive(true);
         }
@@ -203,17 +175,17 @@ public class ShopController : MonoBehaviour
 
     public void CloseToShopMainMenu()
     {
-        if (mainShopMenu != null)
-        {
-            mainShopMenu.SetActive(false);
-            mainAbilityMenu.SetActive(false);
-            abilitySelectorMenu.SetActive(false);
-            abilityUpgradeMenu.SetActive(false);
-            weaponUpgradeMenu.SetActive(false);
-            generalUpgradeMenu.SetActive(false);
-            currentInfoFragments.gameObject.SetActive(false);
-        }
-
         Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        gameObject.SetActive(false);
+
+        mainShopMenu.SetActive(false);
+        mainAbilityMenu.SetActive(false);
+        abilitySelectorMenu.SetActive(false);
+        abilityUpgradeMenu.SetActive(false);
+        weaponUpgradeMenu.SetActive(false);
+        generalUpgradeMenu.SetActive(false);
+        currentInfoFragments.gameObject.SetActive(false);
     }
 }
