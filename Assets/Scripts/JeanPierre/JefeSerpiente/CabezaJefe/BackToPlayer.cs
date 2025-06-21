@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class LookBackAtPlayer : MonoBehaviour
+public class LookAtPlayer : MonoBehaviour
 {
     [Header("Configuración")]
     [Tooltip("Velocidad de rotación (0 para rotación instantánea)")]
@@ -32,8 +32,8 @@ public class LookBackAtPlayer : MonoBehaviour
         // Evitar rotación cero
         if (directionToPlayer == Vector3.zero) return;
 
-        // Calcular rotación para que el BACK mire al jugador
-        Quaternion targetRotation = Quaternion.LookRotation(-directionToPlayer);
+        // Calcular rotación para que el FORWARD mire al jugador (sin invertir)
+        Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
 
         // Aplicar rotación
         if (rotationSpeed <= 0)
