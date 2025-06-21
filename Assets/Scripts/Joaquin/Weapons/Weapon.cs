@@ -11,7 +11,6 @@ public class Weapon : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private Transform bulletSpawnPoint;
     [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private Transform weaponModelTransform;
     [SerializeField] private WeaponStats stats;
     [SerializeField] private ShootingMode baseMode;
 
@@ -23,6 +22,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float spreadIntensity = 1f;
     [SerializeField] private float spreadAngle = 1f;
     [SerializeField] private int shotgunPellets = 3;
+    [SerializeField] private int minAmmoToInterruptReload = 3;
 
     [Header("SFX")]
     [SerializeField] private AudioSource sfxSource;
@@ -40,9 +40,7 @@ public class Weapon : MonoBehaviour
     public WeaponStats Stats => stats;
     public int CurrentAmmo => currentAmmo;
     public int TotalAmmo => totalAmmo;
-    public Transform WeaponModelTransform => weaponModelTransform;
     public bool IsReloading => isReloading;
-    public Vector3 OriginalLocalPosition => originalLocalPosition;
 
     private int maxAmmoPerClip;
     private int currentAmmo;
@@ -50,19 +48,30 @@ public class Weapon : MonoBehaviour
     private float fireRate;
     private float reloadTime;
     private float bulletDamage;
+    private float timeBetweenShots;
 
     private bool isReloading;
     private bool isAutomaticReload;
     private float lastShotTime;
     private Coroutine reloadCoroutine;
-    private Coroutine reloadAnimCoroutine;
-    private Vector3 originalLocalPosition;
 
-    private bool animationInProgress;
+    private Coroutine autoFireCoroutine;
+    private bool isHoldingTrigger = false;
+    private float nextAllowedShotTime = 0f;
+
+    private Transform weaponModelTransform;
+    private Vector3 originalModelPosition;
+    private int ammoReloadedThisCycle = 0;
 
     #endregion
 
     #region Unity Lifecycle
+
+    public void Initialize(Transform modelTransform, Vector3 startPosition)
+    {
+        this.weaponModelTransform = modelTransform;
+        this.originalModelPosition = startPosition;
+    }
 
     private void Awake()
     {
@@ -83,14 +92,26 @@ public class Weapon : MonoBehaviour
                 Debug.LogError("No se encontró el AudioSource para efectos de sonido. Asegúrate de que haya un GameObject llamado 'SFXSource' con un AudioSource en la escena.");
             }
         }
-
-        originalLocalPosition = weaponModelTransform.localPosition;
     }
 
     private void Start()
     {
         SetupStats();
         HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
+    }
+
+    private void OnEnable()
+    {
+        if (isReloading) CancelReload();
+    }
+
+    private void OnDisable()
+    {
+        if (autoFireCoroutine != null)
+        {
+            StopCoroutine(autoFireCoroutine);
+            autoFireCoroutine = null;
+        }
     }
 
     private void Update()
@@ -116,6 +137,8 @@ public class Weapon : MonoBehaviour
 
         CurrentMode = stats.shootingMode;
 
+        timeBetweenShots = 1f / fireRate;
+
         ApplyPassiveUpgrades();
     }
 
@@ -135,36 +158,52 @@ public class Weapon : MonoBehaviour
 
     private void HandleShootingInput()
     {
-        bool triggerPulled = false;
+        bool triggerHeld = Input.GetKey(KeyCode.Mouse0);
+        bool triggerPressed = Input.GetKeyDown(KeyCode.Mouse0);
+        bool triggerReleased = Input.GetKeyUp(KeyCode.Mouse0);
 
-        switch (CurrentMode)
+        bool triggerPulled = (CurrentMode == ShootingMode.Auto) ? Input.GetKey(KeyCode.Mouse0) : Input.GetKeyDown(KeyCode.Mouse0);
+
+        if (CurrentMode == ShootingMode.Auto)
         {
-            case ShootingMode.Single:
-            case ShootingMode.SemiAuto:
-                triggerPulled = Input.GetKeyDown(KeyCode.Mouse0);
-                break;
-            case ShootingMode.Auto:
-                triggerPulled = Input.GetKey(KeyCode.Mouse0);
-                break;
+            if (triggerPressed) isHoldingTrigger = true;
+            if (triggerReleased) isHoldingTrigger = false;
+
+            if (isHoldingTrigger)
+            {
+                TryShoot();
+            }
         }
-
-        if (triggerPulled)
+        else
         {
-            if (isReloading && !isAutomaticReload && currentAmmo > 0 && animationInProgress)
+            if (triggerPressed)
+            {
+                TryShoot();
+            }
+        }
+    }
+
+    private void TryShoot()
+    {
+        if (isReloading)
+        {
+            if (ammoReloadedThisCycle >= minAmmoToInterruptReload)
             {
                 CancelReload();
+                if (CanShoot()) Shoot();
             }
+            return;
+        }
 
-            if (CanShoot())
-            {
-                lastShotTime = Time.time;
-                Shoot();
-            }
-            else if (currentAmmo <= 0 && totalAmmo > 0 && !isReloading)
-            {
-                isAutomaticReload = true;
-                reloadCoroutine = StartCoroutine(Reload());
-            }
+        if (CanShoot())
+        {
+            Shoot();
+            nextAllowedShotTime = Time.time + timeBetweenShots;
+        }
+        else if (currentAmmo <= 0 && totalAmmo > 0 && !isReloading)
+        {
+            isAutomaticReload = true;
+            StartReload();
         }
     }
 
@@ -173,7 +212,7 @@ public class Weapon : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R) && !isReloading && currentAmmo < maxAmmoPerClip && totalAmmo > 0)
         {
             isAutomaticReload = false;
-            reloadCoroutine = StartCoroutine(Reload());
+            StartReload();
         }
     }
 
@@ -184,7 +223,7 @@ public class Weapon : MonoBehaviour
     private bool CanShoot()
     {
         if (isReloading) return false;
-        if (Time.time < lastShotTime + 1f / fireRate) return false;
+        if (Time.time < nextAllowedShotTime) return false;
 
         int ammoCost = GetAmmoCostPerShot();
         return currentAmmo >= ammoCost;
@@ -244,81 +283,81 @@ public class Weapon : MonoBehaviour
 
     #region Reloading
 
+    public void StartReload()
+    {
+        if (isReloading || totalAmmo <= 0 || weaponModelTransform == null) return;
+        reloadCoroutine = StartCoroutine(Reload());
+    }
+
     private IEnumerator Reload()
     {
         isReloading = true;
-        animationInProgress = true;
+        ammoReloadedThisCycle = 0;
+        PlayReloadAudio();
+
+        float animTime = 0.25f;
+        Vector3 downPos = originalModelPosition + new Vector3(0, -0.2f, 0);
+
+        float t = 0;
+        while (t < animTime)
+        {
+            weaponModelTransform.localPosition = Vector3.Lerp(originalModelPosition, downPos, t / animTime);
+            t += Time.deltaTime;
+            yield return null;
+        }
+        weaponModelTransform.localPosition = downPos;
 
         int ammoNeeded = maxAmmoPerClip - currentAmmo;
         int ammoToReload = Mathf.Min(ammoNeeded, totalAmmo);
-        float totalDuration = reloadTime;
-        float delayPerBullet = reloadTime / ammoNeeded;
+        float timeForBulletLoop = reloadTime - (2 * animTime);
 
-        Coroutine anim = StartCoroutine(ReloadAnimation(totalDuration));
-
-        for (int i = 0; i < ammoToReload; i++)
+        if (timeForBulletLoop > 0 && ammoToReload > 0)
         {
-            if (!isReloading) yield break;
+            float delayPerBullet = timeForBulletLoop / ammoToReload;
+            for (int i = 0; i < ammoToReload; i++)
+            {
+                yield return new WaitForSeconds(delayPerBullet);
+                if (!isReloading) yield break;
 
-            PlayReloadAudio();
-
-            currentAmmo++;
-            totalAmmo--;
-            HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
-            yield return new WaitForSeconds(delayPerBullet);
+                currentAmmo++;
+                totalAmmo--;
+                ammoReloadedThisCycle++;
+                HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
+            }
         }
 
+        t = 0;
+        while (t < animTime)
+        {
+            weaponModelTransform.localPosition = Vector3.Lerp(downPos, originalModelPosition, t / animTime);
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        if (weaponModelTransform != null)
+        {
+            weaponModelTransform.localPosition = originalModelPosition;
+        }
         isReloading = false;
         isAutomaticReload = false;
-        animationInProgress = false;
     }
 
     public void CancelReload()
     {
+        if (!isReloading) return;
+
         if (reloadCoroutine != null)
         {
             StopCoroutine(reloadCoroutine);
-            reloadCoroutine = null;
         }
 
-        if (reloadAnimCoroutine != null)
+        if (weaponModelTransform != null)
         {
-            StopCoroutine(reloadAnimCoroutine);
-            reloadAnimCoroutine = null;
-        }
-
-        if (weaponModelTransform.gameObject != null)
-        {
-            weaponModelTransform.localPosition = originalLocalPosition;
+            weaponModelTransform.localPosition = originalModelPosition;
         }
 
         isReloading = false;
         isAutomaticReload = false;
-        animationInProgress = false;
-    }
-
-    private IEnumerator ReloadAnimation(float duration)
-    {
-        Vector3 downPos = originalLocalPosition + new Vector3(0, -0.2f, 0);
-        float half = duration / 2f;
-        float t = 0f;
-
-        while (t < 1f)
-        {
-            weaponModelTransform.localPosition = Vector3.Lerp(originalLocalPosition, downPos, t);
-            t += Time.deltaTime / half;
-            yield return null;
-        }
-
-        t = 0f;
-        while (t < 1f)
-        {
-            weaponModelTransform.localPosition = Vector3.Lerp(downPos, originalLocalPosition, t);
-            t += Time.deltaTime / half;
-            yield return null;
-        }
-
-        weaponModelTransform.localPosition = originalLocalPosition;
     }
 
     public void PlayReloadAudio() => PlayClip(reloadClip);
@@ -340,7 +379,6 @@ public class Weapon : MonoBehaviour
 
         added = Mathf.Min(spaceLeft, amount);
         totalAmmo += added;
-        HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
         return true;
     }
 

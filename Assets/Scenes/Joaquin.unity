@@ -2743,6 +2743,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1c4aa42d1bcc19c4aad679c27195ae2f, type: 3}
+--- !u!4 &490505927 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4900004661380091756, guid: d7e6ddd8dcf450448b946a2962591afb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1212294222096492786}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &506835740
 GameObject:
   m_ObjectHideFlags: 0
@@ -3167,6 +3173,12 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!4 &547146082 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 26785252484893310, guid: d7e6ddd8dcf450448b946a2962591afb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1212294222096492786}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &559607870
 GameObject:
   m_ObjectHideFlags: 0
@@ -10086,6 +10098,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerWithCamera
       objectReference: {fileID: 0}
+    - target: {fileID: 7367639962973085236, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: weaponModelsTransform.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7367639962973085236, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: weaponModelsTransform.Array.data[1]
+      value: 
+      objectReference: {fileID: 547146082}
+    - target: {fileID: 7367639962973085236, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: weaponModelsTransform.Array.data[2]
+      value: 
+      objectReference: {fileID: 490505927}
     - target: {fileID: 8129634047586214791, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10298,6 +10325,16 @@ PrefabInstance:
     - target: {fileID: 7915036361794253291, guid: 3bbd0b1778d491f4a871397c411ee851,
         type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8467140867738633035, guid: 3bbd0b1778d491f4a871397c411ee851,
+        type: 3}
+      propertyPath: isNivel1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8467140867738633035, guid: 3bbd0b1778d491f4a871397c411ee851,
+        type: 3}
+      propertyPath: showAbilityUI
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9154572984299760652, guid: 3bbd0b1778d491f4a871397c411ee851,
