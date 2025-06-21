@@ -445,6 +445,7 @@ GameObject:
   - component: {fileID: -3286658116488342559}
   - component: {fileID: 3247441937836668493}
   - component: {fileID: 4966090092420306200}
+  - component: {fileID: 7746980232694710388}
   m_Layer: 6
   m_Name: EnemigoMelee
   m_TagString: Enemy
@@ -777,6 +778,24 @@ NavMeshAgent:
   m_BaseOffset: 1.02
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &7746980232694710388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5120538479886475079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 186ac6f7230e67745a7246272c11cccd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vidaEnemigoGeneral: {fileID: 7325627134173292253}
+  particleSystem: {fileID: 5679593581912728893}
+  materialAmetralladora: {fileID: 2100000, guid: 8beb468b96f309340ad6441bd769fef3,
+    type: 2}
+  materialPistola: {fileID: 2100000, guid: d56d5a37307e9fc4fa261b3239124b38, type: 2}
+  materialEscopeta: {fileID: 2100000, guid: b9726c6f76e03234989e4ab2a98fb100, type: 2}
 --- !u!1 &6642947135343746201
 GameObject:
   m_ObjectHideFlags: 0
@@ -1144,6 +1163,12 @@ PrefabInstance:
 --- !u!4 &5229989477488249776 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1466875857626249258, guid: d03a73f6ed4c3aa4196a9b0abe85f2d1,
+    type: 3}
+  m_PrefabInstance: {fileID: 6687779932554097562}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &5679593581912728893 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 1305547114840872615, guid: d03a73f6ed4c3aa4196a9b0abe85f2d1,
     type: 3}
   m_PrefabInstance: {fileID: 6687779932554097562}
   m_PrefabAsset: {fileID: 0}
