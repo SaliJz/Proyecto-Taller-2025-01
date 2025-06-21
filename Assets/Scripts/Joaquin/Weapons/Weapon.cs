@@ -51,12 +51,9 @@ public class Weapon : MonoBehaviour
     private float timeBetweenShots;
 
     private bool isReloading;
-    private bool isAutomaticReload;
-    private float lastShotTime;
-    private Coroutine reloadCoroutine;
-
-    private Coroutine autoFireCoroutine;
     private bool isHoldingTrigger = false;
+    private Coroutine reloadCoroutine;
+    private Coroutine autoFireCoroutine;
     private float nextAllowedShotTime = 0f;
 
     private Transform weaponModelTransform;
@@ -202,7 +199,6 @@ public class Weapon : MonoBehaviour
         }
         else if (currentAmmo <= 0 && totalAmmo > 0 && !isReloading)
         {
-            isAutomaticReload = true;
             StartReload();
         }
     }
@@ -211,7 +207,6 @@ public class Weapon : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R) && !isReloading && currentAmmo < maxAmmoPerClip && totalAmmo > 0)
         {
-            isAutomaticReload = false;
             StartReload();
         }
     }
@@ -339,7 +334,6 @@ public class Weapon : MonoBehaviour
             weaponModelTransform.localPosition = originalModelPosition;
         }
         isReloading = false;
-        isAutomaticReload = false;
     }
 
     public void CancelReload()
@@ -357,7 +351,6 @@ public class Weapon : MonoBehaviour
         }
 
         isReloading = false;
-        isAutomaticReload = false;
     }
 
     public void PlayReloadAudio() => PlayClip(reloadClip);
