@@ -7,20 +7,27 @@ using UnityEngine.UI;
 
 public class AbilityShopController : MonoBehaviour
 {
-    [SerializeField] private GameObject shopPanel;
+    [SerializeField] private GameObject abilitySelectorMenu;
     [SerializeField] private AbilityManager abilityManager;
-    [SerializeField] private HUDManager hudManager;
     [SerializeField] private TextMeshProUGUI totalCostText;
-    [SerializeField] private TextMeshProUGUI currentInfoFragments;
     [SerializeField] private TextMeshProUGUI descriptionPanel;
     [SerializeField] private TextMeshProUGUI confirmationText;
-    [SerializeField] private float confirmationDelay = 1.5f;
     [SerializeField] private Button finalizeButton;
+    [SerializeField] private Button equipButton;
     [SerializeField] private Button returnButton;
 
+    [SerializeField] private float confirmationDelay = 1.5f;
+
+    [SerializeField] private GameObject returnPanel;
+    [SerializeField] private GameObject mainAbilityMenu;
+    [SerializeField] private TextMeshProUGUI confirmationPanelText;
+    [SerializeField] private Button confirmationButton;
+    [SerializeField] private Button cancelButton;
+
     private List<GameObject> selectedAbilities = new();
+    private static List<GameObject> purchasedAbilities = new();
+    private static List<GameObject> equippedAbilities = new();
     private Coroutine confirmationCoroutine;
-    private bool pauseGame = false;
     private int totalCost = 0;
 
     public List<GameObject> SelectedAbilities => selectedAbilities;
@@ -28,20 +35,15 @@ public class AbilityShopController : MonoBehaviour
     private void Awake()
     {
         finalizeButton.onClick.AddListener(FinalizePurchase);
+        equipButton.onClick.AddListener(EquipAbilities);
         returnButton.onClick.AddListener(Return);
+
+        confirmationButton.onClick.AddListener(ConfirmationButton);
+        cancelButton.onClick.AddListener(CancelButton);
     }
 
     private void Start()
     {
-        if (shopPanel != null)
-        {
-            shopPanel.SetActive(false);
-        }
-        else
-        {
-            Debug.LogError("[AbilityShopController] Shop Panel no asignado en el AbilityShopController.");
-        }
-
         if (abilityManager == null)
         {
             abilityManager = FindObjectOfType<AbilityManager>();
@@ -51,13 +53,9 @@ public class AbilityShopController : MonoBehaviour
             }
         }
 
-        if (hudManager == null)
-        {
-            hudManager = FindObjectOfType<HUDManager>();
-            if (hudManager == null)
-            {
-                Debug.LogError("[AbilityShopController] HUDManager no encontrado en la escena.");
-            }
+        if (returnPanel != null)
+        {             
+            returnPanel.SetActive(false);
         }
 
         if (confirmationText != null)
@@ -79,95 +77,20 @@ public class AbilityShopController : MonoBehaviour
         UpdateTotalCost();
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (!pauseGame) PauseGame();
-            else RestartGame();
-        }
-
-        if (hudManager != null && currentInfoFragments != null)
-        {
-            if (HUDManager.Instance != null)
-            {
-                currentInfoFragments.text = $"Cantidad actual: <b>{HUDManager.Instance.CurrentFragments}</b> F. Cod.";
-            }
-        }
-    }
-
-    private void PauseGame()
-    {
-        Time.timeScale = 0f;
-        pauseGame = true;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        if(shopPanel != null) shopPanel.SetActive(true);
-    }
-
-    private void RestartGame()
-    {
-        Time.timeScale = 1f;
-        pauseGame = false;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        shopPanel.SetActive(false);
-        Return();
-    }
-
-    public void ShowConfirmation(string message)
-    {
-        if (confirmationCoroutine != null)
-        {
-            StopCoroutine(confirmationCoroutine);
-        }
-        confirmationCoroutine = StartCoroutine(ShowConfirmationCoroutine(message));
-    }
-
-    public IEnumerator ShowConfirmationCoroutine(string message)
-    {
-        confirmationText.text = message;
-        confirmationText.gameObject.SetActive(true);
-        yield return new WaitForSecondsRealtime(confirmationDelay);
-        confirmationText.gameObject.SetActive(false);
-    }
-
     public bool TrySelectAbility(GameObject ability, int cost)
     {
         if (selectedAbilities.Contains(ability))
         {
             selectedAbilities.Remove(ability);
-            totalCost -= cost;
+            if (!IsAbilityPurchased(ability)) totalCost -= cost;
             UpdateTotalCost();
             return false;
         }
 
-        if (selectedAbilities.Count >= 2)
-        {
-            GameObject removed = selectedAbilities[0];
-            AbilityButtonController removedButton = GetButtonControllerForAbility(removed);
-            if (removedButton != null)
-            {
-                totalCost -= removedButton.Cost;
-            }
-            selectedAbilities.RemoveAt(0);
-        }
-
         selectedAbilities.Add(ability);
-        totalCost += cost;
+        if (!IsAbilityPurchased(ability)) totalCost += cost;
         UpdateTotalCost();
         return true;
-    }
-
-    private AbilityButtonController GetButtonControllerForAbility(GameObject ability)
-    {
-        return GetComponentsInChildren<AbilityButtonController>()
-            .FirstOrDefault(button => button.GetAbilityObject() == ability);
-    }
-
-    public bool PlayerHasAbility(GameObject ability)
-    {
-        return abilityManager.activedAbilities.Contains(ability);
     }
 
     public bool IsAbilitySelected(GameObject ability)
@@ -175,12 +98,99 @@ public class AbilityShopController : MonoBehaviour
         return selectedAbilities.Contains(ability);
     }
 
+    public bool IsAbilityPurchased(GameObject ability)
+    {
+        return purchasedAbilities.Contains(ability);
+    }
+
+    public bool IsAbilityEquipped(GameObject ability)
+    {
+        return equippedAbilities.Contains(ability);
+    }
+
+    public void FinalizePurchase()
+    {
+        if (selectedAbilities.Count == 0)
+        {
+            ShowConfirmation("No has seleccionado ninguna habilidad para comprar.");
+            return;
+        }
+
+        if (HUDManager.Instance.CurrentFragments < totalCost)
+        {
+            ShowConfirmation("No tienes suficientes <b>F. Cod.</b> para comprar esta(s) habilidades.");
+            return;
+        }
+
+        int newPurchases = 0;
+        foreach (var ability in selectedAbilities)
+        {
+            if (IsAbilityPurchased(ability))
+            {
+                ShowConfirmation("Habilidad(es) ya comprada(s).");
+                continue;
+            }
+            purchasedAbilities.Add(ability);
+            newPurchases++;
+        }
+
+        if (newPurchases > 0)
+        {
+            ShowConfirmation("Habilidad(es) comprada(s) con éxito!");
+            HUDManager.Instance.DiscountInfoFragment(totalCost);
+        }
+        else
+        {
+            ShowConfirmation("Ninguna habilidad nueva para comprar seleccionada.");
+        }
+
+        selectedAbilities.Clear();
+        totalCost = 0;
+        UpdateTotalCost();
+    }
+
+    public void EquipAbilities()
+    {
+        if (selectedAbilities.Count > 2)
+        {
+            ShowConfirmation("No se puede equipar más de 2 habilidades.");
+            return;
+        }
+
+        if (selectedAbilities.Count == 0)
+        {
+            ShowConfirmation("No has seleccionado ninguna habilidad para equipar.");
+            return;
+        }
+
+        foreach (var ability in selectedAbilities)
+        {
+            if (!IsAbilityPurchased(ability))
+            {
+                ShowConfirmation("Habilidad(es) no comprada(s).");
+                return;
+            }
+        }
+
+        equippedAbilities.Clear();
+        abilityManager.ClearAbilities();
+
+        foreach (var ability in selectedAbilities)
+        {
+            equippedAbilities.Add(ability);
+            abilityManager.AddOrReplaceAbility(ability);
+        }
+
+        ShowConfirmation("Habilidades equipadas con éxito.");
+        selectedAbilities.Clear();
+    }
+
     public void ShowDescription(string abilityDescription)
     {
-        if ( descriptionPanel != null)
+        if (descriptionPanel != null)
         {
-            descriptionPanel.text = abilityDescription;
             descriptionPanel.gameObject.SetActive(true);
+            descriptionPanel.text = abilityDescription;
         }
     }
 
@@ -194,45 +204,55 @@ public class AbilityShopController : MonoBehaviour
         totalCostText.text = $"Total: <b>{totalCost}</b> F. Cod.";
     }
 
-    public void FinalizePurchase()
-    {
-        if (HUDManager.Instance.CurrentFragments < totalCost)
-        {
-            ShowConfirmation("No tienes suficientes <b>F. Cod.</b> para comprar esta(s) habilidades.");
-            return;
-        }
-
-        ShowConfirmation("Habilidades compradas con éxito!");
-
-        HUDManager.Instance.DiscountInfoFragment(totalCost);
-
-        List<GameObject> current = abilityManager.activedAbilities;
-        int currentCount = current.Count;
-
-        for (int i = 0; i < selectedAbilities.Count; i++)
-        {
-            int replaceIndex = currentCount - 1 - i;
-            if (replaceIndex >= 0)
-            {
-                abilityManager.ReplaceAbilityAt(replaceIndex, selectedAbilities[i]);
-            }
-            else
-            {
-                abilityManager.AddOrReplaceAbility(selectedAbilities[i]);
-            }
-        }
-
-        selectedAbilities.Clear();
-        totalCost = 0;
-        UpdateTotalCost();
-    }
-
     private void Return()
     {
+        if (returnPanel != null) returnPanel.SetActive(true);
+
+        bool hasUnnequipedAbilities = purchasedAbilities.Any(p => !equippedAbilities.Contains(p));
+
+        if (hasUnnequipedAbilities && equippedAbilities.Count < 2)
+        {
+            confirmationPanelText.text = "Tienes <b>habilidades compradas</b> sin <b>equipar</b>. ¿Seguro que deseas volver?";
+        }
+        else if (HUDManager.Instance.CurrentFragments >= 100) 
+        {
+            confirmationPanelText.text = "Tienes <b>suficientes fragmentos</b> para <b>comprar</b>. ¿Seguro que deseas volver?";
+        }
+        else
+        {
+            confirmationPanelText.text = "¿Seguro que deseas volver?";
+        }
+    }
+
+    private void ConfirmationButton()
+    {
+        if (abilitySelectorMenu != null) abilitySelectorMenu.SetActive(false);
+        if (returnPanel != null) returnPanel.SetActive(false);
+        if (mainAbilityMenu != null) mainAbilityMenu.SetActive(true);
+
         selectedAbilities.Clear();
         totalCost = 0;
         UpdateTotalCost();
-        StopAllCoroutines();
+        if (confirmationCoroutine != null) StopCoroutine(confirmationCoroutine);
         HideDescription();
+    }
+
+    private void CancelButton()
+    {
+        if (returnPanel != null) returnPanel.SetActive(false);
+    }
+
+    public void ShowConfirmation(string message)
+    {
+        if (confirmationCoroutine != null) StopCoroutine(confirmationCoroutine);
+        confirmationCoroutine = StartCoroutine(ShowConfirmationCoroutine(message));
+    }
+
+    public IEnumerator ShowConfirmationCoroutine(string message)
+    {
+        confirmationText.text = message;
+        confirmationText.gameObject.SetActive(true);
+        yield return new WaitForSecondsRealtime(confirmationDelay);
+        confirmationText.gameObject.SetActive(false);
     }
 }

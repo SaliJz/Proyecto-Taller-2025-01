@@ -6,11 +6,18 @@ public class GlitchShot : MonoBehaviour
 {
     private float slowDuration;
     private float slowMultiplier;
+    private float radius;
 
-    public void Initialize(float slowDuration, float slowMultiplier)
+    public void Initialize(float radius, float slowDuration, float slowMultiplier)
     {
-        this.slowDuration = slowDuration;
-        this.slowMultiplier = slowMultiplier;
+        this.radius = Mathf.Max(0.1f, radius);
+        this.slowDuration = Mathf.Max(1f, slowDuration);
+        this.slowMultiplier = Mathf.Clamp(slowMultiplier, 0f, 1f);
+    }
+
+    private void Start()
+    {
+        gameObject.transform.localScale = new Vector3(radius, radius, radius);
     }
 
     private void OnCollisionEnter(Collision collision)

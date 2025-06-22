@@ -111,7 +111,6 @@ public class AbilityManager : MonoBehaviour
             AbilityDataStore.Instance.AbilityNames.Add(a.name);
         }
 
-        // Fix for CS0200: Use a method or alternative approach to update CurrentIndex
         AbilityDataStore.Instance.SetCurrentIndex(currentIndex);
     }
 
@@ -129,5 +128,13 @@ public class AbilityManager : MonoBehaviour
 
         currentIndex = AbilityDataStore.Instance.CurrentIndex;
         currentIndex = Mathf.Clamp(currentIndex, 0, activeAbilities.Count - 1);
+    }
+
+    public void ClearAbilities()
+    {
+        activeAbilities.Clear();
+        currentIndex = 0;
+        SaveToDataStore();
+        UpdateAbilitiesActiveState();
     }
 }

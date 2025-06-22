@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 
 public class Weapon_Menu_Corregido : MonoBehaviour
 {
+    [SerializeField] private GameObject shopMenu;
+
     [Header("All Cards")]
     [SerializeField] private List<Weapon_Card_Corregido> gunAllCards;
     [SerializeField] private List<Weapon_Card_Corregido> rifleAllCards;
@@ -17,6 +19,7 @@ public class Weapon_Menu_Corregido : MonoBehaviour
     [SerializeField] private Button buttonGunPrice_UI;
     [SerializeField] private Button buttonRiflePrice_UI;
     [SerializeField] private Button buttonShotgunPrice_UI;
+    [SerializeField] private Button buttonExit_UI;
 
     [Header("TMP Gun")]
     [SerializeField] private TextMeshProUGUI gunDescription_UI_TMP;
@@ -49,6 +52,12 @@ public class Weapon_Menu_Corregido : MonoBehaviour
     {
         MoveInspectorListsToWeaponManagerCard();  
     }
+
+    private void Awake()
+    {
+        buttonExit_UI.onClick.AddListener(ExitWeaponMenu);
+    }
+
     void MoveInspectorListsToWeaponManagerCard()
     {
         gunManager.weaponCardList = gunAllCards;
@@ -161,5 +170,11 @@ public class Weapon_Menu_Corregido : MonoBehaviour
     public void LoadScene()
     {
         SceneManager.LoadScene(1);
+    }
+
+    public void ExitWeaponMenu()
+    {
+        gameObject.SetActive(false);
+        shopMenu.SetActive(true);
     }
 }

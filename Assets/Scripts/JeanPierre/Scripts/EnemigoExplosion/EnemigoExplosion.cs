@@ -1,6 +1,6 @@
-// EnemigoExplosion.cs (sin cambios)
 using UnityEngine;
 using System.Collections;
+using UnityEngine.AI;
 
 public class EnemigoExplosion : MonoBehaviour
 {
@@ -31,6 +31,7 @@ public class EnemigoExplosion : MonoBehaviour
 
     private Transform playerTransform;
     private EnemyAbilityReceiver abilityReceiver;
+    private NavMeshAgent agent;
     private bool canMoveContinuously = false;
     private bool toggleZigzag = false;
     private Vector3 previousLateralOffset = Vector3.zero;
@@ -39,6 +40,12 @@ public class EnemigoExplosion : MonoBehaviour
     {
         playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
         abilityReceiver = GetComponent<EnemyAbilityReceiver>();
+        agent = GetComponent<NavMeshAgent>();
+
+        // Desactivamos la rotación automática para usar RotateTowards
+        agent.updateRotation = false;
+        agent.updatePosition = false;
+        agent.speed = moveSpeed;
     }
 
     void OnEnable()
@@ -57,6 +64,7 @@ public class EnemigoExplosion : MonoBehaviour
     {
         if (playerTransform != null)
         {
+            // Rotación hacia el jugador
             Vector3 dirToPlayer = (playerTransform.position - transform.position).normalized;
             Quaternion targetRot = Quaternion.LookRotation(dirToPlayer, Vector3.up);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
@@ -64,12 +72,25 @@ public class EnemigoExplosion : MonoBehaviour
 
         if (canMoveContinuously)
         {
+            // Cálculo del zigzag lateral
             float lateralOsc = continuousZigzagAmplitude * Mathf.Sin(Time.time * continuousZigzagFrequency * 2f * Mathf.PI);
-            float speed = abilityReceiver ? abilityReceiver.CurrentSpeed : moveSpeed;
+            float speed = (abilityReceiver != null) ? abilityReceiver.CurrentSpeed : moveSpeed;
+            agent.speed = speed;
+
             Vector3 lateralOffset = transform.right * lateralOsc;
             Vector3 forwardMove = transform.forward * speed * Time.deltaTime;
-            transform.position += forwardMove + (lateralOffset - previousLateralOffset);
+            Vector3 moveDelta = forwardMove + (lateralOffset - previousLateralOffset);
+
+            // Aplicamos el movimiento con el agente
+            agent.Move(moveDelta);
+            transform.position = agent.nextPosition;  // sincronizar posición
+
             previousLateralOffset = lateralOffset;
+        }
+        else
+        {
+            // Si no se mueve, aseguramos que el agente esté quieto
+            agent.nextPosition = transform.position;
         }
     }
 
@@ -89,6 +110,7 @@ public class EnemigoExplosion : MonoBehaviour
 
     IEnumerator DoTeleport()
     {
+        // Apagamos el objeto (por ejemplo, efectos de pantalla)
         if (toggleObject != null)
             toggleObject.SetActive(false);
 
@@ -101,12 +123,18 @@ public class EnemigoExplosion : MonoBehaviour
             toggleZigzag = !toggleZigzag;
             Vector3 zigzagOffset = perp * lateral;
 
+            Vector3 targetPos;
             if (Random.value < lateralTeleportChance)
-                transform.position += zigzagOffset;
+                targetPos = transform.position + zigzagOffset;
             else
-                transform.position += dirToPlayer * teleportDistance + zigzagOffset;
+                targetPos = transform.position + dirToPlayer * teleportDistance + zigzagOffset;
+
+            // Usamos NavMeshAgent.Warp para teletransportar manteniendo validez en la malla
+            agent.Warp(targetPos);
+            transform.position = agent.nextPosition;
         }
 
+        // Volvemos a encender el objeto
         if (toggleObject != null)
             toggleObject.SetActive(true);
 
@@ -118,6 +146,13 @@ public class EnemigoExplosion : MonoBehaviour
 
 
 
+
+
+
+
+
+
+//// EnemigoExplosion.cs (sin cambios)
 //using UnityEngine;
 //using System.Collections;
 
@@ -146,49 +181,30 @@ public class EnemigoExplosion : MonoBehaviour
 //    public float appearDuration = 0.1f;
 
 //    [Header("Referencias")]
-//    private Transform playerTransform;
 //    public GameObject toggleObject;
 
-//    private Renderer enemyRenderer;
-//    private Material enemyMaterial;
+//    private Transform playerTransform;
+//    private EnemyAbilityReceiver abilityReceiver;
 //    private bool canMoveContinuously = false;
 //    private bool toggleZigzag = false;
 //    private Vector3 previousLateralOffset = Vector3.zero;
 
-//    private EnemyAbilityReceiver abilityReceiver;
-
 //    void Awake()
 //    {
-//        GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
-//        if (playerGO != null)
-//            playerTransform = playerGO.transform;
-//        else
-//            Debug.LogError("No se encontró ningún GameObject con tag 'Player'.");
+//        playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
+//        abilityReceiver = GetComponent<EnemyAbilityReceiver>();
 //    }
 
-//    void Start()
+//    void OnEnable()
 //    {
-//        if (abilityReceiver == null)
-//        {
-//            abilityReceiver = GetComponent<EnemyAbilityReceiver>();
-//        }
-//        else
-//        {
-//            Debug.LogWarning("No se encontró el componente EnemyAbilityReceiver en " + gameObject.name);
-//        }
-
-//        enemyRenderer = GetComponent<Renderer>();
-//        if (enemyRenderer == null)
-//        {
-//            Debug.LogError("No se encontró un componente Renderer en " + gameObject.name);
-//            return;
-//        }
-//        enemyMaterial = enemyRenderer.material;
-
-//        if (playerTransform == null)
-//            Debug.LogError("playerTransform no fue asignado en Awake().");
-
 //        StartCoroutine(TeleportMovementRoutine());
+//    }
+
+//    void OnDisable()
+//    {
+//        StopAllCoroutines();
+//        canMoveContinuously = false;
+//        previousLateralOffset = Vector3.zero;
 //    }
 
 //    void Update()
@@ -197,20 +213,13 @@ public class EnemigoExplosion : MonoBehaviour
 //        {
 //            Vector3 dirToPlayer = (playerTransform.position - transform.position).normalized;
 //            Quaternion targetRot = Quaternion.LookRotation(dirToPlayer, Vector3.up);
-//            transform.rotation = Quaternion.RotateTowards(
-//                transform.rotation,
-//                targetRot,
-//                rotationSpeed * Time.deltaTime
-//            );
+//            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
 //        }
 
 //        if (canMoveContinuously)
 //        {
-//            float lateralOsc = continuousZigzagAmplitude *
-//                               Mathf.Sin(Time.time * continuousZigzagFrequency * 2f * Mathf.PI);
-
+//            float lateralOsc = continuousZigzagAmplitude * Mathf.Sin(Time.time * continuousZigzagFrequency * 2f * Mathf.PI);
 //            float speed = abilityReceiver ? abilityReceiver.CurrentSpeed : moveSpeed;
-
 //            Vector3 lateralOffset = transform.right * lateralOsc;
 //            Vector3 forwardMove = transform.forward * speed * Time.deltaTime;
 //            transform.position += forwardMove + (lateralOffset - previousLateralOffset);
@@ -227,15 +236,13 @@ public class EnemigoExplosion : MonoBehaviour
 //                yield return StartCoroutine(DoTeleport());
 
 //            canMoveContinuously = true;
-//            float advanceTime = Random.Range(minAdvanceTime, maxAdvanceTime);
-//            yield return new WaitForSeconds(advanceTime);
+//            yield return new WaitForSeconds(Random.Range(minAdvanceTime, maxAdvanceTime));
 //            canMoveContinuously = false;
 //        }
 //    }
 
 //    IEnumerator DoTeleport()
 //    {
-//        // Sólo toggle, sin cambiar alfa
 //        if (toggleObject != null)
 //            toggleObject.SetActive(false);
 
@@ -257,16 +264,6 @@ public class EnemigoExplosion : MonoBehaviour
 //        if (toggleObject != null)
 //            toggleObject.SetActive(true);
 
-//        // Espera igual al tiempo de aparición
 //        yield return new WaitForSeconds(appearDuration);
 //    }
-
-//    // FadeAlpha vaciado para no tocar la alfa
-//    IEnumerator FadeAlpha(float startAlpha, float endAlpha, float duration)
-//    {
-//        yield return new WaitForSeconds(duration);
-//    }
 //}
-
-
-

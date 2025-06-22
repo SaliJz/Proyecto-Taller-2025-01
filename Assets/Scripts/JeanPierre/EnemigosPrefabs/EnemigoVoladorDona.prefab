@@ -230,7 +230,13 @@ MonoBehaviour:
   hdrColorAmetralladora: {r: 0, g: 0, b: 0.7924528, a: 1}
   hdrColorPistola: {r: 0.8018868, g: 0, b: 0, a: 1}
   hdrColorEscopeta: {r: 0, g: 0.8113208, b: 0, a: 1}
-  meshRenderers: []
+  meshRenderers:
+  - {fileID: 3486842711023615457}
+  - {fileID: 3429991036380457724}
+  - {fileID: 3597014393640285793}
+  - {fileID: 6633075324172020260}
+  - {fileID: 4034127156086934155}
+  staticMeshRenderers: []
   prefabMuerteAmetralladora: {fileID: 7597145721601309270, guid: 5c64e1320daef804f813dfca3682d4ae,
     type: 3}
   prefabMuertePistola: {fileID: 7597145721601309270, guid: 33004dd31ce07794d8c3fde64d803892,
@@ -1322,6 +1328,30 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 5763874647395255411}
   m_SourcePrefab: {fileID: 100100000, guid: 27722b42e2535dc42800dc44b0a4e38a, type: 3}
+--- !u!137 &3429991036380457724 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7112084198199220271, guid: 27722b42e2535dc42800dc44b0a4e38a,
+    type: 3}
+  m_PrefabInstance: {fileID: 5560525285057524435}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &3486842711023615457 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 9027804865376980786, guid: 27722b42e2535dc42800dc44b0a4e38a,
+    type: 3}
+  m_PrefabInstance: {fileID: 5560525285057524435}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &3597014393640285793 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -233661881753336654, guid: 27722b42e2535dc42800dc44b0a4e38a,
+    type: 3}
+  m_PrefabInstance: {fileID: 5560525285057524435}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &4034127156086934155 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -371849268496959400, guid: 27722b42e2535dc42800dc44b0a4e38a,
+    type: 3}
+  m_PrefabInstance: {fileID: 5560525285057524435}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4750063511514861442 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 27722b42e2535dc42800dc44b0a4e38a,
@@ -1352,6 +1382,12 @@ Animator:
 --- !u!4 &5377382842203575608 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 27722b42e2535dc42800dc44b0a4e38a,
+    type: 3}
+  m_PrefabInstance: {fileID: 5560525285057524435}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &6633075324172020260 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1236130981459581175, guid: 27722b42e2535dc42800dc44b0a4e38a,
     type: 3}
   m_PrefabInstance: {fileID: 5560525285057524435}
   m_PrefabAsset: {fileID: 0}
