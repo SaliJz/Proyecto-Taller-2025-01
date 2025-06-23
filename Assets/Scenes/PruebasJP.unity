@@ -1735,7 +1735,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &561226449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1752,8 +1752,8 @@ MonoBehaviour:
     type: 3}
   prefabsCuerpo:
   - {fileID: 5639541912636597720, guid: cccf84a2fe4d58d43aeefd8e73619a49, type: 3}
-  - {fileID: 3354959929434640376, guid: 95f5a2fa710d7f34e87b42c247382bfa, type: 3}
   - {fileID: 8050023315099829301, guid: 42e730f5ef6354f41ab80ffe1dd0f45f, type: 3}
+  - {fileID: 3354959929434640376, guid: 95f5a2fa710d7f34e87b42c247382bfa, type: 3}
   - {fileID: 4003153279500735077, guid: 64cefd50bb64fbc4f8b016e7540f1ef6, type: 3}
   - {fileID: 5563450520015480790, guid: 913934063e4bce542bea63a413065e03, type: 3}
   - {fileID: 6530118410203233620, guid: d30efe5a76ff25743b72ad781a4c44ef, type: 3}
@@ -1763,13 +1763,15 @@ MonoBehaviour:
   prefabCola: {fileID: 6889553621689296843, guid: b4902a2a3c4b7f847b42cd74d007816f,
     type: 3}
   cantidadSegmentosCuerpo: 15
-  distanciaCabezaCuerpo: 0
-  separacionCola: 5
-  separacionSegmentos: 5
+  distanciaCabezaCuerpo: 1
+  separacionCola: 1
+  separacionSegmentos: 1
   separacionesSegmentosCuerpo:
-  - 2.1
-  - 2.1
-  - 2.1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
   - 1
   - 1
   - 1
@@ -1789,7 +1791,7 @@ Transform:
   m_GameObject: {fileID: 561226448}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -156.9, y: 5.3, z: -150.1}
+  m_LocalPosition: {x: -38.7, y: 5.3, z: 125.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1898,14 +1900,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 561226448}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 70bf2921eb10a8642b4a39d72ac946cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   attackKey: 107
   shakeDuration: 1
-  shakeAmplitude: 30
+  shakeAmplitude: 8
   shakeFrequency: 10
   shakeToAttackDelay: 0.2
   numAttackSegments: 7
@@ -1929,7 +1931,7 @@ MonoBehaviour:
   offsetRadio: 0.2
   velocidadEnrollado: 1
   segmentosCuello: 1
-  alturaTotal: 8
+  alturaTotal: 2
 --- !u!114 &561226458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4577,7 +4579,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -20.9, y: -2, z: 138.6}
-  m_LocalScale: {x: 27.338032, y: 9.268072, z: 26.766325}
+  m_LocalScale: {x: 235.14262, y: 79.71747, z: 230.2252}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
