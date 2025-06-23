@@ -25,9 +25,12 @@ public class SupplyBox : MonoBehaviour
 
     private int actualAmount;
     private bool playerInRange = false;
+    private WeaponManager weaponManager;
 
     private void Start()
     {
+        weaponManager = FindAnyObjectByType<WeaponManager>();
+
         supplyCanvas.SetActive(false);
 
         amountRange = supplyType switch
@@ -56,7 +59,6 @@ public class SupplyBox : MonoBehaviour
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player == null) return;
 
-        WeaponManager weaponManager = FindAnyObjectByType<WeaponManager>();
         if (weaponManager == null) return;
         int added = 0;
 
@@ -98,37 +100,7 @@ public class SupplyBox : MonoBehaviour
         actualAmount = Random.Range((int)amountRange.x, (int)amountRange.y + 1);
         UpdateVisual();
     }
-    /*
-    private Weapon FindWeaponNearby(Vector3 origin, float radius)
-    {
-        int weaponLayer = LayerMask.NameToLayer("Weapon");
-
-        // Recorremos todos los colliders del radio
-        Collider[] colliders = Physics.OverlapSphere(origin, radius);
-
-        float shortestDistance = Mathf.Infinity;
-        Weapon nearestWeapon = null;
-
-        foreach (var col in colliders)
-        {
-            if (col.gameObject.layer == weaponLayer)
-            {
-                Weapon weapon = col.GetComponent<Weapon>();
-                if (weapon != null)
-                {
-                    float distance = Vector3.Distance(origin, col.transform.position);
-                    if (distance < shortestDistance)
-                    {
-                        shortestDistance = distance;
-                        nearestWeapon = weapon;
-                    }
-                }
-            }
-        }
-
-        return nearestWeapon;
-    }
-    */
+    
     private void OnTriggerStay(Collider other)
     {
         if (other.GetComponent<PlayerHealth>() != null)
@@ -147,28 +119,27 @@ public class SupplyBox : MonoBehaviour
         }
     }
 
-
     private void UpdateVisual()
     {
-        if (supplyCanvas != null && supplyAmountText != null)
+        if (supplyCanvas == null || supplyAmountText == null) return;
+
+        string textToShow = "";
+        switch (supplyType)
         {
-            if (supplyType == SupplyType.CodeFragment)
-            {
-                supplyAmountText.text = $"F. Cod. x{actualAmount}";
-            }
-            else if (supplyType == SupplyType.Single)
-            {
-                supplyAmountText.text = $"Pistola x{actualAmount}";
-            }
-            else if (supplyType == SupplyType.SemiAuto)
-            {
-                supplyAmountText.text = $"Escopeta x{actualAmount}";
-            }
-            else if (supplyType == SupplyType.Auto)
-            {
-                supplyAmountText.text = $"Rifle x{actualAmount}";
-            }
+            case SupplyType.CodeFragment:
+                textToShow = $"F. Cod. x{actualAmount}";
+                break;
+            case SupplyType.Single:
+                textToShow = $"Pistola x{actualAmount}";
+                break;
+            case SupplyType.SemiAuto:
+                textToShow = $"Escopeta x{actualAmount}";
+                break;
+            case SupplyType.Auto:
+                textToShow = $"Rifle x{actualAmount}";
+                break;
         }
+        supplyAmountText.text = textToShow;
     }
 
     private void OnDrawGizmos()
