@@ -12,7 +12,7 @@ public class TutorialTeleporter : MonoBehaviour
         if (activated) return;
         else
         {
-            TutorialManager.Instance.StartScenarioByManual(indexScene);
+            //TutorialManager.Instance.StartScenarioByManual(indexScene);
             activated = true;
         }
     }

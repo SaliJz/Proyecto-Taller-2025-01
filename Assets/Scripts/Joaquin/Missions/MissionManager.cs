@@ -378,7 +378,7 @@ public class MissionManager : MonoBehaviour
         activeMission = false;
 
         SelectTeleporter();
-        TutorialManager.Instance.StartScenarioByManual(8);
+        //TutorialManager.Instance.StartScenarioByManual(8);
 
         currentMissionIndex++;
 

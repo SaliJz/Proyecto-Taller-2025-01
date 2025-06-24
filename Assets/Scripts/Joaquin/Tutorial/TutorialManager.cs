@@ -1,174 +1,191 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI; 
 
 
 public class TutorialManager : MonoBehaviour
 {
-    public static TutorialManager Instance
-    { get; private set; }
+    public static TutorialManager Instance { get; private set; }
 
     [System.Serializable]
-    public class RuntimeSceneData
+    public class TutorialSceneRuntime
     {
-        public SceneTutorial sceneData; 
+        public TutorialSceneData tutorialSceneData;
         public UnityEvent onSceneStart;
         [HideInInspector] public bool isActive = false;
     }
-     
-    public List<RuntimeSceneData> scenes; //Ahora es publica
-    public int currentIndex = 0; //Para saber en que indice estamos , me sirve para la escena 2 en adelante
-    [SerializeField] private TextMeshProUGUI dialoguesText;
-    [SerializeField] private AudioSource voicesSource;
-    [SerializeField] private float speedText = 0.04f;
-    
 
-    private int[] killsByScenario;
-    private int[] fragmentsByScenario;
+    public List<TutorialSceneRuntime> tutorialScenes;
+    public int currentSceneIndex = 0;
+    private TutorialSceneRuntime tutorialCurrentScene; 
+    [SerializeField] private TextMeshProUGUI dialogueTextUI;
+    [SerializeField] private AudioSource voiceAudioSource;
+    [SerializeField] private float textTypingSpeed = 0.04f;
+    [SerializeField] private TutorialSceneController tutorialSceneController;
+    [SerializeField] private GameObject FragmentOfTheTutorial;
+    public bool IsTutorialScenePlaying => GetTutorialCurrentScene().isActive;
+    private int[] killCounters;
+    private int[] fragmentCounters;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
-        killsByScenario = new int[scenes.Count];
-        fragmentsByScenario = new int[scenes.Count];
+        killCounters = new int[tutorialScenes.Count];
+        fragmentCounters = new int[tutorialScenes.Count];
+
+        tutorialCurrentScene=tutorialScenes[currentSceneIndex];
     }
 
-    //void ChangeIndex(int index)
-    //{
-    //   currentIndex= index+1;
-    //}
 
-    //ESCENAS 0 Y 1
-    public void StartScenarioByZone(int index)
+    public void ScenarioActivationCheckerByZones()
     {
-        if (index < 0 || index >= scenes.Count)
+        if (GetCurrentSceneActivationType() == ActivationType.ByZona) //Solo esto, ya que verificar la colision por trigger se hace en otro script
         {
-            Debug.LogError($"[TutorialManager] Index fuera de rango: {index}. Total escenas: {scenes.Count}");
-            return;
-        }
-
-        if (!scenes[index].isActive && scenes[index].sceneData.activationType == ActivationType.ByZona)
-        {
-            StartScenario(index);
+            ActivateCurrentScenario();
         }
     }
 
-    //ESCENAS 2 Y 3
-    public void StartScenarioByKills(int index)   //Es activado por los glitchs al morir
+    public void ScenarioActivationCheckerByKills()
     {
-        if (!scenes[index].isActive && scenes[index].sceneData.activationType == ActivationType.ByKills)
+        if (GetCurrentSceneActivationType() == ActivationType.ByKills)
         {
-            killsByScenario[index]++;
-            Debug.Log($"Kills para escenario {index}: {killsByScenario[index]}/{scenes[index].sceneData.necessarykills}");
-            if (killsByScenario[index] >= scenes[index].sceneData.necessarykills)
+            IncreaseKillCounterInCurrentScene(); //Las muertes de enemigo aumentan el contador, para activar escena
+            Debug.Log($"Kills para escena {currentSceneIndex}:" +
+                $" {killCounters[currentSceneIndex]}/{GetTutorialCurrentScene().tutorialSceneData.necessarykills}");
+            if (killCounters[currentSceneIndex] == GetTutorialCurrentScene().tutorialSceneData.necessarykills)
             {
-                StartScenario(index);
-                //ChangeIndex(index);
-                killsByScenario[index]=0;
+                ActivateCurrentScenario();
                 Debug.Log("Conseguiste las kills necesarias");
-            }           
-
-        }
-    }
-
-    //ESCENAS 4 , 9 Y 10
-    public void StartScenarioByTime(int index, float time)
-    {
-        if (!scenes[index].isActive && scenes[index].sceneData.activationType == ActivationType.ForTime)
-        {
-            StartCoroutine(WaitForTime(index, time));
-        }
-    }
-
-    private IEnumerator WaitForTime(int index, float time)
-    {
-        yield return new WaitForSeconds(time);
-        if (!scenes[index].isActive)
-        {
-            StartScenario(index);
-        }
-    }
-
-    //ESCENAS 5, 6 Y 8
-    public void StartScenarioByManual(int index)
-    {
-        if (!scenes[index].isActive && scenes[index].sceneData.activationType == ActivationType.ByEventoManual)
-        {
-            StartScenario(index);
-        }
-    }
-    //ESCENA 7
-    public void StartScenarioByFragments(int index) 
-    {
-        if (!scenes[index].isActive && scenes[index].sceneData.activationType == ActivationType.ByFragments)
-        {
-            fragmentsByScenario[index]++;
-            Debug.Log($"Fragmentos para escenario {index}: {fragmentsByScenario[index]}/{scenes[index].sceneData.necessaryFragments}");
-            if (fragmentsByScenario[index] >= scenes[index].sceneData.necessaryFragments)
-            {
-                StartScenario(index);
             }
         }
     }
 
-
-    // DETIENE CORRUTINAS 
-    private void StartScenario(int index)
+    public void ScenarioActivationCheckerByTime()
     {
-        Debug.Log("El indice actual es:" + index);
-        if (scenes[index].isActive) return;
-        scenes[index].isActive = true;
-        StopAllCoroutines();
-        StartCoroutine(RunScenario(index));
+        if (GetCurrentSceneActivationType() == ActivationType.ForTime)
+        {
+            float waitTimetoActivateScene = tutorialCurrentScene.tutorialSceneData.necessaryTime;
+            StartCoroutine(WaitToActivateScenario(waitTimetoActivateScene));
+        }
     }
 
-    // ACTIVA TODAS LAS FUNCIONES ASOCIADAS AL ESCENARIO, Y REPRODUCE VOZ Y TEXOS
-    private IEnumerator RunScenario(int index)
+    private IEnumerator WaitToActivateScenario(float time)
     {
-        var runtimeScene = scenes[index];
+        yield return new WaitForSeconds(time);     
+        ActivateCurrentScenario();
+    }
+
+    public void ScenarioActivationCheckByManually()
+    {    
+        if (GetCurrentSceneActivationType() == ActivationType.ByEventoManual)
+        {
+            ActivateCurrentScenario();
+        }
+    }
+
+    public void ScenarioActivationCheckByFragment()
+    {    
+        if (GetCurrentSceneActivationType() == ActivationType.ByFragments)
+        {
+            IncreaseFragmentCounterInCurrentScene();
+            Debug.Log($"Fragmentos para escena {currentSceneIndex}: " +
+                $"{fragmentCounters[currentSceneIndex]}/{GetTutorialCurrentScene().tutorialSceneData.necessaryFragments}");
+           
+            if (fragmentCounters[currentSceneIndex] == GetTutorialCurrentScene().tutorialSceneData.necessaryFragments)
+            {
+                ActivateCurrentScenario();
+            }
+        }
+    }
+
+    public void ActivateCurrentScenario()
+    {
+        //Debug.Log("Escenario activado en índice: " + currentSceneIndex);
+        if (GetTutorialCurrentScene().isActive) return; //Aqui, para que la activacion por kills no llame varias veces
+        GetTutorialCurrentScene().isActive = true;
+        StopAllCoroutines();
+        StartCoroutine(PlayScenarioSequence());
+    }
+
+    private IEnumerator PlayScenarioSequence()
+    {
+        var runtimeScene = GetTutorialCurrentScene();
         runtimeScene.onSceneStart?.Invoke();
 
-        foreach (var dialogue in runtimeScene.sceneData.dialogues)
+        foreach (var dialogue in runtimeScene.tutorialSceneData.dialogues)
         {
-            if (dialogue.dialogueVoice != null) voicesSource.PlayOneShot(dialogue.dialogueVoice);
-            yield return StartCoroutine(TypeText(dialogue.dialogueText));
+            if (dialogue.dialogueVoice != null)
+                voiceAudioSource.PlayOneShot(dialogue.dialogueVoice);
+                yield return new WaitForSecondsRealtime(dialogue.dialogueVoice.length); 
+
+            //yield return StartCoroutine(AnimateTextTyping(dialogue.dialogueText));
         }
-       
-        OnScenarioEnded(index); 
+
+        if (currentSceneIndex==4) //la de la cinematica del glitch
+        {
+            tutorialSceneController.StopGlitchDeathCinematic();
+        }
+
+        if(currentSceneIndex==6) //activamos el fragmento
+        {
+            FragmentOfTheTutorial.SetActive(true);
+        }
+        HandleScenarioCompletion();
     }
 
-
-    private void OnScenarioEnded(int finishedIndex)
+    private void HandleScenarioCompletion()
     {
-        currentIndex = finishedIndex + 1; 
-
-        if (currentIndex < scenes.Count)
+        GetTutorialCurrentScene().isActive = false;
+        IncreaseCurrentSceneIndex(); 
+     
+        if (HasNextScene()) //Verificamos que la escena exista
         {
-            var nextScene = scenes[currentIndex];
-
-            if (nextScene.sceneData.activationType == ActivationType.ForTime && !nextScene.isActive)
-            {
-                StartScenarioByTime(currentIndex, nextScene.sceneData.necessaryTime);
-            }
+            tutorialCurrentScene = GetTutorialCurrentScene(); //Actualizamos la escena con la escena del indice actual
+               
+          //Estos metodos se activan automaticamente al comprobar el indice actual, el cual fue incrementado previamente en 1
+          ScenarioActivationCheckerByTime();     
+          ScenarioActivationCheckByManually();
         }
     }
 
-    private IEnumerator TypeText(string text)
+    private IEnumerator AnimateTextTyping(string text)
     {
-        Debug.Log("TEXTO: " + text);
+        //Debug.Log("TEXTO: " + text);
+        dialogueTextUI.text = "";
 
-        dialoguesText.text = "";
-        foreach (char characters in text)
+        foreach (char character in text)
         {
-            dialoguesText.text += characters;
-            yield return new WaitForSeconds(speedText);
+            dialogueTextUI.text += character;
+            yield return new WaitForSecondsRealtime(textTypingSpeed);
         }
     }
 
+    void IncreaseCurrentSceneIndex()
+    {
+        currentSceneIndex+= 1;
+    }
+    void IncreaseKillCounterInCurrentScene()
+    {
+        killCounters[currentSceneIndex]+= 1;
+    }
+    void IncreaseFragmentCounterInCurrentScene()
+    {
+        fragmentCounters[currentSceneIndex]+= 1;
+    }
+    private bool HasNextScene()
+    {
+        return  currentSceneIndex < tutorialScenes.Count;
+    }
+    public TutorialSceneRuntime GetTutorialCurrentScene()
+    {
+        return tutorialScenes[currentSceneIndex];
+    }
+    public ActivationType GetCurrentSceneActivationType()
+    {
+        return tutorialScenes[currentSceneIndex].tutorialSceneData.activationType;
+    }
 }

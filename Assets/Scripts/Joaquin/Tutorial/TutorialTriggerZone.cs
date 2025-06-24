@@ -6,15 +6,22 @@ public class TutorialTriggerZone : MonoBehaviour
 {
     public int sceneIndex;
     private bool activated = false;
+    TutorialManager manager;
 
-    void OnTriggerEnter(Collider other)
+    private void Start()
     {
-        if (activated) return;
-
-        if (other.CompareTag("Player"))
+        manager = TutorialManager.Instance;
+    }
+    private void OnTriggerStay(Collider other)
+    {
+        if (!TutorialManager.Instance.IsTutorialScenePlaying)
         {
-            TutorialManager.Instance.StartScenarioByZone(sceneIndex);
-            activated = true;
+            if (other.CompareTag("Player")) 
+            {
+                manager.ScenarioActivationCheckerByZones();
+                Destroy(gameObject);
+            }
         }
+       
     }
 }

@@ -199,7 +199,7 @@ public class HUDManager : MonoBehaviour
         }
 
         floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: + {amount} -> {infoFragments}"));
-        Debug.Log($"F. Cod.: + {amount} -> {infoFragments}");
+        //Debug.Log($"F. Cod.: + {amount} -> {infoFragments}");
     }
 
     public void DiscountInfoFragment(int amount)
