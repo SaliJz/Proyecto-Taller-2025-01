@@ -12,6 +12,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] private Transform bulletSpawnPoint;
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private WeaponStats stats;
+    [SerializeField] private ParticleSystem muzzleEffect;
     [SerializeField] private ShootingMode baseMode;
 
     [Header("Balas")]
@@ -241,6 +242,7 @@ public class Weapon : MonoBehaviour
         }
 
         PlayShotAudio();
+        PlayEffect();
     }
 
     private void ShootBullet(Vector3 direction)
@@ -273,6 +275,15 @@ public class Weapon : MonoBehaviour
     }
 
     public void PlayShotAudio() => PlayClip(shootClip);
+
+    #endregion
+
+    #region Effects
+
+    private void PlayEffect()
+    {
+        if (muzzleEffect != null) muzzleEffect.Play();
+    }
 
     #endregion
 

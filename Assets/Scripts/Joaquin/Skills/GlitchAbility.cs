@@ -18,11 +18,8 @@ public class GlitchAbility : MonoBehaviour
     [SerializeField] private float slowMultiplier = 0.5f;
     [SerializeField] private float baseRadius = 5f;
 
-    [SerializeField] private bool isNivel1 = false;
-
     private float currentCooldown;
     private float currentDuration;
-    private float currentRadius;
 
     private bool canUse = true;
     private float currentCooldownTimer = 0;
@@ -57,7 +54,6 @@ public class GlitchAbility : MonoBehaviour
             }
         }
 
-        if (isNivel1) AbilityUpgradeManager.ResetUpgrades();
         ApplyUpgrades();
     }
 
@@ -68,27 +64,24 @@ public class GlitchAbility : MonoBehaviour
 
     private void OnEnable()
     {
-        AbilityUpgradeManager.OnUpgradesChanged += ApplyUpgrades;
+        AbilityShopDataManager.OnAbilityShopDataChanged += ApplyUpgrades;
     }
 
     private void OnDisable()
     {
-        AbilityUpgradeManager.OnUpgradesChanged -= ApplyUpgrades;
+        AbilityShopDataManager.OnAbilityShopDataChanged -= ApplyUpgrades;
     }
 
     private void ApplyUpgrades()
     {
-        // Cooldown
-        float cooldownReduction = AbilityUpgradeManager.CooldownLevel * AbilityUpgradeManager.COOLDOWN_REDUCTION;
-        currentCooldown = baseCooldown - (cooldownReduction);
+        AbilityStats stats = AbilityShopDataManager.GetStats(AbilityType.GlitchTime);
+        if (stats == null) return;
 
-        // Duración
-        float durationBonus = AbilityUpgradeManager.EffectDurationLevel * AbilityUpgradeManager.DURATION_INCREASE_PERCENT;
-        currentDuration = baseDuration * (1 + durationBonus);
+        const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f;
+        const float DURATION_INCREASE_PER_LEVEL = 0.5f;
 
-        // Rango
-        float rangeBonus = AbilityUpgradeManager.EffectRangeLevel * AbilityUpgradeManager.RANGE_INCREASE_PERCENT;
-        currentRadius = baseRadius * (1 + rangeBonus);
+        currentCooldown = baseCooldown - (stats.CooldownLevel * COOLDOWN_REDUCTION_PER_LEVEL);
+        currentDuration = baseDuration + (stats.DurationLevel * DURATION_INCREASE_PER_LEVEL);
 
         Debug.Log($"Stats de {abilityInfo.abilityName} actualizados!");
     }
@@ -129,7 +122,7 @@ public class GlitchAbility : MonoBehaviour
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));
         projectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
 
-        projectile.GetComponent<GlitchShot>().Initialize(currentRadius, currentDuration, slowMultiplier);
+        projectile.GetComponent<GlitchShot>().Initialize(baseRadius, currentDuration, slowMultiplier);
         Destroy(projectile, projectileLifeTime);
     }
 }

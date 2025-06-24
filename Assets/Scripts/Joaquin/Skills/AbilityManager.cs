@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class AbilityManager : MonoBehaviour
 {
+    [SerializeField] private bool isLevel1 = false;
+
     [Header("Todas las habilidades posibles")]
     [SerializeField] private List<GameObject> allAbilities;
 
@@ -18,6 +20,8 @@ public class AbilityManager : MonoBehaviour
 
     private void Start()
     {
+        if (isLevel1) AbilityShopDataManager.ResetDataForNewLevel();
+
         foreach (var ability in allAbilities)
         {
             ability.SetActive(false);
@@ -70,6 +74,37 @@ public class AbilityManager : MonoBehaviour
 
         currentIndex = activeAbilities.IndexOf(newAbility);
         SaveToDataStore();
+        UpdateAbilitiesActiveState();
+    }
+
+    public void SetEquippedAbilities(List<AbilityType> equippedTypes)
+    {
+        activeAbilities.Clear();
+
+        foreach (AbilityType type in equippedTypes)
+        {
+            if (type == AbilityType.None) continue;
+
+            GameObject abilityGO = allAbilities.Find(go => {
+                AbilityInfo info = go.GetComponent<AbilityInfo>();
+                return info != null && info.abilityName == type.ToString();
+            });
+
+            if (abilityGO != null)
+            {
+                activeAbilities.Add(abilityGO);
+            }
+            else
+            {
+                Debug.LogWarning($"No se pudo encontrar un GameObject de habilidad correspondiente al tipo: {type.ToString()}");
+            }
+        }
+
+        if (currentIndex >= activeAbilities.Count)
+        {
+            currentIndex = activeAbilities.Count > 0 ? activeAbilities.Count - 1 : 0;
+        }
+
         UpdateAbilitiesActiveState();
     }
 

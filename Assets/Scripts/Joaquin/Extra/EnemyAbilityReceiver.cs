@@ -69,7 +69,7 @@ public class EnemyAbilityReceiver : MonoBehaviour
         currentSpeed = baseSpeed;
     }
 
-    public void ApplyElectroHack(float tickDamage, float tickInterval, int ticks, float slowMultiplier)
+    public void ApplyElectroHack(float tickDamage, float tickInterval, float ticks, float slowMultiplier)
     {
         if (electroHackCoroutine != null)
         {
@@ -78,7 +78,7 @@ public class EnemyAbilityReceiver : MonoBehaviour
         electroHackCoroutine = StartCoroutine(ElectroHackRoutine(tickDamage, tickInterval, ticks, slowMultiplier));
     }
 
-    private IEnumerator ElectroHackRoutine(float tickDamage, float tickInterval, int ticks, float slowMultiplier)
+    private IEnumerator ElectroHackRoutine(float tickDamage, float tickInterval, float ticks, float slowMultiplier)
     {
         ApplySlow(slowMultiplier, tickInterval * ticks);
 

@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("References")]
     private Rigidbody rb;
     [SerializeField] private Transform orientation;
+    [SerializeField] private LayerMask groundLayer;
 
     [Header("Key input")]
     [SerializeField] private KeyCode jumpKey = KeyCode.Space;
@@ -14,18 +15,22 @@ public class PlayerMovement : MonoBehaviour
     [Header ("Movement")]
     [SerializeField] private float speedWalk = 10f;
     [SerializeField] private float groundDrag = 5f;
+    [SerializeField] private float airControl = 0.2f;
 
     [Header("Jump")]
-    [SerializeField] private float jumpForce = 5f;
-    [SerializeField] private float jumpCooldown = 0.25f;
-    [SerializeField] private float jumpAirControl = 0.5f;
-    private bool readyToJump = true;
-    private float jumpBuffer = 0.15f;
-    private float lastJumpPressedTime;
+    [SerializeField] private float minJumpForce = 4f;
+    [SerializeField] private float maxJumpForce = 8f;
+    [SerializeField] private float maxJumpTime = 0.3f;
+    [SerializeField] private float gravityFallMultiplier = 3.5f;
+    private bool isJumping = false;
+    private float jumpTimeCounter;
 
-    [Header("Ground Normal Check")]
-    [SerializeField] private float maxGroundAngle = 45f;
-    private bool isGrounded = true;
+    [Header("Ground Check")]
+    [SerializeField] private float playerHeight = 2f;
+    [SerializeField] private float groundCheckRadius = 0.4f;
+    [SerializeField] private float groundCheckDistance = 0.2f;
+    private bool isGrounded;
+
     public bool IsGrounded => isGrounded;
     public float SpeedWalk => speedWalk;
 
@@ -35,30 +40,17 @@ public class PlayerMovement : MonoBehaviour
         rb.freezeRotation = true;
     }
 
-    void Update()
+    private void Update()
     {
-        if (Input.GetKeyDown(jumpKey))
-        {
-            lastJumpPressedTime = Time.time;
-        }
-
-        //CheckGround();
-        HandleJump();
-
-        // Aplicar fricción al suelo
-        if (isGrounded)
-        {
-            rb.drag = groundDrag; // Fricción al suelo
-        }
-        else
-        {
-            rb.drag = 0; // Sin fricción en el aire
-        }
+        CheckGround();
+        HandleJumpInput();
+        HandleDrag();
     }
 
     private void FixedUpdate()
     {
         HandleMovement();
+        HandleGravity();
     }
 
     private void HandleMovement()
@@ -66,84 +58,84 @@ public class PlayerMovement : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        if (IsFacingSteepWall())
-        {
-            // Cancelar movimiento hacia adelante si está contra una pared empinada
-            vertical = Mathf.Min(0f, vertical);
-        }
-
         Vector3 moveDirection = (orientation.forward * vertical + orientation.right * horizontal).normalized;
 
-        // Aplicar movimiento
         if (isGrounded)
         {
-            Vector3 velocity = new Vector3(moveDirection.x * speedWalk, rb.velocity.y, moveDirection.z * speedWalk);
-            rb.velocity = velocity;
+            rb.velocity = new Vector3(moveDirection.x * speedWalk, rb.velocity.y, moveDirection.z * speedWalk);
         }
-        // Aplicar control de aire
-        else if (!isGrounded)
+        else
         {
-            rb.AddForce(moveDirection * speedWalk * jumpAirControl, ForceMode.Acceleration); // Control de aire
+            rb.AddForce(moveDirection * speedWalk * airControl, ForceMode.Acceleration);
         }
 
-        // Aplicar rotación
         if (moveDirection != Vector3.zero)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(moveDirection); // Rotación hacia la dirección de movimiento
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f); // Rotación suave
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
         }
     }
 
-    private bool IsFacingSteepWall()
+    private void HandleDrag()
     {
-        Debug.DrawRay(transform.position, orientation.forward * 0.6f, Color.red);
+        rb.drag = isGrounded ? groundDrag : 0;
+    }
 
-        if (Physics.Raycast(transform.position, orientation.forward, out RaycastHit hit, 0.6f))
+    private void CheckGround()
+    {
+        Vector3 startPoint = transform.position + Vector3.up * groundCheckRadius;
+        float castDistance = playerHeight / 2 - groundCheckRadius + groundCheckDistance;
+
+        Debug.DrawRay(startPoint, Vector3.down * castDistance, Color.green);
+
+        isGrounded = Physics.SphereCast(startPoint, groundCheckRadius, Vector3.down, out _, castDistance, groundLayer);
+    }
+
+    private void HandleJumpInput()
+    {
+        if (Input.GetKeyDown(jumpKey) && isGrounded)
         {
-            float angle = Vector3.Angle(hit.normal, Vector3.up);
-            return angle > maxGroundAngle;
+            isJumping = true;
+            jumpTimeCounter = maxJumpTime;
+            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+            rb.AddForce(Vector3.up * minJumpForce, ForceMode.Impulse);
         }
-        return false;
-    }
 
-    private void HandleJump()
-    {
-        // Si se presionó el salto recientemente y está en suelo y listo
-        if (Time.time - lastJumpPressedTime < jumpBuffer && isGrounded && readyToJump)
+        if (Input.GetKey(jumpKey) && isJumping)
         {
-            readyToJump = false;
-            lastJumpPressedTime = 0;
-
-            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-
-            Invoke(nameof(ResetJump), jumpCooldown);
-        }
-    }
-
-    private void ResetJump()
-    {
-        readyToJump = true;
-    }
-
-    private void OnCollisionStay(Collision collision)
-    {
-        isGrounded = false;
-
-        // Comprobar si el contacto está en el suelo
-        foreach (ContactPoint contact in collision.contacts)
-        {
-            float angle = Vector3.Angle(contact.normal, Vector3.up);
-            if (angle < maxGroundAngle)
+            if (jumpTimeCounter > 0)
             {
-                isGrounded = true;
-                break;
+                float jumpForce = Mathf.Lerp(maxJumpForce, minJumpForce, 1 - (jumpTimeCounter / maxJumpTime));
+                rb.AddForce(Vector3.up * jumpForce * Time.deltaTime, ForceMode.Impulse);
+                jumpTimeCounter -= Time.deltaTime;
+            }
+            else
+            {
+                isJumping = false;
             }
         }
+
+        if (Input.GetKeyUp(jumpKey))
+        {
+            isJumping = false;
+        }
     }
 
-    private void OnCollisionExit(Collision collision)
+    private void HandleGravity()
     {
-        isGrounded = false;
+        if (!isGrounded && rb.velocity.y < 0)
+        {
+            rb.AddForce(Physics.gravity * (gravityFallMultiplier - 1), ForceMode.Acceleration);
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position + Vector3.up * groundCheckRadius, groundCheckRadius);
+        
+        Gizmos.color = Color.green;
+        Vector3 startPoint = transform.position + Vector3.up * groundCheckRadius;
+        Gizmos.DrawLine(startPoint, startPoint + Vector3.down * (playerHeight / 2 - groundCheckRadius + groundCheckDistance));
     }
 }

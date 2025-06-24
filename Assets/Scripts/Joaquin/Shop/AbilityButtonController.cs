@@ -3,99 +3,138 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+public enum ButtonFunction 
+{ 
+    PurchaseAbility, 
+    EquipAbility,
+    UnequipAbility,
+    UpgradeStat 
+}
+
 public class AbilityButtonController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField] private Button abilityButton;
-    [SerializeField] private GameObject abilityObj;
-    [SerializeField] private TextMeshProUGUI abilityCostText;
-    [SerializeField] private Image buttonImage;
-    [SerializeField] private int cost;
+    [Header("Configuración Principal")]
+    public AbilityType AssociatedAbility;
+    public string UpgradeStatName;
+    [TextArea] public string descriptionFormat;
 
+    [Header("Configuración de Coste")]
+    [SerializeField] private int baseCost = 100;
+    [SerializeField] private int costPerLevel = 50;
+
+    public ButtonFunction CurrentFunction { get; private set; }
+    private Button button;
+    private TextMeshProUGUI buttonText;
+    private Image buttonImage;
     private AbilityShopController shopController;
-    private AbilityInfo abilityInfo;
-    private Color lastColor;
-
-    public int Cost => cost;
+    private const int MAX_UPGRADE_LEVEL = 5;
 
     private void Awake()
     {
         shopController = GetComponentInParent<AbilityShopController>();
-        abilityInfo = abilityObj.GetComponent<AbilityInfo>();
-        buttonImage = abilityButton.GetComponent<Image>();
-
-        if (abilityObj == null)
-        {
-            Debug.LogError("[AbilityButtonController] Ability Object is not assigned in the AbilityButtonController.");
-        }
-        if (abilityCostText == null)
-        {
-            Debug.LogError("[AbilityButtonController] Cost Text is not assigned in the AbilityButtonController.");
-        }
-
-        abilityButton.onClick.AddListener(OnClick);
+        button = GetComponent<Button>();
+        buttonText = GetComponentInChildren<TextMeshProUGUI>();
+        buttonImage = GetComponent<Image>();
+        button.onClick.AddListener(() => shopController.HandleButtonClick(this));
     }
 
-    private void Update()
+    public void UpdateVisuals()
     {
-        Color targetColor;
+        bool isPurchased = AbilityShopDataManager.IsPurchased(AssociatedAbility);
 
-        if (shopController.IsAbilitySelected(abilityObj))
+        if (string.IsNullOrEmpty(UpgradeStatName))
         {
-            targetColor = Color.green;
-            if (shopController.IsAbilityPurchased(abilityObj))
+            if (isPurchased)
             {
-                abilityCostText.text = "Seleccionado";
+                CurrentFunction = AbilityShopDataManager.IsEquipped(AssociatedAbility) ? ButtonFunction.UnequipAbility : ButtonFunction.EquipAbility;
             }
             else
             {
-                abilityCostText.text = $"Costo: <b>{cost}</b> F. Cod. ";
+                CurrentFunction = ButtonFunction.PurchaseAbility;
             }
         }
-        else if (shopController.IsAbilityEquipped(abilityObj))
-        {
-            targetColor = Color.blue;
-            abilityCostText.text = "Habilidad equipada";
-        }
-        else if (shopController.IsAbilityPurchased(abilityObj))
-        {
-            targetColor = Color.red;
-            abilityCostText.text = "Habilidad comprada";
-        }
         else
         {
-            targetColor = Color.white;
-            abilityCostText.text = $"Costo: <b>{cost}</b> F. Cod. ";
+            CurrentFunction = ButtonFunction.UpgradeStat;
         }
 
-        if (targetColor != lastColor)
+        UpdateAppearance();
+    }
+
+    private void UpdateAppearance()
+    {
+        switch (CurrentFunction)
         {
-            buttonImage.color = targetColor;
-            lastColor = targetColor;
+            case ButtonFunction.PurchaseAbility:
+                buttonImage.color = shopController.IsSelected(this) ? Color.green : Color.white;
+                buttonText.text = $"{AssociatedAbility}\nCosto: {baseCost}";
+                button.interactable = true;
+                break;
+            case ButtonFunction.EquipAbility:
+                buttonImage.color = Color.red;
+                buttonText.text = "Equipar";
+                button.interactable = true;
+                break;
+            case ButtonFunction.UnequipAbility:
+                buttonImage.color = Color.blue;
+                buttonText.text = "Equipado";
+                button.interactable = true;
+                break;
+            case ButtonFunction.UpgradeStat:
+                if (!AbilityShopDataManager.IsPurchased(AssociatedAbility))
+                {
+                    SetState(Color.grey, "Bloqueado", false);
+                    return;
+                }
+
+                int currentLevel = GetCurrentUpgradeLevel();
+                if (currentLevel >= MAX_UPGRADE_LEVEL)
+                {
+                    SetState(Color.yellow, "Máximo", false);
+                }
+                else
+                {
+                    Color color = shopController.IsSelected(this) ? Color.green : Color.white;
+                    SetState(color, $"{UpgradeStatName}\nCosto: {GetCurrentCost()}", true);
+                }
+                break;
         }
     }
 
-    public void OnClick()
+    public int GetCurrentCost()
     {
-        bool isNowSelected = shopController.TrySelectAbility(abilityObj, cost);
-
-        if (isNowSelected)
+        if (CurrentFunction == ButtonFunction.PurchaseAbility) return baseCost;
+        if (CurrentFunction == ButtonFunction.UpgradeStat)
         {
-            shopController.ShowConfirmation("Habilidad seleccionada: " + abilityInfo.abilityName);
+            return baseCost + (GetCurrentUpgradeLevel() * costPerLevel);
         }
-        else
+        return 0;
+    }
+
+    private int GetCurrentUpgradeLevel()
+    {
+        AbilityStats stats = AbilityShopDataManager.GetStats(AssociatedAbility);
+        switch (UpgradeStatName)
         {
-            shopController.ShowConfirmation("Habilidad deseleccionada: " + abilityInfo.abilityName);
+            case "Cooldown": return stats.CooldownLevel;
+            case "Duration": return stats.DurationLevel;
+            case "Damage": return stats.DamageLevel;
+            case "Range": return stats.RangeLevel;
+            case "EnemiesAffected": return stats.EnemiesAffectedLevel;
+            default: return 0;
         }
     }
 
-    public GameObject GetAbilityObject()
+    private void SetState(Color color, string text, bool interactable)
     {
-        return abilityObj;
+        buttonImage.color = color;
+        buttonText.text = text;
+        button.interactable = interactable;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        shopController.ShowDescription(abilityInfo.description);
+        shopController.ShowDescription(descriptionFormat);
     }
 
     public void OnPointerExit(PointerEventData eventData)

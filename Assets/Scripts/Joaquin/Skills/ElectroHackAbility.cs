@@ -5,27 +5,27 @@ using UnityEngine;
 
 public class ElectroHackAbility : MonoBehaviour
 {
-    [Header("Camera")]
+    [Header("References")]
     [SerializeField] private Camera playerCamera;
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform projectileSpawnPoint;
+    [SerializeField] private ParticleSystem muzzleEffect;
 
     [Header("ElectroHack Settings")]
-    [SerializeField] private float baseCooldown = 10f;
     [SerializeField] private float projectileLifeTime = 2f;
     [SerializeField] private float projectileSpeed = 20f;
-    [SerializeField] private int maxTargets = 3;
+    [SerializeField] private float baseCooldown = 10f;
+    [SerializeField] private float baseEnemiesAffected = 3;
     [SerializeField] private float tickDamage = 15;
     [SerializeField] private float tickInterval = 1f;
-    [SerializeField] private int ticks = 2;
+    [SerializeField] private float ticks = 2;
     [SerializeField] private float slowMultiplier = 0.75f;
     [SerializeField] private float baseRadius = 5f;
 
-    [SerializeField] private bool isNivel1 = false;
-
     private float currentCooldown;
     private float currentDuration;
-    private float currentRadius;
+    private float currentEnemiesAffected;
+    private float currentDamagePerSecond;
 
     private bool canUse = true;
     private float currentCooldownTimer = 0;
@@ -63,7 +63,6 @@ public class ElectroHackAbility : MonoBehaviour
             }
         }
 
-        if (isNivel1) AbilityUpgradeManager.ResetUpgrades();
         ApplyUpgrades();
     }
 
@@ -74,27 +73,28 @@ public class ElectroHackAbility : MonoBehaviour
 
     private void OnEnable()
     {
-        AbilityUpgradeManager.OnUpgradesChanged += ApplyUpgrades;
+        AbilityShopDataManager.OnAbilityShopDataChanged += ApplyUpgrades;
     }
 
     private void OnDisable()
     {
-        AbilityUpgradeManager.OnUpgradesChanged -= ApplyUpgrades;
+        AbilityShopDataManager.OnAbilityShopDataChanged -= ApplyUpgrades;
     }
 
     private void ApplyUpgrades()
     {
-        // Cooldown
-        float cooldownReduction = AbilityUpgradeManager.CooldownLevel * AbilityUpgradeManager.COOLDOWN_REDUCTION;
-        currentCooldown = baseCooldown - (cooldownReduction);
+        AbilityStats stats = AbilityShopDataManager.GetStats(AbilityType.ElectroHack);
+        if (stats == null) return;
 
-        // Duración
-        float durationBonus = AbilityUpgradeManager.EffectDurationLevel * AbilityUpgradeManager.DURATION_INCREASE_PERCENT;
-        currentDuration = tickInterval * (1 + durationBonus);
+        const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f;
+        const float DURATION_INCREASE_PER_LEVEL = 0.5f;
+        const float DAMAGE_INCREASE_PER_LEVEL = 2.0f;
+        const float ENEMIES_AFFECTED_INCREASE_PER_LEVEL = 1.0f;
 
-        // Rango
-        float rangeBonus = AbilityUpgradeManager.EffectRangeLevel * AbilityUpgradeManager.RANGE_INCREASE_PERCENT;
-        currentRadius = baseRadius * (1 + rangeBonus);
+        currentCooldown = baseCooldown - (stats.CooldownLevel * COOLDOWN_REDUCTION_PER_LEVEL);
+        currentDuration = ticks + (stats.DurationLevel * DURATION_INCREASE_PER_LEVEL);
+        currentDamagePerSecond = tickDamage + (stats.DamageLevel * DAMAGE_INCREASE_PER_LEVEL);
+        currentEnemiesAffected = baseEnemiesAffected + (stats.EnemiesAffectedLevel * ENEMIES_AFFECTED_INCREASE_PER_LEVEL);
 
         Debug.Log($"Stats de {abilityInfo.abilityName} actualizados!");
     }
@@ -127,15 +127,25 @@ public class ElectroHackAbility : MonoBehaviour
 
     private void ActivateAbility()
     {
+        PlayEffect();
         canUse = false;
-        currentCooldownTimer = baseCooldown;
+        currentCooldownTimer = currentCooldown;
         HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
 
         Vector3 direction = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f)).direction;
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));
         projectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
 
-        projectile.GetComponent<ElectroHackShot>().Initialize(currentRadius, maxTargets, tickDamage, tickInterval, ticks, slowMultiplier);
+        projectile.GetComponent<ElectroHackShot>().Initialize(baseRadius, currentEnemiesAffected, currentDamagePerSecond, tickInterval, currentDuration, slowMultiplier);
         Destroy(projectile, projectileLifeTime);
     }
+
+    #region Effects
+
+    private void PlayEffect()
+    {
+        if (muzzleEffect != null) muzzleEffect.Play();
+    }
+
+    #endregion
 }

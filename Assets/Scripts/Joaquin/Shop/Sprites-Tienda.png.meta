@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 608d36384bbc07e4284c82c27e625656
+guid: 3fa8545e06dda7c4c9aabef1bfc892c7
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -39,7 +39,7 @@ TextureImporter:
     mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: 0
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -49,7 +49,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 310, y: 956, z: 293, w: 766}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -97,13 +97,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "Boton_Peque\xF1o_0"
+      name: Sprites-Tienda_0
       rect:
         serializedVersion: 2
-        x: 305
-        y: 956
-        width: 1485
-        height: 361
+        x: 38
+        y: 666
+        width: 354
+        height: 354
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -111,8 +111,50 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fa6c1078b527db84da446dfd7a9fedd8
-      internalID: -261376042
+      spriteID: 4747a07f5a2b57644ad366848c5959ab
+      internalID: 2040180509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprites-Tienda_1
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 258
+        width: 354
+        height: 354
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cccada62bf248ba4b97a580bf2ad85ed
+      internalID: 1185354191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprites-Tienda_2
+      rect:
+        serializedVersion: 2
+        x: 428
+        y: 47
+        width: 1771
+        height: 999
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a2d89537802a9b41809f0d486536a45
+      internalID: 1016491098
       vertices: []
       indices: 
       edges: []
@@ -121,14 +163,16 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      "Boton_Peque\xF1o_0": -261376042
+      Sprites-Tienda_0: 2040180509
+      Sprites-Tienda_1: 1185354191
+      Sprites-Tienda_2: 1016491098
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

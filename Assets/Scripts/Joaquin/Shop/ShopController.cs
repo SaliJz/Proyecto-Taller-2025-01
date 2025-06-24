@@ -10,69 +10,26 @@ public class ShopController : MonoBehaviour
     [SerializeField] private HUDManager hudManager;
 
     [SerializeField] private GameObject mainShopMenu;
-    [SerializeField] private GameObject mainAbilityMenu;
-    [SerializeField] private GameObject abilitySelectorMenu;
-    [SerializeField] private GameObject abilityUpgradeMenu;
-    [SerializeField] private GameObject weaponUpgradeMenu;
-    [SerializeField] private GameObject generalUpgradeMenu;
+    [SerializeField] private GameObject abilityShopMenu;
+    [SerializeField] private GameObject weaponShopMenu;
+    [SerializeField] private GameObject generalShopMenu;
 
-    [SerializeField] private Button mainAbilityButton;
-    [SerializeField] private Button mainAbilityMenuCloseButton;
-    [SerializeField] private Button abilitySelector;
-    [SerializeField] private Button abilityUpgrade;
-    [SerializeField] private Button weaponUpgrade;
-    [SerializeField] private Button generalUpgrade;
+    [SerializeField] private Button abilityShopButton;
+    [SerializeField] private Button weaponShopButton;
+    [SerializeField] private Button generalShopButton;
 
     [SerializeField] private Button skipButton;
 
     [SerializeField] private TextMeshProUGUI currentInfoFragments;
 
+    private bool juegoPausado = false;
+
     private void Start()
     {
-        if (mainAbilityMenu != null)
-        {
-            mainAbilityMenu.SetActive(false);
-        }
-        else
-        {
-            Debug.LogError("[ShopController] Main Ability Menu is not assigned in the ShopController.");
-        }
-
-        if (abilitySelectorMenu != null)
-        {
-            abilitySelectorMenu.SetActive(false);
-        }
-        else
-        {
-            Debug.LogError("[ShopController] Ability Selector Menu is not assigned in the ShopController.");
-        }
-
-        if (abilityUpgradeMenu != null)
-        {
-            abilityUpgradeMenu.SetActive(false);
-        }
-        else
-        {
-            Debug.LogError("[ShopController] Ability Selector Menu is not assigned in the ShopController.");
-        }
-
-        if (weaponUpgradeMenu != null)
-        {
-            weaponUpgradeMenu.SetActive(false);
-        }
-        else
-        {
-            Debug.LogError("[ShopController] Weapon Upgrade Menu is not assigned in the ShopController.");
-        }
-
-        if (generalUpgradeMenu != null)
-        {
-            generalUpgradeMenu.SetActive(false);
-        }
-        else
-        {
-            Debug.LogError("[ShopController] Shield Upgrade Menu is not assigned in the ShopController.");
-        }
+        if (mainShopMenu != null) mainShopMenu.SetActive(false);
+        if (abilityShopMenu != null) abilityShopMenu.SetActive(false);
+        if (weaponShopMenu != null) weaponShopMenu.SetActive(false);
+        if (generalShopMenu != null) generalShopMenu.SetActive(false);
 
         if (hudManager == null)
         {
@@ -86,28 +43,21 @@ public class ShopController : MonoBehaviour
 
     private void Awake()
     {
-        mainAbilityButton.onClick.AddListener(OpenMainAbilityMenu);
-        abilitySelector.onClick.AddListener(OpenAbilitySelectorMenu);
-        abilityUpgrade.onClick.AddListener(OpenAbilityUpgradeMenu);
-        weaponUpgrade.onClick.AddListener(OpenWeaponUpgradeMenu);
-        generalUpgrade.onClick.AddListener(OpenGeneralUpgradeMenu);
-
-        mainAbilityMenuCloseButton.onClick.AddListener(CloseMainAbilityMenu);
+        abilityShopButton.onClick.AddListener(OpenAbilityShopMenu);
+        weaponShopButton.onClick.AddListener(OpenWeaponShopMenu);
+        generalShopButton.onClick.AddListener(OpenGeneralShopMenu);
 
         skipButton.onClick.AddListener(CloseToShopMainMenu);
     }
 
-    private void OnEnable()
-    {
-        Time.timeScale = 0f;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        mainShopMenu.SetActive(true);
-        currentInfoFragments.gameObject.SetActive(true);
-    }
-
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!juegoPausado) PauseGame();
+            else RestartGame();
+        }
+
         if (hudManager != null && currentInfoFragments != null)
         {
             if (HUDManager.Instance != null)
@@ -117,59 +67,52 @@ public class ShopController : MonoBehaviour
         }
     }
 
-    public void OpenMainAbilityMenu()
+    public void PauseGame()
     {
-        if (mainAbilityMenu != null)
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        Time.timeScale = 0f;
+        mainShopMenu.SetActive(true);
+        currentInfoFragments.gameObject.SetActive(true);
+        juegoPausado = true;
+    }
+
+    public void RestartGame()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        Time.timeScale = 1f;
+        mainShopMenu.SetActive(false);
+        currentInfoFragments.gameObject.SetActive(false);
+        juegoPausado = false;
+    }
+
+    public void OpenAbilityShopMenu()
+    {
+        if (abilityShopMenu != null)
         {
             mainShopMenu.SetActive(false);
-            mainAbilityMenu.SetActive(true);
+            abilityShopMenu.SetActive(true);
         }
     }
 
-    public void CloseMainAbilityMenu()
+    public void OpenWeaponShopMenu()
     {
-        if (mainAbilityMenu != null)
+        if (weaponShopMenu != null)
         {
-            mainAbilityMenu.SetActive(false);
-            mainShopMenu.SetActive(true);
+            mainShopMenu.SetActive(false);
+            weaponShopMenu.SetActive(true);
         }
     }
 
-    public void OpenAbilitySelectorMenu()
+    public void OpenGeneralShopMenu()
     {
-        if (abilitySelectorMenu != null)
+        if (generalShopMenu != null)
         {
             mainShopMenu.SetActive(false);
-            mainAbilityMenu.SetActive(false);
-            abilitySelectorMenu.SetActive(true);
-        }
-    }
-
-    public void OpenAbilityUpgradeMenu()
-    {
-        if (abilityUpgradeMenu != null)
-        {
-            mainShopMenu.SetActive(false);
-            mainAbilityMenu.SetActive(false);
-            abilityUpgradeMenu.SetActive(true);
-        }
-    }
-
-    public void OpenWeaponUpgradeMenu()
-    {
-        if (weaponUpgradeMenu != null)
-        {
-            mainShopMenu.SetActive(false);
-            weaponUpgradeMenu.SetActive(true);
-        }
-    }
-
-    public void OpenGeneralUpgradeMenu()
-    {
-        if (generalUpgradeMenu != null)
-        {
-            mainShopMenu.SetActive(false);
-            generalUpgradeMenu.SetActive(true);
+            generalShopMenu.SetActive(true);
         }
     }
 
@@ -179,13 +122,5 @@ public class ShopController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         gameObject.SetActive(false);
-
-        mainShopMenu.SetActive(false);
-        mainAbilityMenu.SetActive(false);
-        abilitySelectorMenu.SetActive(false);
-        abilityUpgradeMenu.SetActive(false);
-        weaponUpgradeMenu.SetActive(false);
-        generalUpgradeMenu.SetActive(false);
-        currentInfoFragments.gameObject.SetActive(false);
     }
 }
