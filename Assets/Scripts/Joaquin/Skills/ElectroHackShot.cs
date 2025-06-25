@@ -5,14 +5,14 @@ using UnityEngine;
 public class ElectroHackShot : MonoBehaviour
 {
     private float radius;
-    private int maxTargets;
+    private float maxTargets;
     private float tickDamage;
     private float tickInterval;
-    private int ticks;
+    private float ticks;
     private float slowMultiplier;
     private bool hasExploded = false;
 
-    public void Initialize(float radius, int maxTargets, float tickDamage, float tickInterval, int ticks, float slowMultiplier)
+    public void Initialize(float radius, float maxTargets, float tickDamage, float tickInterval, float ticks, float slowMultiplier)
     {
         this.radius = Mathf.Max(0.1f, radius); 
         this.maxTargets = Mathf.Max(1, maxTargets);
@@ -59,7 +59,7 @@ public class ElectroHackShot : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = new Color(0.2f, 0.8f, 1f, 0.4f); // Azul cian
+        Gizmos.color = new Color(0.2f, 0.8f, 1f, 0.4f);
         Gizmos.DrawSphere(transform.position, radius);
     }
 }

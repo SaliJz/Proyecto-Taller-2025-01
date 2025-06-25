@@ -115,15 +115,12 @@ public class PlayerDash : MonoBehaviour
         Vector3 delta = targetPos - rb.position;
         float step = delta.magnitude;
 
-        // 1) Chequeo adelantado:
         if (Physics.Raycast(rb.position, delta.normalized, out var hit, step))
         {
-            // chocaste: ajusta targetPos al punto de impacto minus un pequeño margen
             targetPos = hit.point - delta.normalized * 0.1f;
             isDashing = false;
         }
 
-        // 2) Mueve al targetPos realista:
         rb.MovePosition(targetPos);
 
         if (!isDashing || t >= 1f)
@@ -143,7 +140,7 @@ public class PlayerDash : MonoBehaviour
 
     private void StartDashState(Vector3 dashDirection)
     {
-        PlayDashEffect();
+        PlayEffect();
         PlayClip();
 
         isDashing = true;
@@ -165,7 +162,7 @@ public class PlayerDash : MonoBehaviour
     
     private void ResetDashState()
     {
-        StopDashEffect();
+        StopEffect();
 
         isDashing = false;
         rb.useGravity = true;
@@ -188,7 +185,7 @@ public class PlayerDash : MonoBehaviour
 
     private Vector3 GetDashDirection()
     {
-        Transform forwardSource = useCameraForward ? playerCam : orientation; // usar la cámara o la orientación del jugador
+        Transform forwardSource = useCameraForward ? playerCam : orientation;
 
         if (forwardSource == null)
         {
@@ -211,25 +208,21 @@ public class PlayerDash : MonoBehaviour
 
         if (playerMovement.IsGrounded)
         {
-            // Mantener la velocidad horizontal y aplicar gravedad
             rb.velocity = horizontalVel;
         }
         else
         {
-            // Aplicar inercia horizontal y mantener la velocidad vertical
             rb.velocity = new Vector3(horizontalVel.x, rb.velocity.y, horizontalVel.z);
         }
     }
 
-    private void PlayDashEffect()
+    private void PlayEffect()
     {
-        // Reproducir el efecto de partículas
         if (dashEffect != null) dashEffect?.Play();
     }
 
-    private void StopDashEffect()
+    private void StopEffect()
     {
-        // Detener el efecto de partículas
         if (dashEffect != null) dashEffect?.Stop();
     }
 
@@ -257,7 +250,7 @@ public class PlayerDash : MonoBehaviour
         {
             targetFov = defaultFov;
         }
-        StopDashEffect();
+        StopEffect();
     }
 
     private void ApplyBounce()

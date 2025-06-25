@@ -11,18 +11,15 @@ public class MindjackAbility : MonoBehaviour
     [SerializeField] private Transform projectileSpawnPoint;
 
     [Header("Settings")]
-    [SerializeField] private float baseCooldown = 15f;
     [SerializeField] private float projectileLifeTime = 2f;
     [SerializeField] private float projectileSpeed = 40f;
-    [SerializeField] private float damagePerSecond = 20f;
+    [SerializeField] private float baseCooldown = 15f;
+    [SerializeField] private float baseDamagePerSecond = 20f;
     [SerializeField] private float baseDuration = 3f;
     [SerializeField] private float baseRadius = 5f;
 
-    [SerializeField] private bool isNivel1 = false; 
-
     private float currentCooldown;
-    private float currentDuration;
-    private float currentRadius;
+    private float currentDamagePerSecond;
 
     private bool canUse = true;
     private float currentCooldownTimer = 0;
@@ -59,7 +56,6 @@ public class MindjackAbility : MonoBehaviour
             }
         }
 
-        if (isNivel1) AbilityUpgradeManager.ResetUpgrades();
         ApplyUpgrades();
     }
 
@@ -70,27 +66,24 @@ public class MindjackAbility : MonoBehaviour
 
     private void OnEnable()
     {
-        AbilityUpgradeManager.OnUpgradesChanged += ApplyUpgrades;
+        AbilityShopDataManager.OnAbilityShopDataChanged += ApplyUpgrades;
     }
 
     private void OnDisable()
     {
-        AbilityUpgradeManager.OnUpgradesChanged -= ApplyUpgrades;
+        AbilityShopDataManager.OnAbilityShopDataChanged -= ApplyUpgrades;
     }
 
     private void ApplyUpgrades()
     {
-        // Cooldown
-        float cooldownReduction = AbilityUpgradeManager.CooldownLevel * AbilityUpgradeManager.COOLDOWN_REDUCTION;
-        currentCooldown = baseCooldown - (cooldownReduction);
+        AbilityStats stats = AbilityShopDataManager.GetStats(AbilityType.Mindjack);
+        if (stats == null) return;
 
-        // Duración
-        float durationBonus = AbilityUpgradeManager.EffectDurationLevel * AbilityUpgradeManager.DURATION_INCREASE_PERCENT;
-        currentDuration = baseDuration * (1 + durationBonus);
+        const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f;
+        const float DAMAGE_INCREASE_PER_LEVEL = 2.0f;
 
-        // Rango
-        float rangeBonus = AbilityUpgradeManager.EffectRangeLevel * AbilityUpgradeManager.RANGE_INCREASE_PERCENT;
-        currentRadius = baseRadius * (1 + rangeBonus);
+        currentCooldown = baseCooldown - (stats.CooldownLevel * COOLDOWN_REDUCTION_PER_LEVEL);
+        currentDamagePerSecond = baseDamagePerSecond + (stats.DamageLevel * DAMAGE_INCREASE_PER_LEVEL);
 
         Debug.Log($"Stats de {abilityInfo.abilityName} actualizados!");
     }
@@ -131,7 +124,7 @@ public class MindjackAbility : MonoBehaviour
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));
         projectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
 
-        projectile.GetComponent<MindjackShot>().Initialize(currentRadius, damagePerSecond, currentDuration);
+        projectile.GetComponent<MindjackShot>().Initialize(baseRadius, currentDamagePerSecond, baseDuration);
         Destroy(projectile, projectileLifeTime);
     }
 }

@@ -10,19 +10,18 @@ public class IgnitionCodeAbility : MonoBehaviour
     [SerializeField] private Transform projectileSpawnPoint;
 
     [Header("Ignition Settings")]
-    [SerializeField] private float baseCooldown = 15f;
     [SerializeField] private float projectileLifeTime = 2f;
     [SerializeField] private float projectileSpeed = 40f;
-    [SerializeField] private float damagePerSecond = 8f;
+    [SerializeField] private float baseCooldown = 15f;
+    [SerializeField] private float baseDamagePerSecond = 8f;
     [SerializeField] private float baseDuration = 3f;
-    [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private float baseRadius = 3f;
-
-    [SerializeField] private bool isNivel1 = false; 
+    [SerializeField] private LayerMask enemyLayer;
 
     private float currentCooldown;
     private float currentDuration;
     private float currentRadius;
+    private float currentDamagePerSecond;
 
     private bool canUse = true;
     private float currentCooldownTimer = 0;
@@ -60,7 +59,6 @@ public class IgnitionCodeAbility : MonoBehaviour
             }
         }
 
-        if (isNivel1) AbilityUpgradeManager.ResetUpgrades();
         ApplyUpgrades();
     }
 
@@ -71,27 +69,28 @@ public class IgnitionCodeAbility : MonoBehaviour
 
     private void OnEnable()
     {
-        AbilityUpgradeManager.OnUpgradesChanged += ApplyUpgrades;
+        AbilityShopDataManager.OnAbilityShopDataChanged += ApplyUpgrades;
     }
 
     private void OnDisable()
     {
-        AbilityUpgradeManager.OnUpgradesChanged -= ApplyUpgrades;
+        AbilityShopDataManager.OnAbilityShopDataChanged -= ApplyUpgrades;
     }
 
     private void ApplyUpgrades()
     {
-        // Cooldown
-        float cooldownReduction = AbilityUpgradeManager.CooldownLevel * AbilityUpgradeManager.COOLDOWN_REDUCTION;
-        currentCooldown = baseCooldown - (cooldownReduction);
+        AbilityStats stats = AbilityShopDataManager.GetStats(AbilityType.IgnitionCode);
+        if (stats == null) return;
 
-        // Duración
-        float durationBonus = AbilityUpgradeManager.EffectDurationLevel * AbilityUpgradeManager.DURATION_INCREASE_PERCENT;
-        currentDuration = baseDuration * (1 + durationBonus);
+        const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f;
+        const float DURATION_INCREASE_PER_LEVEL = 0.5f;
+        const float RANGE_INCREASE_PER_LEVEL = 0.25f;
+        const float DAMAGE_INCREASE_PER_LEVEL = 2.0f;
 
-        // Rango
-        float rangeBonus = AbilityUpgradeManager.EffectRangeLevel * AbilityUpgradeManager.RANGE_INCREASE_PERCENT;
-        currentRadius = baseRadius * (1 + rangeBonus);
+        currentCooldown = baseCooldown - (stats.CooldownLevel * COOLDOWN_REDUCTION_PER_LEVEL);
+        currentDuration = baseDuration + (stats.DurationLevel * DURATION_INCREASE_PER_LEVEL);
+        currentRadius = baseRadius + (stats.RangeLevel * RANGE_INCREASE_PER_LEVEL);
+        currentDamagePerSecond = baseDamagePerSecond + (stats.DamageLevel * DAMAGE_INCREASE_PER_LEVEL);
 
         Debug.Log($"Stats de {abilityInfo.abilityName} actualizados!");
     }
@@ -125,14 +124,14 @@ public class IgnitionCodeAbility : MonoBehaviour
     private void ActivateAbility()
     {
         canUse = false;
-        currentCooldownTimer = baseCooldown;
+        currentCooldownTimer = currentCooldown;
         HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
 
         Vector3 direction = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f)).direction;
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));
         projectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
 
-        projectile.GetComponent<IgnitionCodeShot>().Initialize(currentRadius, damagePerSecond, currentDuration, enemyLayer);
+        projectile.GetComponent<IgnitionCodeShot>().Initialize(currentRadius, currentDamagePerSecond, currentDuration, enemyLayer);
         Destroy(projectile, projectileLifeTime);
     }
 }
