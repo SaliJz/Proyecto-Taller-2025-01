@@ -1,4 +1,4 @@
-﻿// SnakeColumnWrapOnInput.cs (con headOffset aplicado también en el retorno)
+﻿// SnakeColumnWrapOnInput.cs
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -102,7 +102,7 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
         int wrapStartIndex = segments.Count - numAttackSegments;
         float lerpFactor = followLerpSpeed * Time.deltaTime;
 
-        // Ajuste de segmentos previos
+        // Segmentos previos
         for (int i = 0; i < wrapStartIndex; i++)
         {
             Transform curr = segments[i];
@@ -128,15 +128,24 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
             int rel = i - wrapStartIndex + 1;
             Vector3 tgt = lineOrigin.position + attackDir * (step * rel);
             curr.position = Vector3.Lerp(curr.position, tgt, lerpFactor);
-            if ((tgt - curr.position).sqrMagnitude > 1e-4f)
+
+            if (i == segments.Count - 1 && playerT != null)
+            {
+                // Cola: su atrás local (−Z) apuntará al jugador
+                Vector3 dirToPlayer = (playerT.position - curr.position).normalized;
+                curr.forward = -dirToPlayer;
+            }
+            else if ((tgt - curr.position).sqrMagnitude > 1e-4f)
+            {
                 curr.rotation = Quaternion.Slerp(
                     curr.rotation,
                     Quaternion.LookRotation((tgt - curr.position).normalized),
                     lerpFactor
                 );
+            }
         }
 
-        // Orientar la cabeza al jugador mientras ataca
+        // Cabeza dirigida al jugador
         if (segments.Count > 0 && playerT != null)
         {
             Transform head = segments[0];
@@ -167,7 +176,7 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
         float vueltas = columnWrapper.vueltasCompletas;
         float offset = columnWrapper.offsetRadio;
         float radio = columnWrapper.GetColumnRadius();
-        float headOff = columnWrapper.headOffset;  // Aplicar headOffset
+        float headOff = columnWrapper.headOffset;
         Transform col = columnWrapper.columna;
 
         List<Vector3> wrapTarget = new List<Vector3>(segCount);
@@ -185,12 +194,10 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
         while (elapsed < returnAndWrapDuration)
         {
             float frac = Mathf.SmoothStep(0f, 1f, elapsed / returnAndWrapDuration);
-
             for (int i = 0; i < segCount; i++)
             {
                 Transform seg = segments[i];
                 seg.position = Vector3.Lerp(wrapStart[i], wrapTarget[i], frac);
-
                 if (i == 0)
                 {
                     var playerT2 = GameObject.FindWithTag("Player")?.transform;
@@ -210,11 +217,11 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
                     seg.LookAt(next);
                 }
             }
-
             elapsed += Time.deltaTime;
             yield return null;
         }
 
+        // Ajuste final
         for (int i = 0; i < segCount; i++)
         {
             Transform seg = segments[i];
@@ -245,6 +252,38 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//// SnakeColumnWrapOnInput.cs (con headOffset aplicado también en el retorno)
 //using System.Collections;
 //using System.Collections.Generic;
 //using UnityEngine;
@@ -345,11 +384,10 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
 //        attackTimer += Time.deltaTime;
 //        float t = Mathf.Clamp01(attackTimer / attackDuration);
 
-//        // Solo movimientos para segmentos inferiores y cola
 //        int wrapStartIndex = segments.Count - numAttackSegments;
 //        float lerpFactor = followLerpSpeed * Time.deltaTime;
 
-//        // Segmentos previos
+//        // Ajuste de segmentos previos
 //        for (int i = 0; i < wrapStartIndex; i++)
 //        {
 //            Transform curr = segments[i];
@@ -383,6 +421,14 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
 //                );
 //        }
 
+//        // Orientar la cabeza al jugador mientras ataca
+//        if (segments.Count > 0 && playerT != null)
+//        {
+//            Transform head = segments[0];
+//            Vector3 lookPos = new Vector3(playerT.position.x, head.position.y, playerT.position.z);
+//            head.LookAt(lookPos);
+//        }
+
 //        if (t >= 1f)
 //            EndAttack();
 //    }
@@ -406,6 +452,7 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
 //        float vueltas = columnWrapper.vueltasCompletas;
 //        float offset = columnWrapper.offsetRadio;
 //        float radio = columnWrapper.GetColumnRadius();
+//        float headOff = columnWrapper.headOffset;  // Aplicar headOffset
 //        Transform col = columnWrapper.columna;
 
 //        List<Vector3> wrapTarget = new List<Vector3>(segCount);
@@ -415,7 +462,8 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
 //            float ang = tt * vueltas * 2 * Mathf.PI;
 //            float alt = tt * alturaTotal;
 //            Vector3 dir = new Vector3(Mathf.Cos(ang), 0, Mathf.Sin(ang));
-//            wrapTarget.Add(col.position + dir * (radio + offset) + Vector3.up * alt);
+//            float extra = (i == 0) ? headOff : 0f;
+//            wrapTarget.Add(col.position + dir * (radio + offset + extra) + Vector3.up * alt);
 //        }
 
 //        float elapsed = 0f;
@@ -427,7 +475,17 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
 //            {
 //                Transform seg = segments[i];
 //                seg.position = Vector3.Lerp(wrapStart[i], wrapTarget[i], frac);
-//                if (i <= columnWrapper.segmentosCuello)
+
+//                if (i == 0)
+//                {
+//                    var playerT2 = GameObject.FindWithTag("Player")?.transform;
+//                    if (playerT2 != null)
+//                    {
+//                        Vector3 lookPos = new Vector3(playerT2.position.x, seg.position.y, playerT2.position.z);
+//                        seg.LookAt(lookPos);
+//                    }
+//                }
+//                else if (i <= columnWrapper.segmentosCuello)
 //                    seg.LookAt(new Vector3(col.position.x, seg.position.y, col.position.z));
 //                else
 //                {
@@ -442,12 +500,20 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
 //            yield return null;
 //        }
 
-//        // Ajuste final de posiciones y rotaciones
 //        for (int i = 0; i < segCount; i++)
 //        {
 //            Transform seg = segments[i];
 //            seg.position = wrapTarget[i];
-//            if (i <= columnWrapper.segmentosCuello)
+//            if (i == 0)
+//            {
+//                var playerT3 = GameObject.FindWithTag("Player")?.transform;
+//                if (playerT3 != null)
+//                {
+//                    Vector3 lookPos = new Vector3(playerT3.position.x, seg.position.y, playerT3.position.z);
+//                    seg.LookAt(lookPos);
+//                }
+//            }
+//            else if (i <= columnWrapper.segmentosCuello)
 //                seg.LookAt(new Vector3(col.position.x, seg.position.y, col.position.z));
 //            else
 //            {
@@ -462,14 +528,6 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
 //        snake.enabled = false;
 //    }
 //}
-
-
-
-
-
-
-
-
 
 
 
