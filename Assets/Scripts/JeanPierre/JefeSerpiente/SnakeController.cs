@@ -1,3 +1,4 @@
+// SnakeController.cs
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -43,7 +44,6 @@ public class SnakeController : MonoBehaviour
         maxRegistroPosiciones = Mathf.CeilToInt(
             (distanciaCabezaCuerpo + ObtenerDistanciaTotalCuerpo() + separacionCola) * 5f // Multiplicador ajustado a 5f
         );
-        // Si después de probar con 5f aún sientes que la cabeza se aleja demasiado, puedes probar con 10f o incluso más.
 
         // Instancia cabeza
         Transform cabeza = Instantiate(prefabCabeza, posInicial, Quaternion.identity, transform).transform;
@@ -93,16 +93,14 @@ public class SnakeController : MonoBehaviour
     {
         Transform cabeza = segmentos[0];
         Vector3 dir = (objetivo - cabeza.position).normalized;
-        dir.y = 0; // Asegura que la dirección esté en el plano XZ
+        dir.y = 0;
 
-        // Calcular rotación para mirar al jugador
         if (dir != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(dir);
             cabeza.rotation = Quaternion.Slerp(cabeza.rotation, targetRotation, Time.deltaTime * velocidadRotacionCabeza);
         }
 
-        // Movimiento serpenteante
         Vector3 perp = Vector3.Cross(dir, Vector3.up).normalized;
         float serp = Mathf.Sin(Time.time * frecuenciaSerpenteo) * amplitudSerpenteo;
         Vector3 nuevaPos = cabeza.position + dir * velocidad * Time.deltaTime + perp * serp;
@@ -117,7 +115,6 @@ public class SnakeController : MonoBehaviour
         Transform cabeza = segmentos[0];
         cabeza.position = posicion;
 
-        // Cuando la serpiente está detenida, la cabeza aún debe mirar al jugador
         Vector3 dir = (jugador.position - cabeza.position).normalized;
         dir.y = 0;
         if (dir != Vector3.zero)
@@ -141,7 +138,6 @@ public class SnakeController : MonoBehaviour
         for (int i = 1; i < segmentos.Count; i++)
         {
             float distanciaAtras;
-
             bool esCola = (i == segmentos.Count - 1);
             if (esCola)
             {
@@ -149,9 +145,8 @@ public class SnakeController : MonoBehaviour
             }
             else
             {
-                // suma de separaciones hasta el segmento anterior
                 float suma = 0f;
-                int cuerpoIndex = i - 1; // 0 basado
+                int cuerpoIndex = i - 1;
                 for (int k = 0; k < cuerpoIndex; k++)
                 {
                     if (k < separacionesSegmentosCuerpo.Length)
@@ -159,7 +154,7 @@ public class SnakeController : MonoBehaviour
                     else if (separacionesSegmentosCuerpo.Length > 0)
                         suma += separacionesSegmentosCuerpo[separacionesSegmentosCuerpo.Length - 1];
                     else
-                        suma += separacionSegmentos; // fallback genérico
+                        suma += separacionSegmentos;
                 }
                 distanciaAtras = distanciaCabezaCuerpo + suma;
             }
@@ -168,29 +163,13 @@ public class SnakeController : MonoBehaviour
             Transform seg = segmentos[i];
             seg.position = Vector3.Lerp(seg.position, posObjetivo, Time.deltaTime * velocidad);
 
-            // Los segmentos del cuerpo y la cola también deberían mirar hacia adelante a lo largo de la trayectoria
-            if (i > 0 && i < segmentos.Count - 1) // solo para los segmentos del cuerpo
+            // Rotación de segmento
+            Vector3 lookDirection = (posObjetivo - seg.position).normalized;
+            lookDirection.y = 0;
+            if (lookDirection != Vector3.zero)
             {
-                // Calcular la dirección del segmento basado en la diferencia de su posición actual y la siguiente en la trayectoria
-                Vector3 lookDirection = (posObjetivo - seg.position).normalized;
-                lookDirection.y = 0; // Asegurarse de que la rotación sea solo en el plano XZ
-
-                if (lookDirection != Vector3.zero)
-                {
-                    Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-                    seg.rotation = Quaternion.Slerp(seg.rotation, targetRotation, Time.deltaTime * velocidadRotacionCabeza);
-                }
-            }
-            else if (i == segmentos.Count - 1) // para la cola
-            {
-                Vector3 lookDirection = (posObjetivo - seg.position).normalized;
-                lookDirection.y = 0;
-
-                if (lookDirection != Vector3.zero)
-                {
-                    Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-                    seg.rotation = Quaternion.Slerp(seg.rotation, targetRotation, Time.deltaTime * velocidadRotacionCabeza);
-                }
+                Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+                seg.rotation = Quaternion.Slerp(seg.rotation, targetRotation, Time.deltaTime * velocidadRotacionCabeza);
             }
         }
     }
@@ -207,236 +186,42 @@ public class SnakeController : MonoBehaviour
             acumulado += d;
             if (acumulado >= distanciaAtras)
             {
-                // Interpolate between the two points to get a more precise position
                 float overShoot = acumulado - distanciaAtras;
                 float segmentLength = d;
-                float t = 1 - (overShoot / segmentLength); // Percentage along the current segment
+                float t = 1 - (overShoot / segmentLength);
                 return Vector3.Lerp(posicionesCabeza[i], posicionesCabeza[i + 1], t);
             }
         }
         return posicionesCabeza[posicionesCabeza.Count - 1];
     }
 
-    // Calcula la suma total de separaciones de todos los segmentos de cuerpo
     private float ObtenerDistanciaTotalCuerpo()
     {
         float suma = 0f;
         int count = Mathf.Min(cantidadSegmentosCuerpo, separacionesSegmentosCuerpo.Length);
         for (int i = 0; i < count; i++)
             suma += separacionesSegmentosCuerpo[i];
-        // si hay más segmentos que valores, usamos el último valor para el resto
         if (cantidadSegmentosCuerpo > separacionesSegmentosCuerpo.Length && separacionesSegmentosCuerpo.Length > 0)
             suma += (cantidadSegmentosCuerpo - separacionesSegmentosCuerpo.Length) * separacionesSegmentosCuerpo[separacionesSegmentosCuerpo.Length - 1];
-        // fallback si no hay array definido
         if (separacionesSegmentosCuerpo.Length == 0)
             suma = separacionSegmentos * cantidadSegmentosCuerpo;
         return suma;
     }
+
+    /// <summary>
+    /// Limpia el historial de posiciones de la cabeza y lo rellena con la posición actual
+    /// </summary>
+    public void ResetPositionHistory()
+    {
+        if (segmentos == null || segmentos.Count == 0)
+            return;
+
+        Vector3 currentHeadPos = segmentos[0].position;
+        posicionesCabeza.Clear();
+        for (int i = 0; i < maxRegistroPosiciones; i++)
+            posicionesCabeza.Add(currentHeadPos);
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//using System.Collections.Generic;
-//using UnityEngine;
-
-//// Controla el comportamiento de una serpiente que sigue al jugador con movimiento serpenteante
-//public class SnakeController : MonoBehaviour
-//{
-//    [Header("Prefabs de la serpiente")]
-//    public GameObject prefabCabeza;
-//    public GameObject prefabCuerpo;
-//    public GameObject prefabCola;
-
-//    [Header("Configuración de la serpiente")]
-//    public int cantidadSegmentosCuerpo = 10;             // Número de segmentos de cuerpo
-//    public float distanciaCabezaCuerpo = 0.5f;           // Distancia entre cabeza y primer segmento
-//    public float separacionSegmentos = 0.5f;             // Distancia entre demás segmentos de cuerpo
-//    public float separacionCola = 0.5f;                  // Distancia entre el último segmento de cuerpo y la cola
-//    public float velocidad = 5f;                         // Velocidad de movimiento de la cabeza
-//    public float amplitudSerpenteo = 0.5f;               // Amplitud del movimiento serpenteante
-//    public float frecuenciaSerpenteo = 2f;               // Frecuencia del movimiento serpenteante
-//    public float ejeY = 1f;                              // Altura constante de la serpiente
-//    public float umbralDetencion = 0.1f;                 // Distancia mínima al jugador para detenerse
-
-//    [Header("Referencia al jugador")]
-//    public Transform jugador;
-
-//    // Lista interna de segmentos: cabeza, cuerpos y cola
-//    private List<Transform> segmentos = new List<Transform>();
-//    public List<Transform> Segmentos => segmentos;      // Expuesta para uso externo
-
-//    // Historial de posiciones de la cabeza para desplazar el cuerpo
-//    private List<Vector3> posicionesCabeza = new List<Vector3>();
-//    private int maxRegistroPosiciones;
-
-//    void Start()
-//    {
-//        Vector3 posInicial = new Vector3(transform.position.x, ejeY, transform.position.z);
-//        maxRegistroPosiciones = Mathf.CeilToInt(
-//            (distanciaCabezaCuerpo + separacionSegmentos * (cantidadSegmentosCuerpo - 1) + separacionCola) * 2
-//        );
-
-//        // Instancia cabeza
-//        Transform cabeza = Instantiate(prefabCabeza, posInicial, Quaternion.identity, transform).transform;
-//        // Añadir SphereCollider a la cabeza
-//        if (cabeza.GetComponent<SphereCollider>() == null)
-//        {
-//            cabeza.gameObject.AddComponent<SphereCollider>();
-//        }
-//        segmentos.Add(cabeza);
-
-//        // Instancia segmentos de cuerpo
-//        for (int i = 0; i < cantidadSegmentosCuerpo; i++)
-//        {
-//            Transform cuerpo = Instantiate(prefabCuerpo, posInicial, Quaternion.identity, transform).transform;
-//            // Añadir BoxCollider a cada segmento de cuerpo
-//            if (cuerpo.GetComponent<BoxCollider>() == null)
-//            {
-//                cuerpo.gameObject.AddComponent<BoxCollider>();
-//            }
-//            segmentos.Add(cuerpo);
-//        }
-
-//        // Instancia cola
-//        Transform cola = Instantiate(prefabCola, posInicial, Quaternion.identity, transform).transform;
-//        // Añadir BoxCollider a la cola
-//        if (cola.GetComponent<BoxCollider>() == null)
-//        {
-//            cola.gameObject.AddComponent<BoxCollider>();
-//        }
-//        segmentos.Add(cola);
-
-//        // Rellena historial de posiciones con la posición inicial
-//        for (int i = 0; i < maxRegistroPosiciones; i++)
-//            posicionesCabeza.Add(posInicial);
-//    }
-
-//    void Update()
-//    {
-//        Transform cabeza = segmentos[0];
-//        Vector3 targetPos = new Vector3(jugador.position.x, ejeY, jugador.position.z);
-//        float distancia = Vector3.Distance(cabeza.position, targetPos);
-
-//        if (distancia > umbralDetencion)
-//            MoverCabeza(targetPos);
-//        else
-//            DetenerCabeza(targetPos);
-
-//        SeguirCuerpo();
-//    }
-
-//    void MoverCabeza(Vector3 objetivo)
-//    {
-//        Transform cabeza = segmentos[0];
-//        Vector3 dir = (objetivo - cabeza.position).normalized;
-//        dir.y = 0;
-//        Vector3 perp = Vector3.Cross(dir, Vector3.up).normalized;
-//        float serp = Mathf.Sin(Time.time * frecuenciaSerpenteo) * amplitudSerpenteo;
-//        Vector3 nuevaPos = cabeza.position + dir * velocidad * Time.deltaTime + perp * serp;
-//        nuevaPos.y = ejeY;
-//        cabeza.position = nuevaPos;
-//        RegistrarPosicion(nuevaPos);
-//    }
-
-//    void DetenerCabeza(Vector3 posicion)
-//    {
-//        Transform cabeza = segmentos[0];
-//        cabeza.position = posicion;
-//        RegistrarPosicion(posicion);
-//    }
-
-//    void RegistrarPosicion(Vector3 pos)
-//    {
-//        posicionesCabeza.Insert(0, pos);
-//        if (posicionesCabeza.Count > maxRegistroPosiciones)
-//            posicionesCabeza.RemoveAt(posicionesCabeza.Count - 1);
-//    }
-
-//    void SeguirCuerpo()
-//    {
-//        for (int i = 1; i < segmentos.Count; i++)
-//        {
-//            float distanciaAtras = (i == segmentos.Count - 1)
-//                ? distanciaCabezaCuerpo + separacionSegmentos * (cantidadSegmentosCuerpo - 1) + separacionCola
-//                : distanciaCabezaCuerpo + separacionSegmentos * (i - 1);
-
-//            Vector3 posObjetivo = ObtenerPosicionEnTrayectoria(distanciaAtras);
-//            Transform seg = segmentos[i];
-//            seg.position = Vector3.Lerp(seg.position, posObjetivo, Time.deltaTime * velocidad);
-//            seg.LookAt(new Vector3(posObjetivo.x, ejeY, posObjetivo.z));
-//        }
-//    }
-
-//    Vector3 ObtenerPosicionEnTrayectoria(float distanciaAtras)
-//    {
-//        if (distanciaAtras <= 0f)
-//            return posicionesCabeza[0];
-
-//        float acumulado = 0f;
-//        for (int i = 0; i < posicionesCabeza.Count - 1; i++)
-//        {
-//            float d = Vector3.Distance(posicionesCabeza[i], posicionesCabeza[i + 1]);
-//            acumulado += d;
-//            if (acumulado >= distanciaAtras)
-//                return posicionesCabeza[i + 1];
-//        }
-//        return posicionesCabeza[posicionesCabeza.Count - 1];
-//    }
-//}
-
-
-
-
-
-
 
 
 
