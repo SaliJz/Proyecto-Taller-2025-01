@@ -36,7 +36,6 @@ public class AbilityShopController : MonoBehaviour
             }
         }
 
-        AbilityShopDataManager.Initialize();
         finalizePurchaseButton.onClick.AddListener(FinalizePurchase);
         returnButton.onClick.AddListener(() => returnConfirmationPanel.SetActive(true));
         confirmReturnButton.onClick.AddListener(ConfirmReturn);
@@ -60,14 +59,14 @@ public class AbilityShopController : MonoBehaviour
     {
         if (button.CurrentFunction == ButtonFunction.EquipAbility)
         {
-            AbilityShopDataManager.EquipAbility(button.AssociatedAbility);
-            UpdatePlayerEquippedAbilities();
+            abilityManager.AddOrReplaceAbility(button.AbilityPrefab);
+            UpdateAllButtonVisuals();
             return;
         }
         if (button.CurrentFunction == ButtonFunction.UnequipAbility)
         {
-            AbilityShopDataManager.UnequipAbility(button.AssociatedAbility);
-            UpdatePlayerEquippedAbilities();
+            abilityManager.RemoveAbility(button.AbilityPrefab);
+            UpdateAllButtonVisuals();
             return;
         }
 
@@ -87,32 +86,33 @@ public class AbilityShopController : MonoBehaviour
         int totalCost = CalculateTotalCost();
         if (totalCost <= 0 || HUDManager.Instance.CurrentFragments < totalCost) return;
 
+        var itemsToProcess = new List<AbilityButtonController>(selectedItems);
+        selectedItems.Clear();
+        UpdateTotalCost();
+
         HUDManager.Instance.DiscountInfoFragment(totalCost);
 
-        List<AbilityType> abilitiesToBuy = new List<AbilityType>();
-        Dictionary<AbilityType, List<string>> upgradesToBuy = new Dictionary<AbilityType, List<string>>();
+        List<string> abilitiesToBuy = new List<string>();
+        Dictionary<string, List<string>> upgradesToBuy = new Dictionary<string, List<string>>();
 
-        foreach (var button in selectedItems)
+        foreach (var button in itemsToProcess)
         {
+            string abilityName = button.AbilityPrefab.GetComponent<AbilityInfo>().abilityName;
             if (button.CurrentFunction == ButtonFunction.PurchaseAbility)
             {
-                abilitiesToBuy.Add(button.AssociatedAbility);
+                abilitiesToBuy.Add(abilityName);
             }
             else if (button.CurrentFunction == ButtonFunction.UpgradeStat)
             {
-                if (!upgradesToBuy.ContainsKey(button.AssociatedAbility))
+                if (!upgradesToBuy.ContainsKey(abilityName))
                 {
-                    upgradesToBuy[button.AssociatedAbility] = new List<string>();
+                    upgradesToBuy[abilityName] = new List<string>();
                 }
-                upgradesToBuy[button.AssociatedAbility].Add(button.UpgradeStatName);
+                upgradesToBuy[abilityName].Add(button.UpgradeStatName);
             }
         }
 
-        if (abilitiesToBuy.Count > 0) AbilityShopDataManager.PurchaseAbilities(abilitiesToBuy);
-        if (upgradesToBuy.Count > 0) AbilityShopDataManager.UpgradeStats(upgradesToBuy);
-
-        selectedItems.Clear();
-        UpdateTotalCost();
+        AbilityShopDataManager.PurchaseItems(abilitiesToBuy, upgradesToBuy);
     }
 
     private void ConfirmReturn()
@@ -123,6 +123,29 @@ public class AbilityShopController : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    public bool IsPurchased(AbilityButtonController button) => AbilityShopDataManager.IsPurchased(button.AbilityPrefab.GetComponent<AbilityInfo>().abilityName);
+    public bool IsEquipped(AbilityButtonController button)
+    {
+        if (abilityManager == null)
+        {
+            Debug.LogError("abilityManager es null");
+            return false;
+        }
+
+        if (abilityManager.activedAbilities == null)
+        {
+            Debug.LogError("activedAbilities es null");
+            return false;
+        }
+
+        if (button.AbilityPrefab == null)
+        {
+            Debug.LogError("AbilityPrefab no está asignado en el botón: " + button.name);
+            return false;
+        }
+
+        return abilityManager.activedAbilities.Contains(button.AbilityPrefab);
+    }
     public bool IsSelected(AbilityButtonController button) => selectedItems.Contains(button);
     public void ShowDescription(string text) => descriptionText.text = text;
     public void HideDescription() => descriptionText.text = string.Empty;
@@ -146,10 +169,5 @@ public class AbilityShopController : MonoBehaviour
         int total = 0;
         foreach (var button in selectedItems) total += button.GetCurrentCost();
         return total;
-    }
-
-    private void UpdatePlayerEquippedAbilities()
-    {
-        abilityManager.SetEquippedAbilities(AbilityShopDataManager.GetEquippedAbilities());
     }
 }

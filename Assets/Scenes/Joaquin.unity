@@ -1381,6 +1381,12 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 157653864}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &158452314 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3100109939946986989, guid: d7e6ddd8dcf450448b946a2962591afb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1212294222096492786}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &173826904
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1675,6 +1681,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AssociatedAbility: 1
+  AbilityPrefab: {fileID: 1754464696}
   UpgradeStatName: 
   descriptionFormat: 
   baseCost: 100
@@ -3053,6 +3060,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1318467703}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &479998849 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4701876041897125803, guid: d7e6ddd8dcf450448b946a2962591afb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1212294222096492786}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &489107903
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3945,6 +3958,12 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &591189573 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1039618764485251716, guid: d7e6ddd8dcf450448b946a2962591afb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1212294222096492786}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &604901822
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8405,7 +8424,7 @@ PrefabInstance:
     - target: {fileID: 155917976363016203, guid: c6043f024523eea4895ce6359b9fe091,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1362230733867505061, guid: c6043f024523eea4895ce6359b9fe091,
         type: 3}
@@ -8807,6 +8826,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AssociatedAbility: 4
+  AbilityPrefab: {fileID: 158452314}
   UpgradeStatName: Cooldown, Damage
   descriptionFormat: 
   baseCost: 100
@@ -9082,6 +9102,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1754464696 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 633714095734062609, guid: d7e6ddd8dcf450448b946a2962591afb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1212294222096492786}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1771943752 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1442836555084614997, guid: 1c4aa42d1bcc19c4aad679c27195ae2f,
@@ -13140,6 +13166,16 @@ PrefabInstance:
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 432355536}
+    - target: {fileID: 1586848620660913248, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1599018760969602108, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: allowFirstAbility
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1623021693395869078, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: sfxSource
@@ -13495,7 +13531,7 @@ PrefabInstance:
     - target: {fileID: 8467140867738633035, guid: 3bbd0b1778d491f4a871397c411ee851,
         type: 3}
       propertyPath: showAbilityUI
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9154572984299760652, guid: 3bbd0b1778d491f4a871397c411ee851,
         type: 3}
@@ -14598,6 +14634,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AssociatedAbility: 2
+  AbilityPrefab: {fileID: 591189573}
   UpgradeStatName: 
   descriptionFormat: 
   baseCost: 100
@@ -14991,7 +15028,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2203947538870785944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15319,6 +15356,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AssociatedAbility: 3
+  AbilityPrefab: {fileID: 479998849}
   UpgradeStatName: 
   descriptionFormat: 
   baseCost: 100
@@ -17327,6 +17365,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AssociatedAbility: 4
+  AbilityPrefab: {fileID: 158452314}
   UpgradeStatName: 
   descriptionFormat: 
   baseCost: 100
@@ -19269,6 +19308,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AssociatedAbility: 3
+  AbilityPrefab: {fileID: 479998849}
   UpgradeStatName: Cooldown, Duration, Damage, Range
   descriptionFormat: 
   baseCost: 100
@@ -21041,6 +21081,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AssociatedAbility: 2
+  AbilityPrefab: {fileID: 591189573}
   UpgradeStatName: Cooldown, Duration, Damage, EnemiesAffected
   descriptionFormat: 
   baseCost: 100
@@ -21488,7 +21529,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abilityManager: {fileID: 145835493}
-  MainShopMenu: {fileID: 0}
+  MainShopMenu: {fileID: 8580173543261943527}
   descriptionText: {fileID: 4008251873791179202}
   totalCostText: {fileID: 1639952462750214583}
   finalizePurchaseButton: {fileID: 5925038437132871413}
@@ -21812,6 +21853,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AssociatedAbility: 1
+  AbilityPrefab: {fileID: 1754464696}
   UpgradeStatName: Cooldown, Duration
   descriptionFormat: 
   baseCost: 100

@@ -37,30 +37,20 @@ public class MindjackAbility : MonoBehaviour
             }
         }
 
-        if (projectileSpawnPoint == null)
-        {
-            Debug.LogError("Projectile Spawn Point no está asignado en MindjackAbility.");
-        }
+        if (projectileSpawnPoint == null) Debug.LogError("Projectile Spawn Point no está asignado en MindjackAbility.");
 
-        if (projectilePrefab == null)
-        {
-            Debug.LogError("Projectile Prefab no está asignado en MindjackAbility.");
-        }
+        if (projectilePrefab == null) Debug.LogError("Projectile Prefab no está asignado en MindjackAbility.");
 
         if (abilityInfo == null)
         {
             abilityInfo = GetComponent<AbilityInfo>();
-            if (abilityInfo == null)
-            {
-                Debug.LogError("AbilityInfo no está asignado en MindjackAbility.");
-            }
+            if (abilityInfo == null) Debug.LogError("AbilityInfo no está asignado en MindjackAbility.");
         }
-
-        ApplyUpgrades();
     }
 
     private void Start()
     {
+        ApplyUpgrades();
         HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0f, true, currentCooldown);
     }
 
@@ -76,7 +66,7 @@ public class MindjackAbility : MonoBehaviour
 
     private void ApplyUpgrades()
     {
-        AbilityStats stats = AbilityShopDataManager.GetStats(AbilityType.Mindjack);
+        AbilityStats stats = AbilityShopDataManager.GetStats(abilityInfo.abilityName);
         if (stats == null) return;
 
         const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f;
@@ -85,32 +75,27 @@ public class MindjackAbility : MonoBehaviour
         currentCooldown = baseCooldown - (stats.CooldownLevel * COOLDOWN_REDUCTION_PER_LEVEL);
         currentDamagePerSecond = baseDamagePerSecond + (stats.DamageLevel * DAMAGE_INCREASE_PER_LEVEL);
 
-        Debug.Log($"Stats de {abilityInfo.abilityName} actualizados!");
+        Debug.Log($"Mindjack Ability Upgrades Applied: Cooldown={currentCooldown}, DamagePerSecond={currentDamagePerSecond}");
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse1) && canUse)
+        if (Input.GetKeyDown(KeyCode.Mouse1) && canUse) ActivateAbility();
+        if (!canUse) CooldownLogic();
+    }
+
+    private void CooldownLogic()
+    {
+        currentCooldownTimer -= Time.deltaTime;
+        if (Mathf.Ceil(currentCooldownTimer) != Mathf.Ceil(lastCooldownDisplay))
         {
-            ActivateAbility();
+            HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, false, currentCooldown);
+            lastCooldownDisplay = currentCooldownTimer;
         }
-
-        if (!canUse)
+        if (currentCooldownTimer <= 0)
         {
-            currentCooldownTimer -= Time.deltaTime;
-            currentCooldownTimer = Mathf.Max(0f, currentCooldownTimer);
-
-            if (Mathf.Ceil(currentCooldownTimer) != Mathf.Ceil(lastCooldownDisplay))
-            {
-                HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
-                lastCooldownDisplay = currentCooldownTimer;
-            }
-
-            if (currentCooldownTimer <= 0f)
-            {
-                canUse = true;
-                HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0f, canUse, currentCooldown);
-            }
+            canUse = true;
+            HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0, true, currentCooldown);
         }
     }
 

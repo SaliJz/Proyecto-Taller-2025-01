@@ -14,6 +14,13 @@ public class WeaponManager : MonoBehaviour
 
     private int currentIndex = 0;
     private Vector3[] originalModelPositions;
+    [SerializeField] private bool canChangeWeapon = true;
+
+    public bool CanChangeWeapon
+    {
+        get => canChangeWeapon;
+        set => canChangeWeapon = value;
+    }
 
     private void Start()
     {
@@ -57,6 +64,7 @@ public class WeaponManager : MonoBehaviour
 
     private void ChangeWeapon(int index)
     {
+        if (!canChangeWeapon) return;
         if (index == currentIndex) return;
         PlayerPrefs.SetInt("LastWeaponIndex", index);
 

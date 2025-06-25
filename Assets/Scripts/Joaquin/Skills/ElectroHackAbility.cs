@@ -44,30 +44,20 @@ public class ElectroHackAbility : MonoBehaviour
             }
         }
 
-        if (projectileSpawnPoint == null)
-        {
-            Debug.LogError("Projectile Spawn Point no está asignado en MindjackAbility.");
-        }
+        if (projectileSpawnPoint == null) Debug.LogError("Projectile Spawn Point no está asignado en MindjackAbility.");
 
-        if (projectilePrefab == null)
-        {
-            Debug.LogError("Projectile Prefab no está asignado en MindjackAbility.");
-        }
+        if (projectilePrefab == null) Debug.LogError("Projectile Prefab no está asignado en MindjackAbility.");
 
         if (abilityInfo == null)
         {
             abilityInfo = GetComponent<AbilityInfo>();
-            if (abilityInfo == null)
-            {
-                Debug.LogError("AbilityInfo no está asignado en ElectroHackAbility.");
-            }
+            if (abilityInfo == null) Debug.LogError("AbilityInfo no está asignado en ElectroHackAbility.");
         }
-
-        ApplyUpgrades();
     }
 
     private void Start()
     {
+        ApplyUpgrades();
         HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0f, true, currentCooldown);
     }
 
@@ -83,45 +73,40 @@ public class ElectroHackAbility : MonoBehaviour
 
     private void ApplyUpgrades()
     {
-        AbilityStats stats = AbilityShopDataManager.GetStats(AbilityType.ElectroHack);
+        AbilityStats stats = AbilityShopDataManager.GetStats(abilityInfo.abilityName);
         if (stats == null) return;
 
         const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f;
         const float DURATION_INCREASE_PER_LEVEL = 0.5f;
-        const float DAMAGE_INCREASE_PER_LEVEL = 2.0f;
         const float ENEMIES_AFFECTED_INCREASE_PER_LEVEL = 1.0f;
+        const float DAMAGE_INCREASE_PER_LEVEL = 2.0f;
 
         currentCooldown = baseCooldown - (stats.CooldownLevel * COOLDOWN_REDUCTION_PER_LEVEL);
         currentDuration = ticks + (stats.DurationLevel * DURATION_INCREASE_PER_LEVEL);
         currentDamagePerSecond = tickDamage + (stats.DamageLevel * DAMAGE_INCREASE_PER_LEVEL);
         currentEnemiesAffected = baseEnemiesAffected + (stats.EnemiesAffectedLevel * ENEMIES_AFFECTED_INCREASE_PER_LEVEL);
 
-        Debug.Log($"Stats de {abilityInfo.abilityName} actualizados!");
+        Debug.Log($"ElectroHack Ability Upgraded: Cooldown={currentCooldown}, Duration={currentDuration}, DamagePerSecond={currentDamagePerSecond}, EnemiesAffected={currentEnemiesAffected}");
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse1) && canUse)
+        if (Input.GetKeyDown(KeyCode.Mouse1) && canUse) ActivateAbility();
+        if (!canUse) CooldownLogic();
+    }
+
+    private void CooldownLogic()
+    {
+        currentCooldownTimer -= Time.deltaTime;
+        if (Mathf.Ceil(currentCooldownTimer) != Mathf.Ceil(lastCooldownDisplay))
         {
-            ActivateAbility();
+            HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, false, currentCooldown);
+            lastCooldownDisplay = currentCooldownTimer;
         }
-
-        if (!canUse)
+        if (currentCooldownTimer <= 0)
         {
-            currentCooldownTimer -= Time.deltaTime;
-            currentCooldownTimer = Mathf.Max(0f, currentCooldownTimer);
-
-            if (Mathf.Ceil(currentCooldownTimer) != Mathf.Ceil(lastCooldownDisplay))
-            {
-                HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
-                lastCooldownDisplay = currentCooldownTimer;
-            }
-
-            if (currentCooldownTimer <= 0f)
-            {
-                canUse = true;
-                HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0f, canUse, currentCooldown);
-            }
+            canUse = true;
+            HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0, true, currentCooldown);
         }
     }
 
