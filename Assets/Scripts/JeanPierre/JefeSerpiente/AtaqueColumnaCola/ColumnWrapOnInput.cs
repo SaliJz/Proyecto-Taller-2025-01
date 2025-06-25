@@ -1,7 +1,4 @@
-// ColumnWrapOnInput.cs
-// Controla la serpiente, viaja hacia la columna y la enrolla al presionar 'I'
-// Ahora la cabeza puede sobresalir más usando headOffset
-
+ï»¿// ColumnWrapOnInput.cs
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,10 +9,10 @@ public class ColumnWrapOnInput : MonoBehaviour
     [Header("Referencias")]
     public Transform columna;
 
-    [Header("Parámetros de llegada")]
+    [Header("ParÃ¡metros de llegada")]
     public float umbralLlegada = 0.2f;
 
-    [Header("Configuración de enrollado")]
+    [Header("ConfiguraciÃ³n de enrollado")]
     public int vueltasCompletas = 3;
     public float offsetRadio = 0.2f;
     [Tooltip("Distancia extra que sobresale la cabeza de la columna")]
@@ -23,8 +20,8 @@ public class ColumnWrapOnInput : MonoBehaviour
     public float velocidadEnrollado = 1f;
     public int segmentosCuello = 1;
 
-    [Header("Altura de elevación")]
-    public float alturaTotal; // Ahora pública, ajustable en Inspector
+    [Header("Altura de elevaciÃ³n")]
+    public float alturaTotal; // Ahora pÃºblica, ajustable en Inspector
 
     private SnakeController snake;
     private Transform cabeza;
@@ -59,6 +56,7 @@ public class ColumnWrapOnInput : MonoBehaviour
 
     private IEnumerator InitAndWrap()
     {
+        isWrapping = true;
         snake.enabled = true;
         snake.jugador = columna;
         yield return null;
@@ -67,28 +65,38 @@ public class ColumnWrapOnInput : MonoBehaviour
         {
             Debug.LogError("SnakeController sin segmentos.");
             snake.enabled = false;
+            isWrapping = false;
             yield break;
         }
         cabeza = snake.Segmentos[0];
 
-        while (!isWrapping)
+        // Mover hasta la columna
+        Transform player = GameObject.FindWithTag("Player")?.transform;
+        while (true)
         {
+            // Orientar cabeza hacia el jugador mientras avanza
+            if (player != null)
+            {
+                Vector3 lookPos = new Vector3(player.position.x, cabeza.position.y, player.position.z);
+                cabeza.LookAt(lookPos);
+            }
+
             float dist = Vector3.Distance(
                 new Vector3(cabeza.position.x, 0, cabeza.position.z),
                 new Vector3(columna.position.x, 0, columna.position.z)
             );
             if (dist <= umbralLlegada)
-            {
-                StartCoroutine(Enrollar());
-                yield break;
-            }
+                break;
             yield return null;
         }
+
+        // Enrollar
+        yield return StartCoroutine(Enrollar());
+        isWrapping = false;
     }
 
     private IEnumerator Enrollar()
     {
-        isWrapping = true;
         snake.enabled = false;
 
         Transform player = GameObject.FindWithTag("Player")?.transform;
@@ -96,31 +104,30 @@ public class ColumnWrapOnInput : MonoBehaviour
             Debug.LogError("Player no encontrado para orientar la cabeza.");
 
         int segCount = snake.Segmentos.Count;
-
         alturaTotal = snake.distanciaCabezaCuerpo
                     + snake.separacionSegmentos * (segCount - 2)
                     + snake.separacionCola;
 
+        // Guardar posiciones iniciales
         List<Vector3> startPos = new List<Vector3>(segCount);
         for (int i = 0; i < segCount; i++)
             startPos.Add(snake.Segmentos[i].position);
 
+        // Calcular posiciones en espiral alrededor de la columna
         List<Vector3> targetPos = new List<Vector3>(segCount);
         float radio = GetColumnRadius();
-
         for (int i = 0; i < segCount; i++)
         {
             float t = 1f - ((float)i / (segCount - 1));
             float ang = t * vueltasCompletas * 2 * Mathf.PI;
             float alt = t * alturaTotal;
             Vector3 dir = new Vector3(Mathf.Cos(ang), 0, Mathf.Sin(ang));
-
-            // Aplica headOffset solo al primer segmento (cabeza)
             float extra = (i == 0) ? headOffset : 0f;
             Vector3 p = columna.position + dir * (radio + offsetRadio + extra) + Vector3.up * alt;
             targetPos.Add(p);
         }
 
+        // Animar enrollado
         float elapsed = 0f;
         while (elapsed < velocidadEnrollado)
         {
@@ -130,10 +137,11 @@ public class ColumnWrapOnInput : MonoBehaviour
                 Transform seg = snake.Segmentos[i];
                 seg.position = Vector3.Lerp(startPos[i], targetPos[i], frac);
 
+                // OrientaciÃ³n de la cabeza al jugador durante el enrollado
                 if (i == 0 && player != null)
                 {
-                    Vector3 lookTarget = new Vector3(player.position.x, seg.position.y, player.position.z);
-                    seg.LookAt(lookTarget);
+                    Vector3 lookPos = new Vector3(player.position.x, seg.position.y, player.position.z);
+                    seg.LookAt(lookPos);
                 }
                 else if (i <= segmentosCuello)
                 {
@@ -141,25 +149,25 @@ public class ColumnWrapOnInput : MonoBehaviour
                 }
                 else
                 {
-                    Vector3 lookT = (i < segCount - 1)
+                    Vector3 next = (i < segCount - 1)
                         ? targetPos[i + 1]
                         : columna.position + Vector3.up * (targetPos[i].y + 0.1f);
-                    seg.LookAt(lookT);
+                    seg.LookAt(next);
                 }
             }
             elapsed += Time.deltaTime;
             yield return null;
         }
 
+        // Ajuste final de posiciones y rotaciones
         for (int i = 0; i < segCount; i++)
         {
             Transform seg = snake.Segmentos[i];
             seg.position = targetPos[i];
-
             if (i == 0 && player != null)
             {
-                Vector3 lookTarget = new Vector3(player.position.x, seg.position.y, player.position.z);
-                seg.LookAt(lookTarget);
+                Vector3 lookPos = new Vector3(player.position.x, seg.position.y, player.position.z);
+                seg.LookAt(lookPos);
             }
             else if (i <= segmentosCuello)
             {
@@ -167,14 +175,14 @@ public class ColumnWrapOnInput : MonoBehaviour
             }
             else
             {
-                Vector3 lookT = (i < segCount - 1)
+                Vector3 next = (i < segCount - 1)
                     ? targetPos[i + 1]
                     : columna.position + Vector3.up * (targetPos[i].y + 0.1f);
-                seg.LookAt(lookT);
+                seg.LookAt(next);
             }
         }
 
-        isWrapping = false;
+        yield break;
     }
 
     public float GetColumnRadius()
@@ -189,25 +197,7 @@ public class ColumnWrapOnInput : MonoBehaviour
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //// ColumnWrapOnInput.cs
-//// Controla la serpiente, viaja hacia la columna y la enrolla al presionar 'I'
-
 //using System.Collections;
 //using System.Collections.Generic;
 //using UnityEngine;
@@ -218,17 +208,19 @@ public class ColumnWrapOnInput : MonoBehaviour
 //    [Header("Referencias")]
 //    public Transform columna;
 
-//    [Header("Parámetros de llegada")]
+//    [Header("ParÃ¡metros de llegada")]
 //    public float umbralLlegada = 0.2f;
 
-//    [Header("Configuración de enrollado")]
+//    [Header("ConfiguraciÃ³n de enrollado")]
 //    public int vueltasCompletas = 3;
 //    public float offsetRadio = 0.2f;
+//    [Tooltip("Distancia extra que sobresale la cabeza de la columna")]
+//    public float headOffset = 0.5f;
 //    public float velocidadEnrollado = 1f;
 //    public int segmentosCuello = 1;
 
-//    [Header("Altura de elevación")]
-//    public float alturaTotal; // Ahora pública, ajustable en Inspector
+//    [Header("Altura de elevaciÃ³n")]
+//    public float alturaTotal; // Ahora pÃºblica, ajustable en Inspector
 
 //    private SnakeController snake;
 //    private Transform cabeza;
@@ -247,12 +239,9 @@ public class ColumnWrapOnInput : MonoBehaviour
 //    void Update()
 //    {
 //        if (Input.GetKeyDown(KeyCode.I) && !isWrapping)
-//        {
 //            TriggerWrap();
-//        }
 //    }
 
-//    // Método público para invocar el wrap desde este o desde otro script
 //    public void TriggerWrap()
 //    {
 //        if (columna == null)
@@ -266,7 +255,7 @@ public class ColumnWrapOnInput : MonoBehaviour
 
 //    private IEnumerator InitAndWrap()
 //    {
-//        // Activa el control serpiente para dirigirse a la columna
+//        isWrapping = true;
 //        snake.enabled = true;
 //        snake.jugador = columna;
 //        yield return null;
@@ -275,59 +264,61 @@ public class ColumnWrapOnInput : MonoBehaviour
 //        {
 //            Debug.LogError("SnakeController sin segmentos.");
 //            snake.enabled = false;
+//            isWrapping = false;
 //            yield break;
 //        }
 //        cabeza = snake.Segmentos[0];
 
-//        // Espera hasta llegar al umbral
-//        while (!isWrapping)
+//        // Mover hasta la columna
+//        while (true)
 //        {
 //            float dist = Vector3.Distance(
 //                new Vector3(cabeza.position.x, 0, cabeza.position.z),
 //                new Vector3(columna.position.x, 0, columna.position.z)
 //            );
-
 //            if (dist <= umbralLlegada)
-//            {
-//                StartCoroutine(Enrollar());
-//                yield break;
-//            }
+//                break;
 //            yield return null;
 //        }
+
+//        // Enrollar
+//        yield return StartCoroutine(Enrollar());
+//        isWrapping = false;
 //    }
 
 //    private IEnumerator Enrollar()
 //    {
-//        isWrapping = true;
 //        snake.enabled = false;
 
-//        int segCount = snake.Segmentos.Count;
+//        Transform player = GameObject.FindWithTag("Player")?.transform;
+//        if (player == null)
+//            Debug.LogError("Player no encontrado para orientar la cabeza.");
 
-//        // Calcula y asigna la alturaTotal antes de animar
+//        int segCount = snake.Segmentos.Count;
 //        alturaTotal = snake.distanciaCabezaCuerpo
 //                    + snake.separacionSegmentos * (segCount - 2)
 //                    + snake.separacionCola;
 
-//        // Guarda posiciones iniciales
+//        // Guardar posiciones iniciales
 //        List<Vector3> startPos = new List<Vector3>(segCount);
 //        for (int i = 0; i < segCount; i++)
 //            startPos.Add(snake.Segmentos[i].position);
 
-//        // Calcula posiciones objetivo usando la alturaTotal pública
+//        // Calcular posiciones en espiral alrededor de la columna
 //        List<Vector3> targetPos = new List<Vector3>(segCount);
 //        float radio = GetColumnRadius();
-
 //        for (int i = 0; i < segCount; i++)
 //        {
 //            float t = 1f - ((float)i / (segCount - 1));
 //            float ang = t * vueltasCompletas * 2 * Mathf.PI;
 //            float alt = t * alturaTotal;
 //            Vector3 dir = new Vector3(Mathf.Cos(ang), 0, Mathf.Sin(ang));
-//            Vector3 p = columna.position + dir * (radio + offsetRadio) + Vector3.up * alt;
+//            float extra = (i == 0) ? headOffset : 0f;
+//            Vector3 p = columna.position + dir * (radio + offsetRadio + extra) + Vector3.up * alt;
 //            targetPos.Add(p);
 //        }
 
-//        // Animación de interpolación y orientación
+//        // Animar enrollado
 //        float elapsed = 0f;
 //        while (elapsed < velocidadEnrollado)
 //        {
@@ -337,40 +328,52 @@ public class ColumnWrapOnInput : MonoBehaviour
 //                Transform seg = snake.Segmentos[i];
 //                seg.position = Vector3.Lerp(startPos[i], targetPos[i], frac);
 
-//                if (i <= segmentosCuello)
+//                // OrientaciÃ³n
+//                if (i == 0 && player != null)
+//                {
+//                    seg.LookAt(new Vector3(player.position.x, seg.position.y, player.position.z));
+//                }
+//                else if (i <= segmentosCuello)
+//                {
 //                    seg.LookAt(new Vector3(columna.position.x, seg.position.y, columna.position.z));
+//                }
 //                else
 //                {
-//                    Vector3 lookT = (i < segCount - 1)
+//                    Vector3 next = (i < segCount - 1)
 //                        ? targetPos[i + 1]
 //                        : columna.position + Vector3.up * (targetPos[i].y + 0.1f);
-//                    seg.LookAt(lookT);
+//                    seg.LookAt(next);
 //                }
 //            }
 //            elapsed += Time.deltaTime;
 //            yield return null;
 //        }
 
-//        // Ajuste final
+//        // Ajuste final de posiciones
 //        for (int i = 0; i < segCount; i++)
 //        {
 //            Transform seg = snake.Segmentos[i];
 //            seg.position = targetPos[i];
-//            if (i <= segmentosCuello)
+//            if (i == 0 && player != null)
+//            {
+//                seg.LookAt(new Vector3(player.position.x, seg.position.y, player.position.z));
+//            }
+//            else if (i <= segmentosCuello)
+//            {
 //                seg.LookAt(new Vector3(columna.position.x, seg.position.y, columna.position.z));
+//            }
 //            else
 //            {
-//                Vector3 lookT = (i < segCount - 1)
+//                Vector3 next = (i < segCount - 1)
 //                    ? targetPos[i + 1]
 //                    : columna.position + Vector3.up * (targetPos[i].y + 0.1f);
-//                seg.LookAt(lookT);
+//                seg.LookAt(next);
 //            }
 //        }
 
-//        isWrapping = false;
+//        yield break;
 //    }
 
-//    // Cambiado a público para poder reutilizar desde otro script
 //    public float GetColumnRadius()
 //    {
 //        var col = columna.GetComponent<Collider>();
@@ -381,6 +384,9 @@ public class ColumnWrapOnInput : MonoBehaviour
 //        return Mathf.Max(col.bounds.extents.x, col.bounds.extents.z);
 //    }
 //}
+
+
+
 
 
 
