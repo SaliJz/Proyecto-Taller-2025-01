@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.TextCore.Text;
 
 
 public class TutorialManager : MonoBehaviour
@@ -119,10 +120,10 @@ public class TutorialManager : MonoBehaviour
         foreach (var dialogue in runtimeScene.tutorialSceneData.dialogues)
         {
             if (dialogue.dialogueVoice != null)
+                SetTextUI(dialogue.dialogueText);
                 voiceAudioSource.PlayOneShot(dialogue.dialogueVoice);
-                yield return new WaitForSecondsRealtime(dialogue.dialogueVoice.length); 
-
-            //yield return StartCoroutine(AnimateTextTyping(dialogue.dialogueText));
+                yield return new WaitForSecondsRealtime(dialogue.dialogueVoice.length);
+               
         }
 
         if (currentSceneIndex==4) //la de la cinematica del glitch
@@ -163,6 +164,11 @@ public class TutorialManager : MonoBehaviour
             yield return new WaitForSecondsRealtime(textTypingSpeed);
         }
     }
+    private void SetTextUI(string text)
+    {
+        dialogueTextUI.text =text;
+    }
+    
 
     void IncreaseCurrentSceneIndex()
     {

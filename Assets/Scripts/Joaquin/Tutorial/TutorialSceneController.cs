@@ -49,7 +49,7 @@ public class TutorialSceneController : MonoBehaviour
         if (weaponIcon != null) weaponIcon.SetActive(false);
 
         if (spawnerManager != null) spawnerManager.SetActive(false);
-        //if (spawners != null) spawners.SetActive(false);
+        if (spawners != null) spawners.SetActive(false);
 
         if (GlitchDeathCinematicContainer != null) GlitchDeathCinematicContainer.SetActive(false);
 
