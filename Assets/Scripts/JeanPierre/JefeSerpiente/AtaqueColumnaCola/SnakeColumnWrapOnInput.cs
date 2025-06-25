@@ -221,7 +221,7 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
             yield return null;
         }
 
-        // Ajuste final
+        // Ajuste final de posiciones y rotaciones
         for (int i = 0; i < segCount; i++)
         {
             Transform seg = segments[i];
@@ -246,7 +246,31 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
             }
         }
 
+        // Reiniciar historial
         snake.ResetPositionHistory();
+
+        // Orientar cabeza fluidamente al objeto "PosicionCabezaColumnaNoBorrar"
+        GameObject targetObj = GameObject.Find("PosicionCabezaColumnaNoBorrar");
+        if (targetObj != null && segments.Count > 0)
+        {
+            Transform head = segments[0];
+            Quaternion startRot = head.rotation;
+            Quaternion endRot = Quaternion.LookRotation((targetObj.transform.position - head.position).normalized);
+            float rotElapsed = 0f;
+            float rotDuration = returnAndWrapDuration; // duración igual al wrap
+            while (rotElapsed < rotDuration)
+            {
+                head.rotation = Quaternion.Slerp(startRot, endRot, rotElapsed / rotDuration);
+                rotElapsed += Time.deltaTime;
+                yield return null;
+            }
+            head.rotation = endRot;
+        }
+        else if (targetObj == null)
+        {
+            Debug.LogWarning("No se encontró ningún GameObject llamado 'PosicionCabezaColumnaNoBorrar'.");
+        }
+
         snake.enabled = false;
     }
 }
@@ -263,27 +287,7 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//// SnakeColumnWrapOnInput.cs (con headOffset aplicado también en el retorno)
+//// SnakeColumnWrapOnInput.cs
 //using System.Collections;
 //using System.Collections.Generic;
 //using UnityEngine;
@@ -387,7 +391,7 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
 //        int wrapStartIndex = segments.Count - numAttackSegments;
 //        float lerpFactor = followLerpSpeed * Time.deltaTime;
 
-//        // Ajuste de segmentos previos
+//        // Segmentos previos
 //        for (int i = 0; i < wrapStartIndex; i++)
 //        {
 //            Transform curr = segments[i];
@@ -413,15 +417,24 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
 //            int rel = i - wrapStartIndex + 1;
 //            Vector3 tgt = lineOrigin.position + attackDir * (step * rel);
 //            curr.position = Vector3.Lerp(curr.position, tgt, lerpFactor);
-//            if ((tgt - curr.position).sqrMagnitude > 1e-4f)
+
+//            if (i == segments.Count - 1 && playerT != null)
+//            {
+//                // Cola: su atrás local (−Z) apuntará al jugador
+//                Vector3 dirToPlayer = (playerT.position - curr.position).normalized;
+//                curr.forward = -dirToPlayer;
+//            }
+//            else if ((tgt - curr.position).sqrMagnitude > 1e-4f)
+//            {
 //                curr.rotation = Quaternion.Slerp(
 //                    curr.rotation,
 //                    Quaternion.LookRotation((tgt - curr.position).normalized),
 //                    lerpFactor
 //                );
+//            }
 //        }
 
-//        // Orientar la cabeza al jugador mientras ataca
+//        // Cabeza dirigida al jugador
 //        if (segments.Count > 0 && playerT != null)
 //        {
 //            Transform head = segments[0];
@@ -452,7 +465,7 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
 //        float vueltas = columnWrapper.vueltasCompletas;
 //        float offset = columnWrapper.offsetRadio;
 //        float radio = columnWrapper.GetColumnRadius();
-//        float headOff = columnWrapper.headOffset;  // Aplicar headOffset
+//        float headOff = columnWrapper.headOffset;
 //        Transform col = columnWrapper.columna;
 
 //        List<Vector3> wrapTarget = new List<Vector3>(segCount);
@@ -470,12 +483,10 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
 //        while (elapsed < returnAndWrapDuration)
 //        {
 //            float frac = Mathf.SmoothStep(0f, 1f, elapsed / returnAndWrapDuration);
-
 //            for (int i = 0; i < segCount; i++)
 //            {
 //                Transform seg = segments[i];
 //                seg.position = Vector3.Lerp(wrapStart[i], wrapTarget[i], frac);
-
 //                if (i == 0)
 //                {
 //                    var playerT2 = GameObject.FindWithTag("Player")?.transform;
@@ -495,11 +506,11 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
 //                    seg.LookAt(next);
 //                }
 //            }
-
 //            elapsed += Time.deltaTime;
 //            yield return null;
 //        }
 
+//        // Ajuste final
 //        for (int i = 0; i < segCount; i++)
 //        {
 //            Transform seg = segments[i];
@@ -528,6 +539,26 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
 //        snake.enabled = false;
 //    }
 //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
