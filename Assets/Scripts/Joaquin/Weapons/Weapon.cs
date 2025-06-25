@@ -57,8 +57,8 @@ public class Weapon : MonoBehaviour
     private Coroutine autoFireCoroutine;
     private float nextAllowedShotTime = 0f;
 
-    private Transform weaponModelTransform;
-    private Vector3 originalModelPosition;
+    [SerializeField] private Transform weaponModelTransform;
+    [SerializeField] private Vector3 originalModelPosition;
     private int ammoReloadedThisCycle = 0;
 
     #endregion

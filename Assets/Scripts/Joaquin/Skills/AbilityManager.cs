@@ -20,7 +20,7 @@ public class AbilityManager : MonoBehaviour
 
     private void Start()
     {
-        if (isLevel1) AbilityShopDataManager.ResetDataForNewLevel();
+        if (isLevel1) AbilityShopDataManager.ResetData();
 
         foreach (var ability in allAbilities)
         {
@@ -59,9 +59,35 @@ public class AbilityManager : MonoBehaviour
         UpdateAbilitiesActiveState();
     }
 
+    public void RemoveAbility(GameObject abilityToRemove)
+    {
+        if (activeAbilities.Contains(abilityToRemove))
+        {
+            if (CurrentAbility == abilityToRemove && activeAbilities.Count > 1)
+            {
+                CycleAbility();
+            }
+
+            activeAbilities.Remove(abilityToRemove);
+
+            if (currentIndex >= activeAbilities.Count && activeAbilities.Count > 0)
+            {
+                currentIndex = 0;
+            }
+
+            SaveToDataStore();
+            UpdateAbilitiesActiveState();
+        }
+    }
+
     public void AddOrReplaceAbility(GameObject newAbility)
     {
-        if (activeAbilities.Contains(newAbility)) return;
+        if (activeAbilities.Contains(newAbility))
+        {
+            currentIndex = activeAbilities.IndexOf(newAbility);
+            UpdateAbilitiesActiveState();
+            return;
+        }
 
         if (activeAbilities.Count < 2)
         {
@@ -69,7 +95,8 @@ public class AbilityManager : MonoBehaviour
         }
         else
         {
-            activeAbilities[currentIndex] = newAbility;
+            activeAbilities.RemoveAt(0);
+            activeAbilities.Add(newAbility);
         }
 
         currentIndex = activeAbilities.IndexOf(newAbility);

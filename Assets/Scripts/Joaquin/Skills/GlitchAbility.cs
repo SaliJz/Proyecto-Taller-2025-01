@@ -35,30 +35,20 @@ public class GlitchAbility : MonoBehaviour
             if (playerCamera == null) Debug.LogError("No se encontró la cámara principal. Asegúrate de que haya una cámara con la etiqueta 'MainCamera' en la escena.");
         }
 
-        if (projectileSpawnPoint == null)
-        {
-            Debug.LogError("Projectile Spawn Point no está asignado en GlitchTime.");
-        }
+        if (projectileSpawnPoint == null) Debug.LogError("Projectile Spawn Point no está asignado en GlitchTime.");
 
-        if (projectilePrefab == null)
-        {
-            Debug.LogError("Projectile Prefab no está asignado en GlitchTime.");
-        }
+        if (projectilePrefab == null) Debug.LogError("Projectile Prefab no está asignado en GlitchTime.");
 
         if (abilityInfo == null)
         {
             abilityInfo = GetComponent<AbilityInfo>();
-            if (abilityInfo == null)
-            {
-                Debug.LogError("AbilityInfo no está asignado en GlitchTime.");
-            }
+            if (abilityInfo == null) Debug.LogError("AbilityInfo no está asignado en GlitchTime.");
         }
-
-        ApplyUpgrades();
     }
 
     private void Start()
     {
+        ApplyUpgrades();
         HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0f, true, currentCooldown);
     }
 
@@ -74,7 +64,7 @@ public class GlitchAbility : MonoBehaviour
 
     private void ApplyUpgrades()
     {
-        AbilityStats stats = AbilityShopDataManager.GetStats(AbilityType.GlitchTime);
+        AbilityStats stats = AbilityShopDataManager.GetStats(abilityInfo.abilityName);
         if (stats == null) return;
 
         const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f;
@@ -83,32 +73,27 @@ public class GlitchAbility : MonoBehaviour
         currentCooldown = baseCooldown - (stats.CooldownLevel * COOLDOWN_REDUCTION_PER_LEVEL);
         currentDuration = baseDuration + (stats.DurationLevel * DURATION_INCREASE_PER_LEVEL);
 
-        Debug.Log($"Stats de {abilityInfo.abilityName} actualizados!");
+        Debug.Log($"GlitchTime Ability Upgraded: Cooldown={currentCooldown}, Duration={currentDuration}");
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse1) && canUse)
+        if (Input.GetKeyDown(KeyCode.Mouse1) && canUse) ActivateAbility();
+        if (!canUse) CooldownLogic();
+    }
+
+    private void CooldownLogic()
+    {
+        currentCooldownTimer -= Time.deltaTime;
+        if (Mathf.Ceil(currentCooldownTimer) != Mathf.Ceil(lastCooldownDisplay))
         {
-            ActivateAbility();
+            HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, false, currentCooldown);
+            lastCooldownDisplay = currentCooldownTimer;
         }
-
-        if (!canUse)
+        if (currentCooldownTimer <= 0)
         {
-            currentCooldownTimer -= Time.deltaTime;
-            currentCooldownTimer = Mathf.Max(0f, currentCooldownTimer);
-
-            if (Mathf.Ceil(currentCooldownTimer) != Mathf.Ceil(lastCooldownDisplay))
-            {
-                HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
-                lastCooldownDisplay = currentCooldownTimer;
-            }
-
-            if (currentCooldownTimer <= 0f)
-            {
-                canUse = true;
-                HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0f, canUse, currentCooldown);
-            }
+            canUse = true;
+            HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0, true, currentCooldown);
         }
     }
 

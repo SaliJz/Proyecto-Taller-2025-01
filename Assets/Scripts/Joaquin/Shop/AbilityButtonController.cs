@@ -15,6 +15,7 @@ public class AbilityButtonController : MonoBehaviour, IPointerEnterHandler, IPoi
 {
     [Header("Configuración Principal")]
     public AbilityType AssociatedAbility;
+    public GameObject AbilityPrefab;
     public string UpgradeStatName;
     [TextArea] public string descriptionFormat;
 
@@ -27,6 +28,7 @@ public class AbilityButtonController : MonoBehaviour, IPointerEnterHandler, IPoi
     private TextMeshProUGUI buttonText;
     private Image buttonImage;
     private AbilityShopController shopController;
+    private AbilityInfo abilityInfo;
     private const int MAX_UPGRADE_LEVEL = 5;
 
     private void Awake()
@@ -35,18 +37,39 @@ public class AbilityButtonController : MonoBehaviour, IPointerEnterHandler, IPoi
         button = GetComponent<Button>();
         buttonText = GetComponentInChildren<TextMeshProUGUI>();
         buttonImage = GetComponent<Image>();
+
+        if (AbilityPrefab == null)
+        {
+            Debug.LogError($"[AbilityButtonController] El botón '{name}' no tiene asignado el AbilityPrefab.");
+            return;
+        }
+
+        abilityInfo = AbilityPrefab.GetComponent<AbilityInfo>();
+        if (abilityInfo == null)
+        {
+            Debug.LogError($"[AbilityButtonController] El prefab asignado en '{name}' no tiene componente AbilityInfo.");
+            return;
+        }
+
         button.onClick.AddListener(() => shopController.HandleButtonClick(this));
     }
 
     public void UpdateVisuals()
     {
-        bool isPurchased = AbilityShopDataManager.IsPurchased(AssociatedAbility);
+        if (AbilityPrefab == null || shopController == null)
+        {
+            Debug.LogWarning($"[{name}] No se puede actualizar visuales porque falta asignar AbilityPrefab o ShopController.");
+            return;
+        }
+
+        bool isPurchased = shopController.IsPurchased(this);
+        bool isEquipped = shopController.IsEquipped(this);
 
         if (string.IsNullOrEmpty(UpgradeStatName))
         {
             if (isPurchased)
             {
-                CurrentFunction = AbilityShopDataManager.IsEquipped(AssociatedAbility) ? ButtonFunction.UnequipAbility : ButtonFunction.EquipAbility;
+                CurrentFunction = isEquipped ? ButtonFunction.UnequipAbility : ButtonFunction.EquipAbility;
             }
             else
             {
@@ -66,22 +89,16 @@ public class AbilityButtonController : MonoBehaviour, IPointerEnterHandler, IPoi
         switch (CurrentFunction)
         {
             case ButtonFunction.PurchaseAbility:
-                buttonImage.color = shopController.IsSelected(this) ? Color.green : Color.white;
-                buttonText.text = $"{AssociatedAbility}\nCosto: {baseCost}";
-                button.interactable = true;
+                SetState(shopController.IsSelected(this) ? Color.green : Color.white, $"Comprar\nCosto: {baseCost}", true);
                 break;
             case ButtonFunction.EquipAbility:
-                buttonImage.color = Color.red;
-                buttonText.text = "Equipar";
-                button.interactable = true;
+                SetState(Color.red, "Equipar", true);
                 break;
             case ButtonFunction.UnequipAbility:
-                buttonImage.color = Color.blue;
-                buttonText.text = "Equipado";
-                button.interactable = true;
+                SetState(Color.blue, "Equipado", true);
                 break;
             case ButtonFunction.UpgradeStat:
-                if (!AbilityShopDataManager.IsPurchased(AssociatedAbility))
+                if (!shopController.IsPurchased(this))
                 {
                     SetState(Color.grey, "Bloqueado", false);
                     return;
@@ -113,7 +130,8 @@ public class AbilityButtonController : MonoBehaviour, IPointerEnterHandler, IPoi
 
     private int GetCurrentUpgradeLevel()
     {
-        AbilityStats stats = AbilityShopDataManager.GetStats(AssociatedAbility);
+        AbilityStats stats = AbilityShopDataManager.GetStats(abilityInfo.abilityName);
+
         switch (UpgradeStatName)
         {
             case "Cooldown": return stats.CooldownLevel;
@@ -132,13 +150,6 @@ public class AbilityButtonController : MonoBehaviour, IPointerEnterHandler, IPoi
         button.interactable = interactable;
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        shopController.ShowDescription(descriptionFormat);
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        shopController.HideDescription();
-    }
+    public void OnPointerEnter(PointerEventData eventData) => shopController.ShowDescription(abilityInfo.description);
+    public void OnPointerExit(PointerEventData eventData) => shopController.HideDescription();
 }

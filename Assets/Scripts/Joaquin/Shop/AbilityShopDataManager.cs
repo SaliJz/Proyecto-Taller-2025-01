@@ -26,62 +26,36 @@ public static class AbilityShopDataManager
 {
     public static event Action OnAbilityShopDataChanged;
 
-    private static readonly HashSet<AbilityType> PurchasedAbilities = new HashSet<AbilityType>();
-    private static readonly List<AbilityType> EquippedAbilities = new List<AbilityType>();
-    private static readonly Dictionary<AbilityType, AbilityStats> UpgradeLevels = new Dictionary<AbilityType, AbilityStats>();
+    private static readonly HashSet<string> PurchasedAbilities = new HashSet<string>();
+    private static readonly Dictionary<string, AbilityStats> UpgradeLevels = new Dictionary<string, AbilityStats>();
 
-    #region Initialization
-    public static void Initialize()
+    private static void EnsureAbilityExists(string abilityName)
     {
-        foreach (AbilityType type in Enum.GetValues(typeof(AbilityType)))
+        if (!UpgradeLevels.ContainsKey(abilityName))
         {
-            if (type != AbilityType.None && !UpgradeLevels.ContainsKey(type))
+            UpgradeLevels[abilityName] = new AbilityStats();
+        }
+    }
+
+    public static void PurchaseItems(List<string> abilityNames, Dictionary<string, List<string>> upgrades)
+    {
+        foreach (var name in abilityNames)
+        {
+            if (!IsPurchased(name))
             {
-                UpgradeLevels[type] = new AbilityStats();
+                PurchasedAbilities.Add(name);
+                EnsureAbilityExists(name);
             }
         }
-    }
 
-    #endregion
-
-    #region buy and equip logic
-
-    public static void PurchaseAbilities(IEnumerable<AbilityType> abilitiesToBuy)
-    {
-        foreach (var ability in abilitiesToBuy)
-        {
-            if (!IsPurchased(ability)) PurchasedAbilities.Add(ability);
-        }
-        NotifyDataChanged();
-    }
-
-    public static void EquipAbility(AbilityType type)
-    {
-        if (!IsPurchased(type) || IsEquipped(type)) return;
-        if (EquippedAbilities.Count >= 2) EquippedAbilities.RemoveAt(0);
-        EquippedAbilities.Add(type);
-        NotifyDataChanged();
-    }
-
-    public static void UnequipAbility(AbilityType type)
-    {
-        if (EquippedAbilities.Remove(type))
-        {
-            NotifyDataChanged();
-        }
-    }
-
-    #endregion
-
-    #region Upgrade logic
-
-    public static void UpgradeStats(Dictionary<AbilityType, List<string>> upgrades)
-    {
         foreach (var pair in upgrades)
         {
-            if (!UpgradeLevels.ContainsKey(pair.Key)) continue;
-            AbilityStats stats = UpgradeLevels[pair.Key];
-            foreach (var statName in pair.Value)
+            string abilityName = pair.Key;
+            List<string> statsToUpgrade = pair.Value;
+            EnsureAbilityExists(abilityName);
+
+            AbilityStats stats = UpgradeLevels[abilityName];
+            foreach (var statName in statsToUpgrade)
             {
                 switch (statName)
                 {
@@ -95,31 +69,19 @@ public static class AbilityShopDataManager
         }
         NotifyDataChanged();
     }
-
-    #endregion
-
-    #region Getters and Checkers
-
-    public static bool IsPurchased(AbilityType type) => PurchasedAbilities.Contains(type);
-    public static bool IsEquipped(AbilityType type) => EquippedAbilities.Contains(type);
-    public static List<AbilityType> GetEquippedAbilities() => new List<AbilityType>(EquippedAbilities);
-    public static AbilityStats GetStats(AbilityType type) => UpgradeLevels[type];
-
-
-    #endregion
-
-    #region utility methods
+    public static bool IsPurchased(string abilityName) => PurchasedAbilities.Contains(abilityName);
+    public static AbilityStats GetStats(string abilityName)
+    {
+        EnsureAbilityExists(abilityName);
+        return UpgradeLevels[abilityName];
+    }
 
     public static void NotifyDataChanged() => OnAbilityShopDataChanged?.Invoke();
 
-    public static void ResetDataForNewLevel()
+    public static void ResetData()
     {
         PurchasedAbilities.Clear();
-        EquippedAbilities.Clear();
         UpgradeLevels.Clear();
-        Initialize();
         NotifyDataChanged();
     }
-
-    #endregion
 }
