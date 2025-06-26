@@ -43,11 +43,13 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private RectTransform floatingInfoFragmentsText;
     [SerializeField] private TextMeshProUGUI floatingInfoFragmentsTextContent;
     [SerializeField] private TextMeshProUGUI currentInfoFragments;
+    private bool activecurrentInfoFragment = false;
+
     [SerializeField] private float displayDuration = 2f;
     [SerializeField] private Vector2 floatingStartPos = new Vector2(480f, 0f);
     [SerializeField] private Vector2 floatingEndPos = new Vector2(-10, 0f);
     [SerializeField] private bool isNivel1 = false;
-
+ 
     [Header("Mission UI")]
     [SerializeField] private RectTransform missionTextObject;
     [SerializeField] private GameObject missionPanel;
@@ -125,11 +127,6 @@ public class HUDManager : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        currentInfoFragments.text = $"F. Cod. {infoFragments.ToString("N0")}"; // Formatear con separador de miles
-    }
-
     #endregion
 
     #region Bars and Text Updates
@@ -188,7 +185,14 @@ public class HUDManager : MonoBehaviour
     #endregion 
 
     #region Info Fragments
-
+    private void Update()
+    {
+        if (floatingInfoFragmentsText.gameObject.activeInHierarchy && !activecurrentInfoFragment )
+        {
+            activecurrentInfoFragment = true;
+            currentInfoFragments.transform.gameObject.SetActive(true);
+        }
+    }
     public void AddInfoFragment(int amount)
     {
         infoFragments += amount;
@@ -198,7 +202,12 @@ public class HUDManager : MonoBehaviour
             StopCoroutine(floatingTextCoroutine);
         }
 
-        floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: + {amount} -> {infoFragments}"));
+        if (floatingInfoFragmentsText.gameObject.activeInHierarchy)
+        {  
+            floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: + {amount} -> {infoFragments}"));
+            currentInfoFragments.text = $"F. Cod. {infoFragments.ToString("N0")}"; // Formatear con separador de miles
+        }    
+
         //Debug.Log($"F. Cod.: + {amount} -> {infoFragments}");
     }
 
@@ -212,6 +221,7 @@ public class HUDManager : MonoBehaviour
         }
 
         floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: - {amount} -> {infoFragments}"));
+        currentInfoFragments.text = $"F. Cod. {infoFragments.ToString("N0")}"; // Formatear con separador de miles
         Debug.Log($"F. Cod.: - {amount} -> {infoFragments}");
     }
 
@@ -242,7 +252,10 @@ public class HUDManager : MonoBehaviour
     {
         infoFragments -= amount;
         infoFragments = Mathf.Max(0, infoFragments);
-        floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: - {amount} -> {infoFragments}"));
+        if (floatingInfoFragmentsText.gameObject.activeInHierarchy)
+        {
+            floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: + {amount} -> {infoFragments}"));        
+        }
     }
 
     #endregion

@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.TextCore.Text;
-
-
+using Cinemachine;
 public class TutorialManager : MonoBehaviour
 {
     public static TutorialManager Instance { get; private set; }
@@ -23,9 +21,13 @@ public class TutorialManager : MonoBehaviour
     private TutorialSceneRuntime tutorialCurrentScene; 
     [SerializeField] private TextMeshProUGUI dialogueTextUI;
     [SerializeField] private AudioSource voiceAudioSource;
-    [SerializeField] private float textTypingSpeed = 0.04f;
+    //[SerializeField] private float textTypingSpeed = 0.04f;
     [SerializeField] private TutorialSceneController tutorialSceneController;
     [SerializeField] private GameObject FragmentOfTheTutorial;
+    [SerializeField] private List<CinemachineVirtualCamera> listVirtualCameras;
+    [SerializeField] private List<MonoBehaviour> playerScriptsToDisable;
+    [SerializeField] private GameObject crossHairObject;
+    
     public bool IsTutorialScenePlaying => GetTutorialCurrentScene().isActive;
     private int[] killCounters;
     private int[] fragmentCounters;
@@ -108,8 +110,13 @@ public class TutorialManager : MonoBehaviour
         //Debug.Log("Escenario activado en índice: " + currentSceneIndex);
         if (GetTutorialCurrentScene().isActive) return; //Aqui, para que la activacion por kills no llame varias veces
         GetTutorialCurrentScene().isActive = true;
-        StopAllCoroutines();
+        //StopAllCoroutines();
         StartCoroutine(PlayScenarioSequence());
+
+        //if (currentSceneIndex == 2)
+        //{
+        //    SelectCameraToRender(1);
+        //}
     }
 
     private IEnumerator PlayScenarioSequence()
@@ -117,15 +124,14 @@ public class TutorialManager : MonoBehaviour
         var runtimeScene = GetTutorialCurrentScene();
         runtimeScene.onSceneStart?.Invoke();
 
+        DetectCameraSceneTransition();
         foreach (var dialogue in runtimeScene.tutorialSceneData.dialogues)
         {
             if (dialogue.dialogueVoice != null)
                 SetTextUI(dialogue.dialogueText);
                 voiceAudioSource.PlayOneShot(dialogue.dialogueVoice);
-                yield return new WaitForSecondsRealtime(dialogue.dialogueVoice.length);
-               
+                yield return new WaitForSecondsRealtime(dialogue.dialogueVoice.length);              
         }
-
         if (currentSceneIndex==4) //la de la cinematica del glitch
         {
             tutorialSceneController.StopGlitchDeathCinematic();
@@ -152,24 +158,21 @@ public class TutorialManager : MonoBehaviour
           ScenarioActivationCheckByManually();
         }
     }
+    //private IEnumerator AnimateTextTyping(string text)
+    //{
+    //    Debug.Log("TEXTO: " + text);
+    //    dialogueTextUI.text = "";
 
-    private IEnumerator AnimateTextTyping(string text)
-    {
-        //Debug.Log("TEXTO: " + text);
-        dialogueTextUI.text = "";
-
-        foreach (char character in text)
-        {
-            dialogueTextUI.text += character;
-            yield return new WaitForSecondsRealtime(textTypingSpeed);
-        }
-    }
+    //    foreach (char character in text)
+    //    {
+    //        dialogueTextUI.text += character;
+    //        yield return new WaitForSecondsRealtime(textTypingSpeed);
+    //    }
+    //}
     private void SetTextUI(string text)
     {
         dialogueTextUI.text =text;
     }
-    
-
     void IncreaseCurrentSceneIndex()
     {
         currentSceneIndex+= 1;
@@ -193,5 +196,68 @@ public class TutorialManager : MonoBehaviour
     public ActivationType GetCurrentSceneActivationType()
     {
         return tutorialScenes[currentSceneIndex].tutorialSceneData.activationType;
+    }
+    private void SelectCameraToRender(int indexCamera)
+    {
+        ReturnCamerasToDefault();
+        listVirtualCameras[indexCamera].Priority = 3;
+    }
+
+    private void ReturnCamerasToDefault()
+    {
+        foreach (CinemachineVirtualCamera camera in listVirtualCameras)
+        {
+            if (camera !=listVirtualCameras[2])
+            {
+                camera.Priority = 1;
+            }
+        }
+    }
+    private void DetectCameraSceneTransition()
+    {
+        switch (currentSceneIndex)
+        {
+           
+            case 1: StartCoroutine(ActivateTransitionBetweenCameras()); break;                          
+            case 4:; break;   
+            case 7: StartCoroutine(ActivateTransitionBetweenCameras()); break;
+        }
+    }
+
+    public IEnumerator TemporarilyDisablePlayerScripts()
+    {
+        DisablePlayerScriptsForCameraTransition();
+        yield return new WaitForSeconds(5);
+        EnablePlayerScriptsAfterCameraTransition();
+    }
+    IEnumerator ActivateTransitionBetweenCameras()
+    {
+       DisablePlayerScriptsForCameraTransition();
+       SelectCameraToRender(0);
+       yield return new WaitForSecondsRealtime(2);
+       SelectCameraToRender(1);
+       yield return new WaitForSecondsRealtime(2.5f);
+       ReturnCamerasToDefault();
+       yield return new WaitForSecondsRealtime(2);
+       EnablePlayerScriptsAfterCameraTransition();
+       tutorialSceneController.EnableGlitchScripts();
+    }
+
+    void DisablePlayerScriptsForCameraTransition()
+    {
+        crossHairObject.SetActive(false);
+        foreach(MonoBehaviour script in playerScriptsToDisable)
+        {
+            script.enabled = false;
+        }
+    }
+
+    void EnablePlayerScriptsAfterCameraTransition()
+    {
+        crossHairObject.SetActive(true);
+        foreach (MonoBehaviour script in playerScriptsToDisable)
+        {
+            script.enabled = true;
+        }
     }
 }

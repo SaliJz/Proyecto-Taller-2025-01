@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TutorialFragmentActivator : MonoBehaviour
 {
-    [SerializeField] private float delayBeforeActivation = 7f; // Tiempo de espera antes de poder activarse
+    [SerializeField] private float delayBeforeActivation = 0f; // Tiempo de espera antes de poder activarse
     PickupItem fragmentPickup;
 
     private bool isInteractable = false;

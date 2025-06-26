@@ -1,7 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
+using UnityEngine.AI;
+
 
 public class TutorialSceneController : MonoBehaviour
 {
@@ -9,7 +9,7 @@ public class TutorialSceneController : MonoBehaviour
     [SerializeField] private GameObject weaponIcon;
     [SerializeField] private GameObject spawnerManager;
     [SerializeField] private GameObject spawners;
-    //[SerializeField] private GameObject abilitySelector;
+
     [SerializeField] private GameObject AbilityHolder;
     [SerializeField] private GameObject abilityIcon;
 
@@ -22,9 +22,6 @@ public class TutorialSceneController : MonoBehaviour
     [SerializeField] private int normalEnemiesCount = 10;
 
     [SerializeField] private GameObject infoFragments;
-
-    [SerializeField] private float cinematicDuration = 5f;
-    [SerializeField] private bool waitForCinematic = false; // Si se debe esperar por la cinemática de muerte glitch
 
     private Weapon gunWeapon; // Referencia al componente Weapon del objeto gun
 
@@ -54,7 +51,7 @@ public class TutorialSceneController : MonoBehaviour
         if (GlitchDeathCinematicContainer != null) GlitchDeathCinematicContainer.SetActive(false);
 
         if (infoFragments != null) infoFragments.SetActive(false);
-        //if (abilitySelector != null) abilitySelector.SetActive(false);
+
     }
 
     public void ActiveGun()
@@ -87,10 +84,24 @@ public class TutorialSceneController : MonoBehaviour
 
     public void SpawnNormalEnemies()
     {
-        int count = Mathf.Min(normalEnemiesCount, normalEnemies.Length);
-        for (int i = 0; i < count; i++)
+        foreach (var enemy in normalEnemies)
         {
-            if (normalEnemies[i] != null) normalEnemies[i].SetActive(true);
+            enemy.SetActive(true);
+        }
+    }
+    public void EnableGlitchScripts()
+    {
+        foreach (var enemy in normalEnemies)
+        {
+            Canvas canvas = enemy.GetComponentInChildren<Canvas>(true); 
+            canvas.gameObject.SetActive(true);  
+            
+            enemy.GetComponent<NavMeshAgent>().enabled = true;
+            foreach (MonoBehaviour script in enemy.GetComponents<MonoBehaviour>())
+            {
+                script.enabled = true;
+                
+            }          
         }
     }
 
@@ -124,8 +135,4 @@ public class TutorialSceneController : MonoBehaviour
         missionManager.SetActive(true);
     }
 
-    public void ActivateAbilitySelector()
-    {
-        //if (abilitySelector != null) abilitySelector.SetActive(true);
-    }
 }
