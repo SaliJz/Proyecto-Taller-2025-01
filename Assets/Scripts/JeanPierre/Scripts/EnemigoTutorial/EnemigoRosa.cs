@@ -140,10 +140,10 @@ public class EnemigoRosa : MonoBehaviour
 
         if (TutorialManager.Instance != null)
         {
-            int index = TutorialManager.Instance.currentIndex;
-            if (TutorialManager.Instance.scenes[index].sceneData.activationType == ActivationType.ByKills)
+            int index = TutorialManager.Instance.currentSceneIndex;
+            if (TutorialManager.Instance.GetCurrentSceneActivationType() == ActivationType.ByKills)
             {
-                TutorialManager.Instance.StartScenarioByKills(index);
+                TutorialManager.Instance.ScenarioActivationCheckerByKills();
             }
         }
 
@@ -308,7 +308,7 @@ public class EnemigoRosa : MonoBehaviour
 //        {
 //            foreach (int index in tutorial.IndexScenes)
 //            {
-//                TutorialManager.Instance.StartScenarioByKills(index);
+//                TutorialManager.Instance.ScenarioActivationCheckerByKills(index);
 //            }
 //        }
 

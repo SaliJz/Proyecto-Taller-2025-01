@@ -240,9 +240,11 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
         if (TutorialManager.Instance != null)
         {
-            int index = TutorialManager.Instance.currentIndex;
-            if (TutorialManager.Instance.scenes[index].sceneData.activationType == ActivationType.ByKills)
-                TutorialManager.Instance.StartScenarioByKills(index);
+            int index = TutorialManager.Instance.currentSceneIndex;
+            if (TutorialManager.Instance.GetCurrentSceneActivationType() == ActivationType.ByKills)
+            {
+                TutorialManager.Instance.ScenarioActivationCheckerByKills();
+            }
         }
 
         GameObject prefabAMorir = tipo switch

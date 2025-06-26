@@ -1,47 +1,52 @@
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 
 public class TransitionPanel : MonoBehaviour
 {
     [SerializeField] private CanvasGroup canvasGroup;
-    [SerializeField] private float durationFade; // Duraci�n del fade-out
-    [SerializeField] private float delayStart; // Tiempo de espera antes de iniciar el fade-out
+    [SerializeField] private float totalDuration = 3f;       // Tiempo total del efecto
+    [SerializeField] private float initialInterval = 0.1f;    // Parpadeo más rápido
+    [SerializeField] private float finalInterval = 0.5f;      // Parpadeo más lento
+    [SerializeField] private float delayBeforeBlink = 0.5f;   // Espera antes de empezar
 
     private void Awake()
     {
-        gameObject.SetActive(true);
-        if (canvasGroup != null)
-        {
+        if (canvasGroup == null)
             canvasGroup = GetComponent<CanvasGroup>();
-        }
 
-        // Iniciar la corutina de retraso
-        StartCoroutine(WaitAndStartFade());
-    }
-
-    // Corutina para esperar antes de iniciar el fade-out
-    private IEnumerator WaitAndStartFade()
-    {
-        yield return new WaitForSeconds(delayStart);
-        StartCoroutine(FadeOut());
-    }
-
-    // Corutina para reducir la opacidad del panel
-    private IEnumerator FadeOut()
-    {
         canvasGroup.alpha = 1f;
-        float t = 0f;
+        gameObject.SetActive(true);
+        StartCoroutine(BlinkWithIncreasingDelay());
+    }
 
-        // Mientras el tiempo sea menor que la duraci�n, reducir opacidad
-        while (t < durationFade)
+    private IEnumerator BlinkWithIncreasingDelay()
+    {
+        // 1. Espera inicial
+        yield return new WaitForSeconds(delayBeforeBlink);
+
+        // 2. Parpadeo con tiempo creciente
+        float elapsed = 0f;
+
+        while (elapsed < totalDuration)
         {
-            t += Time.deltaTime;
-            canvasGroup.alpha = Mathf.Lerp(1f, 0f, t / durationFade);
-            yield return null;
+            // Calcular t: qué tan avanzado va (0 a 1)
+            float t = elapsed / totalDuration;
+
+            // Interpolar el tiempo entre parpadeos (más lento con el tiempo)
+            float interval = Mathf.Lerp(initialInterval, finalInterval, t);
+
+            // Parpadeo OFF
+            canvasGroup.alpha = 0f;
+            yield return new WaitForSeconds(interval);
+            elapsed += interval;
+
+            // Parpadeo ON
+            canvasGroup.alpha = 1f;
+            yield return new WaitForSeconds(interval);
+            elapsed += interval;
         }
 
-        // Asegurarse de que el alpha es 0 al finalizar
+        // 3. Apagar al final
         canvasGroup.alpha = 0f;
         gameObject.SetActive(false);
     }
