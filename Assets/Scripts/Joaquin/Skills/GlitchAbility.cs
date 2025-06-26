@@ -17,6 +17,7 @@ public class GlitchAbility : MonoBehaviour
     [SerializeField] private float baseDuration = 3f;
     [SerializeField] private float slowMultiplier = 0.5f;
     [SerializeField] private float baseRadius = 5f;
+    [SerializeField] private LayerMask enemyLayer;
 
     private float currentCooldown;
     private float currentDuration;
@@ -50,16 +51,6 @@ public class GlitchAbility : MonoBehaviour
     {
         ApplyUpgrades();
         HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0f, true, currentCooldown);
-    }
-
-    private void OnEnable()
-    {
-        AbilityShopDataManager.OnAbilityShopDataChanged += ApplyUpgrades;
-    }
-
-    private void OnDisable()
-    {
-        AbilityShopDataManager.OnAbilityShopDataChanged -= ApplyUpgrades;
     }
 
     private void ApplyUpgrades()
@@ -107,7 +98,7 @@ public class GlitchAbility : MonoBehaviour
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));
         projectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
 
-        projectile.GetComponent<GlitchShot>().Initialize(baseRadius, currentDuration, slowMultiplier);
+        projectile.GetComponent<GlitchShot>().Initialize(baseRadius, currentDuration, slowMultiplier, enemyLayer);
         Destroy(projectile, projectileLifeTime);
     }
 }

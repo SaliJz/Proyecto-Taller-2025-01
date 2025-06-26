@@ -9,9 +9,11 @@ public class IgnitionCodeAbility : MonoBehaviour
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform projectileSpawnPoint;
 
-    [Header("Ignition Settings")]
+    [Header("Projectile Settings")]
     [SerializeField] private float projectileLifeTime = 2f;
     [SerializeField] private float projectileSpeed = 40f;
+
+    [Header("Ignition Code Settings")]
     [SerializeField] private float baseCooldown = 15f;
     [SerializeField] private float baseDamagePerSecond = 8f;
     [SerializeField] private float baseDuration = 3f;
@@ -55,16 +57,6 @@ public class IgnitionCodeAbility : MonoBehaviour
     {
         ApplyUpgrades();
         HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0f, true, currentCooldown);
-    }
-
-    private void OnEnable()
-    {
-        AbilityShopDataManager.OnAbilityShopDataChanged += ApplyUpgrades;
-    }
-
-    private void OnDisable()
-    {
-        AbilityShopDataManager.OnAbilityShopDataChanged -= ApplyUpgrades;
     }
 
     private void ApplyUpgrades()

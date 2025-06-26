@@ -23,6 +23,11 @@ public class AbilityShopController : MonoBehaviour
     [SerializeField] private Button confirmReturnButton;
     [SerializeField] private Button cancelReturnButton;
 
+    [Header("UI de Feedback")]
+    [SerializeField] private TextMeshProUGUI confirmationText;
+    [SerializeField] private float confirmationDisplayTime = 1.5f;
+
+    private Coroutine confirmationCoroutine;
     private readonly List<AbilityButtonController> selectedItems = new List<AbilityButtonController>();
 
     private void Awake()
@@ -42,12 +47,17 @@ public class AbilityShopController : MonoBehaviour
         cancelReturnButton.onClick.AddListener(() => returnConfirmationPanel.SetActive(false));
     }
 
+    private void Start()
+    {
+        UpdateAllButtonVisuals();
+        UpdateTotalCost();
+        descriptionText.text = string.Empty;
+        returnConfirmationPanel.SetActive(false);
+    }
+
     private void OnEnable()
     {
         AbilityShopDataManager.OnAbilityShopDataChanged += UpdateAllButtonVisuals;
-        UpdateAllButtonVisuals();
-        UpdateTotalCost();
-        returnConfirmationPanel.SetActive(false);
     }
 
     private void OnDisable()
@@ -61,12 +71,14 @@ public class AbilityShopController : MonoBehaviour
         {
             abilityManager.AddOrReplaceAbility(button.AbilityPrefab);
             UpdateAllButtonVisuals();
+            ShowConfirmation("¡Habilidad equipada con éxito!");
             return;
         }
         if (button.CurrentFunction == ButtonFunction.UnequipAbility)
         {
             abilityManager.RemoveAbility(button.AbilityPrefab);
             UpdateAllButtonVisuals();
+            ShowConfirmation("¡Habilidad desequipada con éxito!");
             return;
         }
 
@@ -113,6 +125,7 @@ public class AbilityShopController : MonoBehaviour
         }
 
         AbilityShopDataManager.PurchaseItems(abilitiesToBuy, upgradesToBuy);
+        ShowConfirmation("¡Compra realizada con éxito!");
     }
 
     private void ConfirmReturn()
@@ -169,5 +182,24 @@ public class AbilityShopController : MonoBehaviour
         int total = 0;
         foreach (var button in selectedItems) total += button.GetCurrentCost();
         return total;
+    }
+
+    public void ShowConfirmation(string message)
+    {
+        if (confirmationText == null) return;
+
+        if (confirmationCoroutine != null)
+        {
+            StopCoroutine(confirmationCoroutine);
+        }
+        confirmationCoroutine = StartCoroutine(ShowConfirmationCoroutine(message));
+    }
+
+    private IEnumerator ShowConfirmationCoroutine(string message)
+    {
+        confirmationText.text = message;
+        confirmationText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(confirmationDisplayTime);
+        confirmationText.gameObject.SetActive(false);
     }
 }

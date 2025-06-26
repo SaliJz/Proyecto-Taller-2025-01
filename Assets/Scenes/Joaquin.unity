@@ -744,7 +744,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 15}
+  m_AnchoredPosition: {x: 0, y: 20}
   m_SizeDelta: {x: 320, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &79341990
@@ -3730,7 +3730,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.4490565, g: 0.4490565, b: 0.4490565, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5834,7 +5834,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -8665,7 +8665,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 1, b: 0.016923666, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -10953,7 +10953,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 1, b: 0.9851301, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -12972,7 +12972,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 15}
+  m_AnchoredPosition: {x: 0, y: 20}
   m_SizeDelta: {x: 320, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1118218121131566095
@@ -13158,9 +13158,24 @@ PrefabInstance:
       objectReference: {fileID: 1002577469}
     - target: {fileID: 661557296630573712, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
+      propertyPath: baseRadius
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 661557296630573712, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 432355536}
+    - target: {fileID: 891735800876516052, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: baseRadius
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 891735800876516052, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: baseDuration
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 891735800876516052, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: playerCamera
@@ -13190,6 +13205,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlayerWithCamera
+      objectReference: {fileID: 0}
+    - target: {fileID: 5060233725945681973, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: baseRadius
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5060233725945681973, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
@@ -13245,6 +13265,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8814230059228490687, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: baseRadius
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8814230059228490687, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
@@ -13727,7 +13752,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 289}
+  m_AnchoredPosition: {x: 0, y: 167}
   m_SizeDelta: {x: 600, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1353238742392007771
@@ -15209,7 +15234,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: HABILIDADES
+  m_text: EQUIPABLE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: df996c0b744400a47ae9bf9225197321, type: 2}
   m_sharedMaterial: {fileID: 6334305401729269255, guid: df996c0b744400a47ae9bf9225197321,
@@ -15340,7 +15365,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 15}
+  m_AnchoredPosition: {x: 0, y: 20}
   m_SizeDelta: {x: 320, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2499433489290227138
@@ -16442,13 +16467,13 @@ RectTransform:
   - {fileID: 8842452833397428858}
   - {fileID: 7359283912485092765}
   - {fileID: 1974493664}
-  - {fileID: 1341988555444110696}
   - {fileID: 1801722503}
   - {fileID: 2112000170}
   - {fileID: 1702350951560118312}
   - {fileID: 6011156478048384534}
   - {fileID: 5328305233440858457}
   - {fileID: 6276730913319953291}
+  - {fileID: 1341988555444110696}
   m_Father: {fileID: 7905360621677637155}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -17003,15 +17028,16 @@ MonoBehaviour:
   m_text: Disparo que al impactar con el enemigo lo vuelve lento por un periodo de
     tiempo.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: df996c0b744400a47ae9bf9225197321, type: 2}
+  m_sharedMaterial: {fileID: 6334305401729269255, guid: df996c0b744400a47ae9bf9225197321,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4288020224
+  m_fontColor: {r: 0, g: 1, b: 0.5852244, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -17609,7 +17635,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 15}
+  m_AnchoredPosition: {x: 0, y: 20}
   m_SizeDelta: {x: 320, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4720055237395307586
@@ -17787,7 +17813,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!222 &4870970181764628641
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18933,7 +18959,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: New Text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: df996c0b744400a47ae9bf9225197321, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: e73a58f6e2794ae7b1b7e50b7fb811b0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -18997,7 +19023,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &5798098316088732422
@@ -20779,7 +20805,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Mejoras de habilidad GlitchTime.
+  m_text: '-1 s cooldown
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: df996c0b744400a47ae9bf9225197321, type: 2}
   m_sharedMaterial: {fileID: 6334305401729269255, guid: df996c0b744400a47ae9bf9225197321,
@@ -21537,6 +21565,8 @@ MonoBehaviour:
   returnButton: {fileID: 5433003801715236383}
   confirmReturnButton: {fileID: 9160099206190433447}
   cancelReturnButton: {fileID: 133704829729649185}
+  confirmationText: {fileID: 5779894631393893489}
+  confirmationDisplayTime: 1.5
 --- !u!224 &8350336773069555827
 RectTransform:
   m_ObjectHideFlags: 0

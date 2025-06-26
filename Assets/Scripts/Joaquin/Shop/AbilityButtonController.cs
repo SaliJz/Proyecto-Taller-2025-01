@@ -112,7 +112,7 @@ public class AbilityButtonController : MonoBehaviour, IPointerEnterHandler, IPoi
                 else
                 {
                     Color color = shopController.IsSelected(this) ? Color.green : Color.white;
-                    SetState(color, $"{UpgradeStatName}\nCosto: {GetCurrentCost()}", true);
+                    SetState(color, $"\nCosto: {GetCurrentCost()} F. Cod.", true);
                 }
                 break;
         }

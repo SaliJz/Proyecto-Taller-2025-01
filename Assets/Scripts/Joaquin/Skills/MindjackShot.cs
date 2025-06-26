@@ -8,28 +8,45 @@ public class MindjackShot : MonoBehaviour
     private float damagePerSecond;
     private float duration;
 
+    [SerializeField] private ParticleSystem impactEffect;
+
     public void Initialize(float radius,float dps, float duration)
     {
-        this.radius = Mathf.Max(0.1f, radius);
-        this.damagePerSecond = Mathf.Max(0f, dps);
-        this.duration = Mathf.Max(1f, duration);
+        this.radius = radius;
+        this.damagePerSecond = dps;
+        this.duration = duration;
+
+        transform.localScale = new Vector3(this.radius * 2, this.radius * 2, this.radius * 2);
     }
 
-    private void Start()
+    private void OnTriggerEnter(Collider other)
     {
-        gameObject.transform.localScale = new Vector3(radius, radius, radius);
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.collider.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy"))
         {
-            EnemyAbilityReceiver enemy = collision.collider.GetComponent<EnemyAbilityReceiver>();
+            EnemyAbilityReceiver enemy = other.GetComponent<EnemyAbilityReceiver>();
             if (enemy != null)
             {
                 enemy.ApplyMindjack(damagePerSecond, duration);
+                PlayEffect();
                 Destroy(gameObject);
             }
+        }
+        else if (other.CompareTag("Ground"))
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void PlayEffect()
+    {
+        if (impactEffect != null)
+        {
+            Instantiate(impactEffect, transform.position, Quaternion.identity);
+            Destroy(impactEffect.gameObject, 2f);
+        }
+        else
+        {
+            Debug.LogWarning("Particle System no está asignado en MindjackShot.");
         }
     }
 }

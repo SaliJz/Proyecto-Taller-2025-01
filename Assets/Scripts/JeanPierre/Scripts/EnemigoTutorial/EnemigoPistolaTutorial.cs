@@ -148,7 +148,7 @@ public class EnemigoPistolaTutorial : MonoBehaviour
         {
             foreach (int index in tutorial.IndexScenes)
             {
-                TutorialManager.Instance.StartScenarioByKills(index);
+                TutorialManager.Instance.ScenarioActivationCheckerByKills();
             }
         }
 

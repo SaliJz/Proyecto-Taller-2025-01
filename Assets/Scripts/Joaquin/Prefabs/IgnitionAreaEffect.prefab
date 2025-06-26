@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7924195036300143641}
   - component: {fileID: 1279289072842879540}
   - component: {fileID: 1237139684493647973}
-  - component: {fileID: 1264341462905422027}
+  - component: {fileID: 5632304628687741784}
   m_Layer: 0
   m_Name: IgnitionAreaEffect
   m_TagString: Untagged
@@ -31,7 +31,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 6, y: 6, z: 6}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3525771622074383082}
   m_Father: {fileID: 0}
@@ -107,7 +107,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.75
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1264341462905422027
+--- !u!114 &5632304628687741784
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -176,6 +176,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5770534136294202460, guid: 960a70e1881df2949bfa5da64101409d,
+        type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6993556799010900588, guid: 960a70e1881df2949bfa5da64101409d,
         type: 3}
