@@ -54,16 +54,6 @@ public class MindjackAbility : MonoBehaviour
         HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0f, true, currentCooldown);
     }
 
-    private void OnEnable()
-    {
-        AbilityShopDataManager.OnAbilityShopDataChanged += ApplyUpgrades;
-    }
-
-    private void OnDisable()
-    {
-        AbilityShopDataManager.OnAbilityShopDataChanged -= ApplyUpgrades;
-    }
-
     private void ApplyUpgrades()
     {
         AbilityStats stats = AbilityShopDataManager.GetStats(abilityInfo.abilityName);

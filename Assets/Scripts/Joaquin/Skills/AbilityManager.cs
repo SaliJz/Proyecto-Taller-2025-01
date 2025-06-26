@@ -13,10 +13,24 @@ public class AbilityManager : MonoBehaviour
     [SerializeField] private List<GameObject> activeAbilities = new List<GameObject>();
 
     [SerializeField] private bool allowFirstAbility = false;
+
     private int currentIndex = 0;
+    private Dictionary<string, GameObject> abilityMap = new Dictionary<string, GameObject>();
 
     public List<GameObject> activedAbilities => activeAbilities;
     public GameObject CurrentAbility => activeAbilities.Count > 0 ? activeAbilities[currentIndex] : null;
+
+    private void Awake()
+    {
+        foreach (var abilityGO in allAbilities)
+        {
+            var info = abilityGO.GetComponent<AbilityInfo>();
+            if (info != null && !abilityMap.ContainsKey(info.abilityName))
+            {
+                abilityMap.Add(info.abilityName, abilityGO);
+            }
+        }
+    }
 
     private void Start()
     {
@@ -41,6 +55,25 @@ public class AbilityManager : MonoBehaviour
         }
 
         UpdateAbilitiesActiveState();
+    }
+
+    private void OnEnable()
+    {
+        AbilityShopDataManager.OnAbilityShopDataChanged += ApplyUpgradesToAllAbilities;
+    }
+
+    private void OnDisable()
+    {
+        AbilityShopDataManager.OnAbilityShopDataChanged -= ApplyUpgradesToAllAbilities;
+    }
+
+    private void ApplyUpgradesToAllAbilities()
+    {
+        foreach (var abilityGO in allAbilities)
+        {
+            abilityGO.SendMessage("ApplyUpgrades", SendMessageOptions.DontRequireReceiver);
+        }
+        Debug.Log("Todas las habilidades han actualizado sus mejoras.");
     }
 
     private void Update()

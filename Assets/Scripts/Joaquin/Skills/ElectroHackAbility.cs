@@ -14,13 +14,14 @@ public class ElectroHackAbility : MonoBehaviour
     [Header("ElectroHack Settings")]
     [SerializeField] private float projectileLifeTime = 2f;
     [SerializeField] private float projectileSpeed = 20f;
+
     [SerializeField] private float baseCooldown = 10f;
     [SerializeField] private float baseEnemiesAffected = 3;
-    [SerializeField] private float tickDamage = 15;
-    [SerializeField] private float tickInterval = 1f;
-    [SerializeField] private float ticks = 2;
     [SerializeField] private float slowMultiplier = 0.75f;
+    [SerializeField] private float baseDamagePerSecond = 8f;
+    [SerializeField] private float baseDuration = 3f;
     [SerializeField] private float baseRadius = 5f;
+    [SerializeField] private LayerMask targetLayer;
 
     private float currentCooldown;
     private float currentDuration;
@@ -61,16 +62,6 @@ public class ElectroHackAbility : MonoBehaviour
         HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0f, true, currentCooldown);
     }
 
-    private void OnEnable()
-    {
-        AbilityShopDataManager.OnAbilityShopDataChanged += ApplyUpgrades;
-    }
-
-    private void OnDisable()
-    {
-        AbilityShopDataManager.OnAbilityShopDataChanged -= ApplyUpgrades;
-    }
-
     private void ApplyUpgrades()
     {
         AbilityStats stats = AbilityShopDataManager.GetStats(abilityInfo.abilityName);
@@ -82,8 +73,8 @@ public class ElectroHackAbility : MonoBehaviour
         const float DAMAGE_INCREASE_PER_LEVEL = 2.0f;
 
         currentCooldown = baseCooldown - (stats.CooldownLevel * COOLDOWN_REDUCTION_PER_LEVEL);
-        currentDuration = ticks + (stats.DurationLevel * DURATION_INCREASE_PER_LEVEL);
-        currentDamagePerSecond = tickDamage + (stats.DamageLevel * DAMAGE_INCREASE_PER_LEVEL);
+        currentDuration = baseDuration + (stats.DurationLevel * DURATION_INCREASE_PER_LEVEL);
+        currentDamagePerSecond = baseDamagePerSecond + (stats.DamageLevel * DAMAGE_INCREASE_PER_LEVEL);
         currentEnemiesAffected = baseEnemiesAffected + (stats.EnemiesAffectedLevel * ENEMIES_AFFECTED_INCREASE_PER_LEVEL);
 
         Debug.Log($"ElectroHack Ability Upgraded: Cooldown={currentCooldown}, Duration={currentDuration}, DamagePerSecond={currentDamagePerSecond}, EnemiesAffected={currentEnemiesAffected}");
@@ -121,7 +112,7 @@ public class ElectroHackAbility : MonoBehaviour
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));
         projectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
 
-        projectile.GetComponent<ElectroHackShot>().Initialize(baseRadius, currentEnemiesAffected, currentDamagePerSecond, tickInterval, currentDuration, slowMultiplier);
+        projectile.GetComponent<ElectroHackShot>().Initialize(baseRadius, currentEnemiesAffected, currentDamagePerSecond, currentDuration, slowMultiplier, targetLayer);
         Destroy(projectile, projectileLifeTime);
     }
 

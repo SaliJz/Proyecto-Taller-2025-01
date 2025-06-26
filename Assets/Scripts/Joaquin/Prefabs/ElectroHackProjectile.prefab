@@ -9764,7 +9764,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -9809,6 +9809,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe6472b0485e0e847a6bb13d72b7687b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  electroAreaEffectPrefab: {fileID: 4313798308361509767, guid: 4748920fe0586964cb4c096d76c363bb,
+    type: 3}
 --- !u!1 &7684828168102399197
 GameObject:
   m_ObjectHideFlags: 0

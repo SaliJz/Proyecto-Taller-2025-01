@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IgnitionAreaEffect : BaseAreaEffect
+public class ElectroAreaEffect : BaseAreaEffect
 {
     protected override void ApplyEffectToTargets()
     {
@@ -12,6 +12,6 @@ public class IgnitionAreaEffect : BaseAreaEffect
 
     protected override Color GetGizmoColor()
     {
-        return new Color(1f, 0.4f, 0f, 0.3f);
+        return new Color(0.2f, 0.8f, 1f, 0.3f);
     }
 }
