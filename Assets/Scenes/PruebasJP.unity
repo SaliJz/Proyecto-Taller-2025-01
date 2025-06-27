@@ -1819,6 +1819,12 @@ MonoBehaviour:
   delayAntesDeAtaque: 1.5
   delayAntesDeDesactivar: 1
   distanciaActivacion: 20
+  distanciaAtaqueMax: 8
+  duracionAtaque: 0.5
+  duracionRetorno: 0.7
+  headOffset: 8
+  tiltX: 40
+  tiltSmoothSpeed: 8
 --- !u!114 &561226453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3207,27 +3213,27 @@ PrefabInstance:
     - target: {fileID: 4763811328902162358, guid: c2d966d4d56151a42a8cf612622fcdbe,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -31.452744
+      value: -31.4
       objectReference: {fileID: 0}
     - target: {fileID: 4763811328902162358, guid: c2d966d4d56151a42a8cf612622fcdbe,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.13
+      value: 4.1
       objectReference: {fileID: 0}
     - target: {fileID: 4763811328902162358, guid: c2d966d4d56151a42a8cf612622fcdbe,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 141.42
+      value: 141.5
       objectReference: {fileID: 0}
     - target: {fileID: 4763811328902162358, guid: c2d966d4d56151a42a8cf612622fcdbe,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.95219934
+      value: 0.92021245
       objectReference: {fileID: 0}
     - target: {fileID: 4763811328902162358, guid: c2d966d4d56151a42a8cf612622fcdbe,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.3054774
+      value: 0.39141935
       objectReference: {fileID: 0}
     - target: {fileID: 4763811328902162358, guid: c2d966d4d56151a42a8cf612622fcdbe,
         type: 3}
@@ -3242,7 +3248,7 @@ PrefabInstance:
     - target: {fileID: 4763811328902162358, guid: c2d966d4d56151a42a8cf612622fcdbe,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 35.574
+      value: 46.086
       objectReference: {fileID: 0}
     - target: {fileID: 4763811328902162358, guid: c2d966d4d56151a42a8cf612622fcdbe,
         type: 3}
