@@ -15,8 +15,6 @@ public class MindjackShot : MonoBehaviour
         this.radius = radius;
         this.damagePerSecond = dps;
         this.duration = duration;
-
-        transform.localScale = new Vector3(this.radius * 2, this.radius * 2, this.radius * 2);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -41,8 +39,8 @@ public class MindjackShot : MonoBehaviour
     {
         if (impactEffect != null)
         {
-            Instantiate(impactEffect, transform.position, Quaternion.identity);
-            Destroy(impactEffect.gameObject, 2f);
+            GameObject impactInstance = Instantiate(impactEffect, transform.position, Quaternion.identity).gameObject;
+            Destroy(impactInstance, 3f);
         }
         else
         {

@@ -13,9 +13,10 @@ public class PlayerDash : MonoBehaviour
     [SerializeField] private float dashDistance = 15f;
     [SerializeField] private float dashDuration = 0.25f;
     [SerializeField] private float dashCooldown = 1f;
-    [SerializeField] private float minPostDashSpeed = 1f; // Velocidad mínima después del dash
+    [SerializeField] private float minPostDashSpeed = 2.5f;
     [SerializeField] private float dashCollisionCheckDistance = 2f;
-    [SerializeField] private float bounceSpeed = 5f;
+    [SerializeField] private float postDashImpulse = 2.5f;
+    [SerializeField] private float bounceImpulse = 5f;
     [SerializeField] private bool useCameraForward = true;
     [SerializeField] private bool flattenDashDirection = true;
 
@@ -87,7 +88,6 @@ public class PlayerDash : MonoBehaviour
             virtualCam.m_Lens.FieldOfView = Mathf.Lerp(currentFov, targetFov, Time.deltaTime * fovTransitionSpeed);
         }
 
-        // Verifica que haya input vertical
         float vertical = Input.GetAxisRaw("Vertical");
 
         bool isMovingForward = vertical > 0.1f;
@@ -140,8 +140,8 @@ public class PlayerDash : MonoBehaviour
 
     private void StartDashState(Vector3 dashDirection)
     {
-        PlayEffect();
-        PlayClip();
+        if (dashEffect != null) dashEffect?.Play();
+        if (sfxSource != null && dashSound != null) sfxSource.PlayOneShot(dashSound);
 
         isDashing = true;
         canDash = false;
@@ -156,31 +156,43 @@ public class PlayerDash : MonoBehaviour
 
         if (playerMovement.IsGrounded)
         {
-            playerMovement.enabled = false;
+            playerMovement.MovementEnabled = false;
         }
     }
     
     private void ResetDashState()
     {
-        StopEffect();
+        if (dashEffect != null) dashEffect.Stop();
 
         isDashing = false;
         rb.useGravity = true;
 
-        AdjustPostDashVelocity();
+        //AdjustPostDashVelocity();
+        ApplyPostDashImpulse();
 
-        if (!playerMovement.enabled)
+        if (!playerMovement.MovementEnabled)
         {
-            playerMovement.enabled = true;
+            playerMovement.MovementEnabled = true;
         }
 
-        StartCoroutine(ResetDashCooldown());
+        Invoke(nameof(ResetDashCooldown), dashCooldown);
     }
 
-    private IEnumerator ResetDashCooldown()
+    private void ResetDashCooldown()
     {
-        yield return new WaitForSeconds(dashCooldown);
         canDash = true;
+    }
+
+    private void ApplyPostDashImpulse()
+    {
+        rb.velocity = Vector3.zero;
+        rb.AddForce(currentDashDirection * postDashImpulse, ForceMode.Impulse);
+    }
+
+    private void ApplyBounce()
+    {
+        rb.velocity = Vector3.zero;
+        rb.AddForce(-currentDashDirection * bounceImpulse, ForceMode.Impulse);
     }
 
     private Vector3 GetDashDirection()
@@ -201,7 +213,7 @@ public class PlayerDash : MonoBehaviour
 
         return direction.normalized;
     }
-
+    /*
     private void AdjustPostDashVelocity()
     {
         Vector3 horizontalVel = new Vector3(currentDashDirection.x, 0f, currentDashDirection.z).normalized * minPostDashSpeed;
@@ -215,17 +227,7 @@ public class PlayerDash : MonoBehaviour
             rb.velocity = new Vector3(horizontalVel.x, rb.velocity.y, horizontalVel.z);
         }
     }
-
-    private void PlayEffect()
-    {
-        if (dashEffect != null) dashEffect?.Play();
-    }
-
-    private void StopEffect()
-    {
-        if (dashEffect != null) dashEffect?.Stop();
-    }
-
+    */
     private bool IsPathClear(Vector3 direction, float distance)
     {
         RaycastHit hit;
@@ -234,35 +236,10 @@ public class PlayerDash : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!isDashing)
+        if (isDashing)
         {
-            CancelDash();
+            ResetDashState();
             ApplyBounce();
-        }
-    }
-
-    private void CancelDash()
-    {
-        rb.useGravity = true;
-        isDashing = false;
-
-        if (virtualCam != null)
-        {
-            targetFov = defaultFov;
-        }
-        StopEffect();
-    }
-
-    private void ApplyBounce()
-    {
-        rb.velocity = -currentDashDirection * bounceSpeed;
-    }
-
-    private void PlayClip()
-    {
-        if (sfxSource != null && dashSound != null)
-        {
-            sfxSource.PlayOneShot(dashSound);
         }
     }
 }

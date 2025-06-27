@@ -10,6 +10,7 @@ public class GlitchTimeArea : MonoBehaviour
     private LayerMask enemyLayer;
 
     [SerializeField] private GameObject glitchParticlePrefab;
+    [SerializeField] private float expandSpeed = 1f;
 
     private HashSet<EnemyAbilityReceiver> affectedEnemies = new HashSet<EnemyAbilityReceiver>();
 
@@ -29,16 +30,23 @@ public class GlitchTimeArea : MonoBehaviour
         Vector3 initialScale = Vector3.one;
         Vector3 targetScale = new Vector3(radius * 2, radius * 2, radius * 2);
 
+        float expandDuration = Mathf.Min(duration, expandSpeed);
+        float expandTime = 0f;
+
+        while (expandTime < expandDuration)
+        {
+            float progress = expandTime / expandDuration;
+            transform.localScale = Vector3.Lerp(initialScale, targetScale, progress);
+            ApplyEffect(transform.position, radius);
+            expandTime += Time.deltaTime;
+            yield return null;
+        }
+
         while (elapsedTime < duration)
         {
-            float progress = elapsedTime / duration;
-            transform.localScale = Vector3.Lerp(initialScale, targetScale, progress);
-            float currentRadius = Mathf.Lerp(0.5f, radius, progress);
-
-            ApplyEffect(transform.position, currentRadius);
-
-            elapsedTime += Time.deltaTime;
+            ApplyEffect(transform.position, radius);
             yield return null;
+            elapsedTime += Time.deltaTime;
         }
 
         Destroy(gameObject);

@@ -18,12 +18,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float airControl = 0.2f;
 
     [Header("Jump")]
-    [SerializeField] private float minJumpForce = 4f;
-    [SerializeField] private float maxJumpForce = 8f;
-    [SerializeField] private float maxJumpTime = 0.3f;
+    [SerializeField] private float jumpForce = 8f;
     [SerializeField] private float gravityFallMultiplier = 3.5f;
-    private bool isJumping = false;
-    private float jumpTimeCounter;
 
     [Header("Ground Check")]
     [SerializeField] private float playerHeight = 2f;
@@ -31,8 +27,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float groundCheckDistance = 0.2f;
     private bool isGrounded;
 
+    public bool IsMoving => rb.velocity.magnitude > 0.1f;
     public bool IsGrounded => isGrounded;
-    public float SpeedWalk => speedWalk;
+    public bool MovementEnabled { get; set; } = true;
 
     void Awake()
     {
@@ -42,6 +39,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (!MovementEnabled) return;
+
         CheckGround();
         HandleJumpInput();
         HandleDrag();
@@ -49,6 +48,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!MovementEnabled) return;
+
         HandleMovement();
         HandleGravity();
     }
@@ -95,29 +96,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(jumpKey) && isGrounded)
         {
-            isJumping = true;
-            jumpTimeCounter = maxJumpTime;
             rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-            rb.AddForce(Vector3.up * minJumpForce, ForceMode.Impulse);
-        }
-
-        if (Input.GetKey(jumpKey) && isJumping)
-        {
-            if (jumpTimeCounter > 0)
-            {
-                float jumpForce = Mathf.Lerp(maxJumpForce, minJumpForce, 1 - (jumpTimeCounter / maxJumpTime));
-                rb.AddForce(Vector3.up * jumpForce * Time.deltaTime, ForceMode.Impulse);
-                jumpTimeCounter -= Time.deltaTime;
-            }
-            else
-            {
-                isJumping = false;
-            }
-        }
-
-        if (Input.GetKeyUp(jumpKey))
-        {
-            isJumping = false;
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
     }
 
