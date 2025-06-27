@@ -9,6 +9,7 @@ public class GlitchShot : MonoBehaviour
     private float radius;
     private LayerMask enemyLayer;
 
+    [SerializeField] private GameObject glitchParticlePrefab;
     [SerializeField] private GameObject glitchAreaPrefab;
 
     public void Initialize(float radius, float duration, float slowMultiplier, LayerMask enemyLayer)
@@ -17,8 +18,6 @@ public class GlitchShot : MonoBehaviour
         this.duration = duration;
         this.slowMultiplier = slowMultiplier;
         this.enemyLayer = enemyLayer;
-
-        transform.localScale = new Vector3(this.radius * 2, this.radius * 2, this.radius * 2);
     }
 
     private void OnTriggerEnter(Collider other)

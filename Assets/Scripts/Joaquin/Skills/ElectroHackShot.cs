@@ -23,8 +23,6 @@ public class ElectroHackShot : MonoBehaviour
         this.duration = duration;
         this.slowMultiplier = slowMultiplier;
         this.targetLayer = targetLayer;
-
-        transform.localScale = new Vector3(this.radius * 2, this.radius * 2, this.radius * 2);
     }
 
     private void OnTriggerEnter(Collider other)

@@ -18,8 +18,6 @@ public class IgnitionCodeShot : MonoBehaviour
         this.damagePerSecond = damagePerSecond;
         this.duration = duration;
         this.targetLayer = enemyLayer;
-
-        transform.localScale = new Vector3(this.radius * 2, this.radius * 2, this.radius * 2);
     }
 
     private void OnTriggerEnter(Collider other)
