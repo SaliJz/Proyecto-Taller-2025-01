@@ -4,6 +4,7 @@ using TMPro;
 using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class ShopController : MonoBehaviour
 {
@@ -19,6 +20,8 @@ public class ShopController : MonoBehaviour
     [SerializeField] private Button generalShopButton;
 
     [SerializeField] private Button skipButton;
+
+    [SerializeField] private string nextScene = "";
 
     [SerializeField] private TextMeshProUGUI currentInfoFragments;
 
@@ -52,12 +55,6 @@ public class ShopController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (!juegoPausado) PauseGame();
-            else RestartGame();
-        }
-
         if (hudManager != null && currentInfoFragments != null)
         {
             if (HUDManager.Instance != null)
@@ -121,6 +118,8 @@ public class ShopController : MonoBehaviour
         Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        SceneManager.LoadScene(nextScene);
         gameObject.SetActive(false);
     }
 }
