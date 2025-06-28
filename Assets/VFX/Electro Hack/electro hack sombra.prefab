@@ -9,9 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1633299312220432856}
-  - component: {fileID: 7809647044417331405}
-  - component: {fileID: 5543111041564647795}
-  - component: {fileID: 4648771032365382282}
+  - component: {fileID: 41359866752555766}
   m_Layer: 0
   m_Name: electro hack sombra
   m_TagString: Untagged
@@ -27,86 +25,38 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2525813096395768750}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.7071068, z: -0.7071068, w: 0}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0.7071068, w: 0}
   m_LocalPosition: {x: -3.786, y: 0.9129327, z: 1.574}
   m_LocalScale: {x: 2.4071548, y: 2.447401, z: 2.4071543}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3518762049677517061}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: -180, y: 0, z: 0}
---- !u!33 &7809647044417331405
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2525813096395768750}
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &5543111041564647795
-MeshRenderer:
+  m_LocalEulerAnglesHint: {x: -270, y: 0, z: -180}
+--- !u!114 &41359866752555766
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2525813096395768750}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: fe42598e3859ea24f99cdf63dccfb90e, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &4648771032365382282
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2525813096395768750}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: fe42598e3859ea24f99cdf63dccfb90e, type: 2}
+  m_DrawDistance: 1000
+  m_FadeScale: 0.9
+  m_StartAngleFade: 180
+  m_EndAngleFade: 180
+  m_UVScale: {x: 1, y: 1}
+  m_UVBias: {x: 0, y: 0}
+  m_DecalLayerMask: 1
+  m_ScaleMode: 0
+  m_Offset: {x: 0, y: 0, z: 2.5}
+  m_Size: {x: 13, y: 13, z: 10}
+  m_FadeFactor: 1
 --- !u!1001 &8119996662788349048
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -115,6 +65,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1633299312220432856}
     m_Modifications:
+    - target: {fileID: 2444575502956381081, guid: 66ba502b0219e1846a1ef999bfe01452,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 883baa696048ed54c84b40f6e37ebd4b, type: 2}
     - target: {fileID: 2461118664860225824, guid: 66ba502b0219e1846a1ef999bfe01452,
         type: 3}
       propertyPath: m_Name
@@ -143,12 +98,12 @@ PrefabInstance:
     - target: {fileID: 4640152930987294077, guid: 66ba502b0219e1846a1ef999bfe01452,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.016
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4640152930987294077, guid: 66ba502b0219e1846a1ef999bfe01452,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.012
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4640152930987294077, guid: 66ba502b0219e1846a1ef999bfe01452,
         type: 3}
@@ -184,6 +139,46 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7459115266703047594, guid: 66ba502b0219e1846a1ef999bfe01452,
+        type: 3}
+      propertyPath: simulationSpeed
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7459115266703047594, guid: 66ba502b0219e1846a1ef999bfe01452,
+        type: 3}
+      propertyPath: ShapeModule.type
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7459115266703047594, guid: 66ba502b0219e1846a1ef999bfe01452,
+        type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 6.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 7459115266703047594, guid: 66ba502b0219e1846a1ef999bfe01452,
+        type: 3}
+      propertyPath: ShapeModule.radiusThickness
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7459115266703047594, guid: 66ba502b0219e1846a1ef999bfe01452,
+        type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7459115266703047594, guid: 66ba502b0219e1846a1ef999bfe01452,
+        type: 3}
+      propertyPath: InitialModule.startSize.minScalar
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7459115266703047594, guid: 66ba502b0219e1846a1ef999bfe01452,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7459115266703047594, guid: 66ba502b0219e1846a1ef999bfe01452,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.minScalar
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
