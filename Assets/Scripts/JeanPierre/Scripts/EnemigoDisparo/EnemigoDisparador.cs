@@ -100,19 +100,17 @@ public class EnemigoDisparador : MonoBehaviour
         // 4) Esperar el tiempo de carga antes de “liberar” bala y efecto
         yield return new WaitForSeconds(tiempoCargaBala);
 
-        // 5) Desprender (unparent) la bala para que siga su lógica de vuelo
-        bala.transform.SetParent(null);
+        // 5) Desprender (unparent) la bala sólo si aún existe
+        if (bala != null)
+            bala.transform.SetParent(null);
 
-        // 6) Opcional: desprender el efecto si quieres que continúe su propia animación en el mundo
+        // 6) Desprender el efecto sólo si aún existe
         if (efecto != null)
             efecto.transform.SetParent(null);
 
-        // (Si tu efecto tiene un sistema de destrucción automático, se limpiará solo;
-        //  si no, considera añadir un Destroy(efecto, duraciónDeseada);)
+        // (Opcional) Si no se destruye solo: Destroy(efecto, 2f);
     }
 }
-
-
 
 
 
