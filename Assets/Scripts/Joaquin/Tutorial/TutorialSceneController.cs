@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class TutorialSceneController : MonoBehaviour
 {
-    [SerializeField] private GameObject gun;
+    //[SerializeField] private GameObject gun;
     [SerializeField] private GameObject weaponIcon;
     [SerializeField] private GameObject spawnerManager;
     [SerializeField] private GameObject spawners;
@@ -27,22 +27,23 @@ public class TutorialSceneController : MonoBehaviour
 
     private void Awake()
     {
-        if (gun != null)
-        {
-            gunWeapon = gun.GetComponent<Weapon>();
-        }
+        if (weaponManager != null) weaponManager.CanEquipFirstWeapon = false;
+        if (weaponManager != null) weaponManager.CanChangeWeapon = false;
+        //if (gun != null)
+        //{
+        //    gunWeapon = gun.GetComponent<Weapon>();
+        //}
     }
 
     private void Start()
     {
-        if (weaponManager != null) weaponManager.enabled = false;
-
+       
         if (AbilityHolder != null) AbilityHolder.SetActive(false);
         if (abilityIcon != null) abilityIcon.SetActive(false);
 
         if (missionManager != null) missionManager.SetActive(false);
 
-        if (gun != null) gun.SetActive(false);
+        //if (gun != null) gun.SetActive(false);
         if (weaponIcon != null) weaponIcon.SetActive(false);
 
         if (spawnerManager != null) spawnerManager.SetActive(false);
@@ -56,9 +57,12 @@ public class TutorialSceneController : MonoBehaviour
 
     public void ActiveGun()
     {
-        if (gun != null) gun.SetActive(true);
+        //if (gun != null) gun.SetActive(true);
+        if (weaponManager != null) weaponManager.CanEquipFirstWeapon = true;
+        if (weaponManager != null) weaponManager.EquipWeaponInstant(0);
         if (weaponIcon != null) weaponIcon.SetActive(true);
 
+      
         if (gunWeapon != null)
         {
             HUDManager.Instance.UpdateAmmo(gunWeapon.CurrentAmmo, gunWeapon.TotalAmmo);
@@ -75,7 +79,7 @@ public class TutorialSceneController : MonoBehaviour
     {
         if (weaponManager != null)
         {
-            weaponManager.enabled = true;
+            weaponManager.CanChangeWeapon = true;
         }
 
         if (AbilityHolder != null) AbilityHolder.SetActive(true);
