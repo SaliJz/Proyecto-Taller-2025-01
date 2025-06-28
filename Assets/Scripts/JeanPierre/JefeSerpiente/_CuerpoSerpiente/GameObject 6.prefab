@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 1805664073598659563}
   - component: {fileID: 1536662257227066073}
   - component: {fileID: 875289083567100820}
+  - component: {fileID: 8915776994026419671}
+  - component: {fileID: 8405805787559571858}
   m_Layer: 0
   m_Name: Body_7 (1)
   m_TagString: Untagged
@@ -83,6 +85,41 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &8915776994026419671
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5630680505269032200}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 170.55765, y: 158.66241, z: 170.55771}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8405805787559571858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5630680505269032200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee995a67a12cbc940819c733baab20c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageAmount: 10
+  knockbackForce: 20
 --- !u!1 &7675547520133598105
 GameObject:
   m_ObjectHideFlags: 0
