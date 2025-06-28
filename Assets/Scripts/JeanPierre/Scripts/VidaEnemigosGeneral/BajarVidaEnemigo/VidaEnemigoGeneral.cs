@@ -73,11 +73,12 @@ public class VidaEnemigoGeneral : MonoBehaviour
         meshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
         staticMeshRenderers = GetComponentsInChildren<MeshRenderer>();
         colorController = GetComponent<TipoColorHDRController>();
-        animator = GetComponentInChildren<Animator>();
     }
 
     void Start()
     {
+        animator = GetComponentInChildren<Animator>();
+
         tipo = (TipoEnemigo)UnityEngine.Random.Range(0, 3);
 #if UNITY_EDITOR
         Debug.Log($"[VidaEnemigo] Tipo: {tipo}");

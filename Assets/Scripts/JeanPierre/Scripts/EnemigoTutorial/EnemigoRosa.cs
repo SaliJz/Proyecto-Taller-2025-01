@@ -1,5 +1,8 @@
+using System.Collections;
 using System.Linq;
+using UnityEditor.AI;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UI;
 
 public class EnemigoRosa : MonoBehaviour
@@ -40,6 +43,7 @@ public class EnemigoRosa : MonoBehaviour
     private TipoEnemigo tipo;
     private bool isDead = false;
     private TipoColorHDRController colorController;
+    private Animator animator;
 
     void Awake()
     {
@@ -49,6 +53,8 @@ public class EnemigoRosa : MonoBehaviour
 
     void Start()
     {
+        animator = GetComponentInChildren<Animator>();
+
         // Forzar siempre “Pistola”
         tipo = TipoEnemigo.Pistola;
 #if UNITY_EDITOR
@@ -154,9 +160,17 @@ public class EnemigoRosa : MonoBehaviour
         HUDManager.Instance?.AddInfoFragment(fragments);
         MissionManager.Instance?.RegisterKill(gameObject.tag, name, tipo.ToString());
 
+        StartCoroutine(TimeToDead());
+    }
+    IEnumerator TimeToDead()
+    {
+        NavMeshAgent nav = GetComponent<NavMeshAgent>();
+        nav.enabled = false;
+        if (animator != null) animator.SetBool("isDead", true);
+        yield return new WaitForSeconds(2f);
+        if (animator != null) animator.SetBool("Die", true);
         Destroy(gameObject);
     }
-
 }
 
 
