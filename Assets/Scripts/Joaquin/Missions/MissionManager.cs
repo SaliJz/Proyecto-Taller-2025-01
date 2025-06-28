@@ -13,7 +13,7 @@ public class MissionManager : MonoBehaviour
     private enum MissionMode { Purgador, JSS, ElUnico }
 
     [Header("Misión base")]
-    [SerializeField] private List<Mission> baseMissions; // ScriptableObjects
+    [SerializeField] private List<Mission> baseMissions;
 
     [SerializeField] private GameObject[] teleporters;
 
@@ -30,7 +30,7 @@ public class MissionManager : MonoBehaviour
     [SerializeField] private float totalCaptureTime = 120f;
     [SerializeField] private float currentTimeCapture = 30f;
     [SerializeField] private MissionMode baseMissionMode;
-    [SerializeField] private bool useBaseMissionMode = false; // Si se usa el modo base configurado
+    [SerializeField] private bool useBaseMissionMode = false;
 
     private bool isCapturing = false;
     private bool isEnemyInCaptureZone = false;
@@ -57,8 +57,7 @@ public class MissionManager : MonoBehaviour
             spawner = FindObjectOfType<EnemySpawner>();
         }
 
-        SceneManager.sceneLoaded += OnSceneLoaded; // Suscribe al evento
-
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnEnable()
@@ -75,7 +74,7 @@ public class MissionManager : MonoBehaviour
         {
             if (isEnemyInCaptureZone)
             {
-                return; // No se puede capturar si hay enemigos en la zona
+                return;
             }
             else
             {
@@ -323,7 +322,7 @@ public class MissionManager : MonoBehaviour
 
         activeMission = true;
     }
-
+    /*
     private void SelectTeleporter()
     {
         if (teleporters == null || teleporters.Length == 0) return;
@@ -341,7 +340,7 @@ public class MissionManager : MonoBehaviour
             HUDManager.Instance?.ShowMission($"Dirígete al teletransportador: {selectedTeleporter.name}", true);
         }
     }
-
+    */
     private IEnumerator TimerCoroutine(float duration)
     {
         float remaining = duration;
@@ -377,7 +376,9 @@ public class MissionManager : MonoBehaviour
     {
         activeMission = false;
 
-        SelectTeleporter();
+        FindObjectOfType<ShopController>()?.PauseGame();
+
+        //electTeleporter();
         //TutorialManager.Instance.StartScenarioByManual(8);
 
         currentMissionIndex++;
@@ -397,7 +398,7 @@ public class MissionManager : MonoBehaviour
             }
             else
             {
-                return; // No cambiar de escena
+                return;
             }
         }
 
