@@ -26,7 +26,7 @@ public class ColumnWrapOnInput : MonoBehaviour
     private Transform cabeza;
     private bool isWrapping = false;
 
-    // Lista para guardar y controlar los colliders de cada segmento
+    // Lista para guardar y controlar todos los colliders de cada segmento (incluyendo hijos)
     private List<Collider> segmentColliders = new List<Collider>();
 
     void Awake()
@@ -60,7 +60,7 @@ public class ColumnWrapOnInput : MonoBehaviour
     {
         isWrapping = true;
 
-        // 1) Desactivar colliders de todos los segmentos antes de moverse
+        // 1) Desactivar colliders de todos los segmentos y sus hijos antes de moverse
         CacheAndDisableColliders();
 
         // 2) Habilitar SnakeController para que se dirija a la columna
@@ -81,7 +81,6 @@ public class ColumnWrapOnInput : MonoBehaviour
         Transform player = GameObject.FindWithTag("Player")?.transform;
         while (true)
         {
-            // Orientar cabeza hacia el jugador mientras avanza
             if (player != null)
             {
                 Vector3 lookPos = new Vector3(player.position.x, cabeza.position.y, player.position.z);
@@ -97,7 +96,7 @@ public class ColumnWrapOnInput : MonoBehaviour
             yield return null;
         }
 
-        // 4) Activar colliders justo al llegar para permitir detección de daño
+        // 4) Activar colliders justo al llegar para permitir detección de daño (todos, incluidos hijos)
         EnableColliders();
 
         // 5) Enrollar alrededor de la columna
@@ -111,8 +110,9 @@ public class ColumnWrapOnInput : MonoBehaviour
         segmentColliders.Clear();
         foreach (Transform seg in snake.Segmentos)
         {
-            Collider col = seg.GetComponent<Collider>();
-            if (col != null)
+            // Recoge todos los colliders del segmento y sus hijos
+            Collider[] cols = seg.GetComponentsInChildren<Collider>();
+            foreach (Collider col in cols)
             {
                 segmentColliders.Add(col);
                 col.enabled = false;
@@ -168,7 +168,6 @@ public class ColumnWrapOnInput : MonoBehaviour
                 Transform seg = snake.Segmentos[i];
                 seg.position = Vector3.Lerp(startPos[i], targetPos[i], frac);
 
-                // Orientaciones (igual que antes)…
                 if (i == 0 && player != null)
                 {
                     Vector3 lookPos = new Vector3(player.position.x, seg.position.y, player.position.z);
@@ -190,7 +189,7 @@ public class ColumnWrapOnInput : MonoBehaviour
             yield return null;
         }
 
-        // Ajuste final de posiciones y rotaciones (igual que antes)…
+        // Ajuste final de posiciones y rotaciones
         for (int i = 0; i < segCount; i++)
         {
             Transform seg = snake.Segmentos[i];
@@ -226,6 +225,244 @@ public class ColumnWrapOnInput : MonoBehaviour
         return Mathf.Max(col.bounds.extents.x, col.bounds.extents.z);
     }
 }
+
+
+
+
+
+
+
+
+
+
+//using System.Collections;
+//using System.Collections.Generic;
+//using UnityEngine;
+
+//[RequireComponent(typeof(SnakeController))]
+//public class ColumnWrapOnInput : MonoBehaviour
+//{
+//    [Header("Referencias")]
+//    public Transform columna;
+
+//    [Header("Parámetros de llegada")]
+//    public float umbralLlegada = 0.2f;
+
+//    [Header("Configuración de enrollado")]
+//    public int vueltasCompletas = 3;
+//    public float offsetRadio = 0.2f;
+//    [Tooltip("Distancia extra que sobresale la cabeza de la columna")]
+//    public float headOffset = 0.5f;
+//    public float velocidadEnrollado = 1f;
+//    public int segmentosCuello = 1;
+
+//    [Header("Altura de elevación")]
+//    public float alturaTotal; // Ahora pública, ajustable en Inspector
+
+//    private SnakeController snake;
+//    private Transform cabeza;
+//    private bool isWrapping = false;
+
+//    // Lista para guardar y controlar los colliders de cada segmento
+//    private List<Collider> segmentColliders = new List<Collider>();
+
+//    void Awake()
+//    {
+//        snake = GetComponent<SnakeController>();
+//        if (snake == null)
+//            Debug.LogError("SnakeController no encontrado.");
+
+//        // Desactiva el movimiento hasta que se presione 'I'
+//        snake.enabled = false;
+//    }
+
+//    void Update()
+//    {
+//        if (Input.GetKeyDown(KeyCode.I) && !isWrapping)
+//            TriggerWrap();
+//    }
+
+//    public void TriggerWrap()
+//    {
+//        if (columna == null)
+//        {
+//            Debug.LogError("Columna no asignada.");
+//            return;
+//        }
+//        if (!isWrapping)
+//            StartCoroutine(InitAndWrap());
+//    }
+
+//    private IEnumerator InitAndWrap()
+//    {
+//        isWrapping = true;
+
+//        // 1) Desactivar colliders de todos los segmentos antes de moverse
+//        CacheAndDisableColliders();
+
+//        // 2) Habilitar SnakeController para que se dirija a la columna
+//        snake.enabled = true;
+//        snake.jugador = columna;
+//        yield return null;
+
+//        if (snake.Segmentos.Count == 0)
+//        {
+//            Debug.LogError("SnakeController sin segmentos.");
+//            snake.enabled = false;
+//            isWrapping = false;
+//            yield break;
+//        }
+//        cabeza = snake.Segmentos[0];
+
+//        // 3) Mover hasta la columna
+//        Transform player = GameObject.FindWithTag("Player")?.transform;
+//        while (true)
+//        {
+//            // Orientar cabeza hacia el jugador mientras avanza
+//            if (player != null)
+//            {
+//                Vector3 lookPos = new Vector3(player.position.x, cabeza.position.y, player.position.z);
+//                cabeza.LookAt(lookPos);
+//            }
+
+//            float dist = Vector3.Distance(
+//                new Vector3(cabeza.position.x, 0, cabeza.position.z),
+//                new Vector3(columna.position.x, 0, columna.position.z)
+//            );
+//            if (dist <= umbralLlegada)
+//                break;
+//            yield return null;
+//        }
+
+//        // 4) Activar colliders justo al llegar para permitir detección de daño
+//        EnableColliders();
+
+//        // 5) Enrollar alrededor de la columna
+//        yield return StartCoroutine(Enrollar());
+
+//        isWrapping = false;
+//    }
+
+//    private void CacheAndDisableColliders()
+//    {
+//        segmentColliders.Clear();
+//        foreach (Transform seg in snake.Segmentos)
+//        {
+//            Collider col = seg.GetComponent<Collider>();
+//            if (col != null)
+//            {
+//                segmentColliders.Add(col);
+//                col.enabled = false;
+//            }
+//        }
+//    }
+
+//    private void EnableColliders()
+//    {
+//        foreach (Collider col in segmentColliders)
+//            col.enabled = true;
+//    }
+
+//    private IEnumerator Enrollar()
+//    {
+//        snake.enabled = false;
+
+//        Transform player = GameObject.FindWithTag("Player")?.transform;
+//        if (player == null)
+//            Debug.LogError("Player no encontrado para orientar la cabeza.");
+
+//        int segCount = snake.Segmentos.Count;
+//        alturaTotal = snake.distanciaCabezaCuerpo
+//                    + snake.separacionSegmentos * (segCount - 2)
+//                    + snake.separacionCola;
+
+//        // Guardar posiciones iniciales
+//        List<Vector3> startPos = new List<Vector3>(segCount);
+//        for (int i = 0; i < segCount; i++)
+//            startPos.Add(snake.Segmentos[i].position);
+
+//        // Calcular posiciones en espiral alrededor de la columna
+//        List<Vector3> targetPos = new List<Vector3>(segCount);
+//        float radio = GetColumnRadius();
+//        for (int i = 0; i < segCount; i++)
+//        {
+//            float t = 1f - ((float)i / (segCount - 1));
+//            float ang = t * vueltasCompletas * 2 * Mathf.PI;
+//            float alt = t * alturaTotal;
+//            Vector3 dir = new Vector3(Mathf.Cos(ang), 0, Mathf.Sin(ang));
+//            float extra = (i == 0) ? headOffset : 0f;
+//            Vector3 p = columna.position + dir * (radio + offsetRadio + extra) + Vector3.up * alt;
+//            targetPos.Add(p);
+//        }
+
+//        // Animar enrollado
+//        float elapsed = 0f;
+//        while (elapsed < velocidadEnrollado)
+//        {
+//            float frac = elapsed / velocidadEnrollado;
+//            for (int i = 0; i < segCount; i++)
+//            {
+//                Transform seg = snake.Segmentos[i];
+//                seg.position = Vector3.Lerp(startPos[i], targetPos[i], frac);
+
+//                // Orientaciones (igual que antes)…
+//                if (i == 0 && player != null)
+//                {
+//                    Vector3 lookPos = new Vector3(player.position.x, seg.position.y, player.position.z);
+//                    seg.LookAt(lookPos);
+//                }
+//                else if (i <= segmentosCuello)
+//                {
+//                    seg.LookAt(new Vector3(columna.position.x, seg.position.y, columna.position.z));
+//                }
+//                else
+//                {
+//                    Vector3 next = (i < segCount - 1)
+//                        ? targetPos[i + 1]
+//                        : columna.position + Vector3.up * (targetPos[i].y + 0.1f);
+//                    seg.LookAt(next);
+//                }
+//            }
+//            elapsed += Time.deltaTime;
+//            yield return null;
+//        }
+
+//        // Ajuste final de posiciones y rotaciones (igual que antes)…
+//        for (int i = 0; i < segCount; i++)
+//        {
+//            Transform seg = snake.Segmentos[i];
+//            seg.position = targetPos[i];
+//            if (i == 0 && player != null)
+//            {
+//                Vector3 lookPos = new Vector3(player.position.x, seg.position.y, player.position.z);
+//                seg.LookAt(lookPos);
+//            }
+//            else if (i <= segmentosCuello)
+//            {
+//                seg.LookAt(new Vector3(columna.position.x, seg.position.y, columna.position.z));
+//            }
+//            else
+//            {
+//                Vector3 next = (i < segCount - 1)
+//                    ? targetPos[i + 1]
+//                    : columna.position + Vector3.up * (targetPos[i].y + 0.1f);
+//                seg.LookAt(next);
+//            }
+//        }
+
+//        yield break;
+//    }
+
+//    public float GetColumnRadius()
+//    {
+//        var col = columna.GetComponent<Collider>();
+//        if (col is CapsuleCollider cap)
+//            return cap.radius * Mathf.Max(columna.localScale.x, columna.localScale.z);
+//        if (col is SphereCollider sph)
+//            return sph.radius * Mathf.Max(columna.localScale.x, columna.localScale.z);
+//        return Mathf.Max(col.bounds.extents.x, col.bounds.extents.z);
+//    }
+//}
 
 
 
