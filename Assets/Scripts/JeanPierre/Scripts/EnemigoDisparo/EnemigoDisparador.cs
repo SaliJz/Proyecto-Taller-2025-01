@@ -13,6 +13,10 @@ public class EnemigoDisparador : MonoBehaviour
     public float velocidadBala = 10f;
     public float distanciaDisparo = 10f;
 
+    [Header("Efecto de disparo")]
+    [Tooltip("Prefab del efecto que se crea al disparar (muzzle flash, etc.)")]
+    public GameObject efectoDisparoPrefab;
+
     [Header("Tiempo de carga de la bala")]
     public float tiempoCargaBala = 1f;
 
@@ -57,6 +61,18 @@ public class EnemigoDisparador : MonoBehaviour
         if (balaPrefab == null || puntoDisparo == null)
             yield break;
 
+        // 0) Instanciar el efecto de disparo como hijo para que siga al puntoDisparo
+        GameObject efecto = null;
+        if (efectoDisparoPrefab != null)
+        {
+            efecto = Instantiate(
+                efectoDisparoPrefab,
+                puntoDisparo.position,
+                puntoDisparo.rotation,
+                puntoDisparo
+            );
+        }
+
         // 1) Instanciar la bala en el puntoDisparo como hija para que siga su movimiento
         GameObject bala = Instantiate(
             balaPrefab,
@@ -81,14 +97,34 @@ public class EnemigoDisparador : MonoBehaviour
             animator.SetTrigger("Disparar");
         }
 
-        // 4) Esperar a que la bala termine de escalar (tiempo de carga)
-        //    y dentro de su propio CargarYDisparar() se desparenta y dispara
+        // 4) Esperar el tiempo de carga antes de “liberar” bala y efecto
         yield return new WaitForSeconds(tiempoCargaBala);
+
+        // 5) Desprender (unparent) la bala para que siga su lógica de vuelo
+        bala.transform.SetParent(null);
+
+        // 6) Opcional: desprender el efecto si quieres que continúe su propia animación en el mundo
+        if (efecto != null)
+            efecto.transform.SetParent(null);
+
+        // (Si tu efecto tiene un sistema de destrucción automático, se limpiará solo;
+        //  si no, considera añadir un Destroy(efecto, duraciónDeseada);)
     }
 }
 
 
-//// EnemigoDisparador.cs
+
+
+
+
+
+
+
+
+
+
+
+//using System.Collections;
 //using UnityEngine;
 
 //public class EnemigoDisparador : MonoBehaviour
@@ -97,10 +133,11 @@ public class EnemigoDisparador : MonoBehaviour
 //    public Transform jugador;
 
 //    [Header("Disparo de bala")]
-//    public float distanciaDisparo = 10f;
 //    public GameObject balaPrefab;
+//    [Tooltip("Transform desde donde se instancia y sigue la bala hasta el disparo")]
 //    public Transform puntoDisparo;
 //    public float velocidadBala = 10f;
+//    public float distanciaDisparo = 10f;
 
 //    [Header("Tiempo de carga de la bala")]
 //    public float tiempoCargaBala = 1f;
@@ -113,15 +150,16 @@ public class EnemigoDisparador : MonoBehaviour
 
 //    private void Awake()
 //    {
-//        // Si no se asignó el jugador en el Inspector, lo busca por tag
+//        // Busca el jugador por tag si no está asignado
 //        if (jugador == null)
 //        {
 //            var jugadorGO = GameObject.FindGameObjectWithTag("Player");
-//            if (jugadorGO) jugador = jugadorGO.transform;
-//            else Debug.LogWarning($"No se encontró Player en {name}");
+//            if (jugadorGO)
+//                jugador = jugadorGO.transform;
+//            else
+//                Debug.LogWarning($"No se encontró Player en {name}");
 //        }
 
-//        // Cachea el Animator hijo si existe
 //        animator = GetComponentInChildren<Animator>();
 //    }
 
@@ -131,38 +169,29 @@ public class EnemigoDisparador : MonoBehaviour
 
 //        temporizadorDisparo += Time.deltaTime;
 
-//        // Dispara solo si ha pasado el intervalo y estamos dentro del rango
-//        bool okTiempo = temporizadorDisparo >= intervaloDisparo;
-//        bool enRango = Vector3.Distance(transform.position, jugador.position) <= distanciaDisparo;
-
-//        if (okTiempo && enRango)
+//        // Comprueba intervalo y distancia
+//        if (temporizadorDisparo >= intervaloDisparo &&
+//            Vector3.Distance(transform.position, jugador.position) <= distanciaDisparo)
 //        {
-//            DispararBala();
+//            StartCoroutine(SpawnChargeAndShoot());
 //            temporizadorDisparo = 0f;
 //        }
 //    }
 
-//    private void DispararBala()
+//    private IEnumerator SpawnChargeAndShoot()
 //    {
-//        if (balaPrefab == null || puntoDisparo == null) return;
+//        if (balaPrefab == null || puntoDisparo == null)
+//            yield break;
 
-//        // Lanza la animación de disparo si hay Animator
-//        if (animator != null)
-//        {
-//            animator.SetBool("isMoving", false);
-//            animator.SetTrigger("Disparar");
-//        }
-
-//        // Instancia la bala como hija de puntoDisparo
-//        Vector3 spawnPos = puntoDisparo.position;
+//        // 1) Instanciar la bala en el puntoDisparo como hija para que siga su movimiento
 //        GameObject bala = Instantiate(
 //            balaPrefab,
-//            spawnPos,
+//            puntoDisparo.position,
 //            puntoDisparo.rotation,
 //            puntoDisparo
 //        );
 
-//        // Configura el script de la bala
+//        // 2) Configurar el script de la bala
 //        var balaScript = bala.GetComponent<BalaEnemigoVolador>();
 //        if (balaScript != null)
 //        {
@@ -170,10 +199,19 @@ public class EnemigoDisparador : MonoBehaviour
 //            balaScript.velocidad = velocidadBala;
 //            balaScript.tiempoCarga = tiempoCargaBala;
 //        }
+
+//        // 3) Disparar animación de carga, si existe
+//        if (animator != null)
+//        {
+//            animator.SetBool("isMoving", false);
+//            animator.SetTrigger("Disparar");
+//        }
+
+//        // 4) Esperar a que la bala termine de escalar (tiempo de carga)
+//        //    y dentro de su propio CargarYDisparar() se desparenta y dispara
+//        yield return new WaitForSeconds(tiempoCargaBala);
 //    }
 //}
-
-
 
 
 
