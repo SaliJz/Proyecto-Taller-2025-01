@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
-using Unity.VisualScripting;
 using UnityEngine.SceneManagement;
 
 public class Weapon_Menu_Corregido : MonoBehaviour
