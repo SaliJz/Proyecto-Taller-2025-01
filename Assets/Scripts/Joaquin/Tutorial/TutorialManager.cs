@@ -49,6 +49,7 @@ public class TutorialManager : MonoBehaviour
     private void Start()
     {
         player = GameObject.FindWithTag("Player");
+        cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
     }
     public void ScenarioActivationCheckerByZones()
     {
@@ -268,7 +269,7 @@ public class TutorialManager : MonoBehaviour
 
     IEnumerator ActivateTransitionBetweenCamerasCinematic()
     {
-        DisablePlayerScriptsForCameraTransition();
+        //DisablePlayerScriptsForCameraTransition();
         SelectCameraToRenderCinematic(0);
         yield return new WaitForSecondsRealtime(2f);
         SelectCameraToRenderCinematic(1);
@@ -277,7 +278,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(2f);
         cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
         ReturnCamerasToDefault();
-        EnablePlayerScriptsAfterCameraTransition();
+        //EnablePlayerScriptsAfterCameraTransition();
         tutorialSceneController.EnableGlitchScriptsInvulnerables();
     }
 
