@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a74dd6890e548f9449693cf2fb9ffb44
+guid: 7cb0ead8ffd7e3c40a27ed95590d2f68
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -49,7 +49,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 799, y: 485, z: 809, w: 492}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -98,7 +98,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: boton chico_0
+      name: boton play, creditos opciones_0
       rect:
         serializedVersion: 2
-        x: 799
-        y: 485
-        width: 312
-        height: 103
+        x: 366
+        y: 254
+        width: 309
+        height: 376
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,8 +124,50 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f8aab1ba587d18b4281bcbeeba9d26c1
-      internalID: -1950102985
+      spriteID: bab1ce0b24a166f45ba1b839571f8777
+      internalID: -15824391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boton play, creditos opciones_1
+      rect:
+        serializedVersion: 2
+        x: 671
+        y: 253
+        width: 4
+        height: 4
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a33b50687f61e1449ae868e56dca647
+      internalID: 1656246756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boton play, creditos opciones_2
+      rect:
+        serializedVersion: 2
+        x: 780
+        y: 223
+        width: 323
+        height: 472
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e9175ff3d4897a42826461702743379
+      internalID: 2096222382
       vertices: []
       indices: 
       edges: []
@@ -134,14 +176,16 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      boton chico_0: -1950102985
+      boton play, creditos opciones_0: -15824391
+      boton play, creditos opciones_1: 1656246756
+      boton play, creditos opciones_2: 2096222382
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
