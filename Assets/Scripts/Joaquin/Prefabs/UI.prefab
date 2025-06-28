@@ -755,6 +755,7 @@ MonoBehaviour:
   abilityStatusText: {fileID: 4820693544033160759}
   abilityIcon: {fileID: 7043003924468383528}
   abilityCooldownFill: {fileID: 5272293509954509621}
+  showAbilityUI: 1
   floatingInfoFragmentsText: {fileID: 7946805199461570092}
   floatingInfoFragmentsTextContent: {fileID: 675611105437948340}
   currentInfoFragments: {fileID: 2728441594374226379}
@@ -1801,8 +1802,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: 30/30
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b2e0000e28e65ac4eb8607f35592b3fc, type: 2}
+  m_sharedMaterial: {fileID: -7545645835671294916, guid: b2e0000e28e65ac4eb8607f35592b3fc,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1832,7 +1834,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 17
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -2978,7 +2980,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5016396342676645482
 RectTransform:
   m_ObjectHideFlags: 0

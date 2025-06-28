@@ -14,6 +14,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] private WeaponStats stats;
     [SerializeField] private ParticleSystem muzzleEffect;
     [SerializeField] private ShootingMode baseMode;
+    [SerializeField] private Transform weaponModelTransform;
 
     [Header("Balas")]
     [SerializeField] private float bulletSpeed = 20f;
@@ -29,6 +30,9 @@ public class Weapon : MonoBehaviour
     [SerializeField] private AudioSource sfxSource;
     [SerializeField] private AudioClip shootClip;
     [SerializeField] private AudioClip reloadClip;
+
+    [Header("Configuración de Animación por codigo")]
+    [SerializeField] private bool useProceduralAnimations = true;
 
     #endregion
 
@@ -56,46 +60,31 @@ public class Weapon : MonoBehaviour
     private Coroutine reloadCoroutine;
     private Coroutine autoFireCoroutine;
     private float nextAllowedShotTime = 0f;
-
-    [SerializeField] private Transform weaponModelTransform;
-    [SerializeField] private Vector3 originalModelPosition;
+    private Vector3 originalModelPosition;
     private int ammoReloadedThisCycle = 0;
 
     #endregion
 
     #region Unity Lifecycle
 
-    public void Initialize(Transform modelTransform, Vector3 startPosition)
-    {
-        this.weaponModelTransform = modelTransform;
-        this.originalModelPosition = startPosition;
-    }
-
     private void Awake()
     {
-        if (playerCamera == null)
+        if (playerCamera == null) playerCamera = Camera.main;
+        if (sfxSource == null) sfxSource = GameObject.Find("SFXSource")?.GetComponent<AudioSource>();
+        if (weaponModelTransform != null)
         {
-            playerCamera = Camera.main;
-            if (playerCamera == null)
-            {
-                Debug.LogError("No se encontró la cámara principal. Asegúrate de que haya una cámara con la etiqueta 'MainCamera' en la escena.");
-            }
+            originalModelPosition = weaponModelTransform.localPosition;
         }
 
-        if (sfxSource == null)
-        {
-            sfxSource = GameObject.Find("SFXSource")?.GetComponent<AudioSource>();
-            if (sfxSource == null)
-            {
-                Debug.LogError("No se encontró el AudioSource para efectos de sonido. Asegúrate de que haya un GameObject llamado 'SFXSource' con un AudioSource en la escena.");
-            }
-        }
+        SetupStats();
     }
 
     private void Start()
     {
-        SetupStats();
-        HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
+        if (HUDManager.Instance != null)
+        {
+            HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
+        }
     }
 
     private void OnEnable()
@@ -132,9 +121,7 @@ public class Weapon : MonoBehaviour
         maxAmmoPerClip = stats.maxAmmoPerClip;
         totalAmmo = stats.totalAmmo;
         currentAmmo = maxAmmoPerClip;
-
         CurrentMode = stats.shootingMode;
-
         timeBetweenShots = 1f / fireRate;
 
         ApplyPassiveUpgrades();
@@ -301,60 +288,82 @@ public class Weapon : MonoBehaviour
         ammoReloadedThisCycle = 0;
         PlayReloadAudio();
 
-        float animTime = 0.25f;
-        Vector3 downPos = originalModelPosition + new Vector3(0, -0.2f, 0);
-
-        float t = 0;
-        while (t < animTime)
-        {
-            weaponModelTransform.localPosition = Vector3.Lerp(originalModelPosition, downPos, t / animTime);
-            t += Time.deltaTime;
-            yield return null;
-        }
-        weaponModelTransform.localPosition = downPos;
-
         int ammoNeeded = maxAmmoPerClip - currentAmmo;
         int ammoToReload = Mathf.Min(ammoNeeded, totalAmmo);
-        float timeForBulletLoop = reloadTime - (2 * animTime);
 
-        if (timeForBulletLoop > 0 && ammoToReload > 0)
+        if (ammoToReload <= 0)
         {
-            float delayPerBullet = timeForBulletLoop / ammoToReload;
-            for (int i = 0; i < ammoToReload; i++)
+            isReloading = false;
+            yield break;
+        }
+
+        float animDownTime = useProceduralAnimations ? 0.2f : 0f;
+        float animUpTime = useProceduralAnimations ? 0.2f : 0f;
+
+        // Animación Hacia Abajo 
+        if (useProceduralAnimations && weaponModelTransform != null)
+        {
+            Vector3 downPos = originalModelPosition + new Vector3(0, -0.2f, 0);
+            float t = 0;
+            while (t < animDownTime)
+            {
+                weaponModelTransform.localPosition = Vector3.Lerp(originalModelPosition, downPos, t / animDownTime);
+                t += Time.deltaTime;
+                yield return null;
+            }
+            weaponModelTransform.localPosition = downPos;
+        }
+
+        // Lógica de Recarga por Bala 
+        float timeForBulletLoop = stats.reloadTime - (animDownTime + animUpTime);
+        if (timeForBulletLoop < 0) timeForBulletLoop = 0;
+        float delayPerBullet = timeForBulletLoop / ammoToReload;
+
+        for (int i = 0; i < ammoToReload; i++)
+        {
+            if (delayPerBullet > 0.01f)
             {
                 yield return new WaitForSeconds(delayPerBullet);
-                if (!isReloading) yield break;
+            }
 
-                currentAmmo++;
-                totalAmmo--;
-                ammoReloadedThisCycle++;
+            if (!isReloading) yield break;
+
+            currentAmmo++;
+            totalAmmo--;
+            ammoReloadedThisCycle++;
+            if (HUDManager.Instance != null)
+            {
                 HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
             }
         }
 
-        t = 0;
-        while (t < animTime)
+        // Si el delay era muy corto, esperar el tiempo restante de golpe
+        if (delayPerBullet <= 0.01f && timeForBulletLoop > 0)
         {
-            weaponModelTransform.localPosition = Vector3.Lerp(downPos, originalModelPosition, t / animTime);
-            t += Time.deltaTime;
-            yield return null;
+            yield return new WaitForSeconds(timeForBulletLoop);
         }
 
-        if (weaponModelTransform != null)
+        // Animación Hacia Arriba 
+        if (useProceduralAnimations && weaponModelTransform != null)
         {
+            Vector3 downPos = originalModelPosition + new Vector3(0, -0.2f, 0);
+            float t = 0;
+            while (t < animUpTime)
+            {
+                weaponModelTransform.localPosition = Vector3.Lerp(downPos, originalModelPosition, t / animUpTime);
+                t += Time.deltaTime;
+                yield return null;
+            }
             weaponModelTransform.localPosition = originalModelPosition;
         }
+
         isReloading = false;
     }
 
     public void CancelReload()
     {
         if (!isReloading) return;
-
-        if (reloadCoroutine != null)
-        {
-            StopCoroutine(reloadCoroutine);
-        }
+        if (reloadCoroutine != null) StopCoroutine(reloadCoroutine);
 
         if (weaponModelTransform != null)
         {
@@ -389,6 +398,7 @@ public class Weapon : MonoBehaviour
     #endregion
 
     #region Audio
+
     private void PlayClip(AudioClip clip)
     {
         if (sfxSource != null && clip != null) sfxSource.PlayOneShot(clip);
