@@ -19,11 +19,9 @@ public class MovimientoZigzagNavMesh : MonoBehaviour
     private float velocidadActual;
     private NavMeshAgent agent;
     private EnemyAbilityReceiver abilityReceiver;
-    private Animator animator;
 
     void Start()
     {
-        animator = GetComponentInChildren<Animator>();
         abilityReceiver = GetComponent<EnemyAbilityReceiver>();
         agent = GetComponent<NavMeshAgent>();
 
@@ -76,13 +74,11 @@ public class MovimientoZigzagNavMesh : MonoBehaviour
             // Mueve con NavMeshAgent para respetar la malla
             agent.Move(dirFinal * velocidadActual * Time.deltaTime);
 
-            if (animator != null) animator.SetBool("isMoving", true);
         }
         else
         {
             // Cerca: reinicia velocidad y detén animación
             velocidadActual = velocidadInicial;
-            if (animator != null) animator.SetBool("isMoving", false);
         }
     }
 }
