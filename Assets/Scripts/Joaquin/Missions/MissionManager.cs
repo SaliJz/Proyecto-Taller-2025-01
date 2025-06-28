@@ -372,7 +372,7 @@ public class MissionManager : MonoBehaviour
         }
     }
 
-    private void CompleteMission()
+    public void CompleteMission() 
     {
         activeMission = false;
 
