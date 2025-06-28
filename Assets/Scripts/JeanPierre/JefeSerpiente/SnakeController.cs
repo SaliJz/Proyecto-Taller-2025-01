@@ -1,3 +1,5 @@
+
+// SnakeController.cs
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,15 +13,15 @@ public class SnakeController : MonoBehaviour
 
     [Header("Configuración de la serpiente")]
     public int cantidadSegmentosCuerpo = 10;           // Número de segmentos de cuerpo
-    public float distanciaCabezaCuerpo = 0.5f;         // Distancia entre cabeza y primer segmento
-    public float separacionCola = 0.5f;                // Distancia entre el último segmento de cuerpo y la cola
+    public float distanciaCabezaCuerpo = 0.5f;       // Distancia entre cabeza y primer segmento
+    public float separacionCola = 0.5f;              // Distancia entre el último segmento de cuerpo y la cola
     [Tooltip("Mantener para compatibilidad con otros scripts")]
-    public float separacionSegmentos = 0.5f;           // fallback para scripts externos
+    public float separacionSegmentos = 0.5f;         // fallback para scripts externos
     [Tooltip("Separación individual por cada prefab de cuerpo")]
     public float[] separacionesSegmentosCuerpo;        // Distancias específicas entre cada segmento
 
     public float velocidad = 5f;                       // Velocidad de movimiento de la cabeza
-    public float amplitudSerpenteo = 0.5f;             // Amplitud del movimiento serpenteante
+    public float amplitudSerpenteo = 0.5f;           // Amplitud del movimiento serpenteante
     public float frecuenciaSerpenteo = 2f;             // Frecuencia del movimiento serpenteante
     public float ejeY = 1f;                            // Altura constante de la serpiente
     public float umbralDetencion = 0.1f;               // Distancia mínima al jugador para detenerse
@@ -39,16 +41,18 @@ public class SnakeController : MonoBehaviour
     void Start()
     {
         Vector3 posInicial = new Vector3(transform.position.x, ejeY, transform.position.z);
+        // MODIFICACIÓN CLAVE AQUÍ: Aumentamos el multiplicador para asegurar suficiente historial de posiciones.
         maxRegistroPosiciones = Mathf.CeilToInt(
-            (distanciaCabezaCuerpo + ObtenerDistanciaTotalCuerpo() + separacionCola) * 5f
+            (distanciaCabezaCuerpo + ObtenerDistanciaTotalCuerpo() + separacionCola) * 5f // Multiplicador ajustado a 5f
         );
 
-        // --- Instancia cabeza ---
+        // Instancia cabeza
         Transform cabeza = Instantiate(prefabCabeza, posInicial, Quaternion.identity, transform).transform;
-        AsegurarColliderYHijos(cabeza);
+        if (cabeza.GetComponent<SphereCollider>() == null)
+            cabeza.gameObject.AddComponent<SphereCollider>();
         segmentos.Add(cabeza);
 
-        // --- Instancia segmentos de cuerpo ---
+        // Instancia segmentos de cuerpo usando array de prefabs
         for (int i = 0; i < cantidadSegmentosCuerpo; i++)
         {
             GameObject prefab = (i < prefabsCuerpo.Length)
@@ -56,16 +60,18 @@ public class SnakeController : MonoBehaviour
                 : prefabsCuerpo[prefabsCuerpo.Length - 1];
 
             Transform cuerpo = Instantiate(prefab, posInicial, Quaternion.identity, transform).transform;
-            AsegurarColliderYHijos(cuerpo);
+            if (cuerpo.GetComponent<Collider>() == null)
+                cuerpo.gameObject.AddComponent<BoxCollider>();
             segmentos.Add(cuerpo);
         }
 
-        // --- Instancia cola ---
+        // Instancia cola
         Transform cola = Instantiate(prefabCola, posInicial, Quaternion.identity, transform).transform;
-        AsegurarColliderYHijos(cola);
+        if (cola.GetComponent<BoxCollider>() == null)
+            cola.gameObject.AddComponent<BoxCollider>();
         segmentos.Add(cola);
 
-        // Rellenar historial de posiciones
+        // Rellena historial de posiciones con la posición inicial
         for (int i = 0; i < maxRegistroPosiciones; i++)
             posicionesCabeza.Add(posInicial);
     }
@@ -121,19 +127,44 @@ public class SnakeController : MonoBehaviour
         RegistrarPosicion(posicion);
     }
 
+    void RegistrarPosicion(Vector3 pos)
+    {
+        posicionesCabeza.Insert(0, pos);
+        if (posicionesCabeza.Count > maxRegistroPosiciones)
+            posicionesCabeza.RemoveAt(posicionesCabeza.Count - 1);
+    }
+
     void SeguirCuerpo()
     {
         for (int i = 1; i < segmentos.Count; i++)
         {
+            float distanciaAtras;
             bool esCola = (i == segmentos.Count - 1);
-            float distanciaAtras = esCola
-                ? distanciaCabezaCuerpo + ObtenerDistanciaTotalCuerpo() + separacionCola
-                : distanciaCabezaCuerpo + SumaSeparacionesHasta(i - 1);
+            if (esCola)
+            {
+                distanciaAtras = distanciaCabezaCuerpo + ObtenerDistanciaTotalCuerpo() + separacionCola;
+            }
+            else
+            {
+                float suma = 0f;
+                int cuerpoIndex = i - 1;
+                for (int k = 0; k < cuerpoIndex; k++)
+                {
+                    if (k < separacionesSegmentosCuerpo.Length)
+                        suma += separacionesSegmentosCuerpo[k];
+                    else if (separacionesSegmentosCuerpo.Length > 0)
+                        suma += separacionesSegmentosCuerpo[separacionesSegmentosCuerpo.Length - 1];
+                    else
+                        suma += separacionSegmentos;
+                }
+                distanciaAtras = distanciaCabezaCuerpo + suma;
+            }
 
             Vector3 posObjetivo = ObtenerPosicionEnTrayectoria(distanciaAtras);
             Transform seg = segmentos[i];
             seg.position = Vector3.Lerp(seg.position, posObjetivo, Time.deltaTime * velocidad);
 
+            // Rotación de segmento
             Vector3 lookDirection = (posObjetivo - seg.position).normalized;
             lookDirection.y = 0;
             if (lookDirection != Vector3.zero)
@@ -157,7 +188,8 @@ public class SnakeController : MonoBehaviour
             if (acumulado >= distanciaAtras)
             {
                 float overShoot = acumulado - distanciaAtras;
-                float t = 1 - (overShoot / d);
+                float segmentLength = d;
+                float t = 1 - (overShoot / segmentLength);
                 return Vector3.Lerp(posicionesCabeza[i], posicionesCabeza[i + 1], t);
             }
         }
@@ -166,78 +198,15 @@ public class SnakeController : MonoBehaviour
 
     private float ObtenerDistanciaTotalCuerpo()
     {
-        if (separacionesSegmentosCuerpo.Length == 0)
-            return separacionSegmentos * cantidadSegmentosCuerpo;
-
         float suma = 0f;
         int count = Mathf.Min(cantidadSegmentosCuerpo, separacionesSegmentosCuerpo.Length);
         for (int i = 0; i < count; i++)
             suma += separacionesSegmentosCuerpo[i];
-        if (cantidadSegmentosCuerpo > separacionesSegmentosCuerpo.Length)
+        if (cantidadSegmentosCuerpo > separacionesSegmentosCuerpo.Length && separacionesSegmentosCuerpo.Length > 0)
             suma += (cantidadSegmentosCuerpo - separacionesSegmentosCuerpo.Length) * separacionesSegmentosCuerpo[separacionesSegmentosCuerpo.Length - 1];
+        if (separacionesSegmentosCuerpo.Length == 0)
+            suma = separacionSegmentos * cantidadSegmentosCuerpo;
         return suma;
-    }
-
-    private float SumaSeparacionesHasta(int index)
-    {
-        float suma = 0f;
-        for (int k = 0; k <= index; k++)
-        {
-            if (k < separacionesSegmentosCuerpo.Length)
-                suma += separacionesSegmentosCuerpo[k];
-            else if (separacionesSegmentosCuerpo.Length > 0)
-                suma += separacionesSegmentosCuerpo[separacionesSegmentosCuerpo.Length - 1];
-            else
-                suma += separacionSegmentos;
-        }
-        return suma;
-    }
-
-    /// <summary>
-    /// Añade al transform indicado un collider apropiado (Sphere o Box) si no lo tiene,
-    /// y recorre también todos sus hijos para añadirles el mismo tipo y tamaño de collider.
-    /// </summary>
-    void AsegurarColliderYHijos(Transform t)
-    {
-        // Primero el propio GameObject
-        Collider padre = t.GetComponent<Collider>();
-        if (padre == null)
-        {
-            // Por defecto BoxCollider
-            padre = t.gameObject.AddComponent<BoxCollider>();
-        }
-
-        // Recorre hijos
-        foreach (Transform hijo in t.GetComponentsInChildren<Transform>())
-        {
-            if (hijo == t) continue;
-            if (hijo.GetComponent<Collider>() != null) continue;
-
-            if (padre is SphereCollider sc)
-            {
-                SphereCollider nh = hijo.gameObject.AddComponent<SphereCollider>();
-                nh.radius = sc.radius;
-                nh.center = sc.center;
-            }
-            else if (padre is BoxCollider bc)
-            {
-                BoxCollider nh = hijo.gameObject.AddComponent<BoxCollider>();
-                nh.size = bc.size;
-                nh.center = bc.center;
-            }
-            else
-            {
-                // fallback genérico
-                hijo.gameObject.AddComponent<BoxCollider>();
-            }
-        }
-    }
-
-    void RegistrarPosicion(Vector3 pos)
-    {
-        posicionesCabeza.Insert(0, pos);
-        if (posicionesCabeza.Count > maxRegistroPosiciones)
-            posicionesCabeza.RemoveAt(posicionesCabeza.Count - 1);
     }
 
     /// <summary>
@@ -254,10 +223,6 @@ public class SnakeController : MonoBehaviour
             posicionesCabeza.Add(currentHeadPos);
     }
 }
-
-
-
-
 
 
 
