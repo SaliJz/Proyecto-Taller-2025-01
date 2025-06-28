@@ -21,10 +21,18 @@ public class WeaponManager : MonoBehaviour
     private int currentIndex = 0;
     private Vector3[] originalModelPositions;
 
+    [SerializeField] private bool canEquipFirstWeapon=true;
+
     public bool CanChangeWeapon
     {
         get => canChangeWeapon;
         set => canChangeWeapon = value;
+    }
+
+    public bool CanEquipFirstWeapon
+    {
+        get => canEquipFirstWeapon;
+        set => canEquipFirstWeapon = value;
     }
 
     private void Start()
@@ -39,11 +47,20 @@ public class WeaponManager : MonoBehaviour
         }
 
         int savedIndex = PlayerPrefs.GetInt("LastWeaponIndex", 0);
-        EquipWeaponInstant(savedIndex);
+       
+        if (canEquipFirstWeapon)
+        {
+            EquipWeaponInstant(savedIndex);
+        }
+       
+
     }
 
+    
     private void Update()
     {
+        if (!canChangeWeapon) return;           
+        
         if (Input.GetKeyDown(KeyCode.Alpha1)) ChangeWeapon(0);
         if (Input.GetKeyDown(KeyCode.Alpha2)) ChangeWeapon(1);
         if (Input.GetKeyDown(KeyCode.Alpha3)) ChangeWeapon(2);

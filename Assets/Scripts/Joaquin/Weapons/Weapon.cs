@@ -135,6 +135,8 @@ public class Weapon : MonoBehaviour
         fireRate *= upgrades.weaponFireRateMultiplier;
         reloadTime *= upgrades.weaponReloadSpeedMultiplier;
         totalAmmo += upgrades.weaponAmmoBonus;
+
+        Debug.Log("mejoras");
     }
 
     #endregion
