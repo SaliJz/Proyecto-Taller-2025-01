@@ -1,42 +1,62 @@
+using Cinemachine;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Glitch_Cinematic : MonoBehaviour
 {
-    [SerializeField] Transform pointA;
-    [SerializeField] Transform pointB;
-    [SerializeField] float speed = 2f;
+    [Header("Movement Points")]
+    [SerializeField] private Transform pointA;
+    [SerializeField] private Transform pointB;
+    [SerializeField] private float speed = 2f;
 
-    [SerializeField] bool isMoving = false;
-
+    [Header("Animator")]
     [SerializeField] private Animator animator;
-    [SerializeField] bool animatorIsActive;
+    //[SerializeField] private string animationName ="Glitch_Cinematic"; 
+
+    public bool isMoving = false;
+    private bool activateAnimator = false;
+
     void Update()
     {
         if (isMoving)
         {
             MoveToB();
-        }
 
-        if (animatorIsActive)
-        {
-            animatorIsActive = false;
-            animator.SetTrigger("isActive");
+            if (!activateAnimator)
+            {
+                ActivateAnimator();
+                activateAnimator = true;
+            }
+
+            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+            if (stateInfo.IsName("Glitch_Cinematic") && stateInfo.normalizedTime >= 0.8f)
+            {
+                isMoving = false;
+            }
         }
     }
 
     public void StartMovingToB()
     {
-        transform.position = pointA.position; // Opcional: empieza desde A
+        //transform.position = pointA.position;
         isMoving = true;
+        activateAnimator = false; 
     }
 
-    void MoveToB()
+    private void MoveToB()
     {
-        transform.position = Vector3.MoveTowards(transform.position, pointB.position, speed * Time.deltaTime);
+        Vector3 currentPosition = transform.position;
+        Vector3 targetPosition = new Vector3(pointB.position.x, currentPosition.y, pointB.position.z);
 
-        if (Vector3.Distance(transform.position, pointB.position) < 0.01f)
+        transform.position = Vector3.MoveTowards(currentPosition, targetPosition, speed * Time.deltaTime);
+    }
+
+    public void ActivateAnimator()
+    {
+        if (animator != null)
         {
-            isMoving = false;
+            animator.SetTrigger("isActive");
         }
     }
 }

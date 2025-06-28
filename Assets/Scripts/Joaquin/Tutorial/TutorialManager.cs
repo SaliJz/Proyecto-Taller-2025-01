@@ -25,9 +25,12 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private TutorialSceneController tutorialSceneController;
     [SerializeField] private GameObject FragmentOfTheTutorial;
     [SerializeField] private List<CinemachineVirtualCamera> listVirtualCameras;
+    [SerializeField] private List<CinemachineVirtualCamera> listVirtualCamerasCinematic;
+    [SerializeField] private CinemachineBrain cinemachineBrain;
     [SerializeField] private List<MonoBehaviour> playerScriptsToDisable;
     [SerializeField] private GameObject crossHairObject;
-    
+    [SerializeField] private Glitch_Cinematic glitchScript;
+    private GameObject player;
     public bool IsTutorialScenePlaying => GetTutorialCurrentScene().isActive;
     private int[] killCounters;
     private int[] fragmentCounters;
@@ -43,7 +46,10 @@ public class TutorialManager : MonoBehaviour
         tutorialCurrentScene=tutorialScenes[currentSceneIndex];
     }
 
-
+    private void Start()
+    {
+        player = GameObject.FindWithTag("Player");
+    }
     public void ScenarioActivationCheckerByZones()
     {
         if (GetCurrentSceneActivationType() == ActivationType.ByZona) //Solo esto, ya que verificar la colision por trigger se hace en otro script
@@ -78,7 +84,11 @@ public class TutorialManager : MonoBehaviour
 
     private IEnumerator WaitToActivateScenario(float time)
     {
-        yield return new WaitForSeconds(time);     
+        yield return new WaitForSeconds(time);   
+        if(currentSceneIndex == 4) 
+        {
+            glitchScript.transform.gameObject.SetActive(true);
+        }
         ActivateCurrentScenario();
     }
 
@@ -203,6 +213,12 @@ public class TutorialManager : MonoBehaviour
         listVirtualCameras[indexCamera].Priority = 3;
     }
 
+    private void SelectCameraToRenderCinematic(int indexCamera)
+    {
+        ReturnCamerasToDefault();
+        listVirtualCamerasCinematic[indexCamera].Priority = 4;
+    }
+
     private void ReturnCamerasToDefault()
     {
         foreach (CinemachineVirtualCamera camera in listVirtualCameras)
@@ -212,14 +228,21 @@ public class TutorialManager : MonoBehaviour
                 camera.Priority = 1;
             }
         }
+
+        foreach (CinemachineVirtualCamera camera in listVirtualCamerasCinematic)
+        {
+                camera.Priority = 1;      
+        }
     }
     private void DetectCameraSceneTransition()
     {
         switch (currentSceneIndex)
-        {
-           
+        {      
             case 1: StartCoroutine(ActivateTransitionBetweenCameras()); break;                          
-            case 4:; break;   
+            case 4:
+                    cinemachineBrain.m_DefaultBlend= new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0f);
+                    glitchScript.StartMovingToB();
+                    StartCoroutine(ActivateTransitionBetweenCamerasCinematic()); break;
             case 7: StartCoroutine(ActivateTransitionBetweenCameras()); break;
         }
     }
@@ -243,8 +266,25 @@ public class TutorialManager : MonoBehaviour
        tutorialSceneController.EnableGlitchScripts();
     }
 
+    IEnumerator ActivateTransitionBetweenCamerasCinematic()
+    {
+        DisablePlayerScriptsForCameraTransition();
+        SelectCameraToRenderCinematic(0);
+        yield return new WaitForSecondsRealtime(2f);
+        SelectCameraToRenderCinematic(1);
+        yield return new WaitForSecondsRealtime(1.5f);
+        SelectCameraToRenderCinematic(2);
+        yield return new WaitForSecondsRealtime(2f);
+        cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
+        ReturnCamerasToDefault();
+        EnablePlayerScriptsAfterCameraTransition();
+        tutorialSceneController.EnableGlitchScriptsInvulnerables();
+    }
+
     void DisablePlayerScriptsForCameraTransition()
     {
+        Rigidbody rb = player.GetComponent<Rigidbody>();
+        rb.velocity = Vector3.zero;
         crossHairObject.SetActive(false);
         foreach(MonoBehaviour script in playerScriptsToDisable)
         {

@@ -10,7 +10,7 @@ public class TutorialSceneController : MonoBehaviour
     [SerializeField] private GameObject spawnerManager;
     [SerializeField] private GameObject spawners;
 
-    [SerializeField] private GameObject AbilityHolder;
+    //[SerializeField] private GameObject AbilityHolder;
     [SerializeField] private GameObject abilityIcon;
 
     [SerializeField] private WeaponManager weaponManager;
@@ -19,7 +19,8 @@ public class TutorialSceneController : MonoBehaviour
 
     [SerializeField] private GameObject GlitchDeathCinematicContainer;
     [SerializeField] private GameObject[] normalEnemies;
-    [SerializeField] private int normalEnemiesCount = 10;
+    [SerializeField] private GameObject[] invulnerableEnemies;
+    //[SerializeField] private int normalEnemiesCount = 10;
 
     [SerializeField] private GameObject infoFragments;
 
@@ -38,7 +39,7 @@ public class TutorialSceneController : MonoBehaviour
     private void Start()
     {
        
-        if (AbilityHolder != null) AbilityHolder.SetActive(false);
+        //if (AbilityHolder != null) AbilityHolder.SetActive(false);
         if (abilityIcon != null) abilityIcon.SetActive(false);
 
         if (missionManager != null) missionManager.SetActive(false);
@@ -82,7 +83,7 @@ public class TutorialSceneController : MonoBehaviour
             weaponManager.CanChangeWeapon = true;
         }
 
-        if (AbilityHolder != null) AbilityHolder.SetActive(true);
+        //if (AbilityHolder != null) AbilityHolder.SetActive(true);
         if (abilityIcon != null) abilityIcon.SetActive(true);
     }
 
@@ -109,16 +110,32 @@ public class TutorialSceneController : MonoBehaviour
         }
     }
 
+    public void EnableGlitchScriptsInvulnerables()
+    {
+        foreach (var enemy in invulnerableEnemies)
+        {
+            Canvas canvas = enemy.GetComponentInChildren<Canvas>(true);
+            canvas.gameObject.SetActive(true);
+
+            enemy.GetComponent<NavMeshAgent>().enabled = true;
+            foreach (MonoBehaviour script in enemy.GetComponents<MonoBehaviour>())
+            {
+                script.enabled = true;
+
+            }
+        }
+    }
+
     public void PlayGlitchDeathCinematic()
     {
-        Time.timeScale = 0;
+        //Time.timeScale = 0;
         GlitchDeathCinematicContainer.SetActive(true);
     }
 
     public void StopGlitchDeathCinematic()
     {           
         GlitchDeathCinematicContainer.SetActive(false);
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
          // Inicia el siguiente escenario (escena 5)        
     }
 
