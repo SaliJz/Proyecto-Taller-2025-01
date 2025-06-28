@@ -47,7 +47,7 @@ public class TutorialSceneController : MonoBehaviour
         //if (gun != null) gun.SetActive(false);
         if (weaponIcon != null) weaponIcon.SetActive(false);
 
-        if (spawnerManager != null) spawnerManager.SetActive(false);
+        //if (spawnerManager != null) spawnerManager.SetActive(false);
         if (spawners != null) spawners.SetActive(false);
 
         if (GlitchDeathCinematicContainer != null) GlitchDeathCinematicContainer.SetActive(false);
@@ -94,19 +94,40 @@ public class TutorialSceneController : MonoBehaviour
             enemy.SetActive(true);
         }
     }
+
+    public void SpawnInvulnerableEnemies()
+    {
+        foreach (var enemy in invulnerableEnemies)
+        {
+            enemy.SetActive(true);
+        }
+    }
     public void EnableGlitchScripts()
     {
         foreach (var enemy in normalEnemies)
         {
-            Canvas canvas = enemy.GetComponentInChildren<Canvas>(true); 
-            canvas.gameObject.SetActive(true);  
-            
-            enemy.GetComponent<NavMeshAgent>().enabled = true;
-            foreach (MonoBehaviour script in enemy.GetComponents<MonoBehaviour>())
+            if (enemy == null) continue; 
+
+            Canvas canvas = enemy.GetComponentInChildren<Canvas>(true);
+            if (canvas != null)
             {
-                script.enabled = true;
-                
-            }          
+                canvas.gameObject.SetActive(true);
+            }
+
+            var agent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
+            if (agent != null)
+            {
+                agent.enabled = true;
+            }
+
+            MonoBehaviour[] scripts = enemy.GetComponents<MonoBehaviour>();
+            foreach (MonoBehaviour script in scripts)
+            {
+                if (script != null)
+                {
+                    script.enabled = true;
+                }
+            }
         }
     }
 
