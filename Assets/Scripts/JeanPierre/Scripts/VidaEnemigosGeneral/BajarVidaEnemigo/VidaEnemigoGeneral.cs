@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.AI;
 
 public class VidaEnemigoGeneral : MonoBehaviour
 {
@@ -67,6 +68,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
     private Animator animator;
 
+    [SerializeField] bool isTracker;//variable exclusiva del tracker para no pedir navmesh en la muerte
     void Awake()
     {
         // Obtener ambos tipos de renderers de los hijos
@@ -265,7 +267,18 @@ public class VidaEnemigoGeneral : MonoBehaviour
     }
 
     IEnumerator TimeToDead()
-    { 
+    {
+        if (isTracker)
+        {
+            EnemigoVolador enemigoVolador = GetComponent<EnemigoVolador>();
+            enemigoVolador.enabled = false;
+            
+        }
+        else
+        {
+            NavMeshAgent nav = GetComponent<NavMeshAgent>();
+            nav.enabled = false;
+        }
         if (animator != null) animator.SetBool("isDead", true);
         yield return new WaitForSeconds(2f);
         Destroy(gameObject);

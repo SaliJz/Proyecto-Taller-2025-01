@@ -244,6 +244,7 @@ MonoBehaviour:
   prefabMuerteEscopeta: {fileID: 7597145721601309270, guid: 1799a004841c0c84487e26a08eadb035,
     type: 3}
   fragments: 50
+  isTracker: 1
 --- !u!136 &4516381978773922137
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -361,9 +362,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60b3e15c74cf41e4b9fa53c6573e81bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  contactDamage: 10
-  attackCooldown: 1
-  attackRange: 20
   baseSpeed: 5
 --- !u!114 &8922103313531675003
 MonoBehaviour:
