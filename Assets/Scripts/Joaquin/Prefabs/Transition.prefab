@@ -95,7 +95,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4343298303781466249
 RectTransform:
   m_ObjectHideFlags: 0
@@ -137,7 +137,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &1661646397122123720
 MonoBehaviour:
@@ -204,5 +204,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 1727007191829455109}
-  durationFade: 3
-  delayStart: 1
+  totalDuration: 1
+  initialInterval: 0.02
+  finalInterval: 0.125
+  delayBeforeBlink: 3
