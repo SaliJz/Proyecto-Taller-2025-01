@@ -1,7 +1,9 @@
-// EnemigoMovimientoDisparador.cs
+
 using UnityEngine;
+using UnityEngine.AI;
 
 [RequireComponent(typeof(EnemyAbilityReceiver))]
+[RequireComponent(typeof(NavMeshAgent))]
 public class EnemigoMovimientoDisparador : MonoBehaviour
 {
     [Header("Referencia al Jugador")]
@@ -13,81 +15,123 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
     [Header("Margen alrededor de la distancia deseada")]
     public float margen = 0.5f;
 
-    [Header("Movimiento relativo al jugador")]
-    public float velocidadMovimiento = 3f;
-
     [Header("Circulación alrededor del jugador")]
     public float velocidadCirculo = 2f;
     public bool sentidoHorario = true;
 
+    [Header("Disparo")]
+    public GameObject balaPrefab;               // Prefab de la bala
+    public Transform puntoDisparo;              // Punto exacto donde nace la bala
+    public float cooldownDisparo = 1.5f;        // Tiempo entre disparos
+    public float velocidadBala = 10f;           // Velocidad de la bala
+
     private EnemyAbilityReceiver abilityReceiver;
+    private NavMeshAgent agent;
+    private Animator animator;
     private float distanciaDeseada;
+    private float timerDisparo;
 
     private void Awake()
     {
         abilityReceiver = GetComponent<EnemyAbilityReceiver>();
+        agent = GetComponent<NavMeshAgent>();
+        animator = GetComponentInChildren<Animator>();
 
-        // Busca jugador si no está asignado
         if (jugador == null)
         {
             var jugadorGO = GameObject.FindGameObjectWithTag("Player");
-            if (jugadorGO != null)
-                jugador = jugadorGO.transform;
-            else
-                Debug.LogWarning($"No se encontró ningún GameObject con tag 'Player' en {name}");
+            if (jugadorGO != null) jugador = jugadorGO.transform;
+            else Debug.LogWarning($"No se encontró Player en {name}");
         }
 
-        // Elige aleatoriamente la distancia deseada dentro del rango
         distanciaDeseada = Random.Range(distanciaMinima, distanciaMaxima);
+        agent.stoppingDistance = distanciaDeseada;
+        agent.updateRotation = false;
+        agent.updateUpAxis = true;
+
+        timerDisparo = cooldownDisparo;
+    }
+
+    private void Start()
+    {
+        if (!agent.isOnNavMesh)
+        {
+            if (NavMesh.SamplePosition(transform.position, out var hit, 5f, NavMesh.AllAreas))
+                agent.Warp(hit.position);
+            else
+                Debug.LogError($"[{name}] No hay NavMesh cercano para posicionar al agente.");
+        }
     }
 
     private void Update()
     {
         if (jugador == null) return;
 
-        float speed = abilityReceiver.CurrentSpeed;
-        Vector3 dir = jugador.position - transform.position;
-        dir.y = 0f;
-        float dist = dir.magnitude;
-        Vector3 moveDir = dir.normalized;
+        // Movimiento
+        agent.speed = abilityReceiver.CurrentSpeed;
+        Vector3 delta = jugador.position - transform.position;
+        delta.y = 0f;
+        float dist = delta.magnitude;
+        bool estaMoviendose = false;
 
-        if (dist > distanciaDeseada + margen)
+        if (!agent.isOnNavMesh)
         {
-            // Se acerca
-            transform.position = Vector3.MoveTowards(
-                transform.position,
-                transform.position + moveDir,
-                speed * Time.deltaTime
-            );
+            Start();
+        }
+        else if (dist > distanciaDeseada + margen)
+        {
+            agent.stoppingDistance = distanciaDeseada;
+            agent.SetDestination(jugador.position);
+            estaMoviendose = true;
         }
         else if (dist < distanciaDeseada - margen)
         {
-            // Se aleja
-            transform.position = Vector3.MoveTowards(
-                transform.position,
-                transform.position - moveDir,
-                speed * Time.deltaTime
-            );
+            Vector3 dirOp = -delta.normalized;
+            Vector3 target = transform.position + dirOp * (distanciaDeseada + 0.1f);
+            agent.stoppingDistance = 0f;
+            agent.SetDestination(target);
+            estaMoviendose = true;
         }
         else
         {
-            // Circula alrededor
+            agent.ResetPath();
+            Vector3 moveDir = delta.normalized;
             Vector3 perp = sentidoHorario
                 ? Quaternion.Euler(0, 90f, 0) * moveDir
                 : Quaternion.Euler(0, -90f, 0) * moveDir;
-
             transform.position += perp.normalized * velocidadCirculo * Time.deltaTime;
+            estaMoviendose = true;
         }
 
-        // Giro suave hacia el jugador
-        if (dir != Vector3.zero)
+        // Rotación
+        Vector3 flatVel = agent.velocity;
+        flatVel.y = 0f;
+        if (flatVel.sqrMagnitude > 0.01f)
+            transform.rotation = Quaternion.LookRotation(flatVel.normalized, Vector3.up);
+
+        // Animación
+        if (animator != null)
+            animator.SetBool("isMoving", estaMoviendose);
+
+        // Disparo
+        timerDisparo -= Time.deltaTime;
+        if (timerDisparo <= 0f && dist <= distanciaMaxima + 1f)
         {
-            Quaternion targetRot = Quaternion.LookRotation(dir);
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                targetRot,
-                speed * Time.deltaTime
-            );
+            Disparar();
+            timerDisparo = cooldownDisparo;
+        }
+    }
+
+    private void Disparar()
+    {
+        if (balaPrefab == null || puntoDisparo == null || jugador == null) return;
+
+        // Instancia la bala exactamente en puntoDisparo, sin offsets verticales
+        GameObject bala = Instantiate(balaPrefab, puntoDisparo.position, puntoDisparo.rotation);
+        if (bala.TryGetComponent<Rigidbody>(out var rb))
+        {
+            Vector3 dir = (jugador.position - puntoDisparo.position).normalized;
+            rb.velocity = dir * velocidadBala;
         }
     }
 
@@ -100,36 +144,68 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
     }
 }
 
+
 //using UnityEngine;
+//using UnityEngine.AI;
 
 //[RequireComponent(typeof(EnemyAbilityReceiver))]
+//[RequireComponent(typeof(NavMeshAgent))]
 //public class EnemigoMovimientoDisparador : MonoBehaviour
 //{
 //    [Header("Referencia al Jugador")]
 //    public Transform jugador;
 
-//    [Header("Movimiento relativo al jugador")]
-//    public float distanciaDeseada = 5f;
-//    public float velocidadMovimiento = 3f;
+//    [Header("Rango para elegir distancia deseada")]
+//    public float distanciaMinima = 3f;
+//    public float distanciaMaxima = 7f;
+//    [Header("Margen alrededor de la distancia deseada")]
 //    public float margen = 0.5f;
 
 //    [Header("Circulación alrededor del jugador")]
 //    public float velocidadCirculo = 2f;
 //    public bool sentidoHorario = true;
 
+//    [Header("Disparo")]
+//    public GameObject balaPrefab;               // Prefab de la bala
+//    public Transform puntoDisparo;              // Punto exacto donde nace la bala
+//    public float cooldownDisparo = 1.5f;        // Tiempo entre disparos
+//    public float velocidadBala = 10f;           // Velocidad de la bala
+
 //    private EnemyAbilityReceiver abilityReceiver;
+//    private NavMeshAgent agent;
+//    private Animator animator;
+//    private float distanciaDeseada;
+//    private float timerDisparo;
 
 //    private void Awake()
 //    {
 //        abilityReceiver = GetComponent<EnemyAbilityReceiver>();
+//        agent = GetComponent<NavMeshAgent>();
+//        animator = GetComponentInChildren<Animator>();
 
 //        if (jugador == null)
 //        {
 //            var jugadorGO = GameObject.FindGameObjectWithTag("Player");
-//            if (jugadorGO != null)
-//                jugador = jugadorGO.transform;
+//            if (jugadorGO != null) jugador = jugadorGO.transform;
+//            else Debug.LogWarning($"No se encontró Player en {name}");
+//        }
+
+//        distanciaDeseada = Random.Range(distanciaMinima, distanciaMaxima);
+//        agent.stoppingDistance = distanciaDeseada;
+//        agent.updateRotation = false;
+//        agent.updateUpAxis = true;
+
+//        timerDisparo = cooldownDisparo;
+//    }
+
+//    private void Start()
+//    {
+//        if (!agent.isOnNavMesh)
+//        {
+//            if (NavMesh.SamplePosition(transform.position, out var hit, 5f, NavMesh.AllAreas))
+//                agent.Warp(hit.position);
 //            else
-//                Debug.LogWarning($"No se encontró ningún GameObject con tag 'Player' en {name}");
+//                Debug.LogError($"[{name}] No hay NavMesh cercano para posicionar al agente.");
 //        }
 //    }
 
@@ -137,47 +213,83 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
 //    {
 //        if (jugador == null) return;
 
-//        float speed = abilityReceiver.CurrentSpeed;
-//        Vector3 dir = jugador.position - transform.position;
-//        dir.y = 0f;
-//        float dist = dir.magnitude;
-//        Vector3 moveDir = dir.normalized;
+//        // Movimiento
+//        agent.speed = abilityReceiver.CurrentSpeed;
+//        Vector3 delta = jugador.position - transform.position;
+//        delta.y = 0f;
+//        float dist = delta.magnitude;
+//        bool estaMoviendose = false;
 
-//        if (dist > distanciaDeseada + margen)
+//        if (!agent.isOnNavMesh)
 //        {
-//            // Se aleja para acercarse al rango óptimo
-//            transform.position = Vector3.MoveTowards(transform.position,
-//                                                     transform.position + moveDir,
-//                                                     speed * Time.deltaTime);
+//            Start();
+//        }
+//        else if (dist > distanciaDeseada + margen)
+//        {
+//            agent.stoppingDistance = distanciaDeseada;
+//            agent.SetDestination(jugador.position);
+//            estaMoviendose = true;
 //        }
 //        else if (dist < distanciaDeseada - margen)
 //        {
-//            // Retrocede si está demasiado cerca
-//            transform.position = Vector3.MoveTowards(transform.position,
-//                                                     transform.position - moveDir,
-//                                                     speed * Time.deltaTime);
+//            Vector3 dirOp = -delta.normalized;
+//            Vector3 target = transform.position + dirOp * (distanciaDeseada + 0.1f);
+//            agent.stoppingDistance = 0f;
+//            agent.SetDestination(target);
+//            estaMoviendose = true;
 //        }
 //        else
 //        {
-//            // En rango óptimo: circula alrededor del jugador
-//            // Calcula dirección perpendicular al vector hacia el jugador
-//            Vector3 perp;
-//            if (sentidoHorario)
-//                perp = Quaternion.Euler(0, 90f, 0) * moveDir;
-//            else
-//                perp = Quaternion.Euler(0, -90f, 0) * moveDir;
-
+//            agent.ResetPath();
+//            Vector3 moveDir = delta.normalized;
+//            Vector3 perp = sentidoHorario
+//                ? Quaternion.Euler(0, 90f, 0) * moveDir
+//                : Quaternion.Euler(0, -90f, 0) * moveDir;
 //            transform.position += perp.normalized * velocidadCirculo * Time.deltaTime;
+//            estaMoviendose = true;
 //        }
 
-//        // Siempre gira suavemente mirando al jugador
-//        if (dir != Vector3.zero)
+//        // Rotación
+//        Vector3 flatVel = agent.velocity;
+//        flatVel.y = 0f;
+//        if (flatVel.sqrMagnitude > 0.01f)
+//            transform.rotation = Quaternion.LookRotation(flatVel.normalized, Vector3.up);
+
+//        // Animación
+//        if (animator != null)
+//            animator.SetBool("isMoving", estaMoviendose);
+
+//        // Disparo
+//        timerDisparo -= Time.deltaTime;
+//        if (timerDisparo <= 0f && dist <= distanciaMaxima + 1f)
 //        {
-//            Quaternion targetRot = Quaternion.LookRotation(dir);
-//            transform.rotation = Quaternion.Slerp(transform.rotation,
-//                                                  targetRot,
-//                                                  speed * Time.deltaTime);
+//            Disparar();
+//            timerDisparo = cooldownDisparo;
 //        }
 //    }
+
+//    private void Disparar()
+//    {
+//        if (balaPrefab == null || puntoDisparo == null || jugador == null) return;
+
+//        // Instancia la bala exactamente en puntoDisparo, sin offsets verticales
+//        GameObject bala = Instantiate(balaPrefab, puntoDisparo.position, puntoDisparo.rotation);
+//        if (bala.TryGetComponent<Rigidbody>(out var rb))
+//        {
+//            Vector3 dir = (jugador.position - puntoDisparo.position).normalized;
+//            rb.velocity = dir * velocidadBala;
+//        }
+//    }
+
+//    /// <summary>
+//    /// Invierte el sentido de circulación alrededor del jugador.
+//    /// </summary>
+//    public void InvertirSentido()
+//    {
+//        sentidoHorario = !sentidoHorario;
+//    }
 //}
+
+
+
 

@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+
 
 public class UpgradeDataStore : MonoBehaviour
 {
@@ -39,29 +38,43 @@ public class UpgradeDataStore : MonoBehaviour
         }
     }
 
-    public void ApplyUpgrade(PassiveUpgradeStats upgrade)
+    //public void ApplyUpgrade(PassiveUpgradeStats upgrade)
+    //{
+    //    float value = upgrade.isPercentage
+    //        ? Random.Range(upgrade.valueRange.x, upgrade.valueRange.y)
+    //        : Mathf.RoundToInt(Random.Range(upgrade.valueRange.x, upgrade.valueRange.y));
+
+    //    switch (upgrade.upgradeType)
+    //    {
+    //        case PassiveUpgradeStats.UpgradeType.WeaponDamage:
+    //            weaponDamageMultiplier += value;
+    //            break;
+    //        case PassiveUpgradeStats.UpgradeType.FireRate:
+    //            weaponFireRateMultiplier += value;
+    //            break;
+    //        case PassiveUpgradeStats.UpgradeType.ReloadSpeed:
+    //            weaponReloadSpeedMultiplier += value;
+    //            break;
+    //        case PassiveUpgradeStats.UpgradeType.AmmoBonus:
+    //            weaponAmmoBonus += Mathf.RoundToInt(value);
+    //            break;
+    //    }
+
+    //    Debug.Log($"Aplicada mejora: {upgrade.upgradeName} (+{value})");
+    //    Weapon[] weapons = FindObjectsOfType<Weapon>();
+    //    foreach (var weapon in weapons)
+    //    {
+    //        weapon.ApplyPassiveUpgrades();
+    //    }
+    //}
+
+    public void ApplyWeaponUpgrade(Weapon_Card_Corregido upgradeWeaponCard)
     {
-        float value = upgrade.isPercentage
-            ? Random.Range(upgrade.valueRange.x, upgrade.valueRange.y)
-            : Mathf.RoundToInt(Random.Range(upgrade.valueRange.x, upgrade.valueRange.y));
+        weaponDamageMultiplier += upgradeWeaponCard.damageBuff/100;
+        weaponFireRateMultiplier += upgradeWeaponCard.fireRatioBuff/100;
+        weaponReloadSpeedMultiplier += upgradeWeaponCard.ReloadSpeedBuff/100;
+        weaponAmmoBonus += upgradeWeaponCard.AmmoBonus;
 
-        switch (upgrade.upgradeType)
-        {
-            case PassiveUpgradeStats.UpgradeType.WeaponDamage:
-                weaponDamageMultiplier += value;
-                break;
-            case PassiveUpgradeStats.UpgradeType.FireRate:
-                weaponFireRateMultiplier += value;
-                break;
-            case PassiveUpgradeStats.UpgradeType.ReloadSpeed:
-                weaponReloadSpeedMultiplier += value;
-                break;
-            case PassiveUpgradeStats.UpgradeType.AmmoBonus:
-                weaponAmmoBonus += Mathf.RoundToInt(value);
-                break;
-        }
-
-        Debug.Log($"Aplicada mejora: {upgrade.upgradeName} (+{value})");
         Weapon[] weapons = FindObjectsOfType<Weapon>();
         foreach (var weapon in weapons)
         {

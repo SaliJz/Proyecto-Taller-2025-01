@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class AbilityManager : MonoBehaviour
 {
+    [SerializeField] private bool isLevel1 = false;
+
     [Header("Todas las habilidades posibles")]
     [SerializeField] private List<GameObject> allAbilities;
 
@@ -11,13 +13,29 @@ public class AbilityManager : MonoBehaviour
     [SerializeField] private List<GameObject> activeAbilities = new List<GameObject>();
 
     [SerializeField] private bool allowFirstAbility = false;
+
     private int currentIndex = 0;
+    private Dictionary<string, GameObject> abilityMap = new Dictionary<string, GameObject>();
 
     public List<GameObject> activedAbilities => activeAbilities;
     public GameObject CurrentAbility => activeAbilities.Count > 0 ? activeAbilities[currentIndex] : null;
 
+    private void Awake()
+    {
+        foreach (var abilityGO in allAbilities)
+        {
+            var info = abilityGO.GetComponent<AbilityInfo>();
+            if (info != null && !abilityMap.ContainsKey(info.abilityName))
+            {
+                abilityMap.Add(info.abilityName, abilityGO);
+            }
+        }
+    }
+
     private void Start()
     {
+        if (isLevel1) AbilityShopDataManager.ResetData();
+
         foreach (var ability in allAbilities)
         {
             ability.SetActive(false);
@@ -39,6 +57,25 @@ public class AbilityManager : MonoBehaviour
         UpdateAbilitiesActiveState();
     }
 
+    private void OnEnable()
+    {
+        AbilityShopDataManager.OnAbilityShopDataChanged += ApplyUpgradesToAllAbilities;
+    }
+
+    private void OnDisable()
+    {
+        AbilityShopDataManager.OnAbilityShopDataChanged -= ApplyUpgradesToAllAbilities;
+    }
+
+    private void ApplyUpgradesToAllAbilities()
+    {
+        foreach (var abilityGO in allAbilities)
+        {
+            abilityGO.SendMessage("ApplyUpgrades", SendMessageOptions.DontRequireReceiver);
+        }
+        Debug.Log("Todas las habilidades han actualizado sus mejoras.");
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Q))
@@ -55,9 +92,35 @@ public class AbilityManager : MonoBehaviour
         UpdateAbilitiesActiveState();
     }
 
+    public void RemoveAbility(GameObject abilityToRemove)
+    {
+        if (activeAbilities.Contains(abilityToRemove))
+        {
+            if (CurrentAbility == abilityToRemove && activeAbilities.Count > 1)
+            {
+                CycleAbility();
+            }
+
+            activeAbilities.Remove(abilityToRemove);
+
+            if (currentIndex >= activeAbilities.Count && activeAbilities.Count > 0)
+            {
+                currentIndex = 0;
+            }
+
+            SaveToDataStore();
+            UpdateAbilitiesActiveState();
+        }
+    }
+
     public void AddOrReplaceAbility(GameObject newAbility)
     {
-        if (activeAbilities.Contains(newAbility)) return;
+        if (activeAbilities.Contains(newAbility))
+        {
+            currentIndex = activeAbilities.IndexOf(newAbility);
+            UpdateAbilitiesActiveState();
+            return;
+        }
 
         if (activeAbilities.Count < 2)
         {
@@ -65,11 +128,43 @@ public class AbilityManager : MonoBehaviour
         }
         else
         {
-            activeAbilities[currentIndex] = newAbility;
+            activeAbilities.RemoveAt(0);
+            activeAbilities.Add(newAbility);
         }
 
         currentIndex = activeAbilities.IndexOf(newAbility);
         SaveToDataStore();
+        UpdateAbilitiesActiveState();
+    }
+
+    public void SetEquippedAbilities(List<AbilityType> equippedTypes)
+    {
+        activeAbilities.Clear();
+
+        foreach (AbilityType type in equippedTypes)
+        {
+            if (type == AbilityType.None) continue;
+
+            GameObject abilityGO = allAbilities.Find(go => {
+                AbilityInfo info = go.GetComponent<AbilityInfo>();
+                return info != null && info.abilityName == type.ToString();
+            });
+
+            if (abilityGO != null)
+            {
+                activeAbilities.Add(abilityGO);
+            }
+            else
+            {
+                Debug.LogWarning($"No se pudo encontrar un GameObject de habilidad correspondiente al tipo: {type.ToString()}");
+            }
+        }
+
+        if (currentIndex >= activeAbilities.Count)
+        {
+            currentIndex = activeAbilities.Count > 0 ? activeAbilities.Count - 1 : 0;
+        }
+
         UpdateAbilitiesActiveState();
     }
 
@@ -111,7 +206,6 @@ public class AbilityManager : MonoBehaviour
             AbilityDataStore.Instance.AbilityNames.Add(a.name);
         }
 
-        // Fix for CS0200: Use a method or alternative approach to update CurrentIndex
         AbilityDataStore.Instance.SetCurrentIndex(currentIndex);
     }
 
@@ -129,5 +223,13 @@ public class AbilityManager : MonoBehaviour
 
         currentIndex = AbilityDataStore.Instance.CurrentIndex;
         currentIndex = Mathf.Clamp(currentIndex, 0, activeAbilities.Count - 1);
+    }
+
+    public void ClearAbilities()
+    {
+        activeAbilities.Clear();
+        currentIndex = 0;
+        SaveToDataStore();
+        UpdateAbilitiesActiveState();
     }
 }

@@ -19,9 +19,9 @@ public class SpawnPoint : MonoBehaviour
         isAvailable = true;
     }
 
-    //private void OnDrawGizmos()
-    //{
-    //    Gizmos.color = isAvailable ? Color.green : Color.red;
-    //    Gizmos.DrawSphere(transform.position, gizmosRange);
-    //}
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = isAvailable ? Color.green : Color.red;
+        Gizmos.DrawSphere(transform.position, gizmosRange);
+    }
 }

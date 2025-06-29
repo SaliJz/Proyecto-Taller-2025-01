@@ -7,7 +7,8 @@ public class IgnitionCodeShot : MonoBehaviour
     private float radius;
     private float damagePerSecond;
     private float duration;
-    private LayerMask enemyLayer;
+    private bool hasExploded = false;
+    private LayerMask targetLayer;
 
     [SerializeField] private GameObject ignitionAreaEffectPrefab;
 
@@ -16,19 +17,22 @@ public class IgnitionCodeShot : MonoBehaviour
         this.radius = radius;
         this.damagePerSecond = damagePerSecond;
         this.duration = duration;
-        this.enemyLayer = enemyLayer;
+        this.targetLayer = enemyLayer;
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.gameObject.CompareTag("Enemy"))
+        if (hasExploded) return;
+
+        if (other.CompareTag("Enemy"))
         {
+            hasExploded = true;
             ApplyIgnition(transform.position);
             Destroy(gameObject);
         }
-
-        if (collision.gameObject.CompareTag("Ground"))
+        else if (other.CompareTag("Ground"))
         {
+            hasExploded = true;
             ApplyIgnitionArea(transform.position);
             Destroy(gameObject);
         }
@@ -36,7 +40,7 @@ public class IgnitionCodeShot : MonoBehaviour
 
     private void ApplyIgnition(Vector3 center)
     {
-        Collider[] hits = Physics.OverlapSphere(center, radius, enemyLayer);
+        Collider[] hits = Physics.OverlapSphere(center, radius, targetLayer);
         foreach (Collider col in hits)
         {
             if (col.CompareTag("Enemy"))
@@ -48,20 +52,22 @@ public class IgnitionCodeShot : MonoBehaviour
                 }
             }
         }
-
     }
 
     private void ApplyIgnitionArea(Vector3 center)
     {
-        // Instanciar el efecto visual de ascuas
         if (ignitionAreaEffectPrefab != null)
         {
             GameObject ignitionEffect = Instantiate(ignitionAreaEffectPrefab, center, Quaternion.identity);
             IgnitionAreaEffect areaEffect = ignitionEffect.GetComponent<IgnitionAreaEffect>();
             if (areaEffect != null)
             {
-                areaEffect.Initialize(radius, damagePerSecond, duration, enemyLayer);
+                areaEffect.Initialize(radius, damagePerSecond, duration, targetLayer);
             }
+        }
+        else
+        {
+            Debug.LogWarning("Ignition Area Effect Prefab no está asignado en IgnitionCodeShot.");
         }
     }
 

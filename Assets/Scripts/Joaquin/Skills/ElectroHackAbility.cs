@@ -5,33 +5,34 @@ using UnityEngine;
 
 public class ElectroHackAbility : MonoBehaviour
 {
-    [Header("Camera")]
+    [Header("References")]
     [SerializeField] private Camera playerCamera;
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform projectileSpawnPoint;
+    [SerializeField] private ParticleSystem muzzleEffect;
 
     [Header("ElectroHack Settings")]
-    [SerializeField] private float cooldown = 10f;
     [SerializeField] private float projectileLifeTime = 2f;
     [SerializeField] private float projectileSpeed = 20f;
-    [SerializeField] private float radius = 5f;
-    [SerializeField] private int maxTargets = 3;
-    [SerializeField] private float tickDamage = 15;
-    [SerializeField] private float tickInterval = 1f;
-    [SerializeField] private int ticks = 2;
-    [SerializeField] private float slowMultiplier = 0.75f; // 25% menos velocidad
 
-    [Header("Spread")]
-    [SerializeField] private float spreadIntensity;
+    [SerializeField] private float baseCooldown = 10f;
+    [SerializeField] private float baseEnemiesAffected = 3;
+    [SerializeField] private float slowMultiplier = 0.75f;
+    [SerializeField] private float baseDamagePerSecond = 8f;
+    [SerializeField] private float baseDuration = 3f;
+    [SerializeField] private float baseRadius = 5f;
+    [SerializeField] private LayerMask targetLayer;
+
+    private float currentCooldown;
+    private float currentDuration;
+    private float currentEnemiesAffected;
+    private float currentDamagePerSecond;
 
     private bool canUse = true;
-    private float currentCooldown = 0;
+    private float currentCooldownTimer = 0;
     private float lastCooldownDisplay = -1f;
 
-    private void Start()
-    {
-        HUDManager.Instance.UpdateAbilityStatus("ElectroHack", currentCooldown, canUse);
-    }
+    private AbilityInfo abilityInfo;
 
     private void Awake()
     {
@@ -43,68 +44,84 @@ public class ElectroHackAbility : MonoBehaviour
                 Debug.LogError("No se encontró la cámara principal. Asegúrate de que haya una cámara con la etiqueta 'MainCamera' en la escena.");
             }
         }
-        if (projectileSpawnPoint == null)
+
+        if (projectileSpawnPoint == null) Debug.LogError("Projectile Spawn Point no está asignado en MindjackAbility.");
+
+        if (projectilePrefab == null) Debug.LogError("Projectile Prefab no está asignado en MindjackAbility.");
+
+        if (abilityInfo == null)
         {
-            Debug.LogError("Projectile Spawn Point no está asignado en MindjackAbility.");
+            abilityInfo = GetComponent<AbilityInfo>();
+            if (abilityInfo == null) Debug.LogError("AbilityInfo no está asignado en ElectroHackAbility.");
         }
-        if (projectilePrefab == null)
-        {
-            Debug.LogError("Projectile Prefab no está asignado en MindjackAbility.");
-        }
+    }
+
+    private void Start()
+    {
+        ApplyUpgrades();
+        HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0f, true, currentCooldown);
+    }
+
+    private void ApplyUpgrades()
+    {
+        AbilityStats stats = AbilityShopDataManager.GetStats(abilityInfo.abilityName);
+        if (stats == null) return;
+
+        const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f;
+        const float DURATION_INCREASE_PER_LEVEL = 0.5f;
+        const float ENEMIES_AFFECTED_INCREASE_PER_LEVEL = 1.0f;
+        const float DAMAGE_INCREASE_PER_LEVEL = 2.0f;
+
+        currentCooldown = baseCooldown - (stats.CooldownLevel * COOLDOWN_REDUCTION_PER_LEVEL);
+        currentDuration = baseDuration + (stats.DurationLevel * DURATION_INCREASE_PER_LEVEL);
+        currentDamagePerSecond = baseDamagePerSecond + (stats.DamageLevel * DAMAGE_INCREASE_PER_LEVEL);
+        currentEnemiesAffected = baseEnemiesAffected + (stats.EnemiesAffectedLevel * ENEMIES_AFFECTED_INCREASE_PER_LEVEL);
+
+        Debug.Log($"ElectroHack Ability Upgraded: Cooldown={currentCooldown}, Duration={currentDuration}, DamagePerSecond={currentDamagePerSecond}, EnemiesAffected={currentEnemiesAffected}");
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse1) && canUse)
+        if (Input.GetKeyDown(KeyCode.Mouse1) && canUse) ActivateAbility();
+        if (!canUse) CooldownLogic();
+    }
+
+    private void CooldownLogic()
+    {
+        currentCooldownTimer -= Time.deltaTime;
+        if (Mathf.Ceil(currentCooldownTimer) != Mathf.Ceil(lastCooldownDisplay))
         {
-            ActivateAbility();
+            HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, false, currentCooldown);
+            lastCooldownDisplay = currentCooldownTimer;
         }
-
-        if (!canUse)
+        if (currentCooldownTimer <= 0)
         {
-            currentCooldown -= Time.deltaTime;
-            currentCooldown = Mathf.Max(0f, currentCooldown);
-
-            // Solo actualiza si hay diferencia perceptible
-            if (Mathf.Ceil(currentCooldown) != Mathf.Ceil(lastCooldownDisplay))
-            {
-                HUDManager.Instance.UpdateAbilityStatus("ElectroHack", currentCooldown, canUse, cooldown);
-                lastCooldownDisplay = currentCooldown;
-            }
-
-            if (currentCooldown <= 0f)
-            {
-                canUse = true;
-                HUDManager.Instance.UpdateAbilityStatus("ElectroHack", 0f, canUse, cooldown);
-            }
+            canUse = true;
+            HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0, true, currentCooldown);
         }
     }
 
     private void ActivateAbility()
     {
+        PlayEffect();
+        canUse = false;
+        currentCooldownTimer = currentCooldown;
+        HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
+
         Vector3 direction = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f)).direction;
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));
         projectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
 
-        projectile.GetComponent<ElectroHackShot>().Initialize(radius, maxTargets, tickDamage, tickInterval, ticks, slowMultiplier);
+        projectile.GetComponent<ElectroHackShot>().Initialize(baseRadius, currentEnemiesAffected, currentDamagePerSecond, currentDuration, slowMultiplier, targetLayer);
         Destroy(projectile, projectileLifeTime);
-
-        canUse = false;
-        currentCooldown = cooldown;
-        HUDManager.Instance.UpdateAbilityStatus("ElectroHack", currentCooldown, canUse);
     }
-    /*
-    private Vector3 CalculateDirectionAndSpread()
+
+    #region Effects
+
+    private void PlayEffect()
     {
-        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        RaycastHit hit;
-        Vector3 targetPoint = Physics.Raycast(ray, out hit) ? hit.point : ray.GetPoint(100);
-        Vector3 direction = targetPoint - projectileSpawnPoint.position;
-
-        float x = Random.Range(-spreadIntensity, spreadIntensity);
-        float y = Random.Range(-spreadIntensity, spreadIntensity);
-
-        return direction + new Vector3(x, y, 0);
+        if (muzzleEffect != null) muzzleEffect.Play();
     }
-    */
+
+    #endregion
 }

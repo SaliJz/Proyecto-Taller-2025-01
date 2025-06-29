@@ -12,7 +12,6 @@ public class DeathManager : MonoBehaviour
     [SerializeField] private int maxBodies = 5;
     [SerializeField] private string gameOverSceneName = "GameOver";
 
-    // Estructura para almacenar el cuerpo y la escena donde murió
     private class BodyData
     {
         public GameObject body;
@@ -20,7 +19,7 @@ public class DeathManager : MonoBehaviour
     }
 
     private Queue<BodyData> bodies = new Queue<BodyData>();
-    private int bodyCounter = 0; // Contador global para los cuerpos
+    private int bodyCounter = 0;
 
     private void Awake()
     {
@@ -36,26 +35,21 @@ public class DeathManager : MonoBehaviour
         }
     }
 
-    // Este método se llama cuando el objeto es destruido
     private void OnDestroy()
     {
-        // Desuscribirse del evento de carga de escena
         if (Instance == this)
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
     }
 
-    // Este método se llama cuando se carga una nueva escena
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Filtrar los cuerpos para que solo permanezcan los de la escena actual o la de derrota
         string currentSceneName = scene.name;
         var remainingBodies = new Queue<BodyData>();
 
         foreach (var bodyData in bodies)
         {
-            // Si el cuerpo pertenece a la escena actual o es la escena de derrota, lo mantenemos
             if (bodyData.sceneName == currentSceneName || currentSceneName == gameOverSceneName)
             {
                 remainingBodies.Enqueue(bodyData);
@@ -72,40 +66,31 @@ public class DeathManager : MonoBehaviour
         bodies = remainingBodies;
     }
 
-    // Este método se llama para registrar una muerte
     public void RegisterDeath(GameObject prefab, Vector3 position)
     {
         string currentSceneName = SceneManager.GetActiveScene().name;
 
-        // Realizar un raycast hacia abajo para detectar la superficie
         RaycastHit hit;
-        Vector3 rayOrigin = position + Vector3.up; // Lanza el raycast desde un poco más arriba
+        Vector3 rayOrigin = position + Vector3.up;
         if (Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity))
         {
-            // Obtener la normal de la superficie
             Vector3 surfaceNormal = hit.normal;
 
-            // Calcular la rotación del DeathBody para alinearlo con la superficie
             Quaternion rotation = Quaternion.FromToRotation(Vector3.up, surfaceNormal);
 
-            // Instanciar el DeathBody con la rotación calculada
             GameObject instance = Instantiate(prefab, hit.point, rotation);
             DontDestroyOnLoad(instance);
 
-            // Incrementar el contador de cuerpos
             bodyCounter++;
 
-            // Actualizar el texto del cuerpo
             DeathBodyController controller = instance.GetComponent<DeathBodyController>();
             if (controller != null)
             {
                 controller.SetText($"Cuerpo #{bodyCounter}");
             }
 
-            // Agregar el cuerpo a la cola
             bodies.Enqueue(new BodyData { body = instance, sceneName = currentSceneName });
 
-            // Eliminar el cuerpo más antiguo si se excede el límite
             if (bodies.Count > maxBodies)
             {
                 BodyData oldest = bodies.Dequeue();
@@ -117,7 +102,6 @@ public class DeathManager : MonoBehaviour
         }
     }
 
-    // Este método se llama para eliminar todos los cuerpos
     public void ClearAll()
     {
         foreach (var bodyData in bodies)

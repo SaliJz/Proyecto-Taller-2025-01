@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TutorialTeleporter : MonoBehaviour
@@ -12,7 +10,7 @@ public class TutorialTeleporter : MonoBehaviour
         if (activated) return;
         else
         {
-            TutorialManager.Instance.StartScenarioByManual(indexScene);
+            //TutorialManager.Instance.StartScenarioByManual(indexScene);
             activated = true;
         }
     }

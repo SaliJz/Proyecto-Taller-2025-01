@@ -29,8 +29,12 @@ public class MovimientoConAtaque : MonoBehaviour
     Vector3 posicionObjetivoAtaque;
     GameObject coliderActual;
 
+    Animator animator;
+
     void Start()
     {
+        animator = GetComponentInChildren<Animator>();
+
         if (playerTransform == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
@@ -51,8 +55,11 @@ public class MovimientoConAtaque : MonoBehaviour
         {
             case Estado.Persecucion:
                 Perseguir();
+                Debug.Log("Activando trigger Attack");
+
                 break;
             case Estado.Ataque:
+
                 MoverAtaque();
                 break;
         }
@@ -88,6 +95,11 @@ public class MovimientoConAtaque : MonoBehaviour
         {
             posicionObjetivoAtaque = posJugador;
             estadoActual = Estado.Ataque;
+            if (animator != null)
+            {
+
+                animator.SetTrigger("Attack");
+            }
         }
     }
 
@@ -107,10 +119,14 @@ public class MovimientoConAtaque : MonoBehaviour
 
     IEnumerator SecuenciaAtaques()
     {
+
         int numAtaques = Random.Range(minAtaques, maxAtaques + 1);
 
         for (int i = 0; i < numAtaques; i++)
         {
+
+            
+
             posicionObjetivoAtaque = PosicionJugadorSinY();
 
             while ((transform.position - posicionObjetivoAtaque).magnitude > 0.1f)

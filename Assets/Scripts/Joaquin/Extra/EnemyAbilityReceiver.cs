@@ -1,29 +1,26 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyAbilityReceiver : MonoBehaviour
 {
-    // Referencia a VidaEnemigoGeneral
-    private VidaEnemigoGeneral vida;
-    private EnemigoRosa enemigoRosa;
-
+    private VidaEnemigoGeneral enemyHealth;
+    private EnemigoRosa pinkEnemyHealth;
+    /*
     [Header("Attack")]
     [SerializeField] private float contactDamage = 10f;
     [SerializeField] private float attackCooldown = 1f;
     [SerializeField] private float attackRange = 20f;
-
+    */
     [Header("Slow")]
     [SerializeField] private float baseSpeed = 3f;
     private float currentSpeed;
     public float CurrentSpeed => currentSpeed;
 
-    // Estado de las habilidades
     private bool isMindjacked = false;
     private bool isIgnited = false;
-    private float lastAttackTime = 0f;
+    private bool isElectroHacked = false;
+    private bool isSlowed = false;
 
-    // Referencias a las coroutines activas
     private Coroutine slowCoroutine;
     private Coroutine electroHackCoroutine;
     private Coroutine ignitionCoroutine;
@@ -31,95 +28,107 @@ public class EnemyAbilityReceiver : MonoBehaviour
 
     private void Awake()
     {
-        vida = GetComponent<VidaEnemigoGeneral>();
-        enemigoRosa = GetComponent<EnemigoRosa>();
+        enemyHealth = GetComponent<VidaEnemigoGeneral>();
+        pinkEnemyHealth = GetComponent<EnemigoRosa>();
 
-        if (vida == null)
+        if (enemyHealth == null)
         {
             Debug.LogWarning("VidaEnemigoGeneral no encontrada en el enemigo.");
         }
-        if (enemigoRosa == null)
+        if (pinkEnemyHealth == null)
         {
             Debug.LogWarning("EnemigoRosa no encontrado en el enemigo.");
         }
 
-        // Inicializar velocidad
         currentSpeed = baseSpeed;
     }
 
     public void TakeDamage(float dmg)
     {
-        vida?.RecibirDanio(dmg);
-        enemigoRosa?.RecibirDanio(dmg);
+        enemyHealth?.RecibirDanio(dmg);
+        pinkEnemyHealth?.RecibirDanio(dmg);
     }
 
-    public void ApplySlow(float multiplier, float duration)
+    public void ApplySlow(float multiplier, float duration, GameObject effectToDestroy)
     {
-        if (slowCoroutine != null)
-        {
-            StopCoroutine(slowCoroutine);
-        }
-        slowCoroutine = StartCoroutine(SlowRoutine(multiplier, duration));
+        if (isSlowed) return;
+
+        if (slowCoroutine != null) StopCoroutine(slowCoroutine);
+        slowCoroutine = StartCoroutine(SlowRoutine(multiplier, duration, effectToDestroy));
     }
 
-    private IEnumerator SlowRoutine(float multiplier, float duration)
+    private IEnumerator SlowRoutine(float multiplier, float duration, GameObject effectToDestroy)
     {
+        isSlowed = true;
+
         currentSpeed = baseSpeed * multiplier;
         yield return new WaitForSeconds(duration);
         currentSpeed = baseSpeed;
-    }
 
-    public void ApplyElectroHack(float tickDamage, float tickInterval, int ticks, float slowMultiplier)
-    {
-        if (electroHackCoroutine != null)
+        if (effectToDestroy != null)
         {
-            StopCoroutine(electroHackCoroutine);
+            Destroy(effectToDestroy);
         }
-        electroHackCoroutine = StartCoroutine(ElectroHackRoutine(tickDamage, tickInterval, ticks, slowMultiplier));
+
+        isSlowed = false;
+        slowCoroutine = null;
     }
 
-    private IEnumerator ElectroHackRoutine(float tickDamage, float tickInterval, int ticks, float slowMultiplier)
+    public void ApplyGlitchTime(float slowMultiplier, float duration, GameObject particlePrefab)
     {
-        ApplySlow(slowMultiplier, tickInterval * ticks);
-
-        for (int i = 0; i < ticks; i++)
+        GameObject particleInstance = null;
+        if (particlePrefab != null)
         {
-            if (vida == null || vida.vida <= 0 || enemigoRosa == null || enemigoRosa.vida <= 0) yield break;
-
-            TakeDamage(tickDamage);
-            yield return new WaitForSeconds(tickInterval);
+            particleInstance = Instantiate(particlePrefab, transform.position, Quaternion.identity, transform);
         }
+
+        ApplySlow(slowMultiplier, duration, particleInstance);
     }
 
-    public void ApplyIgnition(float damagePerSecond, float duration)
+    public void ApplyElectroHack(float damagePerSecond, float duration, float slowMultiplier)
     {
-        if (isIgnited) return;
+        if (isElectroHacked) return;
 
-        if (ignitionCoroutine != null)
-        {
-            StopCoroutine(ignitionCoroutine);
-        }
-        ignitionCoroutine = StartCoroutine(IgnitionRoutine(damagePerSecond, duration));
+        if (electroHackCoroutine != null) StopCoroutine(electroHackCoroutine);
+        electroHackCoroutine = StartCoroutine(ElectroHackRoutine(damagePerSecond, duration, slowMultiplier));
     }
 
-    private IEnumerator IgnitionRoutine(float damagePerSecond, float duration)
+    private IEnumerator ElectroHackRoutine(float damagePerSecond, float duration, float slowMultiplier)
     {
-        isIgnited = true;
+        isElectroHacked = true;
+
+        ApplySlow(slowMultiplier, duration, null);
+
         float elapsed = 0f;
-
-        while (elapsed + 1f <= duration)
+        while (elapsed < duration)
         {
             TakeDamage(damagePerSecond);
             yield return new WaitForSeconds(1f);
             elapsed += 1f;
         }
 
-        float remaining = duration - elapsed;
+        isElectroHacked = false;
+        electroHackCoroutine = null;
+    }
 
-        if (remaining > 0f)
+    public void ApplyIgnition(float damagePerSecond, float duration)
+    {
+        if (isIgnited) return;
+
+        if (ignitionCoroutine != null) StopCoroutine(ignitionCoroutine);
+        ignitionCoroutine = StartCoroutine(IgnitionRoutine(damagePerSecond, duration));
+    }
+
+    private IEnumerator IgnitionRoutine(float damagePerSecond, float duration)
+    {
+        isIgnited = true;
+
+        float elapsed = 0f;
+        while (elapsed < duration)
         {
-            yield return new WaitForSeconds(remaining);
-            TakeDamage(damagePerSecond * remaining);
+            TakeDamage(damagePerSecond);
+            yield return new WaitForSeconds(1f);
+            elapsed += 1f;
         }
 
         isIgnited = false;
@@ -129,75 +138,30 @@ public class EnemyAbilityReceiver : MonoBehaviour
     public void ApplyMindjack(float damagePerSecond, float duration)
     {
         if (isMindjacked) return;
-        isMindjacked = true;
 
-        MindjackAbility mindjackAbility = FindObjectOfType<MindjackAbility>();
-        if (mindjackAbility != null)
-        {
-            mindjackAbility.EnemyMindjacked(true);
-        }
-        else
-        {
-            Debug.LogError("No se encontró la habilidad MindjackAbility.");
-        }
+        Debug.Log("[En proceso] Aplicando Mindjack a " + gameObject.name);
 
-        if (mindjackCoroutine != null)
-        {
-            StopCoroutine(mindjackCoroutine);
-        }
+        if (mindjackCoroutine != null) StopCoroutine(mindjackCoroutine);
         mindjackCoroutine = StartCoroutine(MindjackRoutine(damagePerSecond, duration));
     }
 
     private IEnumerator MindjackRoutine(float damagePerSecond, float duration)
     {
+        isMindjacked = true;
+
         float elapsed = 0f;
         float damageInterval = 1f;
 
-        while (elapsed < duration && vida.vida > 0)
+        while (elapsed < duration && enemyHealth.vida > 0)
         {
-            GameObject target = FindNearestEnemy();
-            if (target != null)
-            {
-                float distance = Vector3.Distance(transform.position, target.transform.position);
-
-                // Movimiento hacia el enemigo
-                if (distance > 1.5f) // separación mínima
-                {
-                    transform.LookAt(target.transform);
-                    transform.position = Vector3.MoveTowards(transform.position, target.transform.position, currentSpeed * Time.deltaTime);
-                }
-
-                // Ataque si está cerca
-                if (distance <= 2f && Time.time >= lastAttackTime + attackCooldown)
-                {
-                    EnemyAbilityReceiver other = target.GetComponent<EnemyAbilityReceiver>();
-                    if (other != null && !other.isMindjacked)
-                    {
-                        other.TakeDamage(contactDamage);
-                        lastAttackTime = Time.time;
-                    }
-                }
-            }
-
-            TakeDamage(damagePerSecond); // daño por segundo
             yield return new WaitForSeconds(damageInterval);
             elapsed += damageInterval;
         }
 
-        // Fin del efecto Mindjack
         isMindjacked = false;
-
-        MindjackAbility mindjackAbility = FindObjectOfType<MindjackAbility>();
-        if (mindjackAbility != null)
-        {
-            mindjackAbility.EnemyMindjacked(false);
-        }
-        else
-        {
-            Debug.LogError("No se encontró la habilidad MindjackAbility.");
-        }
+        mindjackCoroutine = null;
     }
-
+    /*
     private GameObject FindNearestEnemy()
     {
         GameObject nearest = null;
@@ -225,12 +189,5 @@ public class EnemyAbilityReceiver : MonoBehaviour
 
         return nearest;
     }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
-    }
+    */
 }
-
-

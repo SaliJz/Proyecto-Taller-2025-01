@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -7,6 +5,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("References")]
     private Rigidbody rb;
     [SerializeField] private Transform orientation;
+    [SerializeField] private LayerMask groundLayer;
 
     [Header("Key input")]
     [SerializeField] private KeyCode jumpKey = KeyCode.Space;
@@ -14,20 +13,24 @@ public class PlayerMovement : MonoBehaviour
     [Header ("Movement")]
     [SerializeField] private float speedWalk = 10f;
     [SerializeField] private float groundDrag = 5f;
+    [SerializeField] private float airControl = 0.2f;
 
     [Header("Jump")]
-    [SerializeField] private float jumpForce = 5f;
-    [SerializeField] private float jumpCooldown = 0.25f;
-    [SerializeField] private float jumpAirControl = 0.5f;
-    private bool readyToJump = true;
-    private float jumpBuffer = 0.15f;
-    private float lastJumpPressedTime;
+    [SerializeField] private float jumpForce = 8f;
+    [SerializeField] private float gravityFallMultiplier = 3.5f;
 
-    [Header("Ground Normal Check")]
-    [SerializeField] private float maxGroundAngle = 45f;
-    private bool isGrounded = true;
+    [Header("Ground Check")]
+    [SerializeField] private float playerHeight = 2f;
+    [SerializeField] private float groundCheckRadius = 0.4f;
+    [SerializeField] private float groundCheckDistance = 0.2f;
+    private bool isGrounded;
+
+    [Header("Debug Options")]
+    [SerializeField] private bool showDetailsOptions = false;
+
+    public bool IsMoving => rb.velocity.magnitude > 0.1f;
     public bool IsGrounded => isGrounded;
-    public float SpeedWalk => speedWalk;
+    public bool MovementEnabled { get; set; } = true;
 
     void Awake()
     {
@@ -35,30 +38,27 @@ public class PlayerMovement : MonoBehaviour
         rb.freezeRotation = true;
     }
 
-    void Update()
+    private void Update()
     {
-        if (Input.GetKeyDown(jumpKey))
-        {
-            lastJumpPressedTime = Time.time;
-        }
+        if (!MovementEnabled) return;
 
-        //CheckGround();
-        HandleJump();
-
-        // Aplicar fricción al suelo
-        if (isGrounded)
-        {
-            rb.drag = groundDrag; // Fricción al suelo
-        }
-        else
-        {
-            rb.drag = 0; // Sin fricción en el aire
-        }
+        CheckGround();
+        HandleJumpInput();
+        HandleDrag();
     }
 
     private void FixedUpdate()
     {
+        if (!MovementEnabled) return;
+
+        if (isGrounded && Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0)
+        {
+            Vector3 vel = rb.velocity;
+            rb.velocity = new Vector3(0f, vel.y, 0f);
+        }
+
         HandleMovement();
+        HandleGravity();
     }
 
     private void HandleMovement()
@@ -66,84 +66,90 @@ public class PlayerMovement : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        if (IsFacingSteepWall())
-        {
-            // Cancelar movimiento hacia adelante si está contra una pared empinada
-            vertical = Mathf.Min(0f, vertical);
-        }
-
         Vector3 moveDirection = (orientation.forward * vertical + orientation.right * horizontal).normalized;
-
-        // Aplicar movimiento
+        
         if (isGrounded)
         {
-            Vector3 velocity = new Vector3(moveDirection.x * speedWalk, rb.velocity.y, moveDirection.z * speedWalk);
-            rb.velocity = velocity;
+            rb.velocity = new Vector3(moveDirection.x * speedWalk, rb.velocity.y, moveDirection.z * speedWalk);
         }
-        // Aplicar control de aire
-        else if (!isGrounded)
+        else
         {
-            rb.AddForce(moveDirection * speedWalk * jumpAirControl, ForceMode.Acceleration); // Control de aire
+            rb.AddForce(moveDirection * speedWalk * airControl, ForceMode.Acceleration);
         }
 
-        // Aplicar rotación
         if (moveDirection != Vector3.zero)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(moveDirection); // Rotación hacia la dirección de movimiento
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f); // Rotación suave
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
         }
     }
 
-    private bool IsFacingSteepWall()
+    private void HandleDrag()
     {
-        Debug.DrawRay(transform.position, orientation.forward * 0.6f, Color.red);
-
-        if (Physics.Raycast(transform.position, orientation.forward, out RaycastHit hit, 0.6f))
+        if (isGrounded)
         {
-            float angle = Vector3.Angle(hit.normal, Vector3.up);
-            return angle > maxGroundAngle;
+            rb.drag = IsMoving ? 0f : groundDrag;
         }
-        return false;
-    }
-
-    private void HandleJump()
-    {
-        // Si se presionó el salto recientemente y está en suelo y listo
-        if (Time.time - lastJumpPressedTime < jumpBuffer && isGrounded && readyToJump)
+        else
         {
-            readyToJump = false;
-            lastJumpPressedTime = 0;
-
-            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-
-            Invoke(nameof(ResetJump), jumpCooldown);
+            rb.drag = 0;
         }
     }
 
-    private void ResetJump()
+    private void CheckGround()
     {
-        readyToJump = true;
+        Vector3 startPoint = transform.position + Vector3.up * groundCheckRadius;
+        float castDistance = playerHeight / 2 - groundCheckRadius + groundCheckDistance;
+
+        Debug.DrawRay(startPoint, Vector3.down * castDistance, Color.green);
+
+        isGrounded = Physics.SphereCast(startPoint, groundCheckRadius, Vector3.down, out _, castDistance, groundLayer);
     }
 
-    private void OnCollisionStay(Collision collision)
+    private void HandleJumpInput()
     {
-        isGrounded = false;
-
-        // Comprobar si el contacto está en el suelo
-        foreach (ContactPoint contact in collision.contacts)
+        if (Input.GetKeyDown(jumpKey) && isGrounded)
         {
-            float angle = Vector3.Angle(contact.normal, Vector3.up);
-            if (angle < maxGroundAngle)
-            {
-                isGrounded = true;
-                break;
-            }
+            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
     }
 
-    private void OnCollisionExit(Collision collision)
+    private void HandleGravity()
     {
-        isGrounded = false;
+        if (!isGrounded && rb.velocity.y < 0)
+        {
+            rb.AddForce(Physics.gravity * (gravityFallMultiplier - 1), ForceMode.Acceleration);
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position + Vector3.up * groundCheckRadius, groundCheckRadius);
+        
+        Gizmos.color = Color.green;
+        Vector3 startPoint = transform.position + Vector3.up * groundCheckRadius;
+        Gizmos.DrawLine(startPoint, startPoint + Vector3.down * (playerHeight / 2 - groundCheckRadius + groundCheckDistance));
+    }
+
+    private void OnGUI()
+    {
+        if (!showDetailsOptions) return;
+
+        GUI.Label(new Rect(10, 10, 300, 20), "Vel: " + rb.velocity.ToString("F2"));
+        GUI.Label(new Rect(10, 30, 300, 20), "Grounded: " + isGrounded);
+        GUI.Label(new Rect(10, 50, 300, 20), "Moving: " + IsMoving);
+        GUI.Label(new Rect(10, 70, 300, 20), "Movement Enabled: " + MovementEnabled);
+        GUI.Label(new Rect(10, 90, 300, 20), "Gravity: " + Physics.gravity.ToString("F2"));
+        GUI.Label(new Rect(10, 110, 300, 20), "Drag: " + rb.drag.ToString("F2"));
+        GUI.Label(new Rect(10, 130, 300, 20), "Jump Force: " + jumpForce.ToString("F2"));
+        GUI.Label(new Rect(10, 150, 300, 20), "Air Control: " + airControl.ToString("F2"));
+        GUI.Label(new Rect(10, 170, 300, 20), "Ground Layer: " + groundLayer.value.ToString("F2"));
+        GUI.Label(new Rect(10, 190, 300, 20), "Ground Check Radius: " + groundCheckRadius.ToString("F2"));
+        GUI.Label(new Rect(10, 210, 300, 20), "Ground Check Distance: " + groundCheckDistance.ToString("F2"));
+        GUI.Label(new Rect(10, 230, 300, 20), "Player Height: " + playerHeight.ToString("F2"));
+        GUI.Label(new Rect(10, 250, 300, 20), "Orientation: " + orientation.name);
+        GUI.Label(new Rect(10, 270, 300, 20), "Rigidbody: " + rb.name);
     }
 }
