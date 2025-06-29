@@ -39,9 +39,15 @@ public class CobraElevadaController : MonoBehaviour
     // Temporizador interno para controlar el tiempo en Pose antes de iniciar el Coletazo
     private float timerPose;
 
+    // Nueva referencia al activador de efectos
+    private ActivadorEfectos efectosActivator;
+
     void Start()
     {
         serpent = GetComponent<SnakeController>();
+        // Buscamos el ActivadorEfectos en la escena
+        efectosActivator = FindObjectOfType<ActivadorEfectos>();
+
         GameObject p = GameObject.FindWithTag("Player");
         if (p == null)
         {
@@ -54,6 +60,8 @@ public class CobraElevadaController : MonoBehaviour
 
         if (poseAlInicio && serpent.Segmentos != null && serpent.Segmentos.Count > 0)
         {
+            // Apagamos efectos al entrar en pose al inicio
+            if (efectosActivator != null) efectosActivator.activar = false;
             EntrarPose();
         }
     }
@@ -65,9 +73,14 @@ public class CobraElevadaController : MonoBehaviour
 
         if (estado == Estado.Inactivo)
         {
+            // Activamos efectos al quedar inactivo
+            if (efectosActivator != null) efectosActivator.activar = true;
+
             float distAlJugador = Vector3.Distance(serpent.Segmentos[0].position, jugador.position);
             if (distAlJugador <= distanciaActivacionPose)
             {
+                // Apagamos efectos antes de cambiar a pose
+                if (efectosActivator != null) efectosActivator.activar = false;
                 EntrarPose();
                 return;
             }
@@ -98,6 +111,9 @@ public class CobraElevadaController : MonoBehaviour
         serpent.enabled = false;
         timerPose = 0f;
         coletazoRealizado = false;
+
+        // Aseguramos que los efectos queden apagados
+        if (efectosActivator != null) efectosActivator.activar = false;
     }
 
     void SalirPose()
@@ -105,6 +121,8 @@ public class CobraElevadaController : MonoBehaviour
         estado = Estado.Inactivo;
         serpent.enabled = true;
         coletazoRealizado = false;
+        // Reactivamos efectos al salir de pose
+        if (efectosActivator != null) efectosActivator.activar = true;
     }
 
     void IniciarColetazo()
@@ -225,7 +243,30 @@ public class CobraElevadaController : MonoBehaviour
 
 
 
-// // CobraElevadaController.cs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//// CobraElevadaController.cs
 //using System.Collections;
 //using System.Collections.Generic;
 //using UnityEngine;
@@ -279,54 +320,37 @@ public class CobraElevadaController : MonoBehaviour
 //            jugador = p.transform;
 //        }
 
-//        if (poseAlInicio)
+//        if (poseAlInicio && serpent.Segmentos != null && serpent.Segmentos.Count > 0)
 //        {
-//            // Solo intentamos entrar en pose si ya tenemos segmentos cargados
-//            if (serpent.Segmentos != null && serpent.Segmentos.Count > 0)
-//                EntrarPose();
+//            EntrarPose();
 //        }
 //    }
 
 //    void Update()
 //    {
-//        // Si no hay SnakeController o si aún no se han generado los segmentos, no hacemos nada
 //        if (serpent == null || serpent.Segmentos == null || serpent.Segmentos.Count == 0 || jugador == null)
 //            return;
 
-//        // 1) Si estamos Inactivos, revisamos distancia al jugador
 //        if (estado == Estado.Inactivo)
 //        {
-//            // Accedemos a la cabeza (primer elemento de la lista)
-//            Vector3 cabezaPos = serpent.Segmentos[0].position;
-//            float distAlJugador = Vector3.Distance(cabezaPos, jugador.position);
-
+//            float distAlJugador = Vector3.Distance(serpent.Segmentos[0].position, jugador.position);
 //            if (distAlJugador <= distanciaActivacionPose)
 //            {
 //                EntrarPose();
-//                return; // Salimos para no procesar nada más este frame
+//                return;
 //            }
 //        }
-//        // 2) Si estamos en Pose, vamos sumando tiempo y aplicamos pose. Cuando se cumpla el tiempo, lanzamos coletazo.
 //        else if (estado == Estado.Pose)
 //        {
-//            // Contamos el tiempo que llevamos en Pose
 //            timerPose += Time.deltaTime;
-
-//            // Si ya pasaron los segundos necesarios y aún no se hizo el coletazo, lo iniciamos
 //            if (timerPose >= tiempoEsperaColetazo && !coletazoRealizado)
-//            {
 //                IniciarColetazo();
-//            }
-
-//            // Aplicamos la pose en cada frame mientras estemos en este estado
 //            AplicarPose();
 //        }
-//        // 3) Si estamos en Coletazo, aplicamos la animación correspondiente
 //        else if (estado == Estado.Coletazo)
 //        {
 //            AplicarColetazo();
 //        }
-//        // 4) En cualquier otro caso (Inactivo), dejamos el SnakeController habilitado para que siga moviéndose normalmente
 //        else
 //        {
 //            serpent.enabled = true;
@@ -335,17 +359,11 @@ public class CobraElevadaController : MonoBehaviour
 
 //    void EntrarPose()
 //    {
-//        // Preparamos la lista de segmentos (solo la primera vez, o en cada entrada a Pose)
 //        segmentos = serpent.Segmentos;
-
-//        // Nos aseguramos de que el máximo cuello sea al menos 2 para evitar divisiones por cero
 //        int maxNeck = Mathf.Max(2, segmentos.Count - 1);
 //        numSegmentosCuello = Mathf.Clamp(numSegmentosCuello, 2, maxNeck);
-
 //        estado = Estado.Pose;
 //        serpent.enabled = false;
-
-//        // Reiniciamos temporizadores internos
 //        timerPose = 0f;
 //        coletazoRealizado = false;
 //    }
@@ -355,24 +373,17 @@ public class CobraElevadaController : MonoBehaviour
 //        estado = Estado.Inactivo;
 //        serpent.enabled = true;
 //        coletazoRealizado = false;
-//        // No es necesario reiniciar timerPose aquí; se reinicia al entrar en pose nuevamente
 //    }
 
 //    void IniciarColetazo()
 //    {
-//        // Preparamos las direcciones originales de cada segmento para el coletazo “tipo soga”
 //        coletazoDirections = new List<Vector3>(segmentos.Count);
 //        for (int i = 0; i < segmentos.Count; i++)
 //        {
 //            if (i == 0)
-//            {
 //                coletazoDirections.Add(Vector3.zero);
-//            }
 //            else
-//            {
-//                Vector3 dir = (segmentos[i].position - segmentos[i - 1].position).normalized;
-//                coletazoDirections.Add(dir);
-//            }
+//                coletazoDirections.Add((segmentos[i].position - segmentos[i - 1].position).normalized);
 //        }
 //        angleAcumulado = 0f;
 //        timerColetazo = 0f;
@@ -385,16 +396,13 @@ public class CobraElevadaController : MonoBehaviour
 //        if (segmentos == null || segmentos.Count == 0)
 //            return;
 
-//        // Calculamos la posición de la cabeza en 2D (ignorando Y)
 //        Vector3 cabeza2D = new Vector3(segmentos[0].position.x, 0, segmentos[0].position.z);
 //        Vector3 jug2D = new Vector3(jugador.position.x, 0, jugador.position.z);
 
-//        // Dirección desde la cabeza hacia el jugador (en XZ)
 //        Vector3 dir = (jug2D - cabeza2D).sqrMagnitude < 0.01f
 //                          ? transform.forward
 //                          : (jug2D - cabeza2D).normalized;
 
-//        // El objetivo en Y es alturaMaxima sobre el suelo
 //        Vector3 objetivo = cabeza2D + Vector3.up * alturaMaxima;
 
 //        SeguirCadena(objetivo, dir, velocidadSuavizado);
@@ -402,11 +410,15 @@ public class CobraElevadaController : MonoBehaviour
 
 //    void AplicarColetazo()
 //    {
+//        // Durante el ataque, la cabeza siempre mira al jugador
+//        Transform cabeza = segmentos[0];
+//        Vector3 lookTarget = new Vector3(jugador.position.x, cabeza.position.y, jugador.position.z);
+//        cabeza.LookAt(lookTarget);
+
 //        timerColetazo += Time.deltaTime;
 //        float deltaAngle = (360f / duracionColetazo) * Time.deltaTime;
 //        angleAcumulado += deltaAngle;
 
-//        // Para cada segmento a partir de numSegmentosCuello, giramos en círculo según colectazoDirections
 //        for (int i = numSegmentosCuello; i < segmentos.Count; i++)
 //        {
 //            Vector3 prevPos = segmentos[i - 1].position;
@@ -414,11 +426,8 @@ public class CobraElevadaController : MonoBehaviour
 //            segmentos[i].position = prevPos + rotDir * distanciaColetazo;
 //        }
 
-//        // Cuando termine el coletazo, salimos de la pose y volvemos a Inactivo
 //        if (timerColetazo >= duracionColetazo)
-//        {
 //            SalirPose();
-//        }
 //    }
 
 //    void SeguirCadena(Vector3 cabezaObj, Vector3 dirXZ, float velocidad)
@@ -426,7 +435,6 @@ public class CobraElevadaController : MonoBehaviour
 //        float separacion = serpent.separacionSegmentos;
 //        Vector3 derecha = Vector3.Cross(dirXZ, Vector3.up).normalized;
 
-//        // Mover suavizado de la cabeza hacia el objetivo (hacia arriba sobre el jugador)
 //        segmentos[0].position = Vector3.Lerp(
 //            segmentos[0].position,
 //            cabezaObj,
@@ -436,7 +444,6 @@ public class CobraElevadaController : MonoBehaviour
 //        Vector3 anterior = segmentos[0].position;
 //        for (int i = 1; i < segmentos.Count; i++)
 //        {
-//            // Si estamos en el cuello (i < numSegmentosCuello), aplicamos curva y altura; en cola es línea recta
 //            float t = i < numSegmentosCuello
 //                      ? (float)i / (numSegmentosCuello - 1)
 //                      : 1f;
@@ -458,7 +465,6 @@ public class CobraElevadaController : MonoBehaviour
 //                velocidad * Time.deltaTime
 //            );
 
-//            // Orientar cada segmento para que mire hacia el anterior (sin afectar la Y)
 //            Vector3 mira = anterior - segmentos[i].position;
 //            mira.y = 0;
 //            if (mira.sqrMagnitude > 0.001f)
@@ -474,6 +480,13 @@ public class CobraElevadaController : MonoBehaviour
 //        }
 //    }
 //}
+
+
+
+
+
+
+
 
 
 
