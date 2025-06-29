@@ -60,7 +60,7 @@ public class TipoColorController : MonoBehaviour
 
         Color baseCol = currentTipo == TipoEnemigo.Ametralladora ? Color.blue
                         : currentTipo == TipoEnemigo.Pistola ? Color.red
-                                                                     : Color.green;
+                                                              : Color.green;
         Color hdrCol = baseCol * emissionIntensity;
 
         if (colorRoutine != null)
@@ -72,26 +72,38 @@ public class TipoColorController : MonoBehaviour
     private IEnumerator CambiarColorSuave(Color targetBase, Color targetHDR)
     {
         float elapsed = 0f;
+        // Captura colores iniciales de cada renderer
+        var startBaseColors = new List<Color>(renderers.Count);
+        var startHDRColors = new List<Color>(renderers.Count);
 
-        var firstMat = renderers[0].material;
-        Color startBase = firstMat.HasProperty("_BaseColor") ? firstMat.GetColor("_BaseColor")
-                         : firstMat.HasProperty("_Color") ? firstMat.GetColor("_Color")
-                                                                  : Color.white;
-        Color startHDR = firstMat.HasProperty("_EmissionColor") ? firstMat.GetColor("_EmissionColor")
-                         : firstMat.HasProperty("_FresnelColor") ? firstMat.GetColor("_FresnelColor")
-                                                                  : startBase;
+        foreach (var rend in renderers)
+        {
+            var mat = rend.material;
+            Color sb = mat.HasProperty("_BaseColor") ? mat.GetColor("_BaseColor")
+                   : mat.HasProperty("_Color") ? mat.GetColor("_Color")
+                   : Color.white;
+            startBaseColors.Add(sb);
 
+            Color sh = mat.HasProperty("_EmissionColor") ? mat.GetColor("_EmissionColor")
+                   : mat.HasProperty("_FresnelColor") ? mat.GetColor("_FresnelColor")
+                   : sb * emissionIntensity;
+            startHDRColors.Add(sh);
+        }
+
+        // Interpolación suave
         while (elapsed < duracionTransicionColor)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duracionTransicionColor);
 
-            Color lerpBase = Color.Lerp(startBase, targetBase, t);
-            Color lerpHDR = Color.Lerp(startHDR, targetHDR, t);
-
-            foreach (var rend in renderers)
+            for (int i = 0; i < renderers.Count; i++)
             {
+                var rend = renderers[i];
                 var mat = rend.material;
+
+                Color lerpBase = Color.Lerp(startBaseColors[i], targetBase, t);
+                Color lerpHDR = Color.Lerp(startHDRColors[i], targetHDR, t);
+
                 if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", lerpBase);
                 else if (mat.HasProperty("_Color")) mat.SetColor("_Color", lerpBase);
 
@@ -101,7 +113,7 @@ public class TipoColorController : MonoBehaviour
             yield return null;
         }
 
-        // Valores finales
+        // Asegura valores finales exactos
         foreach (var rend in renderers)
         {
             var mat = rend.material;
@@ -111,6 +123,9 @@ public class TipoColorController : MonoBehaviour
             if (mat.HasProperty("_EmissionColor")) mat.SetColor("_EmissionColor", targetHDR);
             if (mat.HasProperty("_FresnelColor")) mat.SetColor("_FresnelColor", targetHDR);
         }
+
+        // Marca fin de coroutine
+        colorRoutine = null;
     }
 
     public void RecibirDanio(float d)
@@ -123,10 +138,11 @@ public class TipoColorController : MonoBehaviour
     {
         isBlinking = true;
 
+        // Guarda colores actuales antes de parpadear
         var mat0 = renderers[0].material;
         Color currBase = mat0.HasProperty("_BaseColor") ? mat0.GetColor("_BaseColor")
                        : mat0.HasProperty("_Color") ? mat0.GetColor("_Color")
-                                                            : Color.white;
+                                                    : Color.white;
         Color currHDR = mat0.HasProperty("_EmissionColor") ? mat0.GetColor("_EmissionColor")
                        : mat0.HasProperty("_FresnelColor") ? mat0.GetColor("_FresnelColor")
                                                             : currBase * emissionIntensity;
@@ -134,6 +150,7 @@ public class TipoColorController : MonoBehaviour
         float half = blinkInterval * 0.5f;
         for (int i = 0; i < blinkCount; i++)
         {
+            // Blanco fuerte
             foreach (var rend in renderers)
             {
                 var mat = rend.material;
@@ -145,6 +162,7 @@ public class TipoColorController : MonoBehaviour
             }
             yield return new WaitForSeconds(half);
 
+            // Restablece a color previo
             foreach (var rend in renderers)
             {
                 var mat = rend.material;
@@ -160,8 +178,6 @@ public class TipoColorController : MonoBehaviour
         isBlinking = false;
     }
 }
-
-
 
 
 
@@ -197,7 +213,6 @@ public class TipoColorController : MonoBehaviour
 //    private TipoEnemigo currentTipo;
 //    public TipoEnemigo CurrentTipo => currentTipo;
 
-//    // Ahora usamos Renderer en lugar de MeshRenderer
 //    private List<Renderer> renderers = new List<Renderer>();
 //    private Coroutine colorRoutine;
 //    private bool isBlinking = false;
@@ -211,10 +226,17 @@ public class TipoColorController : MonoBehaviour
 //    {
 //        yield return new WaitForSeconds(delayInicial);
 
-//        // Recoge TODOS los Renderers en hijos (incluye SkinnedMeshRenderer, MeshRenderer…)
+//        // 1) Todos los Renderers hijos de este GameObject
 //        renderers.AddRange(GetComponentsInChildren<Renderer>());
 
-//        // Habilita emission en los materiales que lo tengan
+//        // 2) También busca en toda la escena cualquier objeto llamado "Holograma_1"
+//        foreach (var t in FindObjectsOfType<Transform>())
+//        {
+//            if (t.name == "Holograma_1")
+//                renderers.AddRange(t.GetComponentsInChildren<Renderer>());
+//        }
+
+//        // Habilita emisión en todos los materiales que tengan la propiedad
 //        foreach (var rend in renderers)
 //        {
 //            var mat = rend.material;
@@ -237,6 +259,7 @@ public class TipoColorController : MonoBehaviour
 
 //        if (colorRoutine != null)
 //            StopCoroutine(colorRoutine);
+
 //        colorRoutine = StartCoroutine(CambiarColorSuave(baseCol, hdrCol));
 //    }
 
@@ -296,11 +319,11 @@ public class TipoColorController : MonoBehaviour
 
 //        var mat0 = renderers[0].material;
 //        Color currBase = mat0.HasProperty("_BaseColor") ? mat0.GetColor("_BaseColor")
-//                         : mat0.HasProperty("_Color") ? mat0.GetColor("_Color")
-//                                                          : Color.white;
+//                       : mat0.HasProperty("_Color") ? mat0.GetColor("_Color")
+//                                                            : Color.white;
 //        Color currHDR = mat0.HasProperty("_EmissionColor") ? mat0.GetColor("_EmissionColor")
-//                         : mat0.HasProperty("_FresnelColor") ? mat0.GetColor("_FresnelColor")
-//                                                          : currBase * emissionIntensity;
+//                       : mat0.HasProperty("_FresnelColor") ? mat0.GetColor("_FresnelColor")
+//                                                            : currBase * emissionIntensity;
 
 //        float half = blinkInterval * 0.5f;
 //        for (int i = 0; i < blinkCount; i++)
@@ -331,6 +354,15 @@ public class TipoColorController : MonoBehaviour
 //        isBlinking = false;
 //    }
 //}
+
+
+
+
+
+
+
+
+
 
 
 
