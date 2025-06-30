@@ -55,7 +55,7 @@ MonoBehaviour:
   m_DecalLayerMask: 4294967295
   m_ScaleMode: 0
   m_Offset: {x: 0, y: 0, z: 1}
-  m_Size: {x: 5, y: 5, z: 5}
+  m_Size: {x: 12, y: 12, z: 5}
   m_FadeFactor: 0.767
 --- !u!1 &2961634004161347876
 GameObject:
@@ -81,7 +81,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2961634004161347876}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -14.27, y: -1.954, z: 135.1}
   m_LocalScale: {x: 87.48895, y: 20.290075, z: 5.4019}
   m_ConstrainProportionsScale: 0
@@ -194,6 +194,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1400939088089728218, guid: c610938e9fce1b3418bd86feb514bf88,
+        type: 3}
+      propertyPath: MarkerProjected
+      value: 
+      objectReference: {fileID: 5223679294411161440}
     - target: {fileID: 2837279686403313000, guid: c610938e9fce1b3418bd86feb514bf88,
         type: 3}
       propertyPath: m_Name
