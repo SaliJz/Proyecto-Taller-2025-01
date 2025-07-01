@@ -11,7 +11,7 @@ public class PlayerDash : MonoBehaviour
     [SerializeField] private float dashDistance = 15f;
     [SerializeField] private float dashDuration = 0.25f;
     [SerializeField] private float dashCooldown = 1f;
-    [SerializeField] private float minPostDashSpeed = 2.5f;
+    //[SerializeField] private float minPostDashSpeed = 2.5f;
     [SerializeField] private float dashCollisionCheckDistance = 2f;
     [SerializeField] private float postDashImpulse = 2.5f;
     [SerializeField] private float bounceImpulse = 5f;

@@ -6,8 +6,8 @@ public class RetryButtonChangeScene : MonoBehaviour
 {
     public static string SCENE_NAME = string.Empty;
     [SerializeField] private SceneTransition sceneTransition;
-    //[SerializeField] private AudioSource fxSource;
-    //[SerializeField] private AudioClip clickSound;
+    [SerializeField] private AudioSource fxSource;
+    [SerializeField] private AudioClip clickSound;
 
     private void Start()
     {
@@ -22,20 +22,22 @@ public class RetryButtonChangeScene : MonoBehaviour
 
     void ChangeScene()
     {
-        //PlaySoundButton();
+        PlaySoundButton();
         if (SCENE_NAME == string.Empty)
         {
-            sceneTransition.LoadSceneWithFade("MenuPrincipalJesus");
+            sceneTransition.LoadSceneWithFade("MenuPrincipal");
         }
         else
         {
-            sceneTransition.LoadSceneWithFade(SCENE_NAME);
+            GameManager.Instance?.ReloadLastLevel();
         }
     }
-    /*
+    
     private void PlaySoundButton()
     {
-        fxSource.PlayOneShot(clickSound);
+        if (fxSource != null && clickSound != null)
+        {
+            fxSource.PlayOneShot(clickSound);
+        }
     }
-    */
 }

@@ -17,36 +17,51 @@ public class MenuPausa : MonoBehaviour
     [SerializeField] private Button quitButton;
 
     [Header("Texts")]
-    [SerializeField] private string nombreEscenaMenuPrincipal;
+    [SerializeField] private string mainSceneName;
 
     [Header("Audio")]
     [SerializeField] private AudioSource SFXSource;
     [SerializeField] private AudioClip buttonClip;
 
+    private ShopController shopController;
     private bool isDead = false; 
-    private bool juegoPausado = false;
+    private bool pausedGame = false;
+
+    private void Awake()
+    {
+        if (restartButton == null || mainMenuButton == null || settingsButton == null || quitButton == null)
+        {
+            return;
+        }
+        restartButton.onClick.AddListener(ResumeGame);
+        mainMenuButton.onClick.AddListener(GoToMainMenu);
+        settingsButton.onClick.AddListener(ShowSettings);
+        quitButton.onClick.AddListener(QuitGame);
+
+        shopController = FindObjectOfType<ShopController>();
+    }
 
     private void Start()
     {
         pauseMenuPanel.SetActive(false);
         settingsPanel.SetActive(false);
-
-        if (restartButton == null || mainMenuButton == null || settingsButton == null || quitButton == null)
-        {
-            return;
-        }
-        restartButton.onClick.AddListener(RestartGame);
-        mainMenuButton.onClick.AddListener(GoToMainMenu);
-        settingsButton.onClick.AddListener(ShowSettings);
-        quitButton.onClick.AddListener(QuitGame);
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape) && !isDead)
         {
-            if (!juegoPausado) PauseGame();
-            else RestartGame();
+            if (shopController != null && shopController.ShopPauseGame)
+            {
+                if (Input.GetKeyDown(KeyCode.Escape) && !pausedGame)
+                {
+                    PauseGame();
+                }
+                else if (Input.GetKeyDown(KeyCode.Escape) && pausedGame)
+                {
+                    ResumeGame();
+                }
+            }
         }
     }
 
@@ -54,24 +69,24 @@ public class MenuPausa : MonoBehaviour
     {
         PlayButtonAudio();
         Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true; // Ocultar el cursor
+        Cursor.visible = true;
 
         Time.timeScale = 0f;
         pauseMenuPanel.SetActive(true);
         settingsPanel.SetActive(false);
-        juegoPausado = true;
+        pausedGame = true;
     }
 
-    public void RestartGame()
+    public void ResumeGame()
     {
         PlayButtonAudio();
-        Cursor.lockState = CursorLockMode.Locked; // Desbloquear el cursor
-        Cursor.visible = false; // Mostrar el cursor
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
         Time.timeScale = 1f; 
         pauseMenuPanel.SetActive(false);
         settingsPanel.SetActive(false);
-        juegoPausado = false;
+        pausedGame = false;
     }
 
     public void ShowSettings()
@@ -85,7 +100,7 @@ public class MenuPausa : MonoBehaviour
     {
         PlayButtonAudio();
         Time.timeScale = 1f; 
-        SceneManager.LoadScene(nombreEscenaMenuPrincipal);
+        SceneManager.LoadScene(mainSceneName);
     }
 
     public void QuitGame()
@@ -96,7 +111,7 @@ public class MenuPausa : MonoBehaviour
 
     public void SetIsDead(bool isDead)
     {
-        this.isDead = isDead; // Actualizar el estado de muerte
+        this.isDead = isDead;
     }
 
     private void PlayButtonAudio()

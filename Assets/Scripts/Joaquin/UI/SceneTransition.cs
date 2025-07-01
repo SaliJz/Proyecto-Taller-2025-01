@@ -7,97 +7,58 @@ using UnityEngine.UI;
 
 public class SceneTransition : MonoBehaviour
 {
-    [Header("Fade Elements")]
-    [SerializeField] private GameObject loadingIcon;
-    [SerializeField] private GameObject loadingText;
-    [SerializeField] private float fadeDuration = 1f;
-    [SerializeField] private Color fadeColor = Color.white;
+    [Header("Elementos de Transición")]
+    [SerializeField] private float fadeDuration = 1.0f;
     [SerializeField] private Image fadeImage;
 
-    [Header("Elementos de la Tienda")]
-    [SerializeField] private GameObject shopUI;
-    [SerializeField] private Button continueButton;
-
-    private CanvasGroup canvasGroup;
-    private string sceneToLoad;
+    private Coroutine activeFade;
 
     private void Awake()
     {
-        canvasGroup = GetComponent<CanvasGroup>();
-        if (fadeImage != null) fadeImage.color = new Color(fadeColor.r, fadeColor.g, fadeColor.b, 0);
-        if (shopUI != null) shopUI.SetActive(false);
+        if (fadeImage != null)
+        {
+            fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, 0);
+            fadeImage.gameObject.SetActive(false);
+        }
     }
-
 
     public void LoadSceneWithFade(string sceneName)
     {
-        gameObject.SetActive(true);
-        
-        MenuPausa menuPausa = FindObjectOfType<MenuPausa>();
-
-        if (menuPausa != null)
-        {
-            menuPausa.SetIsDead(true);
-        }
-        StartCoroutine(LoadSceneCoroutine(sceneName));
+        if (activeFade != null) StopCoroutine(activeFade);
+        activeFade = StartCoroutine(LoadSceneRoutine(sceneName));
     }
 
-    private IEnumerator TransitionToShopRoutine()
+    public Coroutine Fade(float targetAlpha)
     {
-        FindObjectOfType<PlayerMovement>().enabled = false;
-        FindObjectOfType<MoveCamera>().enabled = false;
-        FindObjectOfType<PlayerDash>().enabled = false;
-
-        Weapon[] weapons = Resources.FindObjectsOfTypeAll<Weapon>().ToArray();
-        foreach (var weapon in weapons)
-        {
-            weapon.enabled = false;
-        }
-
-        yield return Fade(1f);
-
-        if (shopUI != null) shopUI.SetActive(true);
-
-        yield return Fade(0f);
+        if (activeFade != null) StopCoroutine(activeFade);
+        activeFade = StartCoroutine(FadeRoutine(targetAlpha));
+        return activeFade;
     }
 
-    private IEnumerator LoadSceneCoroutine(string sceneName)
+    private IEnumerator FadeRoutine(float targetAlpha)
     {
-        Time.timeScale = 0f;
-        canvasGroup.alpha = 0f;
+        fadeImage.gameObject.SetActive(true);
+        float startAlpha = fadeImage.color.a;
 
         float t = 0;
         while (t < fadeDuration)
         {
             t += Time.unscaledDeltaTime;
-            canvasGroup.alpha = Mathf.Lerp(0, 1, t / fadeDuration);
+            float alpha = Mathf.Lerp(startAlpha, targetAlpha, t / fadeDuration);
+            fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, alpha);
             yield return null;
         }
 
-        yield return new WaitForSecondsRealtime(1f);
-
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(sceneName);
-    }
-
-    private IEnumerator Fade(float targetAlpha)
-    {
-        canvasGroup.alpha = 1 - targetAlpha;
-        fadeImage.gameObject.SetActive(true);
-
-        float t = 0;
-        while (t < fadeDuration)
-        {
-            t += Time.deltaTime;
-            float alpha = Mathf.Lerp(canvasGroup.alpha, targetAlpha, t / fadeDuration);
-            fadeImage.color = new Color(fadeColor.r, fadeColor.g, fadeColor.b, alpha);
-            yield return null;
-        }
-        fadeImage.color = new Color(fadeColor.r, fadeColor.g, fadeColor.b, targetAlpha);
-
+        fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, targetAlpha);
         if (targetAlpha == 0)
         {
             fadeImage.gameObject.SetActive(false);
         }
+    }
+
+    private IEnumerator LoadSceneRoutine(string sceneName)
+    {
+        yield return Fade(1f);
+        SceneManager.LoadScene(sceneName);
     }
 }

@@ -22,8 +22,17 @@ public class MenuController : MonoBehaviour
     [SerializeField] private GameObject settingsPanel;
 
     [Header("Scenes")]
-    [SerializeField] private string levelSceneName = "Jesus";
+    //[SerializeField] private string levelSceneName = "";
     [SerializeField] private string creditsSceneName = "Creditos";
+
+    [SerializeField] private Toggle replayTutorialsToggle;
+
+    private void Awake()
+    {
+        playButton.onClick.AddListener(StartGame);
+        creditsButton.onClick.AddListener(OpenCredits);
+        quitButton.onClick.AddListener(QuitGame);
+    }
 
     private void Start()
     {
@@ -32,32 +41,33 @@ public class MenuController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
-        playButton.onClick.AddListener(StartGame);
-        creditsButton.onClick.AddListener(ShowCredits);
-        quitButton.onClick.AddListener(QuitGame);
         
         if (settingsPanel != null)
         {
-            settingsButton.onClick.AddListener(ShowOpciones);
+            settingsButton.onClick.AddListener(OpenSettings);
+        }
+
+        if (GameManager.Instance != null && replayTutorialsToggle != null)
+        {
+            replayTutorialsToggle.gameObject.SetActive(GameManager.Instance.GameCompletedOnce);
         }
     }
 
     public void StartGame()
     {
         PlayButtonAudio();
-
-        SceneManager.LoadScene(levelSceneName);
+        bool forceTutorials = replayTutorialsToggle != null && replayTutorialsToggle.isOn;
+        GameManager.Instance?.StartGame(forceTutorials);
     }
 
-    public void ShowCredits()
+    public void OpenCredits()
     {
         PlayButtonAudio();
 
         SceneManager.LoadScene(creditsSceneName);  
     }
 
-    public void ShowOpciones()
+    public void OpenSettings()
     {
         PlayButtonAudio();
 

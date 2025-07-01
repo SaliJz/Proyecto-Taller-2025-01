@@ -45,7 +45,6 @@ public class MissionManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton
         if (Instance != null && Instance != this) Destroy(gameObject);
         else Instance = this;
         
@@ -104,18 +103,17 @@ public class MissionManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded; // Desuscribe del evento
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name != gameObject.scene.name) // Si cambió de escena
+        if (scene.name != gameObject.scene.name)
         {
             ResetAllMissions();
         }
     }
 
-    // Este método se llama para registrar una muerte
     public void RegisterKill(string tag, string name, string tipo)
     {
         if (currentMissionIndex >= baseMissions.Count)
@@ -127,7 +125,7 @@ public class MissionManager : MonoBehaviour
         currentMission.RegisterKill(tag, name, tipo);
 
         string progress = string.Join(" | ", currentMission.killConditions.Select(k =>
-            $"{k.currentAmount}/{k.requiredAmount}")); // Progreso de cada condición
+            $"{k.currentAmount}/{k.requiredAmount}"));
 
         string message = $"{currentMission.missionName}\n{progress}";
 
@@ -135,7 +133,7 @@ public class MissionManager : MonoBehaviour
 
         if (enemySpawner != null)
         {
-            enemySpawner.EnemiesKilledCount(1); // Restar un enemigo al contador
+            enemySpawner.EnemiesKilledCount(1);
         }
 
         if (currentMission.IsCompleted)
@@ -373,7 +371,7 @@ public class MissionManager : MonoBehaviour
     {
         activeMission = false;
 
-        FindObjectOfType<ShopController>()?.PauseGame();
+        GameManager.Instance?.OnLevelCompleted();
 
         //electTeleporter();
         //TutorialManager.Instance.StartScenarioByManual(8);

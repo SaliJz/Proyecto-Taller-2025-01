@@ -18,11 +18,17 @@ public class ShopController : MonoBehaviour
 
     [SerializeField] private Button skipButton;
 
-    [SerializeField] private string nextScene = "";
+    //[SerializeField] private string nextScene = "";
 
     [SerializeField] private TextMeshProUGUI currentInfoFragments;
 
-    private bool juegoPausado = false;
+    private bool shopPauseGame = false;
+
+    public bool ShopPauseGame
+    {
+        get { return shopPauseGame; }
+        set { shopPauseGame = value; }
+    }
 
     private void Start()
     {
@@ -47,7 +53,7 @@ public class ShopController : MonoBehaviour
         weaponShopButton.onClick.AddListener(OpenWeaponShopMenu);
         generalShopButton.onClick.AddListener(OpenGeneralShopMenu);
 
-        skipButton.onClick.AddListener(CloseToShopMainMenu);
+        skipButton.onClick.AddListener(CloseShop);
     }
 
     private void Update()
@@ -61,7 +67,7 @@ public class ShopController : MonoBehaviour
         }
     }
 
-    public void PauseGame()
+    public void OpenShop()
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -69,18 +75,16 @@ public class ShopController : MonoBehaviour
         Time.timeScale = 0f;
         mainShopMenu.SetActive(true);
         currentInfoFragments.gameObject.SetActive(true);
-        juegoPausado = true;
+        shopPauseGame = true;
     }
 
-    public void RestartGame()
+    public void CloseShop()
     {
+        Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        Time.timeScale = 1f;
-        mainShopMenu.SetActive(false);
-        currentInfoFragments.gameObject.SetActive(false);
-        juegoPausado = false;
+        GameManager.Instance?.LoadNextLevelAfterShop();
     }
 
     public void OpenAbilityShopMenu()
@@ -108,15 +112,5 @@ public class ShopController : MonoBehaviour
             mainShopMenu.SetActive(false);
             generalShopMenu.SetActive(true);
         }
-    }
-
-    public void CloseToShopMainMenu()
-    {
-        Time.timeScale = 1f;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
-        SceneManager.LoadScene(nextScene);
-        gameObject.SetActive(false);
     }
 }
