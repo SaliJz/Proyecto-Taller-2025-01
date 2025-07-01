@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 608d36384bbc07e4284c82c27e625656
+guid: 9992e2f834824314a93135a206d6ffb6
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -45,11 +45,11 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 0
+  spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 310, y: 956, z: 293, w: 766}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -98,7 +98,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "Boton_Peque\xF1o_0"
+      name: Barra_Check_0
       rect:
         serializedVersion: 2
-        x: 303
-        y: 950
-        width: 1489
-        height: 372
+        x: 645
+        y: 2644
+        width: 428
+        height: 444
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,8 +124,50 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fa6c1078b527db84da446dfd7a9fedd8
-      internalID: -261376042
+      spriteID: 99b1511c12b74d7488079b2878b21c55
+      internalID: 1831871595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Barra_Check_1
+      rect:
+        serializedVersion: 2
+        x: 1170
+        y: 2644
+        width: 2243
+        height: 444
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3e074e4ae316554d9189ecf391dc634
+      internalID: -73792303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Barra_Check_2
+      rect:
+        serializedVersion: 2
+        x: 710
+        y: 2240
+        width: 292
+        height: 257
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f6b0e7c10466f743bacedf131da5e62
+      internalID: -1260410060
       vertices: []
       indices: 
       edges: []
@@ -134,14 +176,16 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      "Boton_Peque\xF1o_0": -261376042
+      Barra_Check_0: 1831871595
+      Barra_Check_1: -73792303
+      Barra_Check_2: -1260410060
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
