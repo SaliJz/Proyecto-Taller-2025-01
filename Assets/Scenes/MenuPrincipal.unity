@@ -8093,7 +8093,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bossLevelIndex: 9
   bossSceneName: JeanPierre_Jefe
-  mainMenuSceneName: MenuPrincipal
   victorySceneName: Creditos
   defeatSceneName: GameOver
   reusableLevelSceneNames:
@@ -8126,7 +8125,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95511f168c0f15c45a8917272530c3fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wallMaterials: []
+  wallMaterials:
+  - {fileID: 2100000, guid: 95f4025d328417942a994a8b40b09772, type: 2}
+  - {fileID: 2100000, guid: 4c404c9078284c54486602fd32125f37, type: 2}
+  - {fileID: 2100000, guid: dd765d61fd37e5340bb3c6b82652868e, type: 2}
   startColor: {r: 0, g: 0, b: 0, a: 0}
   endColor: {r: 1, g: 0, b: 0, a: 1}
   corruptionStartLevel: 2

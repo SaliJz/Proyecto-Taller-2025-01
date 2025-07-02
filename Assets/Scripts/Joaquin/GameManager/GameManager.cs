@@ -15,11 +15,12 @@ public class GameManager : MonoBehaviour
     //[SerializeField] private string mainMenuSceneName = "MenuPrincipal";
     [SerializeField] private string victorySceneName = "Creditos";
     [SerializeField] private string defeatSceneName = "GameOver";
-    [SerializeField] private string[] reusableLevelSceneNames = { "CopiaNivel1", "CopiaNivel2" };
+    [SerializeField] private string[] reusableLevelSceneNames = { "Nivel1 Variante", "Nivel2 Variante" };
 
     private bool tutorialsCompleted = false;
     public int CurrentLevelIndex { get; private set; }
     public bool GameCompletedOnce { get; private set; }
+    public bool TutorialsCompleted { get; private set; }
 
     private void Awake()
     {
@@ -33,6 +34,11 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         LoadGameData();
+    }
+
+    private void Update()
+    {
+        
     }
 
     private void LoadGameData()

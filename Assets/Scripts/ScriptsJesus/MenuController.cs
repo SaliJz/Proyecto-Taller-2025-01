@@ -49,7 +49,7 @@ public class MenuController : MonoBehaviour
 
         if (GameManager.Instance != null && replayTutorialsToggle != null)
         {
-            replayTutorialsToggle.gameObject.SetActive(GameManager.Instance.GameCompletedOnce);
+            replayTutorialsToggle.gameObject.SetActive(GameManager.Instance.TutorialsCompleted);
         }
     }
 
