@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -20,14 +19,15 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
     public bool sentidoHorario = true;
 
     [Header("Disparo")]
-    public GameObject balaPrefab;               // Prefab de la bala
-    public Transform puntoDisparo;              // Punto exacto donde nace la bala
-    public float cooldownDisparo = 1.5f;        // Tiempo entre disparos
-    public float velocidadBala = 10f;           // Velocidad de la bala
+    public GameObject balaPrefab;
+    public Transform puntoDisparo;
+    public float cooldownDisparo = 1.5f;
+    public float velocidadBala = 10f;
 
     private EnemyAbilityReceiver abilityReceiver;
     private NavMeshAgent agent;
     private Animator animator;
+
     private float distanciaDeseada;
     private float timerDisparo;
 
@@ -36,6 +36,10 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
         abilityReceiver = GetComponent<EnemyAbilityReceiver>();
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
+
+        // Permitir cruce automático de OffMeshLinks sin detenerse bruscamente
+        agent.autoTraverseOffMeshLink = true;
+        agent.autoBraking = false;
 
         if (jugador == null)
         {
@@ -67,53 +71,61 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
     {
         if (jugador == null) return;
 
-        // Movimiento
-        agent.speed = abilityReceiver.CurrentSpeed;
-        Vector3 delta = jugador.position - transform.position;
-        delta.y = 0f;
-        float dist = delta.magnitude;
-        bool estaMoviendose = false;
+        // Si está cruzando un OffMeshLink, dejar que NavMeshAgent lo maneje
+        if (agent.isOnOffMeshLink)
+            return;
 
-        if (!agent.isOnNavMesh)
-        {
-            Start();
-        }
-        else if (dist > distanciaDeseada + margen)
+        // Ajustar velocidad según ralentizaciones, hackeos, etc.
+        agent.speed = abilityReceiver.CurrentSpeed;
+
+        float dist = Vector3.Distance(transform.position, jugador.position);
+
+        // Si está lejos, acercarse
+        if (dist > distanciaDeseada + margen)
         {
             agent.stoppingDistance = distanciaDeseada;
             agent.SetDestination(jugador.position);
-            estaMoviendose = true;
         }
+        // Si está demasiado cerca, retroceder
         else if (dist < distanciaDeseada - margen)
         {
-            Vector3 dirOp = -delta.normalized;
-            Vector3 target = transform.position + dirOp * (distanciaDeseada + 0.1f);
+            Vector3 dirOp = (transform.position - jugador.position).normalized;
             agent.stoppingDistance = 0f;
-            agent.SetDestination(target);
-            estaMoviendose = true;
+            agent.SetDestination(transform.position + dirOp * (distanciaDeseada + 0.1f));
         }
+        // Dentro de rango, circular
         else
         {
             agent.ResetPath();
-            Vector3 moveDir = delta.normalized;
-            Vector3 perp = sentidoHorario
-                ? Quaternion.Euler(0, 90f, 0) * moveDir
-                : Quaternion.Euler(0, -90f, 0) * moveDir;
-            transform.position += perp.normalized * velocidadCirculo * Time.deltaTime;
-            estaMoviendose = true;
+            CirculaAlrededor();
         }
 
-        // Rotación
+        RotacionYAnimacion();
+        ManejaDisparo(dist);
+    }
+
+    private void CirculaAlrededor()
+    {
+        Vector3 delta = jugador.position - transform.position;
+        Vector3 perp = sentidoHorario
+            ? Quaternion.Euler(0, 90f, 0) * delta.normalized
+            : Quaternion.Euler(0, -90f, 0) * delta.normalized;
+        transform.position += perp * velocidadCirculo * Time.deltaTime;
+    }
+
+    private void RotacionYAnimacion()
+    {
         Vector3 flatVel = agent.velocity;
         flatVel.y = 0f;
         if (flatVel.sqrMagnitude > 0.01f)
             transform.rotation = Quaternion.LookRotation(flatVel.normalized, Vector3.up);
 
-        // Animación
         if (animator != null)
-            animator.SetBool("isMoving", estaMoviendose);
+            animator.SetBool("isMoving", agent.hasPath);
+    }
 
-        // Disparo
+    private void ManejaDisparo(float dist)
+    {
         timerDisparo -= Time.deltaTime;
         if (timerDisparo <= 0f && dist <= distanciaMaxima + 1f)
         {
@@ -126,7 +138,6 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
     {
         if (balaPrefab == null || puntoDisparo == null || jugador == null) return;
 
-        // Instancia la bala exactamente en puntoDisparo, sin offsets verticales
         GameObject bala = Instantiate(balaPrefab, puntoDisparo.position, puntoDisparo.rotation);
         if (bala.TryGetComponent<Rigidbody>(out var rb))
         {
@@ -143,6 +154,41 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
         sentidoHorario = !sentidoHorario;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //using UnityEngine;
@@ -289,7 +335,4 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
 //        sentidoHorario = !sentidoHorario;
 //    }
 //}
-
-
-
 
