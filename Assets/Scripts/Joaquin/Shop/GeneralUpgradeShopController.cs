@@ -34,6 +34,21 @@ public class GeneralUpgradeShopController : MonoBehaviour
         cancelButton.onClick.AddListener(CancelButton);
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (returnPanel != null && returnPanel.activeSelf)
+            {
+                cancelButton.onClick.Invoke();
+            }
+            else
+            {
+                Return();
+            }
+        }
+    }
+
     private void Start()
     {
         if (returnPanel != null)

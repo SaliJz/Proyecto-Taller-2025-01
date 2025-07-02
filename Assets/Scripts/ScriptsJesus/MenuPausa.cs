@@ -49,18 +49,17 @@ public class MenuPausa : MonoBehaviour
 
     private void Update()
     {
+        if (shopController != null && shopController.ShopPauseGame) return;
+
         if (Input.GetKeyDown(KeyCode.Escape) && !isDead)
         {
-            if (shopController != null && shopController.ShopPauseGame)
+            if (Input.GetKeyDown(KeyCode.Escape) && !pausedGame)
             {
-                if (Input.GetKeyDown(KeyCode.Escape) && !pausedGame)
-                {
-                    PauseGame();
-                }
-                else if (Input.GetKeyDown(KeyCode.Escape) && pausedGame)
-                {
-                    ResumeGame();
-                }
+                PauseGame();
+            }
+            else if (Input.GetKeyDown(KeyCode.Escape) && pausedGame)
+            {
+                ResumeGame();
             }
         }
     }

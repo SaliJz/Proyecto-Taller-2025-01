@@ -45,15 +45,23 @@ public class MissionManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this) Destroy(gameObject);
-        else Instance = this;
-        
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+
         if (spawner == null)
         {
             spawner = FindObjectOfType<EnemySpawner>();
-        }
 
-        SceneManager.sceneLoaded += OnSceneLoaded;
+            if (spawner == null)
+            {
+                Debug.LogError("No se encontró un EnemySpawner en la escena.");
+            }
+        }
     }
 
     private void OnEnable()
@@ -103,14 +111,9 @@ public class MissionManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.name != gameObject.scene.name)
+        if (Instance == this)
         {
-            ResetAllMissions();
+            Instance = null;
         }
     }
 
@@ -129,11 +132,9 @@ public class MissionManager : MonoBehaviour
 
         string message = $"{currentMission.missionName}\n{progress}";
 
-        EnemySpawner enemySpawner = FindObjectOfType<EnemySpawner>();
-
-        if (enemySpawner != null)
+        if (spawner != null)
         {
-            enemySpawner.EnemiesKilledCount(1);
+            spawner.EnemiesKilledCount(1);
         }
 
         if (currentMission.IsCompleted)

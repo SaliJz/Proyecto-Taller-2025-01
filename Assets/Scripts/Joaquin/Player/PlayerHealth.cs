@@ -159,21 +159,12 @@ public class PlayerHealth : MonoBehaviour
             enemySpawner.ResetSpawner();
         }
 
-        UpgradeDataStore.Instance.ResetTemporaryUpgrades();
-
         if (deathPrefab != null)
         {
             DeathManager.Instance.RegisterDeath(deathPrefab, transform.position);
         }
-
-        if (sceneTransition != null)
-        {
-            sceneTransition.LoadSceneWithFade(gameOverSceneName);
-        }
-        else
-        {
-            SceneManager.LoadScene(gameOverSceneName);
-        }
+        
+        GameManager.Instance?.PlayerDied();
     }
     public class DetectarObjetosEnContacto : MonoBehaviour
     {

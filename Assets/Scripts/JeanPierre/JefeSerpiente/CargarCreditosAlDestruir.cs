@@ -11,6 +11,6 @@ public class CargarCreditosAlDestruir : MonoBehaviour
         // y luego la cargamos de inmediato.
         // Nota: Si llamas a Destroy(this.gameObject) desde otro script,
         // tan pronto empiece la destrucción de este objeto se ejecutará OnDestroy.
-        SceneManager.LoadScene("Creditos");
+        GameManager.Instance.OnBossDefeated();
     }
 }

@@ -57,6 +57,14 @@ public class Weapon_Menu_Corregido : MonoBehaviour
         buttonExit_UI.onClick.AddListener(ExitWeaponMenu);
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ExitWeaponMenu();
+        }
+    }
+
     void MoveInspectorListsToWeaponManagerCard()
     {
         gunManager.weaponCardList = gunAllCards;

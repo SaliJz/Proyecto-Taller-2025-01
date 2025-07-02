@@ -14,6 +14,8 @@ public class AbilityManager : MonoBehaviour
 
     [SerializeField] private bool allowFirstAbility = false;
 
+    [SerializeField] private GameObject glitchHandVFX;
+
     private int currentIndex = 0;
     private Dictionary<string, GameObject> abilityMap = new Dictionary<string, GameObject>();
 
@@ -22,6 +24,8 @@ public class AbilityManager : MonoBehaviour
 
     private void Awake()
     {
+        glitchHandVFX.gameObject.SetActive(false);
+
         foreach (var abilityGO in allAbilities)
         {
             var info = abilityGO.GetComponent<AbilityInfo>();
@@ -81,6 +85,15 @@ public class AbilityManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             CycleAbility();
+        }
+
+        if (currentIndex == 1)
+        {
+            glitchHandVFX.gameObject.SetActive(true);
+        }
+        else
+        {
+            glitchHandVFX.gameObject.SetActive(false);
         }
     }
 

@@ -47,6 +47,21 @@ public class AbilityShopController : MonoBehaviour
         cancelReturnButton.onClick.AddListener(() => returnConfirmationPanel.SetActive(false));
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (returnConfirmationPanel.activeSelf)
+            {
+                returnConfirmationPanel.SetActive(false);
+            }
+            else
+            {
+                returnConfirmationPanel.SetActive(true);
+            }
+        }
+    }
+
     private void Start()
     {
         UpdateAllButtonVisuals();

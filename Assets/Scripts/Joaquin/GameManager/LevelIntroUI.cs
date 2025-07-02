@@ -8,14 +8,6 @@ public class LevelIntroUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI levelText;
     [SerializeField] private float displayDuration = 3f;
 
-    private void Awake()
-    {
-        if (levelText != null)
-        {
-            levelText.text = string.Empty;
-        }
-    }
-
     private void Start()
     {
         if (GameManager.Instance == null || levelText == null)
@@ -25,7 +17,8 @@ public class LevelIntroUI : MonoBehaviour
         }
 
         int displayLevel = GameManager.Instance.CurrentLevelIndex + 1;
-        levelText.text = $"Nivel {displayLevel}";
+        if (GameManager.Instance.CurrentLevelIndex > 9) levelText.text = $"Nivel {displayLevel} (Jefe)";
+        else levelText.text = $"Nivel {displayLevel}";
         StartCoroutine(FadeOutRoutine());
     }
 
