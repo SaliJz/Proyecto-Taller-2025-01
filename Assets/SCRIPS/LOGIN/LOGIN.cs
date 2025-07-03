@@ -28,7 +28,7 @@ public class LOGIN : MonoBehaviour
                 loginmode=JsonUtility.FromJson<LOGINMODE>(www.downloadHandler.text);
                 if(loginmode.message=="success")
                 {
-                    SceneManager.LoadScene("delete");
+                    SceneManager.LoadScene("MenuPrincipal");
                 }
             }
             else
