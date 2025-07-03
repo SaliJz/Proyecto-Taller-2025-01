@@ -26,6 +26,7 @@ public class LOGIN : MonoBehaviour
             if (www.result == UnityWebRequest.Result.Success)
             {
                 loginmode=JsonUtility.FromJson<LOGINMODE>(www.downloadHandler.text);
+                Debug.Log(www.downloadHandler.text);
                 if(loginmode.message=="success")
                 {
                     SceneManager.LoadScene("MenuPrincipal");
