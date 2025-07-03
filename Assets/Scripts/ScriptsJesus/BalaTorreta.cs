@@ -24,7 +24,7 @@ public class BalaTorreta : MonoBehaviour
     {
         if (other.CompareTag("PLAYER"))
         {
-            other.GetComponent<JugadorMovimiento>()?.TomarDaño(daño);
+            other.GetComponent<JugadorMovimiento>()?.TomarDano(daño);
             Destroy(gameObject);
         }
     }

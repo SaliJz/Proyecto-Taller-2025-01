@@ -29,7 +29,7 @@ public class Mover : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
-        Vector3 moveVelocity = new Vector3(horizontalInput * moveSpeed, rb.velocity.y, verticalInput * moveSpeed);
+        Vector3 moveVelocity = new Vector3(horizontalInput * moveSpeed, rb.linearVelocity.y, verticalInput * moveSpeed);
 
         if (horizontalInput != 0 && CheckSideCollision(horizontalInput, true))
         {
@@ -41,7 +41,7 @@ public class Mover : MonoBehaviour
             moveVelocity.z = 0;
         }
 
-        rb.velocity = moveVelocity;
+        rb.linearVelocity = moveVelocity;
 
         if (Input.GetButtonDown("Jump") && isGrounded)
         {

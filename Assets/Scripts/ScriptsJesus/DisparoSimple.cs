@@ -14,7 +14,7 @@ public class DisparoSimple : MonoBehaviour
     void Update()
     {
         temporizador += Time.deltaTime;
-        estaSaltando = Mathf.Abs(GetComponent<Rigidbody>().velocity.y) > 0.1f;
+        estaSaltando = Mathf.Abs(GetComponent<Rigidbody>().linearVelocity.y) > 0.1f;
 
         if (Input.GetButton("Fire1") && temporizador >= tiempoEntreDisparos)
         {
@@ -52,10 +52,10 @@ public class DisparoSimple : MonoBehaviour
         Rigidbody rb = bala.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.velocity = direccionDisparo * velocidadBala;  
+            rb.linearVelocity = direccionDisparo * velocidadBala;  
         }
 
-        Debug.Log("¡Disparo realizado!");
+        Debug.Log("ï¿½Disparo realizado!");
     }
 
 

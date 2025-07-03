@@ -38,9 +38,9 @@ public class MoverTienda : MonoBehaviour
 
         Vector3 moveDirection = new Vector3(h, 0f, v).normalized;
         Vector3 moveVelocity = moveDirection * moveSpeed;
-        moveVelocity.y = rb.velocity.y;
+        moveVelocity.y = rb.linearVelocity.y;
 
-        rb.velocity = moveVelocity;
+        rb.linearVelocity = moveVelocity;
 
 
         

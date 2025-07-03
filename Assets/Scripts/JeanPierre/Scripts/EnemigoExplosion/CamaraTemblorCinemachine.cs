@@ -1,5 +1,5 @@
+using Unity.Cinemachine;
 using UnityEngine;
-using Cinemachine;
 
 public class CamaraTemblorCinemachine : MonoBehaviour
 {
@@ -31,8 +31,8 @@ public class CamaraTemblorCinemachine : MonoBehaviour
         }
 
         // Asegúrate de que la amplitud y frecuencia estén en cero al comenzar
-        perlin.m_AmplitudeGain = 0f;
-        perlin.m_FrequencyGain = 0f;
+        perlin.AmplitudeGain = 0f;
+        perlin.FrequencyGain = 0f;
     }
 
     void Update()
@@ -48,8 +48,8 @@ public class CamaraTemblorCinemachine : MonoBehaviour
 
             if (tiempoTemblorRestante <= 0f)
             {
-                perlin.m_AmplitudeGain = 0f;
-                perlin.m_FrequencyGain = 0f;
+                perlin.AmplitudeGain = 0f;
+                perlin.FrequencyGain = 0f;
             }
         }
     }
@@ -58,8 +58,8 @@ public class CamaraTemblorCinemachine : MonoBehaviour
     {
         if (perlin == null) return;
 
-        perlin.m_AmplitudeGain = intensidad;
-        perlin.m_FrequencyGain = frecuencia;
+        perlin.AmplitudeGain = intensidad;
+        perlin.FrequencyGain = frecuencia;
         tiempoTemblorRestante = duracion;
     }
 }

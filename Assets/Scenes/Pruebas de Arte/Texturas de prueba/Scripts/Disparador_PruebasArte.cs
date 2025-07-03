@@ -18,7 +18,7 @@ public class Disparador_PruebasArte : MonoBehaviour
 
             Rigidbody rb = proyectil.GetComponent<Rigidbody>();
 
-            rb.velocity = new Vector3 (vel, 0, 0);
+            rb.linearVelocity = new Vector3 (vel, 0, 0);
 
             if(MuzzleFlash != null)
             {

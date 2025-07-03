@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Events;
-using Cinemachine;
 public class TutorialManager : MonoBehaviour
 {
     public static TutorialManager Instance { get; private set; }
@@ -49,7 +49,7 @@ public class TutorialManager : MonoBehaviour
     private void Start()
     {
         player = GameObject.FindWithTag("Player");
-        cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
+        cinemachineBrain.DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.EaseIn, 2f);
     }
     public void ScenarioActivationCheckerByZones()
     {
@@ -241,7 +241,7 @@ public class TutorialManager : MonoBehaviour
         {      
             case 1: StartCoroutine(ActivateTransitionBetweenCameras()); break;                          
             case 4:
-                    cinemachineBrain.m_DefaultBlend= new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0f);
+                    cinemachineBrain.DefaultBlend= new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.Cut, 0f);
                     glitchScript.StartMovingToB();
                     StartCoroutine(ActivateTransitionBetweenCamerasCinematic()); break;
             case 7: StartCoroutine(ActivateTransitionBetweenCameras()); break;
@@ -276,7 +276,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(1.5f);
         SelectCameraToRenderCinematic(2);
         yield return new WaitForSecondsRealtime(2f);
-        cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
+        cinemachineBrain.DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.EaseInOut, 2f);
         ReturnCamerasToDefault();
         //EnablePlayerScriptsAfterCameraTransition();
         tutorialSceneController.EnableGlitchScriptsInvulnerables();
@@ -285,7 +285,7 @@ public class TutorialManager : MonoBehaviour
     void DisablePlayerScriptsForCameraTransition()
     {
         Rigidbody rb = player.GetComponent<Rigidbody>();
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         crossHairObject.SetActive(false);
         foreach(MonoBehaviour script in playerScriptsToDisable)
         {

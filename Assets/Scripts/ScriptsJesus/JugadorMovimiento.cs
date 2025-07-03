@@ -17,8 +17,8 @@ public class JugadorMovimiento : MonoBehaviour
     private Vector3 direccionMovimiento;
     private bool estaEnSuelo;
 
-    [Header("Material físico sin fricción")]
-    [SerializeField] private PhysicMaterial sinFriccion;
+    [Header("Material fï¿½sico sin fricciï¿½n")]
+    [SerializeField] private PhysicsMaterial sinFriccion;
 
 
     void Start()
@@ -48,7 +48,7 @@ public class JugadorMovimiento : MonoBehaviour
 
         if (Input.GetButtonDown("Jump") && EstaEnSuelo())
         {
-            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
             rb.AddForce(Vector3.up * fuerzaSalto, ForceMode.Impulse);
         }
     }
@@ -56,8 +56,8 @@ public class JugadorMovimiento : MonoBehaviour
     private void FixedUpdate()
     {
         Vector3 movimiento = direccionMovimiento * velocidad;
-        Vector3 nuevaVelocidad = new Vector3(movimiento.x, rb.velocity.y, movimiento.z);
-        rb.velocity = nuevaVelocidad;
+        Vector3 nuevaVelocidad = new Vector3(movimiento.x, rb.linearVelocity.y, movimiento.z);
+        rb.linearVelocity = nuevaVelocidad;
     }
 
     private bool EstaEnSuelo()
@@ -84,14 +84,14 @@ public class JugadorMovimiento : MonoBehaviour
         }
     }
 
-    public void TomarDaño(int daño)
+    public void TomarDano(int dano)
     {
-        vida -= daño;
+        vida -= dano;
         Debug.Log("Vida actual del jugador: " + vida);
 
         if (vida <= 0)
         {
-            Debug.Log("¡El jugador ha muerto!");
+            Debug.Log("ï¿½El jugador ha muerto!");
             Destroy(gameObject);
         }
     }

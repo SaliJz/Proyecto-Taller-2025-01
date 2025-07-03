@@ -1,6 +1,6 @@
 using System.Collections;
+using Unity.Cinemachine;
 using UnityEngine;
-using Cinemachine;
 
 public class PlayerDash : MonoBehaviour
 {
@@ -69,7 +69,7 @@ public class PlayerDash : MonoBehaviour
             sfxSource = GameObject.Find("SFXSource")?.GetComponent<AudioSource>();
             if (sfxSource == null)
             {
-                Debug.LogError("No se encontró el AudioSource para efectos de sonido. Asegúrate de que haya un GameObject llamado 'SFXSource' con un AudioSource en la escena.");
+                Debug.LogError("No se encontrï¿½ el AudioSource para efectos de sonido. Asegï¿½rate de que haya un GameObject llamado 'SFXSource' con un AudioSource en la escena.");
             }
         }
 
@@ -149,7 +149,7 @@ public class PlayerDash : MonoBehaviour
         dashStartPos = transform.position;
         dashEndPos = dashStartPos + dashDirection * dashDistance;
 
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         rb.useGravity = false;
 
         if (playerMovement.IsGrounded)
@@ -183,13 +183,13 @@ public class PlayerDash : MonoBehaviour
 
     private void ApplyPostDashImpulse()
     {
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         rb.AddForce(currentDashDirection * postDashImpulse, ForceMode.Impulse);
     }
 
     private void ApplyBounce()
     {
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         rb.AddForce(-currentDashDirection * bounceImpulse, ForceMode.Impulse);
     }
 

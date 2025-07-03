@@ -29,7 +29,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] private AudioClip shootClip;
     [SerializeField] private AudioClip reloadClip;
 
-    [Header("Configuración de Animación por codigo")]
+    [Header("Configuraciï¿½n de Animaciï¿½n por codigo")]
     [SerializeField] private bool useProceduralAnimations = true;
 
     #endregion
@@ -235,7 +235,7 @@ public class Weapon : MonoBehaviour
     private void ShootBullet(Vector3 direction)
     {
         GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(direction));
-        bullet.GetComponent<Rigidbody>().velocity = direction * bulletSpeed;
+        bullet.GetComponent<Rigidbody>().linearVelocity = direction * bulletSpeed;
         Destroy(bullet, bulletLifetime);
     }
 
@@ -300,7 +300,7 @@ public class Weapon : MonoBehaviour
         float animDownTime = useProceduralAnimations ? 0.2f : 0f;
         float animUpTime = useProceduralAnimations ? 0.2f : 0f;
 
-        // Animación Hacia Abajo 
+        // Animaciï¿½n Hacia Abajo 
         if (useProceduralAnimations && weaponModelTransform != null)
         {
             Vector3 downPos = originalModelPosition + new Vector3(0, -0.2f, 0);
@@ -314,7 +314,7 @@ public class Weapon : MonoBehaviour
             weaponModelTransform.localPosition = downPos;
         }
 
-        // Lógica de Recarga por Bala 
+        // Lï¿½gica de Recarga por Bala 
         float timeForBulletLoop = stats.reloadTime - (animDownTime + animUpTime);
         if (timeForBulletLoop < 0) timeForBulletLoop = 0;
         float delayPerBullet = timeForBulletLoop / ammoToReload;
@@ -343,7 +343,7 @@ public class Weapon : MonoBehaviour
             yield return new WaitForSeconds(timeForBulletLoop);
         }
 
-        // Animación Hacia Arriba 
+        // Animaciï¿½n Hacia Arriba 
         if (useProceduralAnimations && weaponModelTransform != null)
         {
             Vector3 downPos = originalModelPosition + new Vector3(0, -0.2f, 0);
@@ -377,7 +377,7 @@ public class Weapon : MonoBehaviour
 
     #endregion
 
-    #region Munición
+    #region Municiï¿½n
 
     public bool TryAddAmmo(int amount, out int added)
     {

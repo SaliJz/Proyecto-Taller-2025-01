@@ -28,7 +28,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Debug Options")]
     [SerializeField] private bool showDetailsOptions = false;
 
-    public bool IsMoving => rb.velocity.magnitude > 0.1f;
+    public bool IsMoving => rb.linearVelocity.magnitude > 0.1f;
     public bool IsGrounded => isGrounded;
     public bool MovementEnabled { get; set; } = true;
 
@@ -53,8 +53,8 @@ public class PlayerMovement : MonoBehaviour
 
         if (isGrounded && Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0)
         {
-            Vector3 vel = rb.velocity;
-            rb.velocity = new Vector3(0f, vel.y, 0f);
+            Vector3 vel = rb.linearVelocity;
+            rb.linearVelocity = new Vector3(0f, vel.y, 0f);
         }
 
         HandleMovement();
@@ -70,7 +70,7 @@ public class PlayerMovement : MonoBehaviour
         
         if (isGrounded)
         {
-            rb.velocity = new Vector3(moveDirection.x * speedWalk, rb.velocity.y, moveDirection.z * speedWalk);
+            rb.linearVelocity = new Vector3(moveDirection.x * speedWalk, rb.linearVelocity.y, moveDirection.z * speedWalk);
         }
         else
         {
@@ -88,11 +88,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGrounded)
         {
-            rb.drag = IsMoving ? 0f : groundDrag;
+            rb.linearDamping = IsMoving ? 0f : groundDrag;
         }
         else
         {
-            rb.drag = 0;
+            rb.linearDamping = 0;
         }
     }
 
@@ -110,14 +110,14 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(jumpKey) && isGrounded)
         {
-            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
     }
 
     private void HandleGravity()
     {
-        if (!isGrounded && rb.velocity.y < 0)
+        if (!isGrounded && rb.linearVelocity.y < 0)
         {
             rb.AddForce(Physics.gravity * (gravityFallMultiplier - 1), ForceMode.Acceleration);
         }
@@ -137,12 +137,12 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!showDetailsOptions) return;
 
-        GUI.Label(new Rect(10, 10, 300, 20), "Vel: " + rb.velocity.ToString("F2"));
+        GUI.Label(new Rect(10, 10, 300, 20), "Vel: " + rb.linearVelocity.ToString("F2"));
         GUI.Label(new Rect(10, 30, 300, 20), "Grounded: " + isGrounded);
         GUI.Label(new Rect(10, 50, 300, 20), "Moving: " + IsMoving);
         GUI.Label(new Rect(10, 70, 300, 20), "Movement Enabled: " + MovementEnabled);
         GUI.Label(new Rect(10, 90, 300, 20), "Gravity: " + Physics.gravity.ToString("F2"));
-        GUI.Label(new Rect(10, 110, 300, 20), "Drag: " + rb.drag.ToString("F2"));
+        GUI.Label(new Rect(10, 110, 300, 20), "Drag: " + rb.linearDamping.ToString("F2"));
         GUI.Label(new Rect(10, 130, 300, 20), "Jump Force: " + jumpForce.ToString("F2"));
         GUI.Label(new Rect(10, 150, 300, 20), "Air Control: " + airControl.ToString("F2"));
         GUI.Label(new Rect(10, 170, 300, 20), "Ground Layer: " + groundLayer.value.ToString("F2"));

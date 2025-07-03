@@ -33,17 +33,17 @@ public class GlitchAbility : MonoBehaviour
         if (playerCamera == null)
         {
             playerCamera = Camera.main;
-            if (playerCamera == null) Debug.LogError("No se encontró la cámara principal. Asegúrate de que haya una cámara con la etiqueta 'MainCamera' en la escena.");
+            if (playerCamera == null) Debug.LogError("No se encontrï¿½ la cï¿½mara principal. Asegï¿½rate de que haya una cï¿½mara con la etiqueta 'MainCamera' en la escena.");
         }
 
-        if (projectileSpawnPoint == null) Debug.LogError("Projectile Spawn Point no está asignado en GlitchTime.");
+        if (projectileSpawnPoint == null) Debug.LogError("Projectile Spawn Point no estï¿½ asignado en GlitchTime.");
 
-        if (projectilePrefab == null) Debug.LogError("Projectile Prefab no está asignado en GlitchTime.");
+        if (projectilePrefab == null) Debug.LogError("Projectile Prefab no estï¿½ asignado en GlitchTime.");
 
         if (abilityInfo == null)
         {
             abilityInfo = GetComponent<AbilityInfo>();
-            if (abilityInfo == null) Debug.LogError("AbilityInfo no está asignado en GlitchTime.");
+            if (abilityInfo == null) Debug.LogError("AbilityInfo no estï¿½ asignado en GlitchTime.");
         }
     }
 
@@ -96,7 +96,7 @@ public class GlitchAbility : MonoBehaviour
 
         Vector3 direction = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f)).direction;
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));
-        projectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
+        projectile.GetComponent<Rigidbody>().linearVelocity = direction * projectileSpeed;
 
         projectile.GetComponent<GlitchShot>().Initialize(baseRadius, currentDuration, slowMultiplier, enemyLayer);
         Destroy(projectile, projectileLifeTime);

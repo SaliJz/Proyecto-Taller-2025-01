@@ -55,26 +55,26 @@ public class PickupItem : MonoBehaviour
             switch (pickupType)
             {
                 case PickupType.CodeFragment:
-                    Debug.Log("Rigidbody encontrado, configurando propiedades para fragmento de código");
-                    rb.mass = 0.1f; // Más "ligero"
-                    rb.drag = 1f;
-                    rb.angularDrag = 1f;
+                    Debug.Log("Rigidbody encontrado, configurando propiedades para fragmento de cï¿½digo");
+                    rb.mass = 0.1f; // Mï¿½s "ligero"
+                    rb.linearDamping = 1f;
+                    rb.angularDamping = 1f;
                     break;
 
                 case PickupType.AmmoSingle:
                 case PickupType.AmmoSemiAuto:
                 case PickupType.AmmoAuto:
-                    Debug.Log("Rigidbody encontrado, configurando propiedades para munición");
+                    Debug.Log("Rigidbody encontrado, configurando propiedades para municiï¿½n");
                     rb.mass = 0.3f;
-                    rb.drag = 1f;
-                    rb.angularDrag = 1f;
+                    rb.linearDamping = 1f;
+                    rb.angularDamping = 1f;
                     rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ |
                                      RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
                     break;
             }
         }
 
-        // Si el objeto es un fragmento de código, lo volamos hacia el jugador
+        // Si el objeto es un fragmento de cï¿½digo, lo volamos hacia el jugador
         if (pickupType == PickupType.CodeFragment)
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -104,7 +104,7 @@ public class PickupItem : MonoBehaviour
         }
         else if (playerInRange)
         {
-            TryPickup(); // solo para munición
+            TryPickup(); // solo para municiï¿½n
         }
     }
 

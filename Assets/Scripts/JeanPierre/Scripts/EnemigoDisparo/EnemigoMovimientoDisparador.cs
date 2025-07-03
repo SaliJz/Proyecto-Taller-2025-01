@@ -14,7 +14,7 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
     [Header("Margen alrededor de la distancia deseada")]
     public float margen = 0.5f;
 
-    [Header("Circulación alrededor del jugador")]
+    [Header("Circulaciï¿½n alrededor del jugador")]
     public float velocidadCirculo = 2f;
     public bool sentidoHorario = true;
 
@@ -37,7 +37,7 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
 
-        // Permitir cruce automático de OffMeshLinks sin detenerse bruscamente
+        // Permitir cruce automï¿½tico de OffMeshLinks sin detenerse bruscamente
         agent.autoTraverseOffMeshLink = true;
         agent.autoBraking = false;
 
@@ -45,7 +45,7 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
         {
             var jugadorGO = GameObject.FindGameObjectWithTag("Player");
             if (jugadorGO != null) jugador = jugadorGO.transform;
-            else Debug.LogWarning($"No se encontró Player en {name}");
+            else Debug.LogWarning($"No se encontrï¿½ Player en {name}");
         }
 
         distanciaDeseada = Random.Range(distanciaMinima, distanciaMaxima);
@@ -71,22 +71,22 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
     {
         if (jugador == null) return;
 
-        // Si está cruzando un OffMeshLink, dejar que NavMeshAgent lo maneje
+        // Si estï¿½ cruzando un OffMeshLink, dejar que NavMeshAgent lo maneje
         if (agent.isOnOffMeshLink)
             return;
 
-        // Ajustar velocidad según ralentizaciones, hackeos, etc.
+        // Ajustar velocidad segï¿½n ralentizaciones, hackeos, etc.
         agent.speed = abilityReceiver.CurrentSpeed;
 
         float dist = Vector3.Distance(transform.position, jugador.position);
 
-        // Si está lejos, acercarse
+        // Si estï¿½ lejos, acercarse
         if (dist > distanciaDeseada + margen)
         {
             agent.stoppingDistance = distanciaDeseada;
             agent.SetDestination(jugador.position);
         }
-        // Si está demasiado cerca, retroceder
+        // Si estï¿½ demasiado cerca, retroceder
         else if (dist < distanciaDeseada - margen)
         {
             Vector3 dirOp = (transform.position - jugador.position).normalized;
@@ -142,12 +142,12 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
         if (bala.TryGetComponent<Rigidbody>(out var rb))
         {
             Vector3 dir = (jugador.position - puntoDisparo.position).normalized;
-            rb.velocity = dir * velocidadBala;
+            rb.linearVelocity = dir * velocidadBala;
         }
     }
 
     /// <summary>
-    /// Invierte el sentido de circulación alrededor del jugador.
+    /// Invierte el sentido de circulaciï¿½n alrededor del jugador.
     /// </summary>
     public void InvertirSentido()
     {
@@ -207,7 +207,7 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
 //    [Header("Margen alrededor de la distancia deseada")]
 //    public float margen = 0.5f;
 
-//    [Header("Circulación alrededor del jugador")]
+//    [Header("Circulaciï¿½n alrededor del jugador")]
 //    public float velocidadCirculo = 2f;
 //    public bool sentidoHorario = true;
 
@@ -233,7 +233,7 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
 //        {
 //            var jugadorGO = GameObject.FindGameObjectWithTag("Player");
 //            if (jugadorGO != null) jugador = jugadorGO.transform;
-//            else Debug.LogWarning($"No se encontró Player en {name}");
+//            else Debug.LogWarning($"No se encontrï¿½ Player en {name}");
 //        }
 
 //        distanciaDeseada = Random.Range(distanciaMinima, distanciaMaxima);
@@ -295,13 +295,13 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
 //            estaMoviendose = true;
 //        }
 
-//        // Rotación
+//        // Rotaciï¿½n
 //        Vector3 flatVel = agent.velocity;
 //        flatVel.y = 0f;
 //        if (flatVel.sqrMagnitude > 0.01f)
 //            transform.rotation = Quaternion.LookRotation(flatVel.normalized, Vector3.up);
 
-//        // Animación
+//        // Animaciï¿½n
 //        if (animator != null)
 //            animator.SetBool("isMoving", estaMoviendose);
 
@@ -328,7 +328,7 @@ public class EnemigoMovimientoDisparador : MonoBehaviour
 //    }
 
 //    /// <summary>
-//    /// Invierte el sentido de circulación alrededor del jugador.
+//    /// Invierte el sentido de circulaciï¿½n alrededor del jugador.
 //    /// </summary>
 //    public void InvertirSentido()
 //    {

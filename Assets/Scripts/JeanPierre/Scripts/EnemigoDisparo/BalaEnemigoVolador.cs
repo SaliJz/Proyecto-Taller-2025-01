@@ -20,14 +20,14 @@ public class BalaEnemigoVolador : MonoBehaviour
         rend = GetComponent<Renderer>();
         rb = GetComponent<Rigidbody>();
 
-        // Hacer la bala cinemática para que no reaccione a colisiones/gravedad mientras carga
+        // Hacer la bala cinemï¿½tica para que no reaccione a colisiones/gravedad mientras carga
         if (rb != null)
         {
             rb.isKinematic = true;
             rb.useGravity = false;
         }
 
-        // Escala inicial pequeña
+        // Escala inicial pequeï¿½a
         transform.localScale = Vector3.one * 0.1f;
         if (rend) rend.material.color = Color.white;
 
@@ -48,17 +48,17 @@ public class BalaEnemigoVolador : MonoBehaviour
             yield return null;
         }
 
-        // Calcula dirección hacia el jugador justo al disparo
+        // Calcula direcciï¿½n hacia el jugador justo al disparo
         direccion = (jugador.position - transform.position).normalized;
 
-        // Desparenta y habilita física para que reciba velocidad
+        // Desparenta y habilita fï¿½sica para que reciba velocidad
         transform.parent = null;
         disparada = true;
 
         if (rb != null)
         {
-            rb.isKinematic = false;              // ahora sí reacciona a física
-            rb.velocity = direccion * velocidad;
+            rb.isKinematic = false;              // ahora sï¿½ reacciona a fï¿½sica
+            rb.linearVelocity = direccion * velocidad;
         }
     }
 
@@ -66,7 +66,7 @@ public class BalaEnemigoVolador : MonoBehaviour
     {
         if (!disparada)
         {
-            // Mientras no dispare, obligamos su posición a coincidir con el puntoDisparo
+            // Mientras no dispare, obligamos su posiciï¿½n a coincidir con el puntoDisparo
             if (transform.parent != null)
                 transform.position = transform.parent.position;
 
@@ -106,7 +106,7 @@ public class BalaEnemigoVolador : MonoBehaviour
 //    public float tiempoCarga = 1f;
 //    private bool disparada = false;
 //    private Renderer rend;
-//    private Vector3 direccion;    // guardamos la dirección al disparar
+//    private Vector3 direccion;    // guardamos la direcciï¿½n al disparar
 
 //    private void Start()
 //    {
@@ -135,7 +135,7 @@ public class BalaEnemigoVolador : MonoBehaviour
 //        transform.parent = null;
 //        disparada = true;
 
-//        // Calcula la dirección justo al disparo
+//        // Calcula la direcciï¿½n justo al disparo
 //        direccion = (jugador.position - transform.position).normalized;
 
 //        // Si tiene Rigidbody, asignamos su velocidad
@@ -144,7 +144,7 @@ public class BalaEnemigoVolador : MonoBehaviour
 //        {
 //            rb.velocity = direccion * velocidad;
 //        }
-//        // si no tiene Rigidbody, podrías moverlo en Update con 'direccion'
+//        // si no tiene Rigidbody, podrï¿½as moverlo en Update con 'direccion'
 //    }
 
 //    private void Update()
@@ -152,10 +152,10 @@ public class BalaEnemigoVolador : MonoBehaviour
 //        if (!disparada)
 //            return;
 
-//        // Si no tienes Rigidbody, usarías esto:
+//        // Si no tienes Rigidbody, usarï¿½as esto:
 //        // transform.position += direccion * velocidad * Time.deltaTime;
 
-//        // (Opcional) efectos de parpadeo aquí...
+//        // (Opcional) efectos de parpadeo aquï¿½...
 //        if (rend)
 //        {
 //            float t = Mathf.PingPong(Time.time * 2f, 1f);
