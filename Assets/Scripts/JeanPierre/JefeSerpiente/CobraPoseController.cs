@@ -108,7 +108,6 @@ public class CobraPoseController : MonoBehaviour
         snake.enabled = false;
         if (efectosActivator != null) efectosActivator.activar = false;
 
-        // --- FEEDBACK en la pose, usando attackTargetWithOffset ---
         Vector3 headPos = segmentos[0].position;
         Vector3 dirRaw = (player.position - headPos).normalized;
         float distanciaReal = Vector3.Distance(headPos, player.position);
@@ -157,8 +156,6 @@ public class CobraPoseController : MonoBehaviour
 
         headAttackStart = segmentos[0].position;
         baseAttackStart = segmentos[segmentosCuello].position;
-
-        // (Ya hemos calculado originalAttackTarget y attackTargetWithOffset en EntrarPose)
 
         Transform cabeza = segmentos[0];
         Vector3 lookDir = (attackTargetWithOffset - cabeza.position); lookDir.y = 0;
@@ -261,14 +258,17 @@ public class CobraPoseController : MonoBehaviour
             prev = segmentos[i].position;
         }
     }
+
+    void OnDestroy()
+    {
+        // Asegura que el feedbackInstance se destruya si este script se elimina antes
+        if (feedbackInstance != null)
+        {
+            Destroy(feedbackInstance);
+            feedbackInstance = null;
+        }
+    }
 }
-
-
-
-
-
-
-
 
 
 
@@ -308,11 +308,11 @@ public class CobraPoseController : MonoBehaviour
 //    public GameObject prefabAlLlegar;
 //    [Tooltip("Desfase en Y para instanciar el prefab un poco más abajo")]
 //    public float instanciaYOffset = 0.5f;
+//    [Tooltip("Prefab de feedback que indica dónde atacará la cobra")]
+//    public GameObject prefabEnPosicionJugador;
 
 //    [Header("Rotación de cabeza en ataque")]
-//    [Tooltip("Ángulo en X al que se inclina la cabeza durante el ataque")]
 //    public float tiltX = 40f;
-//    [Tooltip("Velocidad de interpolación de la rotación X durante el ataque")]
 //    public float tiltSmoothSpeed = 8f;
 
 //    private SnakeController snake;
@@ -329,15 +329,15 @@ public class CobraPoseController : MonoBehaviour
 //    private Vector3 attackTargetWithOffset;
 //    private float timer;
 
+//    private GameObject feedbackInstance;
+
 //    void Start()
 //    {
 //        snake = GetComponent<SnakeController>();
 //        efectosActivator = FindObjectOfType<ActivadorEfectos>();
-
 //        GameObject p = GameObject.FindWithTag("Player");
 //        if (p == null) Debug.LogError("No se encontró ningún GameObject con tag \"Player\".");
 //        else player = p.transform;
-
 //        if (poseOnStart) EntrarPose();
 //    }
 
@@ -353,24 +353,14 @@ public class CobraPoseController : MonoBehaviour
 //            StartCoroutine(FullSequence());
 //        }
 //        else if (dist > distanciaActivacion)
-//        {
 //            hasTriggered = false;
-//        }
 
 //        switch (estado)
 //        {
-//            case Estado.Pose:
-//                AplicarPose();
-//                break;
-//            case Estado.Atacando:
-//                UpdateAtaque();
-//                break;
-//            case Estado.Retornando:
-//                UpdateRetorno();
-//                break;
-//            case Estado.Inactivo:
-//                snake.enabled = true;
-//                break;
+//            case Estado.Pose: AplicarPose(); break;
+//            case Estado.Atacando: UpdateAtaque(); break;
+//            case Estado.Retornando: UpdateRetorno(); break;
+//            case Estado.Inactivo: snake.enabled = true; break;
 //        }
 //    }
 
@@ -394,16 +384,31 @@ public class CobraPoseController : MonoBehaviour
 //        segmentosCuello = Mathf.Clamp(segmentosCuello, 2, segmentos.Count - 1);
 //        estado = Estado.Pose;
 //        snake.enabled = false;
+//        if (efectosActivator != null) efectosActivator.activar = false;
 
-//        if (efectosActivator != null)
-//            efectosActivator.activar = false;
+//        // --- FEEDBACK en la pose, usando attackTargetWithOffset ---
+//        Vector3 headPos = segmentos[0].position;
+//        Vector3 dirRaw = (player.position - headPos).normalized;
+//        float distanciaReal = Vector3.Distance(headPos, player.position);
+//        float distanciaUsar = Mathf.Min(distanciaReal, distanciaAtaqueMax);
+
+//        originalAttackTarget = headPos + dirRaw * distanciaUsar;
+//        originalAttackTarget.y = player.position.y;
+
+//        attackTargetWithOffset = headPos + dirRaw * (distanciaUsar + headOffset);
+//        attackTargetWithOffset.y = player.position.y;
+
+//        if (prefabEnPosicionJugador != null)
+//        {
+//            Vector3 feedbackPos = attackTargetWithOffset + Vector3.down * instanciaYOffset;
+//            feedbackInstance = Instantiate(prefabEnPosicionJugador, feedbackPos, Quaternion.identity);
+//        }
 //    }
 
 //    void SalirPose()
 //    {
 //        estado = Estado.Inactivo;
-//        if (efectosActivator != null)
-//            efectosActivator.activar = true;
+//        if (efectosActivator != null) efectosActivator.activar = true;
 //    }
 
 //    void AplicarPose()
@@ -416,10 +421,9 @@ public class CobraPoseController : MonoBehaviour
 //        Vector3 targetHead = headFlat + Vector3.up * alturaMax;
 
 //        Transform cabeza = segmentos[0];
-//        Vector3 lookDirToPlayer = (playerFlat - cabeza.position);
-//        lookDirToPlayer.y = 0;
-//        if (lookDirToPlayer.sqrMagnitude > 0.001f)
-//            cabeza.rotation = Quaternion.Slerp(cabeza.rotation, Quaternion.LookRotation(lookDirToPlayer), poseSmoothSpeed * Time.deltaTime);
+//        Vector3 lookDir = playerFlat - cabeza.position; lookDir.y = 0;
+//        if (lookDir.sqrMagnitude > 0.001f)
+//            cabeza.rotation = Quaternion.Slerp(cabeza.rotation, Quaternion.LookRotation(lookDir), poseSmoothSpeed * Time.deltaTime);
 
 //        FollowChain(targetHead, dir, poseSmoothSpeed);
 //    }
@@ -432,19 +436,10 @@ public class CobraPoseController : MonoBehaviour
 //        headAttackStart = segmentos[0].position;
 //        baseAttackStart = segmentos[segmentosCuello].position;
 
-//        Vector3 dirRaw = (player.position - headAttackStart).normalized;
-//        float distanciaReal = Vector3.Distance(headAttackStart, player.position);
-//        float distanciaUsar = Mathf.Min(distanciaReal, distanciaAtaqueMax);
-
-//        originalAttackTarget = headAttackStart + dirRaw * distanciaUsar;
-//        originalAttackTarget.y = player.position.y;
-
-//        attackTargetWithOffset = headAttackStart + dirRaw * (distanciaUsar + headOffset);
-//        attackTargetWithOffset.y = player.position.y;
+//        // (Ya hemos calculado originalAttackTarget y attackTargetWithOffset en EntrarPose)
 
 //        Transform cabeza = segmentos[0];
-//        Vector3 lookDir = (attackTargetWithOffset - cabeza.position);
-//        lookDir.y = 0;
+//        Vector3 lookDir = (attackTargetWithOffset - cabeza.position); lookDir.y = 0;
 //        if (lookDir.sqrMagnitude > 0.001f)
 //            cabeza.rotation = Quaternion.LookRotation(lookDir);
 
@@ -457,24 +452,26 @@ public class CobraPoseController : MonoBehaviour
 //        timer = Mathf.Min(1f, timer + Time.deltaTime / duracionAtaque);
 //        float arcHeight = Mathf.Sin(timer * Mathf.PI) * alturaMax * 0.7f;
 
-//        // Mover cabeza
 //        Vector3 headPos = Vector3.Lerp(headAttackStart, attackTargetWithOffset, timer);
 //        headPos.y += arcHeight;
 //        segmentos[0].position = headPos;
 
-//        // Curvar cuello
 //        Vector3 neckHeadPos = Vector3.Lerp(headAttackStart, originalAttackTarget, timer);
 //        neckHeadPos.y += arcHeight;
 //        MoveNeckCurved(neckHeadPos, baseAttackStart, alturaMax * 0.5f);
 
-//        // Inclinación extra de la cabeza
 //        Transform cabeza = segmentos[0];
 //        Vector3 eul = cabeza.rotation.eulerAngles;
 //        cabeza.rotation = Quaternion.Slerp(cabeza.rotation, Quaternion.Euler(tiltX, eul.y, eul.z), tiltSmoothSpeed * Time.deltaTime);
 
 //        if (timer >= 1f)
 //        {
-//            // Al llegar a la posición final de ataque: instancia un poco más abajo
+//            if (feedbackInstance != null)
+//            {
+//                Destroy(feedbackInstance);
+//                feedbackInstance = null;
+//            }
+
 //            if (prefabAlLlegar != null)
 //            {
 //                Vector3 spawnPos = segmentos[0].position + Vector3.down * instanciaYOffset;
@@ -498,8 +495,7 @@ public class CobraPoseController : MonoBehaviour
 //        Vector3 neckHeadPos = Vector3.Lerp(originalAttackTarget, targetReturnHead, timer);
 //        MoveNeckCurved(neckHeadPos, baseAttackStart, alturaMax * 0.5f);
 
-//        if (timer >= 1f)
-//            estado = Estado.Pose;
+//        if (timer >= 1f) estado = Estado.Pose;
 //    }
 
 //    void MoveNeckCurved(Vector3 headPos, Vector3 basePos, float controlHeight)
@@ -512,17 +508,10 @@ public class CobraPoseController : MonoBehaviour
 //            Vector3 curvedPos = linearPos + Vector3.up * controlHeight * arcFactor;
 //            segmentos[i].position = curvedPos;
 
-//            Vector3 lookTarget = (i < segmentosCuello - 1)
-//                ? segmentos[i + 1].position
-//                : basePos;
-//            Vector3 lookDir = lookTarget - segmentos[i].position;
-//            lookDir.y = 0;
+//            Vector3 lookTarget = (i < segmentosCuello - 1) ? segmentos[i + 1].position : basePos;
+//            Vector3 lookDir = lookTarget - segmentos[i].position; lookDir.y = 0;
 //            if (lookDir.sqrMagnitude > 0.001f)
-//                segmentos[i].rotation = Quaternion.Slerp(
-//                    segmentos[i].rotation,
-//                    Quaternion.LookRotation(lookDir),
-//                    poseSmoothSpeed * Time.deltaTime
-//                );
+//                segmentos[i].rotation = Quaternion.Slerp(segmentos[i].rotation, Quaternion.LookRotation(lookDir), poseSmoothSpeed * Time.deltaTime);
 //        }
 //    }
 
@@ -532,34 +521,30 @@ public class CobraPoseController : MonoBehaviour
 //        float halfPi = Mathf.PI * 0.5f;
 //        Vector3 right = Vector3.Cross(dirXZ, Vector3.up).normalized;
 //        segmentos[0].position = Vector3.Lerp(segmentos[0].position, headT, speed * Time.deltaTime);
-
 //        Vector3 prev = segmentos[0].position;
+
 //        for (int i = 1; i < segmentos.Count; i++)
 //        {
 //            float t = (i < segmentosCuello) ? (float)i / (segmentosCuello - 1) : 1f;
-//            Vector3 bent = (i < segmentosCuello)
-//                ? Quaternion.AngleAxis(anguloCurva * t, right) * dirXZ
-//                : dirXZ;
-//            float yOff = (i < segmentosCuello)
-//                ? Mathf.Sin((1f - t) * halfPi) * alturaMax
-//                : 0f;
+//            Vector3 bent = (i < segmentosCuello) ? Quaternion.AngleAxis(anguloCurva * t, right) * dirXZ : dirXZ;
+//            float yOff = (i < segmentosCuello) ? Mathf.Sin((1f - t) * halfPi) * alturaMax : 0f;
 //            Vector3 bentXZ = new Vector3(bent.x, 0, bent.z).normalized;
-//            Vector3 target = prev - bentXZ * sep;
-//            target.y = yOff;
+//            Vector3 target = prev - bentXZ * sep; target.y = yOff;
 //            segmentos[i].position = Vector3.Lerp(segmentos[i].position, target, speed * Time.deltaTime);
 
-//            Vector3 look = prev - segmentos[i].position;
-//            look.y = 0;
+//            Vector3 look = prev - segmentos[i].position; look.y = 0;
 //            if (look.sqrMagnitude > 0.001f)
-//                segmentos[i].rotation = Quaternion.Slerp(
-//                    segmentos[i].rotation,
-//                    Quaternion.LookRotation(look),
-//                    speed * Time.deltaTime
-//                );
+//                segmentos[i].rotation = Quaternion.Slerp(segmentos[i].rotation, Quaternion.LookRotation(look), speed * Time.deltaTime);
+
 //            prev = segmentos[i].position;
 //        }
 //    }
 //}
+
+
+
+
+
 
 
 
