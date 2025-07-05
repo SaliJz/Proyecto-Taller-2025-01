@@ -19,6 +19,11 @@ public class GlitchAbility : MonoBehaviour
     [SerializeField] private float baseRadius = 5f;
     [SerializeField] private LayerMask enemyLayer;
 
+    [SerializeField] private GameObject glitchHandVFX;
+
+    [Header("Animation")]
+    [SerializeField] private int abilityAnimationID = 0;
+
     private float currentCooldown;
     private float currentDuration;
 
@@ -71,6 +76,15 @@ public class GlitchAbility : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse1) && canUse) ActivateAbility();
         if (!canUse) CooldownLogic();
+
+        if (gameObject.activeSelf && glitchHandVFX != null) 
+        {
+            glitchHandVFX.SetActive(true);
+        }
+        else
+        {
+             glitchHandVFX.SetActive(false);
+        }
     }
 
     private void CooldownLogic()
@@ -93,6 +107,8 @@ public class GlitchAbility : MonoBehaviour
         canUse = false;
         currentCooldownTimer = currentCooldown;
         HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
+
+        PlayerAnimatorController.Instance?.PlayFireAbilityAnim(abilityAnimationID);
 
         Vector3 direction = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f)).direction;
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));

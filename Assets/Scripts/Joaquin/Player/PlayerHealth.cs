@@ -16,7 +16,7 @@ public class PlayerHealth : MonoBehaviour
     private bool isRegenShield;
 
     [Header("Muerte y transición")]
-    [SerializeField] private string gameOverSceneName = "GameOver";
+    //[SerializeField] private string gameOverSceneName = "GameOver";
     [SerializeField] private GameObject deathPrefab;
     [SerializeField] private SceneTransition sceneTransition;
 
