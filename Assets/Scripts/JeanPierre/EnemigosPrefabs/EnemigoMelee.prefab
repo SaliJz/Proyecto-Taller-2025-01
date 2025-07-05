@@ -518,6 +518,7 @@ MonoBehaviour:
   prefabMuerteEscopeta: {fileID: 7597145721601309270, guid: 1799a004841c0c84487e26a08eadb035,
     type: 3}
   fragments: 50
+  isTracker: 0
 --- !u!114 &4643872267189118312
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -534,9 +535,6 @@ MonoBehaviour:
   velocidadInicial: 5
   velocidadMaxima: 8.8
   aceleracion: 0.5
-  amplitud: 7
-  escalaRuido: 1
-  semillaRuido: 0
   distanciaMinima: 1
 --- !u!136 &3441400616488566475
 CapsuleCollider:
@@ -637,9 +635,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60b3e15c74cf41e4b9fa53c6573e81bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  contactDamage: 15
-  attackCooldown: 1.5
-  attackRange: 20
   baseSpeed: 5
 --- !u!114 &-3876290804030161075
 MonoBehaviour:
@@ -938,7 +933,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 293f35d805d6afc4681b262caa320d70, type: 2}
+      objectReference: {fileID: 2100000, guid: d966b8f09ad10564880843dd0457aecc, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: -840777845830954692, guid: bc4fc5b8e38745d4398ee5e81acc7c60, type: 3}
