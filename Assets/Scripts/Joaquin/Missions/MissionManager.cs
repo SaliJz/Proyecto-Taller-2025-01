@@ -120,12 +120,12 @@ public class MissionManager : MonoBehaviour
         {
             case MissionMode.Purgador:
                 HUDManager.Instance?.ShowMission($"Objetivo: Elimina enemigos\nProgreso: {currentMissionSO.killConditions[0].currentAmount}/{purgadorKills}");
-                spawner.StartPurgeSpawning(purgadorKills, 15, 2f); // Spawnea los enemigos necesarios
+                spawner?.StartPurgeSpawning(purgadorKills, 15, 2f); // Spawnea los enemigos necesarios
                 break;
 
             case MissionMode.JSS:
                 HUDManager.Instance?.ShowMission($"Objetivo: Sobrevive\nTiempo restante: {Mathf.Ceil(jssDuration)}s", true);
-                spawner.StartContinuousSpawning(jssSimultaneousEnemies, 1f, jssDuration);
+                spawner?.StartContinuousSpawning(jssSimultaneousEnemies, 1f, jssDuration);
                 StartCoroutine(TimerCoroutine(jssDuration)); // Inicia el temporizador de supervivencia
                 break;
 
@@ -133,7 +133,7 @@ public class MissionManager : MonoBehaviour
                 HUDManager.Instance?.ShowMission("Objetivo: Captura la zona segura\nPermanece solo para aumentar el tiempo");
                 currentCaptureTime = elUnicoInitialTime; // El "colchón" de tiempo que tiene el jugador
                 SelectSafeZone();
-                spawner.StartContinuousSpawning(10, 3f); // Spawn infinito de enemigos a un ritmo moderado
+                spawner?.StartContinuousSpawning(10, 3f); // Spawn infinito de enemigos a un ritmo moderado
                 break;
         }
     }
