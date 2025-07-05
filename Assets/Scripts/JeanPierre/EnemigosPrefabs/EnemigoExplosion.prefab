@@ -469,6 +469,9 @@ MonoBehaviour:
   prefabMuerteEscopeta: {fileID: 7597145721601309270, guid: 1799a004841c0c84487e26a08eadb035,
     type: 3}
   fragments: 50
+  enableDissolve: 0
+  dissolveDuration: 1
+  isTracker: 0
 --- !u!136 &1268450203785874081
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -561,20 +564,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41bbc5e82a4757f438414ada08da1214, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minTeleportDistance: 1
-  maxTeleportDistance: 2.3
-  minTeleports: 2
-  maxTeleports: 4
-  zigzagTeleportAmplitude: 0.4
-  lateralTeleportChance: 0.2
-  minAdvanceTime: 0.4
-  maxAdvanceTime: 0.6
   moveSpeed: 2
   rotationSpeed: 180
-  continuousZigzagAmplitude: 0.4
-  continuousZigzagFrequency: 2
-  disappearDuration: 0.2
-  appearDuration: 0.1
   toggleObject: {fileID: 3282461227398318059}
 --- !u!114 &7750208852716804292
 MonoBehaviour:
@@ -588,9 +579,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60b3e15c74cf41e4b9fa53c6573e81bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  contactDamage: 10
-  attackCooldown: 1
-  attackRange: 20
   baseSpeed: 2
 --- !u!114 &-2804150367015730761
 MonoBehaviour:
