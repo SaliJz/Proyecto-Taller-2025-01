@@ -304,12 +304,15 @@ public class HUDManager : MonoBehaviour
 
     public void ShowMission(string message, bool isTimer = false)
     {
+        Debug.Log($"[HUDManager] Mostrando mensaje: {message}");
+
         missionPanel?.SetActive(true);
         missionText.gameObject?.SetActive(true);
         timerText.gameObject?.SetActive(isTimer);
 
         if (missionTextObject == null)
         {
+            Debug.LogWarning("No se ha asignado missionTextObject");
             return;
         }
 

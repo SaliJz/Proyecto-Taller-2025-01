@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class MissionManager : MonoBehaviour
 {
+    // ... (Enum MissionMode y las variables del Inspector se mantienen igual)
     private enum MissionMode { Purgador, JSS, ElUnico }
 
     [Header("Misión base")]
@@ -14,23 +15,12 @@ public class MissionManager : MonoBehaviour
 
     [SerializeField] private GameObject[] teleporters;
 
-    [SerializeField] private string nextSceneName = "VictoryScene";
-
-    [Header("Configuración de misión")]
-    [SerializeField] private bool canChangeScene = true;
-
     [SerializeField] private float missionStartDelay = 10f;
-    [SerializeField] private int maxEnemiesInTotal = -1;
-    [SerializeField] private float spawnInterval = 1f;
 
     [SerializeField] private GameObject[] safeZones;
-    [SerializeField] private float totalCaptureTime = 120f;
-    [SerializeField] private float currentTimeCapture = 30f;
     [SerializeField] private MissionMode baseMissionMode;
     [SerializeField] private bool useBaseMissionMode = false;
 
-    private bool isCapturing = false;
-    private bool isEnemyInCaptureZone = false;
     private bool activeMission = false;
 
     private int currentMissionIndex = 0;
@@ -38,10 +28,13 @@ public class MissionManager : MonoBehaviour
 
     private MissionMode currentMode;
     private EnemySpawner spawner;
-    private Coroutine delayRoutine;
-    private int randomTeleporterIndex = 0;
     public static MissionManager Instance { get; private set; }
     public bool ActiveMission => activeMission;
+
+    // Variables para la misión "El Único"
+    private float currentCaptureTime;
+    private bool isPlayerInZone;
+    private bool isEnemyInZone;
 
     private void Awake()
     {
@@ -50,184 +43,202 @@ public class MissionManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
-
-        if (spawner == null)
-        {
-            spawner = FindObjectOfType<EnemySpawner>();
-
-            if (spawner == null)
-            {
-                Debug.LogError("No se encontró un EnemySpawner en la escena.");
-            }
-        }
+        spawner = FindObjectOfType<EnemySpawner>();
     }
 
-    private void OnEnable()
+    private void Start()
     {
-        ResetAllMissions();
         BeginMission();
     }
 
     private void Update()
     {
-        if (!activeMission) return;
-
-        if (isCapturing)
+        // Solo ejecutar el Update si la misión activa es "El Único"
+        if (activeMission && currentMode == MissionMode.ElUnico)
         {
-            if (isEnemyInCaptureZone)
-            {
-                return;
-            }
-            else
-            {
-                currentTimeCapture += Time.deltaTime;
-
-                HUDManager.Instance?.UpdateMissionProgress(currentTimeCapture, totalCaptureTime, true);
-                HUDManager.Instance?.UpdateTimer(currentTimeCapture);
-
-                if (currentTimeCapture >= totalCaptureTime)
-                {
-                    currentTimeCapture = totalCaptureTime;
-                    CompleteMission();
-                }
-            }
-        }
-        else
-        {
-            currentTimeCapture -= Time.deltaTime;
-
-            HUDManager.Instance?.UpdateMissionProgress(currentTimeCapture, totalCaptureTime, true);
-            HUDManager.Instance?.UpdateTimer(currentTimeCapture);
-
-            if (currentTimeCapture < 0f)
-            {
-                currentTimeCapture = 0f;
-                FailedMission(); 
-            }
+            HandleElUnicoMission();
         }
     }
 
     private void OnDestroy()
     {
-        if (Instance == this)
+        if (Instance == this) Instance = null;
+    }
+
+    private void BeginMission()
+    {
+        currentMode = SelectModeByLevel(); // Decide qué misión toca
+        StartCoroutine(BeginMissionCoroutine());
+    }
+
+    private IEnumerator BeginMissionCoroutine()
+    {
+        // --- 1. Lógica de Dificultad Procedural ---
+        // Se calcula la dificultad basada en el índice del GameManager
+        int difficultyStep = 0;
+        if (GameManager.Instance != null)
         {
-            Instance = null;
+            // El índice 0 y 1 son tutoriales, así que el aumento empieza en el índice 2
+            difficultyStep = Mathf.Max(0, GameManager.Instance.CurrentLevelIndex - 1);
+        }
+
+        if (baseMissions.Count == 0)
+        {
+            Debug.LogError("No se ha asignado ninguna misión en baseMissions.");
+            yield break;
+        }
+
+        // --- 2. Cálculo de Parámetros de Misión ---
+        var currentMissionSO = baseMissions[0]; // Coge el SO correspondiente al modo
+
+        // Purgador
+        int purgadorKills = 5 + (difficultyStep * 5);
+        currentMissionSO.killConditions[0].requiredAmount = purgadorKills;
+        currentMissionSO.ResetProgress();
+
+        // El Único
+        float elUnicoSurvivalTime = 120f + (difficultyStep * 30f);
+        float elUnicoInitialTime = 30f;
+
+        // JSS
+        int jssSimultaneousEnemies = 5 + (difficultyStep * 5);
+        float jssDuration = 30f + (difficultyStep * 20f);
+
+        // --- 3. Inicio de Misión ---
+        float delay = missionStartDelay;
+        while (delay > 0f)
+        {
+            HUDManager.Instance?.ShowMission($"Misión comienza en: {Mathf.Ceil(delay)}s");
+            delay -= Time.deltaTime;
+            yield return null;
+        }
+
+        activeMission = true;
+
+        switch (currentMode)
+        {
+            case MissionMode.Purgador:
+                HUDManager.Instance?.ShowMission($"Objetivo: Elimina enemigos\nProgreso: {currentMissionSO.killConditions[0].currentAmount}/{purgadorKills}");
+                spawner.StartPurgeSpawning(purgadorKills, 15, 2f); // Spawnea los enemigos necesarios
+                break;
+
+            case MissionMode.JSS:
+                HUDManager.Instance?.ShowMission($"Objetivo: Sobrevive\nTiempo restante: {Mathf.Ceil(jssDuration)}s", true);
+                spawner.StartContinuousSpawning(jssSimultaneousEnemies, 1f, jssDuration);
+                StartCoroutine(TimerCoroutine(jssDuration)); // Inicia el temporizador de supervivencia
+                break;
+
+            case MissionMode.ElUnico:
+                HUDManager.Instance?.ShowMission("Objetivo: Captura la zona segura\nPermanece solo para aumentar el tiempo");
+                currentCaptureTime = elUnicoInitialTime; // El "colchón" de tiempo que tiene el jugador
+                SelectSafeZone();
+                spawner.StartContinuousSpawning(10, 3f); // Spawn infinito de enemigos a un ritmo moderado
+                break;
         }
     }
 
+    // --- Lógica de Misiones Específicas ---
+
     public void RegisterKill(string tag, string name, string tipo)
     {
-        if (currentMissionIndex >= baseMissions.Count)
+        if (!activeMission || currentMode != MissionMode.Purgador) return;
+
+        var currentMissionSO = baseMissions[(int)currentMode];
+        currentMissionSO.RegisterKill(tag, name, tipo);
+
+        if (currentMissionSO.IsCompleted)
         {
-            return;
-        }
-
-        var currentMission = baseMissions[currentMissionIndex];
-        currentMission.RegisterKill(tag, name, tipo);
-
-        string progress = string.Join(" | ", currentMission.killConditions.Select(k =>
-            $"{k.currentAmount}/{k.requiredAmount}"));
-
-        string message = $"{currentMission.missionName}\n{progress}";
-
-        if (spawner != null)
-        {
-            spawner.EnemiesKilledCount(1);
-        }
-
-        if (currentMission.IsCompleted)
-        {
-            if (HUDManager.Instance != null)
-            {
-                if (currentMode == MissionMode.JSS)
-                {
-                    HUDManager.Instance.ShowMission(message, true);
-                }
-                else
-                {
-                    HUDManager.Instance.ShowMission(message);
-                }
-            }
-
             CompleteMission();
         }
         else
         {
-            if (HUDManager.Instance != null)
-            {
-                if (currentMode == MissionMode.JSS)
-                {
-                    HUDManager.Instance.ShowMission(message, true);
-                }
-                else
-                {
-                    HUDManager.Instance.ShowMission(message);
-                }
-            }
+            string progress = $"{currentMissionSO.killConditions[0].currentAmount}/{currentMissionSO.killConditions[0].requiredAmount}";
+            HUDManager.Instance?.ShowMission($"{currentMissionSO.missionName}\n{progress}");
         }
     }
 
-    // Comienza la misión actual 
-    private void BeginMission()
+    private void HandleElUnicoMission()
     {
-        currentMode = SelectModeByLevel();
+        if (isPlayerInZone && !isEnemyInZone)
+        {
+            currentCaptureTime += Time.deltaTime; // El tiempo sube si el jugador está solo en la zona
+        }
+        else if (!isPlayerInZone)
+        {
+            currentCaptureTime -= Time.deltaTime; // El tiempo baja si el jugador está fuera
+        }
+        // Si el jugador y el enemigo están en la zona, el tiempo se congela.
 
-        if (currentMissionIndex >= baseMissions.Count) return;
+        float totalTime = 120f + (Mathf.Max(0, GameManager.Instance.CurrentLevelIndex - 1) * 30f);
+        HUDManager.Instance?.UpdateMissionProgress(currentCaptureTime, totalTime, false);
+        HUDManager.Instance?.UpdateTimer(currentCaptureTime);
 
-        if (delayRoutine != null) StopCoroutine(delayRoutine);
-        delayRoutine = StartCoroutine(BeginMissionAfterDelay());
+        if (currentCaptureTime >= totalTime) CompleteMission();
+        if (currentCaptureTime <= 0) FailedMission();
     }
 
-    private IEnumerator BeginMissionAfterDelay()
+    // --- Flujo de Final de Misión ---
+
+    public void CompleteMission()
     {
-        float remaining = missionStartDelay;
-        while (remaining > 0f)
+        if (!activeMission) return;
+        activeMission = false;
+
+        spawner.StopAndClearSpawner();
+        // Desactivar zonas, etc. si es necesario
+        if (currentMode == MissionMode.ElUnico)
         {
-            HUDManager.Instance?.ShowMission($"Misión comienza en: {Mathf.Ceil(remaining)}s");
-            remaining -= Time.deltaTime;
+            safeZones[currentSafeZoneIndex].GetComponent<CaptureZone>()?.Deactivate();
+        }
+
+        StartCoroutine(MissionCompleteSequence());
+    }
+
+    private IEnumerator MissionCompleteSequence()
+    {
+        // 1. Mostrar mensaje de Misión Completa
+        HUDManager.Instance?.ShowMission("¡Misión Completa!");
+        yield return new WaitForSeconds(2f); // Pausa breve
+
+        // 2. Iniciar cuenta atrás para la tienda
+        float countdown = 5f;
+        while (countdown > 0)
+        {
+            HUDManager.Instance?.ShowMission($"La tienda se abrirá en {Mathf.Ceil(countdown)}...");
+            countdown -= Time.deltaTime;
             yield return null;
         }
 
-        var currentMission = baseMissions[currentMissionIndex];
+        // 3. Llamar al GameManager para que maneje la transición a la tienda
+        GameManager.Instance?.OnLevelCompleted();
+    }
 
-        string progress = string.Join(" | ", currentMission.killConditions.Select(k =>
-            $"{k.currentAmount}/{k.requiredAmount}"));
-            string message = $"{currentMission.missionName}\n{progress}";
+    private void FailedMission()
+    {
+        activeMission = false;
 
-        if (currentMode == MissionMode.JSS)
+        PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
+        if (playerHealth != null)
         {
-            spawner.ResetSpawner();
-
-            int simult = currentMission.killConditions[0].requiredAmount;
-            maxEnemiesInTotal = 5;
-            spawnInterval= 2.5f;
-            spawner.SpawnCondition(maxEnemiesInTotal, spawnInterval);
-            spawner.SpawnWave(simult);
-
-            StartCoroutine(TimerCoroutine(currentMission.duration));
-
-            HUDManager.Instance?.ShowMission(message, true); // Mostrar misión JSS
-        }
-        else if (currentMode == MissionMode.ElUnico)
-        {
-            spawner.ResetSpawner(); 
-
-            SelectSafeZone();
-            currentTimeCapture = 30f;
-            totalCaptureTime = currentMission.duration;
-            maxEnemiesInTotal = -1;
-            spawnInterval = 2.5f;
-            spawner.SpawnCondition(maxEnemiesInTotal, spawnInterval);
-        }
-        else
-        {
-            spawner.ResetSpawner();
-            HUDManager.Instance?.ShowMission(message); // Mostrar misión Purgador
+            playerHealth.TakeDamage(1000, transform.position); // O el daño que desees
         }
     }
 
+    private IEnumerator TimerCoroutine(float duration)
+    {
+        float remaining = duration;
+        while (remaining > 0f)
+        {
+            remaining -= Time.deltaTime;
+            HUDManager.Instance.UpdateTimer(remaining);
+            yield return null;
+        }
+        
+        CompleteMission();
+    }
+
+    // --- Métodos de Ayuda ---
     private MissionMode SelectModeByLevel()
     {
         if (useBaseMissionMode)
@@ -259,32 +270,8 @@ public class MissionManager : MonoBehaviour
         return MissionMode.Purgador; // Por defecto, si no se ha configurado nada
     }
 
-    public void SetActiveCapture(bool isActive)
-    {
-        isCapturing = isActive;
-        if (isCapturing)
-        {
-            HUDManager.Instance?.ShowMission("Capturando zona segura...", true);
-        }
-        else
-        {
-            HUDManager.Instance?.ShowMission("Regresa a la zona de captura", true);
-        }
-    }
-
-    public void SetEnemyOnCaptureZone(bool isEnemy)
-    {
-        isEnemyInCaptureZone = isEnemy;
-        if (isEnemy)
-        {
-            HUDManager.Instance?.ShowMission("¡Enemigos en la zona de captura!", true);
-        }
-        else
-        {
-            HUDManager.Instance?.ShowMission("Zona segura despejada. Continúa capturando.", true);
-        }
-    }
-
+    public void SetActiveCapture(bool isActive) { isPlayerInZone = isActive; }
+    public void SetEnemyOnCaptureZone(bool isEnemy) { isEnemyInZone = isEnemy; }
     private void SelectSafeZone()
     {
         if (safeZones == null || safeZones.Length == 0) return;
@@ -317,143 +304,5 @@ public class MissionManager : MonoBehaviour
         }
 
         activeMission = true;
-    }
-    /*
-    private void SelectTeleporter()
-    {
-        if (teleporters == null || teleporters.Length == 0) return;
-        // Desactiva todos los teleportadores primero
-        foreach (var teleporter in teleporters)
-        {
-            if (teleporter != null) teleporter.SetActive(false);
-        }
-        int randomIndex = UnityEngine.Random.Range(0, teleporters.Length);
-        randomTeleporterIndex = randomIndex; // Guardar el índice seleccionado
-        GameObject selectedTeleporter = teleporters[randomIndex];
-        if (selectedTeleporter != null)
-        {
-            selectedTeleporter.SetActive(true);
-            HUDManager.Instance?.ShowMission($"Dirígete al teletransportador: {selectedTeleporter.name}", true);
-        }
-    }
-    */
-    private IEnumerator TimerCoroutine(float duration)
-    {
-        float remaining = duration;
-        while (remaining > 0f)
-        {
-            remaining -= Time.deltaTime;
-            HUDManager.Instance.UpdateTimer(remaining);
-            yield return null;
-        }
-
-        if (baseMissions[currentMissionIndex].IsCompleted)
-        {
-            CompleteMission();
-        }
-        else
-        {
-            FailedMission();
-        }
-    }
-
-    private void FailedMission()
-    {
-        activeMission = false;
-
-        PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
-        if (playerHealth != null)
-        {
-            playerHealth.TakeDamage(1000, transform.position); // O el daño que desees
-        }
-    }
-
-    public void CompleteMission() 
-    {
-        activeMission = false;
-
-        GameManager.Instance?.OnLevelCompleted();
-
-        //electTeleporter();
-        //TutorialManager.Instance.StartScenarioByManual(8);
-
-        currentMissionIndex++;
-
-        if (currentMissionIndex < baseMissions.Count)
-        {
-            BeginMission();
-        }
-        else
-        {
-            HUDManager.Instance?.ShowMission("Misión completa. Proceda al siguiente nivel.");
-            HideMissionTimer(5f);
-
-            if (canChangeScene)
-            {
-                StartCoroutine(ChangeSceneAfterDelay());
-            }
-            else
-            {
-                return;
-            }
-        }
-
-        if (currentMode == MissionMode.ElUnico)
-        {
-            GameObject selectedZone = safeZones[currentSafeZoneIndex];
-            CaptureZone captureZone = selectedZone.GetComponent<CaptureZone>();
-
-            if (captureZone != null)
-            {
-                captureZone.Deactivate();
-            }
-
-            isCapturing = false;
-            isEnemyInCaptureZone = false;
-        }
-    }
-
-    private IEnumerator HideMissionTimer(float time)
-    {
-        float remaining = time;
-        while (remaining > 0f)
-        {
-            remaining -= Time.deltaTime;
-
-            yield return null;
-        }
-
-        HUDManager.Instance?.HideMission();
-    }
-
-    // Reinicia todas las misiones
-    public void ResetAllMissions()
-    {
-        foreach (var mission in baseMissions)
-        {
-            mission.ResetProgress();
-        }
-
-        currentMissionIndex = 0;
-    }
-
-    // Cambia de escena después de un retraso
-    private IEnumerator ChangeSceneAfterDelay()
-    {
-        float timeout = 10f; // Tiempo máximo de espera
-        float elapsedTime = 0f;
-
-        while (teleporters[randomTeleporterIndex].activeSelf && elapsedTime < timeout)
-        {
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        if (elapsedTime >= timeout)
-        {
-            Debug.LogWarning("Tiempo de espera agotado para el teletransportador. Cambiando de escena de todos modos.");
-        }
-        // Luego cambiar de escena
-        SceneManager.LoadScene(nextSceneName);
     }
 }

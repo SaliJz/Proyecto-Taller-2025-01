@@ -76,15 +76,6 @@ public class GlitchAbility : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse1) && canUse) ActivateAbility();
         if (!canUse) CooldownLogic();
-
-        if (gameObject.activeSelf && glitchHandVFX != null) 
-        {
-            glitchHandVFX.SetActive(true);
-        }
-        else
-        {
-             glitchHandVFX.SetActive(false);
-        }
     }
 
     private void CooldownLogic()

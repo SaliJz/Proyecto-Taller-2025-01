@@ -207,7 +207,6 @@ public class Weapon : MonoBehaviour
 
     private bool CanShoot()
     {
-        if (weaponManager != null && !weaponManager.CanChangeWeapon) return false;
         if (isReloading) return false;
         if (Time.time < nextAllowedShotTime) return false;
 
