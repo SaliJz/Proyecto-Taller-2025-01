@@ -12,7 +12,8 @@ public class ProyectilEnemigoResponsableDeInfligirDanoAlJugador : MonoBehaviour
             var ph = other.GetComponent<PlayerHealth>();
             if (ph != null)
             {
-                ph.TakeDamage(damage);
+                // Ahora pasamos también la posición del proyectil como attackerPosition
+                ph.TakeDamage(damage, transform.position);
             }
             Destroy(gameObject);
         }
