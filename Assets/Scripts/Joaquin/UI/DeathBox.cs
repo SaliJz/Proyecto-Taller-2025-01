@@ -17,7 +17,7 @@ public class DeathBox : MonoBehaviour
             if (playerHealth != null)
             {
                 // Aplicar daño al jugador
-                playerHealth.TakeDamage(damageAmount);
+                playerHealth.TakeDamage(damageAmount, transform.position);
                 Debug.Log($"Player hit the death box! Applied {damageAmount} damage to {collision.gameObject.name}.");
             }
             else

@@ -26,7 +26,7 @@ public class Cabeza : MonoBehaviour
         PlayerHealth playerHealth = obj.GetComponent<PlayerHealth>();
         if (playerHealth != null)
         {
-            playerHealth.TakeDamage(damageAmount);
+            playerHealth.TakeDamage(damageAmount, transform.position);
         }
 
         // 2) Calcula y aplica knockback si tiene Rigidbody

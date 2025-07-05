@@ -21,7 +21,7 @@ public class LavaTrigger : MonoBehaviour
 
                 if (timers[playerHealth] >= 1f)
                 {
-                    playerHealth.TakeDamage(damagePerSecond);
+                    playerHealth.TakeDamage(damagePerSecond, transform.position);
                     timers[playerHealth] = 0f;
                 }
             }

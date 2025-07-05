@@ -1,5 +1,6 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using System.Collections;
 
 public class Active_ShieldHUD : MonoBehaviour
 {
@@ -9,7 +10,41 @@ public class Active_ShieldHUD : MonoBehaviour
     [SerializeField] Animator LeftAnim;
     public Transform PlayerTransform;
 
-    public void ActiveShield(Vector3 attackDir)
+    private void Start()
+    {
+        if (UpAnim != false) UpAnim.gameObject.SetActive(false);
+        if (DownAnim != false) DownAnim.gameObject.SetActive(false);
+        if (RightAnim != false) RightAnim.gameObject.SetActive(false);
+        if (LeftAnim != false) LeftAnim.gameObject.SetActive(false);
+
+        if (PlayerTransform == null)
+        {
+            PlayerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        }
+
+        ResetAllAlphas();
+    }
+
+    private void ResetAllAlphas()
+    {
+        SetAlpha(UpAnim, 0f);
+        SetAlpha(DownAnim, 0f);
+        SetAlpha(RightAnim, 0f);
+        SetAlpha(LeftAnim, 0f);
+    }
+
+    private void SetAlpha(Animator anim, float alpha)
+    {
+        var image = anim.GetComponent<UnityEngine.UI.Image>();
+        if (image != null)
+        {
+            var color = image.color;
+            color.a = alpha;
+            image.color = color;
+        }
+    }
+
+    public void ActivateIndicator(Vector3 attackDir)
     {
         if(PlayerTransform != null)
         {
@@ -18,30 +53,54 @@ public class Active_ShieldHUD : MonoBehaviour
             Vector3 forward = PlayerTransform.forward;
             Vector3 right = PlayerTransform.right;
 
-            float frontDot = Vector3.Dot(forward, attackDir);
+            float forwardDot = Vector3.Dot(forward, attackDir);
             float rightDot = Vector3.Dot(right, attackDir);
 
-            if (frontDot > 0.7f)
+            const float threshold = 0.4f;
+
+            if (forwardDot > threshold)
             {
                 Debug.Log("ARRIBA");
-                UpAnim.Play("ShieldFade");
+                ShowIndicator(UpAnim);
             }
-            else if(frontDot < -0.7f)
+
+            if (forwardDot < -threshold)
             {
                 Debug.Log("ATRAS");
-                DownAnim.Play("ShieldFade");
+                ShowIndicator(DownAnim);
             }
-            else if (rightDot > 0f)
+
+            if (rightDot > threshold)
             {
                 Debug.Log("DERECHA");
-                RightAnim.Play("ShieldFade");
+                ShowIndicator(RightAnim);
             }
-            else
+
+            if (rightDot < -threshold)
             {
                 Debug.Log("IZQUIERDA");
-                LeftAnim.Play("ShieldFade");
+                ShowIndicator(LeftAnim);
             }
         }
 
+    }
+
+    private void ShowIndicator(Animator animGO)
+    {
+        StartCoroutine(PlayAndDisable(animGO));
+    }
+
+    private IEnumerator PlayAndDisable(Animator animGO)
+    {
+        GameObject obj = animGO.gameObject;
+
+        if (!obj.activeSelf)
+            obj.SetActive(true);
+
+        animGO.Play("ShieldFade", 0, 0f);
+
+        yield return new WaitForSeconds(0.2f);
+
+        obj.SetActive(false);
     }
 }

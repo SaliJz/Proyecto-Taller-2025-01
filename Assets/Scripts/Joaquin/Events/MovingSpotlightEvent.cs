@@ -77,7 +77,7 @@ public class MovingSpotlightEvent : MonoBehaviour
     {
         while (true)
         {
-            player.TakeDamage((int)damagePerSecond);
+            player.TakeDamage((int)damagePerSecond, transform.position);
             yield return new WaitForSeconds(1f);
         }
     }

@@ -350,16 +350,31 @@ public class HUDManager : MonoBehaviour
         missionTextObject.anchoredPosition = missionStartPos;
     }
 
-    #endregion
-
-    #region Ability and Text Updates
-
     public void UpdateAbilityStatus(string abilityName, float cooldownRemaining, bool isReady, float cooldownTotal = 1f)
     {
         if (abilityNameText != null || abilityName != null)
         {
             if (!abilityNameText.gameObject.activeSelf) abilityNameText.gameObject.SetActive(true);
             abilityNameText.text = abilityName;
+        }
+
+        switch (abilityName)
+        {
+            case "GlitchTime":
+                abilityIcon.color = Color.gray;
+                break;
+            case "ElectroHack":
+                abilityIcon.color = Color.cyan;
+                break;
+            case "IgnitionCode":
+                abilityIcon.color = Color.red;
+                break;
+            case "Mindjack":
+                abilityIcon.color = Color.green;
+                break;
+            default:
+                abilityIcon.color = Color.white;
+                break;
         }
 
         if (isReady)
