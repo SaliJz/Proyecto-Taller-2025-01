@@ -16,17 +16,22 @@ public class PlayerHealth : MonoBehaviour
     private bool isRegenShield;
 
     [Header("Muerte y transición")]
-    [SerializeField] private string gameOverSceneName = "GameOver";
+    //[SerializeField] private string gameOverSceneName = "GameOver";
     [SerializeField] private GameObject deathPrefab;
     [SerializeField] private SceneTransition sceneTransition;
 
     [SerializeField] private bool isNivel1 = false;
+
+    [Header("Referencias del HUD")]
+    [SerializeField] private Active_ShieldHUD directionalDamageHUD;
 
     private bool isIgnited = false;
     private Coroutine ignitionCoroutine;
 
     private void Start()
     {
+        if (directionalDamageHUD == null) directionalDamageHUD = FindObjectOfType<Active_ShieldHUD>();
+
         if (isNivel1) GeneralUpgradeManager.ResetUpgrades();
 
         UpdateMaxStats();
@@ -73,9 +78,17 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, Vector3 attackerPosition)
     {
+        Vector3 damageDirection = (attackerPosition - transform.position).normalized;
+
         int damageLeft = damage;
+
+        if (directionalDamageHUD != null)
+        {
+            Debug.LogWarning($"Dirección del daño: {damageDirection}");
+            directionalDamageHUD.ActivateIndicator(damageDirection);
+        }
 
         if (currentShield > 0)
         {
@@ -146,7 +159,7 @@ public class PlayerHealth : MonoBehaviour
         int ticks = Mathf.FloorToInt(duration);
         for (int i = 0; i < ticks; i++)
         {
-            TakeDamage((int)damagePerSecond);
+            TakeDamage((int)damagePerSecond, transform.position);
             yield return new WaitForSeconds(1f);
         }
     }

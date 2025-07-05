@@ -364,7 +364,7 @@ public class MissionManager : MonoBehaviour
         PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
         if (playerHealth != null)
         {
-            playerHealth.TakeDamage(1000); // O el daño que desees
+            playerHealth.TakeDamage(1000, transform.position); // O el daño que desees
         }
     }
 

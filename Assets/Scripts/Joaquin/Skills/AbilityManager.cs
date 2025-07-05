@@ -14,18 +14,15 @@ public class AbilityManager : MonoBehaviour
 
     [SerializeField] private bool allowFirstAbility = false;
 
-    [SerializeField] private GameObject glitchHandVFX;
-
     private int currentIndex = 0;
     private Dictionary<string, GameObject> abilityMap = new Dictionary<string, GameObject>();
+    private VFXController vfxController;
 
     public List<GameObject> activedAbilities => activeAbilities;
     public GameObject CurrentAbility => activeAbilities.Count > 0 ? activeAbilities[currentIndex] : null;
 
     private void Awake()
     {
-        glitchHandVFX.gameObject.SetActive(false);
-
         foreach (var abilityGO in allAbilities)
         {
             var info = abilityGO.GetComponent<AbilityInfo>();
@@ -38,6 +35,8 @@ public class AbilityManager : MonoBehaviour
 
     private void Start()
     {
+        vfxController = FindObjectOfType<VFXController>();
+
         if (isLevel1) AbilityShopDataManager.ResetData();
 
         foreach (var ability in allAbilities)
@@ -86,20 +85,18 @@ public class AbilityManager : MonoBehaviour
         {
             CycleAbility();
         }
-
-        if (currentIndex == 1)
-        {
-            glitchHandVFX.gameObject.SetActive(true);
-        }
-        else
-        {
-            glitchHandVFX.gameObject.SetActive(false);
-        }
     }
 
     public void CycleAbility()
     {
         if (activeAbilities.Count <= 1) return;
+
+        if (vfxController != null)
+        {
+            vfxController.DeactivateAll();
+            vfxController.ActivateVFX(CurrentAbility.name);
+        }
+
         currentIndex = (currentIndex + 1) % activeAbilities.Count;
         SaveToDataStore();
         UpdateAbilitiesActiveState();

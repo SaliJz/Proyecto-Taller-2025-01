@@ -1,101 +1,259 @@
 using UnityEngine;
 
-[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
+[RequireComponent(typeof(MeshFilter))]
 public class CreadorColisionToro : MonoBehaviour
 {
-    [Header("Parametros del toro")]
-    public float radioMayor = 1f;     // distancia desde el centro al centro del tubo
-    public float radioMenor = 0.3f;   // radio del tubo
-    public int segmentosMayores = 24; // subdivisiones alrededor del anillo principal
-    public int segmentosMenores = 12; // subdivisiones del tubo
+    [Header("Parámetros del toro (iniciales)")]
+    public float radioMayor = 1f;
+    public float radioMenor = 0.3f;
+    public int segmentosMayores = 24;
+    public int segmentosMenores = 12;
 
-    [Header("Material")]
-    public Material materialToro;     // asignar un material (por ejemplo rojo) en el Inspector
+    private MeshFilter mf;
+    private MeshCollider colliderNoConvexo;
+
+    void Awake()
+    {
+        mf = GetComponent<MeshFilter>();
+
+        // collider físico cóncavo
+        colliderNoConvexo = gameObject.AddComponent<MeshCollider>();
+        colliderNoConvexo.convex = false;
+
+        // Crea hijos con CapsuleColliders para trigger
+        CreaTriggersCapsula();
+    }
 
     void Start()
     {
-        // Generar malla del toro
-        Mesh mallaToro = CrearMallaToro(radioMayor, radioMenor, segmentosMayores, segmentosMenores);
-
-        // Asignar a MeshFilter
-        MeshFilter mf = GetComponent<MeshFilter>();
-        mf.sharedMesh = mallaToro;
-
-        // Asignar material (se define en el Inspector)
-        MeshRenderer mr = GetComponent<MeshRenderer>();
-        if (materialToro != null)
-        {
-            mr.sharedMaterial = materialToro;
-        }
-        else
-        {
-            Debug.LogWarning("CreadorColisionToro: materialToro no asignado en el Inspector.");
-        }
-
-        // Asignar MeshCollider
-        MeshCollider mc = GetComponent<MeshCollider>();
-        mc.sharedMesh = mallaToro;
-        mc.convex = false;  // conservar el agujero del toro
+        RegeneraToro(radioMayor);
     }
 
-    Mesh CrearMallaToro(float R, float r, int segMay, int segMen)
+    public void ActualizarRadioMayor(float nuevoRadio)
     {
-        Mesh mesh = new Mesh { name = "ToroProcedural" };
+        RegeneraToro(nuevoRadio);
+        CreaTriggersCapsula();
+    }
 
-        int cuentaVertices = (segMay + 1) * (segMen + 1);
-        Vector3[] vertices = new Vector3[cuentaVertices];
-        Vector3[] normales = new Vector3[cuentaVertices];
-        Vector2[] uvs = new Vector2[cuentaVertices];
-        int[] triangulos = new int[segMay * segMen * 6];
+    private void RegeneraToro(float R)
+    {
+        var mesh = CrearMallaToro(R, radioMenor, segmentosMayores, segmentosMenores);
+        mesh.name = "ToroProcedural";
+        mf.sharedMesh = mesh;
+        colliderNoConvexo.sharedMesh = mesh;
+    }
 
-        float dosPi = Mathf.PI * 2f;
+    private Mesh CrearMallaToro(float R, float r, int segMay, int segMen)
+    {
+        Mesh mesh = new Mesh();
+        int vCount = (segMay + 1) * (segMen + 1);
+        var verts = new Vector3[vCount];
+        var norms = new Vector3[vCount];
+        var uvs = new Vector2[vCount];
+        var tris = new int[segMay * segMen * 6];
+
+        float TWO_PI = Mathf.PI * 2f;
         int vi = 0;
         for (int i = 0; i <= segMay; i++)
         {
-            float u = (float)i / segMay * dosPi;
-            Vector3 centro = new Vector3(Mathf.Cos(u) * R, 0f, Mathf.Sin(u) * R);
+            float u = i / (float)segMay * TWO_PI;
+            Vector3 center = new Vector3(Mathf.Cos(u) * R, 0f, Mathf.Sin(u) * R);
 
             for (int j = 0; j <= segMen; j++)
             {
-                float v = (float)j / segMen * dosPi;
-                Vector3 normal = new Vector3(
+                float v = j / (float)segMen * TWO_PI;
+                Vector3 n = new Vector3(
                     Mathf.Cos(u) * Mathf.Cos(v),
                     Mathf.Sin(v),
                     Mathf.Sin(u) * Mathf.Cos(v)
                 );
-                vertices[vi] = centro + normal * r;
-                normales[vi] = normal;
-                uvs[vi] = new Vector2((float)i / segMay, (float)j / segMen);
+                verts[vi] = center + n * r;
+                norms[vi] = n;
+                uvs[vi] = new Vector2(i / (float)segMay, j / (float)segMen);
                 vi++;
             }
         }
 
         int ti = 0;
-        int columnas = segMen + 1;
+        int cols = segMen + 1;
         for (int i = 0; i < segMay; i++)
         {
             for (int j = 0; j < segMen; j++)
             {
-                int actual = i * columnas + j;
-                int siguiente = (i + 1) * columnas + j;
+                int curr = i * cols + j;
+                int next = (i + 1) * cols + j;
 
-                // Dos triangulos por cada cuadrilatero
-                triangulos[ti++] = actual;
-                triangulos[ti++] = siguiente;
-                triangulos[ti++] = actual + 1;
+                tris[ti++] = curr;
+                tris[ti++] = next;
+                tris[ti++] = curr + 1;
 
-                triangulos[ti++] = actual + 1;
-                triangulos[ti++] = siguiente;
-                triangulos[ti++] = siguiente + 1;
+                tris[ti++] = curr + 1;
+                tris[ti++] = next;
+                tris[ti++] = next + 1;
             }
         }
 
-        mesh.vertices = vertices;
-        mesh.normals = normales;
+        mesh.vertices = verts;
+        mesh.normals = norms;
         mesh.uv = uvs;
-        mesh.triangles = triangulos;
+        mesh.triangles = tris;
         mesh.RecalculateBounds();
-
         return mesh;
     }
+
+    private void CreaTriggersCapsula()
+    {
+        // elimina hijos previos
+        for (int i = transform.childCount - 1; i >= 0; i--)
+            DestroyImmediate(transform.GetChild(i).gameObject);
+
+        float TWO_PI = Mathf.PI * 2f;
+        float paso = TWO_PI / segmentosMayores;
+        float altura = paso * radioMayor + 2f * radioMenor;
+
+        for (int i = 0; i < segmentosMayores; i++)
+        {
+            float u = i * paso;
+            Vector3 center = new Vector3(Mathf.Cos(u) * radioMayor, 0f, Mathf.Sin(u) * radioMayor);
+            Vector3 tangent = new Vector3(-Mathf.Sin(u), 0f, Mathf.Cos(u));
+
+            var go = new GameObject("TriggerCapsula_" + i);
+            go.transform.SetParent(transform, false);
+            go.transform.localPosition = center;
+            go.transform.localRotation = Quaternion.LookRotation(tangent, Vector3.up);
+
+            var cap = go.AddComponent<CapsuleCollider>();
+            cap.direction = 2;           // eje Z local
+            cap.isTrigger = true;
+            cap.radius = radioMenor;
+            cap.height = altura;
+        }
+    }
 }
+
+
+
+
+
+
+
+
+//using UnityEngine;
+
+//[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
+//public class CreadorColisionToro : MonoBehaviour
+//{
+//    [Header("Parámetros del toro (iniciales)")]
+//    public float radioMayor = 1f;
+//    public float radioMenor = 0.3f;
+//    public int segmentosMayores = 24;
+//    public int segmentosMenores = 12;
+
+//    private MeshFilter mf;
+//    private MeshCollider colliderNoConvexo;
+//    private MeshCollider colliderTrigger;
+//    private float radioMayorInicial;
+
+//    void Awake()
+//    {
+//        mf = GetComponent<MeshFilter>();
+//        // Collider físico (no convexo)
+//        colliderNoConvexo = gameObject.AddComponent<MeshCollider>();
+//        colliderNoConvexo.convex = false;
+//        // Collider trigger (convexo)
+//        colliderTrigger = gameObject.AddComponent<MeshCollider>();
+//        colliderTrigger.convex = true;
+//        colliderTrigger.isTrigger = true;
+//        radioMayorInicial = radioMayor;
+//    }
+
+//    void Start()
+//    {
+//        RegeneraToro(radioMayorInicial);
+//    }
+
+//    public void ActualizarRadioMayor(float nuevoRadioMayor)
+//    {
+//        RegeneraToro(nuevoRadioMayor);
+//    }
+
+//    private void RegeneraToro(float R)
+//    {
+//        Mesh mallaToro = CrearMallaToro(R, radioMenor, segmentosMayores, segmentosMenores);
+
+//        mf.sharedMesh = mallaToro;
+
+//        // Actualizar collider físico
+//        colliderNoConvexo.sharedMesh = mallaToro;
+
+//        // Actualizar trigger collider
+//        colliderTrigger.sharedMesh = mallaToro;
+//    }
+
+//    private Mesh CrearMallaToro(float R, float r, int segMay, int segMen)
+//    {
+//        Mesh mesh = new Mesh { name = "ToroProcedural" };
+//        int vCount = (segMay + 1) * (segMen + 1);
+//        Vector3[] vertices = new Vector3[vCount];
+//        Vector3[] normales = new Vector3[vCount];
+//        Vector2[] uvs = new Vector2[vCount];
+//        int[] tris = new int[segMay * segMen * 6];
+
+//        float TWO_PI = Mathf.PI * 2f;
+//        int vi = 0;
+//        for (int i = 0; i <= segMay; i++)
+//        {
+//            float u = (float)i / segMay * TWO_PI;
+//            Vector3 center = new Vector3(Mathf.Cos(u) * R, 0f, Mathf.Sin(u) * R);
+
+//            for (int j = 0; j <= segMen; j++)
+//            {
+//                float v = (float)j / segMen * TWO_PI;
+//                Vector3 normal = new Vector3(
+//                    Mathf.Cos(u) * Mathf.Cos(v),
+//                    Mathf.Sin(v),
+//                    Mathf.Sin(u) * Mathf.Cos(v)
+//                );
+//                vertices[vi] = center + normal * r;
+//                normales[vi] = normal;
+//                uvs[vi] = new Vector2((float)i / segMay, (float)j / segMen);
+//                vi++;
+//            }
+//        }
+
+//        int ti = 0;
+//        int cols = segMen + 1;
+//        for (int i = 0; i < segMay; i++)
+//        {
+//            for (int j = 0; j < segMen; j++)
+//            {
+//                int current = i * cols + j;
+//                int next = (i + 1) * cols + j;
+
+//                tris[ti++] = current;
+//                tris[ti++] = next;
+//                tris[ti++] = current + 1;
+//                tris[ti++] = current + 1;
+//                tris[ti++] = next;
+//                tris[ti++] = next + 1;
+//            }
+//        }
+
+//        mesh.vertices = vertices;
+//        mesh.normals = normales;
+//        mesh.uv = uvs;
+//        mesh.triangles = tris;
+//        mesh.RecalculateBounds();
+//        return mesh;
+//    }
+//}
+
+
+
+
+
+
+
+
+
+

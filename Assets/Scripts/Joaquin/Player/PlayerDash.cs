@@ -86,11 +86,10 @@ public class PlayerDash : MonoBehaviour
             virtualCam.m_Lens.FieldOfView = Mathf.Lerp(currentFov, targetFov, Time.deltaTime * fovTransitionSpeed);
         }
 
-        float vertical = Input.GetAxisRaw("Vertical");
+        // bool isMovingForward = vertical > 0.1f;
 
-        bool isMovingForward = vertical > 0.1f;
-
-        if (Input.GetKeyDown(dashKey) && canDash && !isDashing && isMovingForward)
+        // Modifica la condición del if:
+        if (Input.GetKeyDown(dashKey) && canDash && !isDashing)
         {
             Vector3 dashDirection = GetDashDirection();
             if (IsPathClear(dashDirection, dashCollisionCheckDistance))
@@ -144,6 +143,8 @@ public class PlayerDash : MonoBehaviour
     {
         if (dashEffect != null) dashEffect?.Play();
         if (sfxSource != null && dashSound != null) sfxSource.PlayOneShot(dashSound);
+
+        PlayerAnimatorController.Instance?.PlayDashAnim();
 
         isDashing = true;
         canDash = false;

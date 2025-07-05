@@ -23,6 +23,9 @@ public class ElectroHackAbility : MonoBehaviour
     [SerializeField] private float baseRadius = 5f;
     [SerializeField] private LayerMask targetLayer;
 
+    [Header("Animation")]
+    [SerializeField] private int abilityAnimationID = 1;
+
     private float currentCooldown;
     private float currentDuration;
     private float currentEnemiesAffected;
@@ -107,6 +110,8 @@ public class ElectroHackAbility : MonoBehaviour
         canUse = false;
         currentCooldownTimer = currentCooldown;
         HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
+
+        PlayerAnimatorController.Instance?.PlayFireAbilityAnim(abilityAnimationID);
 
         Vector3 direction = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f)).direction;
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));

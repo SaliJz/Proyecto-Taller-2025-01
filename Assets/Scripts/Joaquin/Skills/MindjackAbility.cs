@@ -18,6 +18,9 @@ public class MindjackAbility : MonoBehaviour
     [SerializeField] private float baseDuration = 3f;
     [SerializeField] private float baseRadius = 5f;
 
+    [Header("Animation")]
+    [SerializeField] private int abilityAnimationID = 2;
+
     private float currentCooldown;
     private float currentDamagePerSecond;
 
@@ -94,6 +97,8 @@ public class MindjackAbility : MonoBehaviour
         canUse = false;
         currentCooldownTimer = currentCooldown;
         HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
+
+        PlayerAnimatorController.Instance?.PlayFireAbilityAnim(abilityAnimationID);
 
         Vector3 direction = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f)).direction;
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));

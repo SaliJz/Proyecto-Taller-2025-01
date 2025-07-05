@@ -12,14 +12,15 @@ public class WeaponManager : MonoBehaviour
 
     [Header("Configuración de Animación por codigo")]
     [SerializeField] private bool useProceduralAnimations = true;
+    [SerializeField] private bool useAnimatorAnimations;
 
     [Header("Configuración de control de cambio")]
     [SerializeField] private bool canChangeWeapon = true;
+    [SerializeField] private bool canEquipFirstWeapon = true;
 
     private int currentIndex = 0;
     private Vector3[] originalModelPositions;
-
-    [SerializeField] private bool canEquipFirstWeapon=true;
+    private VFXController vfxController;
 
     public bool CanChangeWeapon
     {
@@ -35,6 +36,8 @@ public class WeaponManager : MonoBehaviour
 
     private void Start()
     {
+        vfxController = FindObjectOfType<VFXController>();
+
         originalModelPositions = new Vector3[weaponModels.Length];
         for (int i = 0; i < weaponModels.Length; i++)
         {
@@ -50,11 +53,8 @@ public class WeaponManager : MonoBehaviour
         {
             EquipWeaponInstant(savedIndex);
         }
-       
-
     }
 
-    
     private void Update()
     {
         if (!canChangeWeapon) return;           
@@ -78,6 +78,12 @@ public class WeaponManager : MonoBehaviour
     {
         if (!canChangeWeapon || index == currentIndex || index < 0 || index >= weapons.Length) return;
 
+        if (vfxController != null)
+        {
+            vfxController.DeactivateAll();
+            vfxController.ActivateVFX(index.ToString());
+        }
+
         PlayerPrefs.SetInt("LastWeaponIndex", index);
 
         if (weapons[currentIndex].IsReloading)
@@ -87,7 +93,11 @@ public class WeaponManager : MonoBehaviour
 
         if (useProceduralAnimations)
         {
-            StartCoroutine(SwitchWeaponAnimation(index));
+            StartCoroutine(SwitchWeaponProceduralAnimation(index));
+        }
+        else if (useAnimatorAnimations)
+        {
+            StartCoroutine(SwitchWeaponAnimatorAnimation(index));
         }
         else
         {
@@ -95,7 +105,33 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
-    private IEnumerator SwitchWeaponAnimation(int newIndex)
+    private IEnumerator SwitchWeaponAnimatorAnimation(int newIndex)
+    {
+        canChangeWeapon = false;
+
+        PlayerAnimatorController.Instance?.PlaySwitchWeaponAnim(newIndex); // establece ID y bool
+
+        yield return new WaitForSeconds(0.1f); // da tiempo a que el Animator evalúe el blend
+
+        weapons[currentIndex].gameObject.SetActive(false);
+        weaponModels[currentIndex].SetActive(false);
+
+        currentIndex = newIndex;
+
+        weapons[currentIndex].gameObject.SetActive(true);
+        weaponModels[currentIndex].SetActive(true);
+
+        yield return new WaitForSeconds(0.1f);
+
+        //PlayerAnimatorController.Instance?.StopSwitchWeaponAnim(); // método que desactiva el bool
+
+        Weapon newWeapon = weapons[currentIndex];
+        UpdateHUD(newWeapon);
+
+        canChangeWeapon = true;
+    }
+
+    private IEnumerator SwitchWeaponProceduralAnimation(int newIndex)
     {
         canChangeWeapon = false;
 

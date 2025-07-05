@@ -1,54 +1,104 @@
-using UnityEngine;
+锘縰sing UnityEngine;
 
 public class EscaladoRotacionSuave : MonoBehaviour
 {
-    [Header("Configuraci髇 de Escalado")]
-    public float escalaVelocidad = 1f;    // Velocidad del escalado
-    public float escalaAmplitud = 0.5f;   // Rango m醲imo de escalado
-    public bool escaladoActivo = true;    // Activar/desactivar escalado
+    [Header("Referencia al Toro Procedural")]
+    [Tooltip("Arrastra aqu铆 tu componente CreadorColisionToro")]
+    public CreadorColisionToro toro;
 
-    [Header("Configuraci髇 de Rotaci髇 (Eje Y)")]
-    public float velocidadRotacion = 30f; // Velocidad de rotaci髇 en grados/segundo
-    public bool rotacionActiva = true;    // Activar/desactivar rotaci髇
+    [Header("Pulsaci贸n del Radio Mayor")]
+    [Tooltip("Velocidad a la que sube y baja el radio")]
+    public float escalaVelocidad = 1f;
+    [Tooltip("M谩xima variaci贸n del radio mayor")]
+    public float escalaAmplitud = 0.5f;
 
-    private Vector3 escalaInicial;
-    private Vector3 escalaObjetivo;
+    [Header("Rotaci贸n en Eje Y")]
+    [Tooltip("Grados por segundo")]
+    public float velocidadRotacion = 30f;
+    public bool rotacionActiva = true;
+
+    private float radioInicial;
 
     void Start()
     {
-        // Guardar la escala inicial del objeto
-        escalaInicial = transform.localScale;
+        if (toro == null)
+        {
+            Debug.LogError("EscaladoRotacionSuave: debes asignar CreadorColisionToro en el Inspector.");
+            enabled = false;
+            return;
+        }
+        // Guardamos el valor original para pulsar alrededor de 茅l
+        radioInicial = toro.radioMayor;
     }
 
     void Update()
     {
-        // Escalado pulsante en X y Z
-        if (escaladoActivo)
-        {
-            float factorEscala = Mathf.Sin(Time.time * escalaVelocidad) * escalaAmplitud;
-            transform.localScale = new Vector3(
-                escalaInicial.x + factorEscala,
-                escalaInicial.y,
-                escalaInicial.z + factorEscala
-            );
-        }
+        // Calcula un factor oscilante entre 0 y escalaAmplitud
+        float factor = Mathf.PingPong(Time.time * escalaVelocidad, escalaAmplitud);
 
-        // Rotaci髇 continua en el eje Y
+        // Aplica solo al radio mayor del toro, **no al transform.localScale**
+        toro.ActualizarRadioMayor(radioInicial + factor);
+
+        // Rotaci贸n pura del GameObject, sin modificar escala
         if (rotacionActiva)
-        {
-            transform.Rotate(Vector3.up, velocidadRotacion * Time.deltaTime);
-        }
-    }
-
-    // M閠odos para controlar los efectos desde otros scripts
-    public void ToggleEscalado(bool estado)
-    {
-        escaladoActivo = estado;
-        if (!estado) transform.localScale = escalaInicial;
-    }
-
-    public void ToggleRotacion(bool estado)
-    {
-        rotacionActiva = estado;
+            transform.Rotate(Vector3.up, velocidadRotacion * Time.deltaTime, Space.World);
     }
 }
+
+
+
+
+
+//using UnityEngine;
+
+//public class EscaladoRotacionSuave : MonoBehaviour
+//{
+//    [Header("Configuraci贸n de Escalado (Radio Mayor)")]
+//    [Tooltip("Arrastra aqu铆 tu CreadorColisionToro")]
+//    public CreadorColisionToro toro;
+//    [Tooltip("Velocidad a la que sube y baja el radio")]
+//    public float escalaVelocidad = 1f;
+//    [Tooltip("M谩xima variaci贸n del radio mayor")]
+//    public float escalaAmplitud = 0.5f;
+
+//    [Header("Configuraci贸n de Rotaci贸n (Eje Y)")]
+//    public float velocidadRotacion = 30f;
+//    public bool rotacionActiva = true;
+
+//    private float radioInicial;
+
+//    void Awake()
+//    {
+//        // Si existe un Rigidbody, hazlo cinem谩tico para permitir MeshCollider c贸ncavo
+//        var rb = GetComponent<Rigidbody>();
+//        if (rb != null)
+//            rb.isKinematic = true;
+//    }
+
+//    void Start()
+//    {
+//        if (toro == null)
+//        {
+//            Debug.LogError("EscaladoRotacionSuave: asigna el componente CreadorColisionToro en el Inspector.");
+//            enabled = false;
+//            return;
+//        }
+//        radioInicial = toro.radioMayor;
+//    }
+
+//    void Update()
+//    {
+//        float factor = Mathf.PingPong(Time.time * escalaVelocidad, escalaAmplitud);
+//        float nuevoRadio = radioInicial + factor;
+//        toro.ActualizarRadioMayor(nuevoRadio);
+
+//        if (rotacionActiva)
+//            transform.Rotate(Vector3.up, velocidadRotacion * Time.deltaTime, Space.World);
+//    }
+//}
+
+
+
+
+
+

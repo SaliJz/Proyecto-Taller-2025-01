@@ -20,6 +20,9 @@ public class IgnitionCodeAbility : MonoBehaviour
     [SerializeField] private float baseRadius = 3f;
     [SerializeField] private LayerMask enemyLayer;
 
+    [Header("Animation")]
+    [SerializeField] private int abilityAnimationID = 1;
+
     private float currentCooldown;
     private float currentDuration;
     private float currentRadius;
@@ -103,6 +106,8 @@ public class IgnitionCodeAbility : MonoBehaviour
         canUse = false;
         currentCooldownTimer = currentCooldown;
         HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
+
+        PlayerAnimatorController.Instance?.PlayFireAbilityAnim(abilityAnimationID);
 
         Vector3 direction = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f)).direction;
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.LookRotation(direction));

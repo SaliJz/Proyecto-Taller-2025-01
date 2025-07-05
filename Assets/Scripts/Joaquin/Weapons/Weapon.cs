@@ -60,6 +60,7 @@ public class Weapon : MonoBehaviour
     private float nextAllowedShotTime = 0f;
     private Vector3 originalModelPosition;
     private int ammoReloadedThisCycle = 0;
+    private WeaponManager weaponManager;
 
     #endregion
 
@@ -67,6 +68,7 @@ public class Weapon : MonoBehaviour
 
     private void Awake()
     {
+        if (weaponManager == null) weaponManager = GetComponentInParent<WeaponManager>();
         if (playerCamera == null) playerCamera = Camera.main;
         if (sfxSource == null) sfxSource = GameObject.Find("SFXSource")?.GetComponent<AudioSource>();
         if (weaponModelTransform != null)
@@ -205,6 +207,7 @@ public class Weapon : MonoBehaviour
 
     private bool CanShoot()
     {
+        if (weaponManager != null && !weaponManager.CanChangeWeapon) return false;
         if (isReloading) return false;
         if (Time.time < nextAllowedShotTime) return false;
 

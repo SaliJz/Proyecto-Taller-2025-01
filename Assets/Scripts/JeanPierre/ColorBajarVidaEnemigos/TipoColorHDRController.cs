@@ -1,13 +1,14 @@
-// TipoColorHDRController.cs
+ï»¿// TipoColorHDRController.cs
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class TipoColorHDRController : MonoBehaviour
 {
     public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
 
-    [Header("Configuración")]
+    [Header("ConfiguraciÃ³n")]
     public float intervaloCambio = 10f;
     public float duracionTransicionColor = 1f;
     public int blinkCount = 4;
@@ -30,7 +31,6 @@ public class TipoColorHDRController : MonoBehaviour
     {
         yield return new WaitForSeconds(delayInicial);
 
-        // Recolecta todos los SkinnedMeshRenderer en este objeto y sus hijos
         skinnedRenderers.AddRange(GetComponentsInChildren<SkinnedMeshRenderer>());
 
         ActualizarTipoYColor();
@@ -45,7 +45,7 @@ public class TipoColorHDRController : MonoBehaviour
         // Ametralladora = azul, Pistola = verde, Escopeta = rojo
         Color targetColor = currentTipo == TipoEnemigo.Ametralladora ? Color.blue
                           : currentTipo == TipoEnemigo.Pistola ? Color.green
-                          : /* Escopeta */                         Color.red;
+                          : /* Escopeta */                            Color.red;
 
         if (colorRoutine != null)
             StopCoroutine(colorRoutine);
@@ -54,24 +54,44 @@ public class TipoColorHDRController : MonoBehaviour
 
     private IEnumerator CambiarColorSuave(Color targetColor)
     {
-        float elapsed = 0f;
-        Color startColor = skinnedRenderers.Count > 0 ? skinnedRenderers[0].sharedMaterial.color : Color.white;
+        // Determina quÃ© renderizadores soportan la propiedad "_Color"
+        var supportsColor = skinnedRenderers
+            .Select(r => r.material.HasProperty("_Color"))
+            .ToList();
 
+        // Obtiene colores iniciales por renderer
+        var baseColors = skinnedRenderers
+            .Select((r, i) => supportsColor[i]
+                ? r.material.GetColor("_Color")
+                : Color.white)
+            .ToList();
+
+        // Color de inicio para lerp
+        Color startColor = baseColors.FirstOrDefault();
+
+        float elapsed = 0f;
         while (elapsed < duracionTransicionColor)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duracionTransicionColor);
             Color lerpCol = Color.Lerp(startColor, targetColor, t);
-            foreach (var rend in skinnedRenderers)
+
+            for (int i = 0; i < skinnedRenderers.Count; i++)
             {
-                // Asegúrate de usar instancias si modificas material en tiempo de ejecución
-                rend.material.color = lerpCol;
+                var rend = skinnedRenderers[i];
+                if (supportsColor[i])
+                    rend.material.SetColor("_Color", lerpCol);
             }
             yield return null;
         }
 
-        foreach (var rend in skinnedRenderers)
-            rend.material.color = targetColor;
+        // Asegura color final
+        for (int i = 0; i < skinnedRenderers.Count; i++)
+        {
+            var rend = skinnedRenderers[i];
+            if (supportsColor[i])
+                rend.material.SetColor("_Color", targetColor);
+        }
     }
 
     public void RecibirDanio(float d)
@@ -85,38 +105,49 @@ public class TipoColorHDRController : MonoBehaviour
     {
         isBlinking = true;
 
-        List<Color> baseColors = new List<Color>();
-        List<Color> baseHDR = new List<Color>();
+        // Detecta soporte para _Color y _EmissionColor
+        var supportsColor = skinnedRenderers
+            .Select(r => r.material.HasProperty("_Color"))
+            .ToList();
+        var supportsHDR = skinnedRenderers
+            .Select(r => r.material.HasProperty("_EmissionColor"))
+            .ToList();
 
-        foreach (var rend in skinnedRenderers)
-        {
-            baseColors.Add(rend.material.color);
-            if (rend.material.HasProperty("_EmissionColor"))
-                baseHDR.Add(rend.material.GetColor("_EmissionColor"));
-            else
-                baseHDR.Add(Color.black);
-        }
+        // Guarda valores originales
+        var baseColors = skinnedRenderers
+            .Select((r, i) => supportsColor[i]
+                ? r.material.GetColor("_Color")
+                : Color.white)
+            .ToList();
+        var baseHDR = skinnedRenderers
+            .Select((r, i) => supportsHDR[i]
+                ? r.material.GetColor("_EmissionColor")
+                : Color.black)
+            .ToList();
 
         float half = blinkInterval * 0.5f;
 
         for (int i = 0; i < blinkCount; i++)
         {
-            // Blanco
-            foreach (var rend in skinnedRenderers)
+            // Parpadeo a blanco
+            for (int j = 0; j < skinnedRenderers.Count; j++)
             {
-                rend.material.color = Color.white;
-                if (rend.material.HasProperty("_EmissionColor"))
+                var rend = skinnedRenderers[j];
+                if (supportsColor[j])
+                    rend.material.SetColor("_Color", Color.white);
+                if (supportsHDR[j])
                     rend.material.SetColor("_EmissionColor", Color.white);
             }
             yield return new WaitForSeconds(half);
 
-            // Restaurar
-            for (int idx = 0; idx < skinnedRenderers.Count; idx++)
+            // Restaurar valores originales
+            for (int j = 0; j < skinnedRenderers.Count; j++)
             {
-                var rend = skinnedRenderers[idx];
-                rend.material.color = baseColors[idx];
-                if (rend.material.HasProperty("_EmissionColor"))
-                    rend.material.SetColor("_EmissionColor", baseHDR[idx]);
+                var rend = skinnedRenderers[j];
+                if (supportsColor[j])
+                    rend.material.SetColor("_Color", baseColors[j]);
+                if (supportsHDR[j])
+                    rend.material.SetColor("_EmissionColor", baseHDR[j]);
             }
             yield return new WaitForSeconds(half);
         }
@@ -124,6 +155,235 @@ public class TipoColorHDRController : MonoBehaviour
         isBlinking = false;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//// TipoColorHDRController.cs
+//using UnityEngine;
+//using System.Collections;
+//using System.Collections.Generic;
+//using System.Linq;
+
+//public class TipoColorHDRController : MonoBehaviour
+//{
+//    public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
+
+//    [Header("ConfiguraciÃ³n")]
+//    public float intervaloCambio = 10f;
+//    public float duracionTransicionColor = 1f;
+//    public int blinkCount = 4;
+//    public float blinkInterval = 0.1f;
+//    public float delayInicial = 0.6f; // Espera antes de asignar SkinnedMeshRenderers
+
+//    private TipoEnemigo currentTipo;
+//    public TipoEnemigo CurrentTipo => currentTipo;
+
+//    private List<SkinnedMeshRenderer> skinnedRenderers = new List<SkinnedMeshRenderer>();
+//    private Coroutine colorRoutine;
+//    private bool isBlinking = false;
+
+//    void Start()
+//    {
+//        StartCoroutine(InicializarConRetraso());
+//    }
+
+//    private IEnumerator InicializarConRetraso()
+//    {
+//        yield return new WaitForSeconds(delayInicial);
+
+//        skinnedRenderers.AddRange(GetComponentsInChildren<SkinnedMeshRenderer>());
+
+//        ActualizarTipoYColor();
+//        InvokeRepeating(nameof(ActualizarTipoYColor), intervaloCambio, intervaloCambio);
+//    }
+
+//    private void ActualizarTipoYColor()
+//    {
+//        int rand = Random.Range(0, System.Enum.GetValues(typeof(TipoEnemigo)).Length);
+//        currentTipo = (TipoEnemigo)rand;
+
+//        // Ametralladora = azul, Pistola = verde, Escopeta = rojo
+//        Color targetColor = currentTipo == TipoEnemigo.Ametralladora ? Color.blue
+//                          : currentTipo == TipoEnemigo.Pistola ? Color.green
+//                          : /* Escopeta */                            Color.red;
+
+//        if (colorRoutine != null)
+//            StopCoroutine(colorRoutine);
+//        colorRoutine = StartCoroutine(CambiarColorSuave(targetColor));
+//    }
+
+//    private IEnumerator CambiarColorSuave(Color targetColor)
+//    {
+//        // Determina quÃ© renderizadores soportan la propiedad "_Color"
+//        var supportsColor = skinnedRenderers
+//            .Select(r => r.material.HasProperty("_Color"))
+//            .ToList();
+
+//        // Obtiene colores iniciales por renderer
+//        var baseColors = skinnedRenderers
+//            .Select((r, i) => supportsColor[i]
+//                ? r.material.GetColor("_Color")
+//                : Color.white)
+//            .ToList();
+
+//        // Color de inicio para lerp
+//        Color startColor = baseColors.FirstOrDefault();
+
+//        float elapsed = 0f;
+//        while (elapsed < duracionTransicionColor)
+//        {
+//            elapsed += Time.deltaTime;
+//            float t = Mathf.Clamp01(elapsed / duracionTransicionColor);
+//            Color lerpCol = Color.Lerp(startColor, targetColor, t);
+
+//            for (int i = 0; i < skinnedRenderers.Count; i++)
+//            {
+//                var rend = skinnedRenderers[i];
+//                if (supportsColor[i])
+//                    rend.material.SetColor("_Color", lerpCol);
+//            }
+//            yield return null;
+//        }
+
+//        // Asegura color final
+//        for (int i = 0; i < skinnedRenderers.Count; i++)
+//        {
+//            var rend = skinnedRenderers[i];
+//            if (supportsColor[i])
+//                rend.material.SetColor("_Color", targetColor);
+//        }
+//    }
+
+//    public void RecibirDanio(float d)
+//    {
+//        if (isBlinking) return;
+//        StartCoroutine(Parpadeo());
+//        // Procesar vida si es necesario
+//    }
+
+//    private IEnumerator Parpadeo()
+//    {
+//        isBlinking = true;
+
+//        // Detecta soporte para _Color y _EmissionColor
+//        var supportsColor = skinnedRenderers
+//            .Select(r => r.material.HasProperty("_Color"))
+//            .ToList();
+//        var supportsHDR = skinnedRenderers
+//            .Select(r => r.material.HasProperty("_EmissionColor"))
+//            .ToList();
+
+//        // Guarda valores originales
+//        var baseColors = skinnedRenderers
+//            .Select((r, i) => supportsColor[i]
+//                ? r.material.GetColor("_Color")
+//                : Color.white)
+//            .ToList();
+//        var baseHDR = skinnedRenderers
+//            .Select((r, i) => supportsHDR[i]
+//                ? r.material.GetColor("_EmissionColor")
+//                : Color.black)
+//            .ToList();
+
+//        float half = blinkInterval * 0.5f;
+
+//        for (int i = 0; i < blinkCount; i++)
+//        {
+//            // Parpadeo a blanco
+//            for (int j = 0; j < skinnedRenderers.Count; j++)
+//            {
+//                var rend = skinnedRenderers[j];
+//                if (supportsColor[j])
+//                    rend.material.SetColor("_Color", Color.white);
+//                if (supportsHDR[j])
+//                    rend.material.SetColor("_EmissionColor", Color.white);
+//            }
+//            yield return new WaitForSeconds(half);
+
+//            // Restaurar valores originales
+//            for (int j = 0; j < skinnedRenderers.Count; j++)
+//            {
+//                var rend = skinnedRenderers[j];
+//                if (supportsColor[j])
+//                    rend.material.SetColor("_Color", baseColors[j]);
+//                if (supportsHDR[j])
+//                    rend.material.SetColor("_EmissionColor", baseHDR[j]);
+//            }
+//            yield return new WaitForSeconds(half);
+//        }
+
+//        isBlinking = false;
+//    }
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -146,52 +406,46 @@ public class TipoColorHDRController : MonoBehaviour
 //{
 //    public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
 
-//    [Header("Configuración")]
+//    [Header("ConfiguraciÃ³n")]
 //    public float intervaloCambio = 10f;
 //    public float duracionTransicionColor = 1f;
 //    public int blinkCount = 4;
 //    public float blinkInterval = 0.1f;
-//    public float delayInicial = 0.6f; // Espera antes de asignar MeshRenderers
+//    public float delayInicial = 0.6f; // Espera antes de asignar SkinnedMeshRenderers
 
-//    // currentTipo se mantiene privado, pero se expone mediante una propiedad pública de solo lectura
 //    private TipoEnemigo currentTipo;
 //    public TipoEnemigo CurrentTipo => currentTipo;
 
-//    private List<MeshRenderer> meshRenderers = new List<MeshRenderer>();
+//    private List<SkinnedMeshRenderer> skinnedRenderers = new List<SkinnedMeshRenderer>();
 //    private Coroutine colorRoutine;
 //    private bool isBlinking = false;
 
 //    void Start()
 //    {
-//        // Inicia inicialización retardada
 //        StartCoroutine(InicializarConRetraso());
 //    }
 
 //    private IEnumerator InicializarConRetraso()
 //    {
-//        // Espera delayInicial segundos antes de recolectar MeshRenderers y comenzar
 //        yield return new WaitForSeconds(delayInicial);
 
-//        // Recolecta todos los MeshRenderer en este objeto y sus hijos
-//        meshRenderers.AddRange(GetComponentsInChildren<MeshRenderer>());
+//        // Recolecta todos los SkinnedMeshRenderer en este objeto y sus hijos
+//        skinnedRenderers.AddRange(GetComponentsInChildren<SkinnedMeshRenderer>());
 
-//        // Inicializa color basado en tipo inicial y programa cambios periódicos
 //        ActualizarTipoYColor();
 //        InvokeRepeating(nameof(ActualizarTipoYColor), intervaloCambio, intervaloCambio);
 //    }
 
 //    private void ActualizarTipoYColor()
 //    {
-//        // Selecciona un tipo aleatorio
 //        int rand = Random.Range(0, System.Enum.GetValues(typeof(TipoEnemigo)).Length);
 //        currentTipo = (TipoEnemigo)rand;
 
-//        // Determina color destino según tipo
+//        // Ametralladora = azul, Pistola = verde, Escopeta = rojo
 //        Color targetColor = currentTipo == TipoEnemigo.Ametralladora ? Color.blue
-//                          : currentTipo == TipoEnemigo.Pistola ? Color.red
-//                          : Color.green;
+//                          : currentTipo == TipoEnemigo.Pistola ? Color.green
+//                          : /* Escopeta */                         Color.red;
 
-//        // Inicia transición suave
 //        if (colorRoutine != null)
 //            StopCoroutine(colorRoutine);
 //        colorRoutine = StartCoroutine(CambiarColorSuave(targetColor));
@@ -200,20 +454,22 @@ public class TipoColorHDRController : MonoBehaviour
 //    private IEnumerator CambiarColorSuave(Color targetColor)
 //    {
 //        float elapsed = 0f;
-//        Color startColor = meshRenderers.Count > 0 ? meshRenderers[0].material.color : Color.white;
+//        Color startColor = skinnedRenderers.Count > 0 ? skinnedRenderers[0].sharedMaterial.color : Color.white;
 
 //        while (elapsed < duracionTransicionColor)
 //        {
 //            elapsed += Time.deltaTime;
 //            float t = Mathf.Clamp01(elapsed / duracionTransicionColor);
 //            Color lerpCol = Color.Lerp(startColor, targetColor, t);
-//            foreach (var rend in meshRenderers)
+//            foreach (var rend in skinnedRenderers)
+//            {
+//                // AsegÃºrate de usar instancias si modificas material en tiempo de ejecuciÃ³n
 //                rend.material.color = lerpCol;
+//            }
 //            yield return null;
 //        }
 
-//        // Asegura color final exacto
-//        foreach (var rend in meshRenderers)
+//        foreach (var rend in skinnedRenderers)
 //            rend.material.color = targetColor;
 //    }
 
@@ -221,23 +477,19 @@ public class TipoColorHDRController : MonoBehaviour
 //    {
 //        if (isBlinking) return;
 //        StartCoroutine(Parpadeo());
-//        // Aquí podrías procesar la resta de vida si fuera necesario
+//        // Procesar vida si es necesario
 //    }
 
 //    private IEnumerator Parpadeo()
 //    {
 //        isBlinking = true;
 
-//        // Guardamos los colores base (difuso) y HDR (emisión) de cada MeshRenderer
 //        List<Color> baseColors = new List<Color>();
 //        List<Color> baseHDR = new List<Color>();
 
-//        foreach (var rend in meshRenderers)
+//        foreach (var rend in skinnedRenderers)
 //        {
-//            // Color difuso
 //            baseColors.Add(rend.material.color);
-
-//            // Color HDR (emisión); si no existe la propiedad, guardamos negro
 //            if (rend.material.HasProperty("_EmissionColor"))
 //                baseHDR.Add(rend.material.GetColor("_EmissionColor"));
 //            else
@@ -248,8 +500,8 @@ public class TipoColorHDRController : MonoBehaviour
 
 //        for (int i = 0; i < blinkCount; i++)
 //        {
-//            // 1) Ponemos difuso = blanco y HDR = blanco
-//            foreach (var rend in meshRenderers)
+//            // Blanco
+//            foreach (var rend in skinnedRenderers)
 //            {
 //                rend.material.color = Color.white;
 //                if (rend.material.HasProperty("_EmissionColor"))
@@ -257,10 +509,10 @@ public class TipoColorHDRController : MonoBehaviour
 //            }
 //            yield return new WaitForSeconds(half);
 
-//            // 2) Restauramos difuso y HDR originales
-//            for (int idx = 0; idx < meshRenderers.Count; idx++)
+//            // Restaurar
+//            for (int idx = 0; idx < skinnedRenderers.Count; idx++)
 //            {
-//                var rend = meshRenderers[idx];
+//                var rend = skinnedRenderers[idx];
 //                rend.material.color = baseColors[idx];
 //                if (rend.material.HasProperty("_EmissionColor"))
 //                    rend.material.SetColor("_EmissionColor", baseHDR[idx]);
@@ -271,3 +523,14 @@ public class TipoColorHDRController : MonoBehaviour
 //        isBlinking = false;
 //    }
 //}
+
+
+
+
+
+
+
+
+
+
+
