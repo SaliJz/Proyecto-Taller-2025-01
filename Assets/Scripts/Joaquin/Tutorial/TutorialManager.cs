@@ -138,7 +138,7 @@ public class TutorialManager : MonoBehaviour
         }
         foreach (var dialogue in runtimeScene.tutorialSceneData.dialogues)
         {
-            if (dialogue.dialogueText != null)
+            if (dialogue.dialogueText != null)  
             {
                SetTextUI(dialogue.dialogueText);
             }
@@ -238,8 +238,16 @@ public class TutorialManager : MonoBehaviour
     }
     public ActivationType GetCurrentSceneActivationType()
     {
-        return tutorialScenes[currentSceneIndex].tutorialSceneData.activationType;
+        if (currentSceneIndex < tutorialScenes.Count)
+        {
+            return tutorialScenes[currentSceneIndex].tutorialSceneData.activationType;
+        }
+        else
+        {
+            return ActivationType.ByKills;
+        }
     }
+
     private void SelectCameraToRender(int indexCamera)
     {
         ReturnCamerasToDefault();

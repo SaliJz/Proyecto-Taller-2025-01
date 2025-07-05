@@ -185,7 +185,8 @@ public class MissionManager : MonoBehaviour
         if (!activeMission) return;
         activeMission = false;
 
-        spawner.StopAndClearSpawner();
+        spawner?.StopAndClearSpawner();
+
         // Desactivar zonas, etc. si es necesario
         if (currentMode == MissionMode.ElUnico)
         {

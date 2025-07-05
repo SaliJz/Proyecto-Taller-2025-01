@@ -107,7 +107,7 @@ public class TutorialSceneController : MonoBehaviour
             foreach (var enemy in normalEnemies)
             {
                 enemy.SetActive(true);
-                yield return new WaitForSeconds(0.5f);
+                //yield return new WaitForSeconds(0.5f);
             }
         }
 
@@ -116,7 +116,7 @@ public class TutorialSceneController : MonoBehaviour
             foreach (var enemy in invulnerableEnemies)
             {
                 enemy.SetActive(true);
-                yield return new WaitForSeconds(1f);
+                //yield return new WaitForSeconds(1f);
             }
         }
 
