@@ -26,6 +26,10 @@ public class CobraPoseController : MonoBehaviour
     public float duracionRetorno = 0.7f;
     [Tooltip("Distancia extra que avanzará solo la cabeza durante el ataque")]
     public float headOffset = 0.5f;
+    [Tooltip("Prefab que se genera al llegar al objetivo de ataque")]
+    public GameObject prefabAlLlegar;
+    [Tooltip("Desfase en Y para instanciar el prefab un poco más abajo")]
+    public float instanciaYOffset = 0.5f;
 
     [Header("Rotación de cabeza en ataque")]
     [Tooltip("Ángulo en X al que se inclina la cabeza durante el ataque")]
@@ -113,7 +117,6 @@ public class CobraPoseController : MonoBehaviour
         estado = Estado.Pose;
         snake.enabled = false;
 
-        // Desactivar efectos al entrar en Pose
         if (efectosActivator != null)
             efectosActivator.activar = false;
     }
@@ -121,8 +124,6 @@ public class CobraPoseController : MonoBehaviour
     void SalirPose()
     {
         estado = Estado.Inactivo;
-
-        // Reactivar efectos al volver a Inactivo
         if (efectosActivator != null)
             efectosActivator.activar = true;
     }
@@ -178,20 +179,31 @@ public class CobraPoseController : MonoBehaviour
         timer = Mathf.Min(1f, timer + Time.deltaTime / duracionAtaque);
         float arcHeight = Mathf.Sin(timer * Mathf.PI) * alturaMax * 0.7f;
 
+        // Mover cabeza
         Vector3 headPos = Vector3.Lerp(headAttackStart, attackTargetWithOffset, timer);
         headPos.y += arcHeight;
         segmentos[0].position = headPos;
 
+        // Curvar cuello
         Vector3 neckHeadPos = Vector3.Lerp(headAttackStart, originalAttackTarget, timer);
         neckHeadPos.y += arcHeight;
         MoveNeckCurved(neckHeadPos, baseAttackStart, alturaMax * 0.5f);
 
+        // Inclinación extra de la cabeza
         Transform cabeza = segmentos[0];
         Vector3 eul = cabeza.rotation.eulerAngles;
         cabeza.rotation = Quaternion.Slerp(cabeza.rotation, Quaternion.Euler(tiltX, eul.y, eul.z), tiltSmoothSpeed * Time.deltaTime);
 
         if (timer >= 1f)
         {
+            // Al llegar a la posición final de ataque: instancia un poco más abajo
+            if (prefabAlLlegar != null)
+            {
+                Vector3 spawnPos = segmentos[0].position + Vector3.down * instanciaYOffset;
+                GameObject instancia = Instantiate(prefabAlLlegar, spawnPos, Quaternion.identity);
+                Destroy(instancia, 2f);
+            }
+
             timer = 0f;
             estado = Estado.Retornando;
         }
@@ -339,6 +351,7 @@ public class CobraPoseController : MonoBehaviour
 //    public float tiltSmoothSpeed = 8f;
 
 //    private SnakeController snake;
+//    private ActivadorEfectos efectosActivator;
 //    private List<Transform> segmentos;
 //    private Estado estado = Estado.Inactivo;
 //    private Transform player;
@@ -347,16 +360,19 @@ public class CobraPoseController : MonoBehaviour
 
 //    private Vector3 headAttackStart;
 //    private Vector3 baseAttackStart;
-//    private Vector3 originalAttackTarget;       // sin offset
-//    private Vector3 attackTargetWithOffset;     // con offset
+//    private Vector3 originalAttackTarget;
+//    private Vector3 attackTargetWithOffset;
 //    private float timer;
 
 //    void Start()
 //    {
 //        snake = GetComponent<SnakeController>();
+//        efectosActivator = FindObjectOfType<ActivadorEfectos>();
+
 //        GameObject p = GameObject.FindWithTag("Player");
 //        if (p == null) Debug.LogError("No se encontró ningún GameObject con tag \"Player\".");
 //        else player = p.transform;
+
 //        if (poseOnStart) EntrarPose();
 //    }
 
@@ -413,9 +429,20 @@ public class CobraPoseController : MonoBehaviour
 //        segmentosCuello = Mathf.Clamp(segmentosCuello, 2, segmentos.Count - 1);
 //        estado = Estado.Pose;
 //        snake.enabled = false;
+
+//        // Desactivar efectos al entrar en Pose
+//        if (efectosActivator != null)
+//            efectosActivator.activar = false;
 //    }
 
-//    void SalirPose() => estado = Estado.Inactivo;
+//    void SalirPose()
+//    {
+//        estado = Estado.Inactivo;
+
+//        // Reactivar efectos al volver a Inactivo
+//        if (efectosActivator != null)
+//            efectosActivator.activar = true;
+//    }
 
 //    void AplicarPose()
 //    {
@@ -453,7 +480,6 @@ public class CobraPoseController : MonoBehaviour
 //        attackTargetWithOffset = headAttackStart + dirRaw * (distanciaUsar + headOffset);
 //        attackTargetWithOffset.y = player.position.y;
 
-//        // orientar cabeza hacia target con offset
 //        Transform cabeza = segmentos[0];
 //        Vector3 lookDir = (attackTargetWithOffset - cabeza.position);
 //        lookDir.y = 0;
@@ -469,17 +495,14 @@ public class CobraPoseController : MonoBehaviour
 //        timer = Mathf.Min(1f, timer + Time.deltaTime / duracionAtaque);
 //        float arcHeight = Mathf.Sin(timer * Mathf.PI) * alturaMax * 0.7f;
 
-//        // solo cabeza con offset
 //        Vector3 headPos = Vector3.Lerp(headAttackStart, attackTargetWithOffset, timer);
 //        headPos.y += arcHeight;
 //        segmentos[0].position = headPos;
 
-//        // cuello sin seguir offset
 //        Vector3 neckHeadPos = Vector3.Lerp(headAttackStart, originalAttackTarget, timer);
 //        neckHeadPos.y += arcHeight;
 //        MoveNeckCurved(neckHeadPos, baseAttackStart, alturaMax * 0.5f);
 
-//        // tilt solo cabeza
 //        Transform cabeza = segmentos[0];
 //        Vector3 eul = cabeza.rotation.eulerAngles;
 //        cabeza.rotation = Quaternion.Slerp(cabeza.rotation, Quaternion.Euler(tiltX, eul.y, eul.z), tiltSmoothSpeed * Time.deltaTime);
@@ -508,7 +531,6 @@ public class CobraPoseController : MonoBehaviour
 
 //    void MoveNeckCurved(Vector3 headPos, Vector3 basePos, float controlHeight)
 //    {
-//        // sólo mueve segmentos 1..segmentosCuello-1
 //        for (int i = 1; i < segmentosCuello; i++)
 //        {
 //            float t = (float)i / (segmentosCuello - 1);
@@ -565,91 +587,6 @@ public class CobraPoseController : MonoBehaviour
 //        }
 //    }
 //}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
