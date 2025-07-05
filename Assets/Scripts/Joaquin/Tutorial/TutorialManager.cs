@@ -22,8 +22,8 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI dialogueTextUI;
     [SerializeField] private AudioSource voiceAudioSource;
     //[SerializeField] private float textTypingSpeed = 0.04f;
-    [SerializeField] private TutorialSceneController tutorialSceneController;
-    [SerializeField] private GameObject FragmentOfTheTutorial;
+    [SerializeField] public TutorialSceneController tutorialSceneController;
+    //[SerializeField] private GameObject FragmentOfTheTutorial;
     [SerializeField] private List<CinemachineVirtualCamera> listVirtualCameras;
     [SerializeField] private List<CinemachineVirtualCamera> listVirtualCamerasCinematic;
     [SerializeField] private CinemachineBrain cinemachineBrain;
@@ -123,11 +123,6 @@ public class TutorialManager : MonoBehaviour
         GetTutorialCurrentScene().isActive = true;
         //StopAllCoroutines();
         StartCoroutine(PlayScenarioSequence());
-
-        //if (currentSceneIndex == 2)
-        //{
-        //    SelectCameraToRender(1);
-        //}
     }
 
     private IEnumerator PlayScenarioSequence()
@@ -136,6 +131,10 @@ public class TutorialManager : MonoBehaviour
         runtimeScene.onSceneStart?.Invoke();
 
         DetectCameraSceneTransition();
+        if (currentSceneIndex == 3) //activamos el fragmento
+        {
+            tutorialSceneController.orbitingCircleSpawner.enabled = true;
+        }
         foreach (var dialogue in runtimeScene.tutorialSceneData.dialogues)
         {
             if (dialogue.dialogueVoice != null)
@@ -143,15 +142,18 @@ public class TutorialManager : MonoBehaviour
                 voiceAudioSource.PlayOneShot(dialogue.dialogueVoice);
                 yield return new WaitForSecondsRealtime(dialogue.dialogueVoice.length);              
         }
-        if (currentSceneIndex==4) //la de la cinematica del glitch
+        if (currentSceneIndex == 3) 
         {
-            tutorialSceneController.StopGlitchDeathCinematic();
-        }
+            tutorialSceneController.orbitingCircleSpawner.activateScripts=true;
+            tutorialSceneController.orbitingCircleSpawner.prefab.GetComponent<SphereCollider>().enabled = true;
 
-        if(currentSceneIndex==6) //activamos el fragmento
-        {
-            FragmentOfTheTutorial.SetActive(true);
         }
+        if (currentSceneIndex == 0) 
+        {
+            StartCoroutine(ActivateTransitionBetweenTwoCameras(1, 3f, 1, 0));
+            tutorialSceneController.StartHaloCorutine();
+        }
+      
         HandleScenarioCompletion();
     }
 
@@ -224,7 +226,7 @@ public class TutorialManager : MonoBehaviour
     {
         foreach (CinemachineVirtualCamera camera in listVirtualCameras)
         {
-            if (camera !=listVirtualCameras[2])
+            if (camera !=listVirtualCameras[0])
             {
                 camera.Priority = 1;
             }
@@ -238,49 +240,65 @@ public class TutorialManager : MonoBehaviour
     private void DetectCameraSceneTransition()
     {
         switch (currentSceneIndex)
-        {      
-            case 1: StartCoroutine(ActivateTransitionBetweenCameras()); break;                          
-            case 4:
-                    cinemachineBrain.m_DefaultBlend= new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0f);
-                    glitchScript.StartMovingToB();
-                    StartCoroutine(ActivateTransitionBetweenCamerasCinematic()); break;
-            case 7: StartCoroutine(ActivateTransitionBetweenCameras()); break;
+        {
+            case 1: StartCoroutine(ActivateTransitionBetweenTwoCameras(2,2,3,2.5f)); break;
+            //case 3: StartCoroutine(ActivateTransitionBetweenTwoCameras(1, 5f, 1, 0)); break;
+            //case 4:
+            //        cinemachineBrain.m_DefaultBlend= new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0f);
+            //        glitchScript.StartMovingToB();
+            //        StartCoroutine(ActivateTransitionBetweenCamerasCinematic()); break;
+            case 4: StartCoroutine(ActivateTransitionBetweenTwoCameras(2,2,3,2.5f)); break;
         }
     }
 
     public IEnumerator TemporarilyDisablePlayerScripts()
     {
         DisablePlayerScriptsForCameraTransition();
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(6.5f);
+        EnablePlayerScriptsAfterCameraTransition();
+        if (currentSceneIndex == 0)
+        {
+            yield return new WaitForSeconds(0.4f);
+            tutorialSceneController.DisableTeleport();
+        }
         EnablePlayerScriptsAfterCameraTransition();
     }
-    IEnumerator ActivateTransitionBetweenCameras()
+    IEnumerator ActivateTransitionBetweenTwoCameras(int camera1,float time1, int camera2, float time2)
     {
+       cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0f);
        DisablePlayerScriptsForCameraTransition();
-       SelectCameraToRender(0);
-       yield return new WaitForSecondsRealtime(2);
-       SelectCameraToRender(1);
-       yield return new WaitForSecondsRealtime(2.5f);
+       tutorialSceneController.ActivateFadeOutOnCameraSwitch();
+        if(currentSceneIndex == 0)
+        {
+            tutorialSceneController.rotateRig.isActive = true;
+        }  
+       yield return new WaitUntil(() => tutorialSceneController.fadeTransition.isFadeIn == false);
+       SelectCameraToRender(camera1);
+       yield return new WaitForSecondsRealtime(time1);
+       SelectCameraToRender(camera2);
+       yield return new WaitForSecondsRealtime(time2);
+       tutorialSceneController.rotateRig.isActive = false;
+       cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseOut, 2f);
        ReturnCamerasToDefault();
        yield return new WaitForSecondsRealtime(2);
        EnablePlayerScriptsAfterCameraTransition();
        tutorialSceneController.EnableGlitchScripts();
     }
 
-    IEnumerator ActivateTransitionBetweenCamerasCinematic()
-    {
-        //DisablePlayerScriptsForCameraTransition();
-        SelectCameraToRenderCinematic(0);
-        yield return new WaitForSecondsRealtime(2f);
-        SelectCameraToRenderCinematic(1);
-        yield return new WaitForSecondsRealtime(1.5f);
-        SelectCameraToRenderCinematic(2);
-        yield return new WaitForSecondsRealtime(2f);
-        cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
-        ReturnCamerasToDefault();
-        //EnablePlayerScriptsAfterCameraTransition();
-        tutorialSceneController.EnableGlitchScriptsInvulnerables();
-    }
+    //IEnumerator ActivateTransitionBetweenCamerasCinematic()
+    //{
+    //    //DisablePlayerScriptsForCameraTransition();
+    //    SelectCameraToRenderCinematic(0);
+    //    yield return new WaitForSecondsRealtime(2f);
+    //    SelectCameraToRenderCinematic(1);
+    //    yield return new WaitForSecondsRealtime(1.5f);
+    //    SelectCameraToRenderCinematic(2);
+    //    yield return new WaitForSecondsRealtime(2f);
+    //    cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
+    //    ReturnCamerasToDefault();
+    //    //EnablePlayerScriptsAfterCameraTransition();
+    //    tutorialSceneController.EnableGlitchScriptsInvulnerables();
+    //}
 
     void DisablePlayerScriptsForCameraTransition()
     {

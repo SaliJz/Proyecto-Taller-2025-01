@@ -8,7 +8,7 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private Transform orientation;
 
     private float rotationX = 0f;
-    private float rotationY = 0f;
+    private float rotationY = -90f;
 
     private void Start()
     {

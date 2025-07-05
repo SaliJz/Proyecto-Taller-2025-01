@@ -1,6 +1,7 @@
 
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 
 
 public class TutorialSceneController : MonoBehaviour
@@ -9,8 +10,13 @@ public class TutorialSceneController : MonoBehaviour
     [SerializeField] private GameObject weaponIcon;
     [SerializeField] private GameObject spawnerManager;
     [SerializeField] private GameObject spawners;
+    [SerializeField] private GameObject teleporter;
+    [SerializeField] private TutorialManager manager;
+    public FadeTransition fadeTransition;
+    public HaloMoveController haloMoveController;
+    public RotateRig rotateRig;
+    public OrbitingCircleSpawner orbitingCircleSpawner;
 
-    //[SerializeField] private GameObject AbilityHolder;
     [SerializeField] private GameObject abilityIcon;
 
     [SerializeField] private WeaponManager weaponManager;
@@ -89,18 +95,34 @@ public class TutorialSceneController : MonoBehaviour
 
     public void SpawnNormalEnemies()
     {
-        foreach (var enemy in normalEnemies)
+        StartCoroutine(SpawnWithDelay());
+    }
+
+    private IEnumerator SpawnWithDelay()
+    {
+        yield return new WaitForSeconds(0.2f);
+
+        if (manager.currentSceneIndex == 1)
         {
-            enemy.SetActive(true);
+            foreach (var enemy in normalEnemies)
+            {
+                enemy.SetActive(true);
+            }
         }
+
+        if (manager.currentSceneIndex == 4)
+        {
+            foreach (var enemy in invulnerableEnemies)
+            {
+                enemy.SetActive(true);
+            }
+        }
+
     }
 
     public void SpawnInvulnerableEnemies()
     {
-        foreach (var enemy in invulnerableEnemies)
-        {
-            enemy.SetActive(true);
-        }
+        StartCoroutine(SpawnWithDelay());
     }
     public void EnableGlitchScripts()
     {
@@ -177,4 +199,20 @@ public class TutorialSceneController : MonoBehaviour
         missionManager.SetActive(true);
     }
 
+    public void DisableTeleport()
+    {
+        teleporter.SetActive(false);
+    }
+
+    public void ActivateFadeOutOnCameraSwitch()
+    {    
+        fadeTransition.fadeDuration = 0.2f;
+        fadeTransition.delayBeforeFade = 0;
+        fadeTransition.StartCoroutine(fadeTransition.FadeInOut(1));
+    }
+
+    public void StartHaloCorutine()
+    {
+        haloMoveController.StartCoroutine(haloMoveController.MoveHaloAparition());
+    }
 }

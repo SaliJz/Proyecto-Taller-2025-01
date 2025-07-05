@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using Cinemachine;
 
@@ -69,7 +69,7 @@ public class PlayerDash : MonoBehaviour
             sfxSource = GameObject.Find("SFXSource")?.GetComponent<AudioSource>();
             if (sfxSource == null)
             {
-                Debug.LogError("No se encontr� el AudioSource para efectos de sonido. Aseg�rate de que haya un GameObject llamado 'SFXSource' con un AudioSource en la escena.");
+                Debug.LogError("No se encontró el AudioSource para efectos de sonido. Asegúrate de que haya un GameObject llamado 'SFXSource' con un AudioSource en la escena.");
             }
         }
 
@@ -115,9 +115,13 @@ public class PlayerDash : MonoBehaviour
 
         if (Physics.Raycast(rb.position, delta.normalized, out var hit, step))
         {
-            targetPos = hit.point - delta.normalized * 0.1f;
-            isDashing = false;
+            if (!hit.collider.CompareTag("Fragment"))
+            {
+                targetPos = hit.point - delta.normalized * 0.1f;
+                isDashing = false;
+            }
         }
+
 
         rb.MovePosition(targetPos);
 
@@ -229,8 +233,16 @@ public class PlayerDash : MonoBehaviour
     private bool IsPathClear(Vector3 direction, float distance)
     {
         RaycastHit hit;
-        return !Physics.Raycast(transform.position, direction, out hit, distance);
+        if (Physics.Raycast(transform.position, direction, out hit, distance))
+        {
+            // Si colisiona, pero el tag es "Fragment", lo consideramos como "camino libre"
+            return hit.collider.CompareTag("Fragment");
+        }
+
+        // Si no colisionó con nada, el camino está libre
+        return true;
     }
+
 
     private void OnCollisionEnter(Collision collision)
     {

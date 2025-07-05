@@ -23,6 +23,7 @@ public class TutorialTriggerZone : MonoBehaviour
         else if (currentSceneIndex == 1)
         {
             yield return new WaitForSeconds(0.5f);
+            manager.tutorialSceneController.haloMoveController.gameObject.SetActive(false);
         }
         manager.ScenarioActivationCheckerByZones();
         Destroy(gameObject);
@@ -36,10 +37,13 @@ public class TutorialTriggerZone : MonoBehaviour
             if (other.CompareTag("Player")) 
             {   activated = true;
                 if (currentSceneIndex == 0)
-                {
+                {           
                     manager.StartCoroutine(manager.TemporarilyDisablePlayerScripts());
-                }     
-                StartCoroutine(DelayStart());   
+                }
+               
+                StartCoroutine(DelayStart());
+
+               
             }
         }     
     }
