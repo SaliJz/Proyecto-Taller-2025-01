@@ -49,6 +49,7 @@ public class TutorialManager : MonoBehaviour
     private void Start()
     {
         player = GameObject.FindWithTag("Player");
+        if (cinemachineBrain == null) return;
         cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
     }
     public void ScenarioActivationCheckerByZones()
@@ -137,10 +138,18 @@ public class TutorialManager : MonoBehaviour
         }
         foreach (var dialogue in runtimeScene.tutorialSceneData.dialogues)
         {
+            if (dialogue.dialogueText != null)
+            {
+               SetTextUI(dialogue.dialogueText);
+            }
+               
             if (dialogue.dialogueVoice != null)
-                SetTextUI(dialogue.dialogueText);
+            {
                 voiceAudioSource.PlayOneShot(dialogue.dialogueVoice);
-                yield return new WaitForSecondsRealtime(dialogue.dialogueVoice.length);              
+                yield return new WaitForSecondsRealtime(dialogue.dialogueVoice.length);
+            }
+              
+                          
         }
         if (currentSceneIndex == 3) 
         {
@@ -148,12 +157,33 @@ public class TutorialManager : MonoBehaviour
             tutorialSceneController.orbitingCircleSpawner.prefab.GetComponent<SphereCollider>().enabled = true;
 
         }
-        if (currentSceneIndex == 0) 
+        if (currentSceneIndex == 0)
         {
-            StartCoroutine(ActivateTransitionBetweenTwoCameras(1, 3f, 1, 0));
-            tutorialSceneController.StartHaloCorutine();
+            if (tutorialSceneController == null)
+            {
+                Debug.LogError("tutorialSceneController no está asignado.");
+                //yield break; // Detiene la corrutina si falta el controlador
+            }
+
+            else
+            {
+                StartCoroutine(ActivateTransitionBetweenTwoCameras(1, 3f, 1, 0));
+                tutorialSceneController.StartHaloCorutine();
+            }
+
+           
         }
-      
+        if (currentSceneIndex == 1)
+        {
+            Debug.Log("ActivandoGlitchNormal");
+            tutorialSceneController.EnableGlitchScripts();
+        }
+
+        if (currentSceneIndex == 4)
+        {
+            tutorialSceneController.EnableGlitchScriptsInvulnerables();
+        }
+
         HandleScenarioCompletion();
     }
 
@@ -265,8 +295,11 @@ public class TutorialManager : MonoBehaviour
     }
     IEnumerator ActivateTransitionBetweenTwoCameras(int camera1,float time1, int camera2, float time2)
     {
-       cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0f);
-       DisablePlayerScriptsForCameraTransition();
+        if (cinemachineBrain != null)
+        {
+            cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0f);
+        }
+        DisablePlayerScriptsForCameraTransition();
        tutorialSceneController.ActivateFadeOutOnCameraSwitch();
         if(currentSceneIndex == 0)
         {
@@ -282,24 +315,7 @@ public class TutorialManager : MonoBehaviour
        ReturnCamerasToDefault();
        yield return new WaitForSecondsRealtime(2);
        EnablePlayerScriptsAfterCameraTransition();
-       tutorialSceneController.EnableGlitchScripts();
     }
-
-    //IEnumerator ActivateTransitionBetweenCamerasCinematic()
-    //{
-    //    //DisablePlayerScriptsForCameraTransition();
-    //    SelectCameraToRenderCinematic(0);
-    //    yield return new WaitForSecondsRealtime(2f);
-    //    SelectCameraToRenderCinematic(1);
-    //    yield return new WaitForSecondsRealtime(1.5f);
-    //    SelectCameraToRenderCinematic(2);
-    //    yield return new WaitForSecondsRealtime(2f);
-    //    cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
-    //    ReturnCamerasToDefault();
-    //    //EnablePlayerScriptsAfterCameraTransition();
-    //    tutorialSceneController.EnableGlitchScriptsInvulnerables();
-    //}
-
     void DisablePlayerScriptsForCameraTransition()
     {
         Rigidbody rb = player.GetComponent<Rigidbody>();

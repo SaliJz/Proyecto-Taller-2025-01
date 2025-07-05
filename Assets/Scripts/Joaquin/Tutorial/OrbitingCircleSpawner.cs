@@ -9,10 +9,10 @@ public class OrbitingCircleSpawner : MonoBehaviour
     public float radius = 5f;
     public float rotationSpeed = 30f;
 
-    public bool activateScripts = false; // <-- booleano de activación
+    public bool activateScripts = false;
 
     private Transform orbitCenter;
-    private List<GameObject> spawnedObjects = new List<GameObject>(); // lista para guardar referencias
+    private List<GameObject> spawnedObjects = new List<GameObject>();
 
     void Start()
     {

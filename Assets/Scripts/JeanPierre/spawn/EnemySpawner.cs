@@ -92,17 +92,19 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnSingleEnemy()
     {
-        var availablePoints = spawnPoints.Where(sp => sp.IsAvailable).ToList();
-        if (availablePoints.Count == 0) return;
+        if (enemyPrefabs == null || enemyPrefabs.Length == 0) return;
 
-        GameObject randomEnemyPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
-        SpawnPoint randomPoint = availablePoints[Random.Range(0, availablePoints.Count)];
+            var availablePoints = spawnPoints.Where(sp => sp.IsAvailable).ToList();
+            if (availablePoints.Count == 0) return;
 
-        Vector2 offset = Random.insideUnitCircle * spawnRadius;
-        Vector3 spawnPosition = randomPoint.transform.position + new Vector3(offset.x, 0, offset.y);
+            GameObject randomEnemyPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+            SpawnPoint randomPoint = availablePoints[Random.Range(0, availablePoints.Count)];
 
-        GameObject enemy = Instantiate(randomEnemyPrefab, spawnPosition, randomPoint.transform.rotation);
-        activeEnemies.Add(enemy);
+            Vector2 offset = Random.insideUnitCircle * spawnRadius;
+            Vector3 spawnPosition = randomPoint.transform.position + new Vector3(offset.x, 0, offset.y);
+
+            GameObject enemy = Instantiate(randomEnemyPrefab, spawnPosition, randomPoint.transform.rotation);
+            activeEnemies.Add(enemy); 
     }
 
     public void ResetSpawner()

@@ -157,14 +157,27 @@ public class TutorialSceneController : MonoBehaviour
     {
         foreach (var enemy in invulnerableEnemies)
         {
+            if (enemy == null) continue;
+
             Canvas canvas = enemy.GetComponentInChildren<Canvas>(true);
-            canvas.gameObject.SetActive(true);
-
-            enemy.GetComponent<NavMeshAgent>().enabled = true;
-            foreach (MonoBehaviour script in enemy.GetComponents<MonoBehaviour>())
+            if (canvas != null)
             {
-                script.enabled = true;
+                canvas.gameObject.SetActive(true);
+            }
 
+            var agent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
+            if (agent != null)
+            {
+                agent.enabled = true;
+            }
+
+            MonoBehaviour[] scripts = enemy.GetComponents<MonoBehaviour>();
+            foreach (MonoBehaviour script in scripts)
+            {
+                if (script != null)
+                {
+                    script.enabled = true;
+                }
             }
         }
     }

@@ -8,11 +8,11 @@ public class RotateRig : MonoBehaviour
     public float rotationSpeed = 20f;
 
     [Header("Cámara")]
-    public Transform cameraTransform; // Arrastra aquí tu cámara hija
+    public Transform cameraTransform;
 
     [Header("Órbita")]
-    public float radius = 5f;  // Distancia horizontal
-    public float height = 2f;  // Altura vertical (eje Y)
+    public float radius = 5f;  
+    public float height = 2f;  
 
     public bool isActive=false;
 

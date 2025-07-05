@@ -22,7 +22,7 @@ public class TutorialTriggerZone : MonoBehaviour
         }
         else if (currentSceneIndex == 1)
         {
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.4f);
             manager.tutorialSceneController.haloMoveController.gameObject.SetActive(false);
         }
         manager.ScenarioActivationCheckerByZones();

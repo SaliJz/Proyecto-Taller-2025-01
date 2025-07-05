@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 1661646397122123720}
   - component: {fileID: 7247489205012644270}
   - component: {fileID: 1727007191829455109}
-  - component: {fileID: 6327766648407742936}
+  - component: {fileID: 5186639809274965250}
   m_Layer: 5
   m_Name: Transition
   m_TagString: Untagged
@@ -191,7 +191,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &6327766648407742936
+--- !u!114 &5186639809274965250
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -200,11 +200,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 3361291804808458079}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a79917f52766a5499f2fa1845fc0bd1, type: 3}
+  m_Script: {fileID: 11500000, guid: 6c28468573ee195468f13d9e7eb38329, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 1727007191829455109}
-  totalDuration: 1
-  initialInterval: 0.02
-  finalInterval: 0.125
-  delayBeforeBlink: 3
+  fadeDuration: 3
+  delayBeforeFade: 4
+  isFadeIn: 1
