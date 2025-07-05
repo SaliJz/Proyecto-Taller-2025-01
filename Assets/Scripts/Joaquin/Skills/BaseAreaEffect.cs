@@ -78,7 +78,7 @@ public abstract class BaseAreaEffect : MonoBehaviour
         {
             if (player != null)
             {
-                player.TakeDamage((int)damagePerSecond);
+                player.TakeDamage((int)damagePerSecond, transform.position);
             }
         }
     }

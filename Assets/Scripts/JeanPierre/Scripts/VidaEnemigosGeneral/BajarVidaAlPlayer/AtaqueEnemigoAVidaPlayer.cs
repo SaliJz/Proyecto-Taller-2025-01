@@ -46,7 +46,7 @@ public class AtaqueEnemigoAVidaPlayer : MonoBehaviour
     private IEnumerator DamagePlayerRoutine(PlayerHealth playerHealth)
     {
         // Primer golpe inmediato
-        playerHealth.TakeDamage(damageAmount);
+        playerHealth.TakeDamage(damageAmount, transform.position);
 
         while (true)
         {
@@ -58,7 +58,7 @@ public class AtaqueEnemigoAVidaPlayer : MonoBehaviour
                 break;
 
             // Si sigue dentro, aplicamos siguiente golpe
-            playerHealth.TakeDamage(damageAmount);
+            playerHealth.TakeDamage(damageAmount, transform.position);
         }
 
         damageCoroutine = null;

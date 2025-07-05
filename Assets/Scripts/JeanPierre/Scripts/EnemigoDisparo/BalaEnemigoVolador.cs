@@ -86,7 +86,7 @@ public class BalaEnemigoVolador : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             var ph = other.GetComponent<PlayerHealth>();
-            if (ph) ph.TakeDamage(20);
+            if (ph) ph.TakeDamage(20, transform.position);
             Destroy(gameObject);
         }
     }

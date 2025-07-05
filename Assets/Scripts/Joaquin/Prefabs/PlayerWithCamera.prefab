@@ -590,8 +590,8 @@ MonoBehaviour:
   baseCooldown: 10
   baseEnemiesAffected: 3
   slowMultiplier: 0.25
-  baseDamagePerSecond: 8
-  baseDuration: 3
+  baseDamagePerSecond: 5
+  baseDuration: 2
   baseRadius: 1
   targetLayer:
     serializedVersion: 2
@@ -1491,6 +1491,7 @@ MonoBehaviour:
     type: 3}
   sceneTransition: {fileID: 0}
   isNivel1: 0
+  directionalDamageHUD: {fileID: 0}
 --- !u!1 &4031085736701839370
 GameObject:
   m_ObjectHideFlags: 0
@@ -3481,6 +3482,26 @@ PrefabInstance:
     - target: {fileID: 233082645597343594, guid: 1964cea7123d7ee4e8469b382061a31c,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 494567780987074891, guid: 1964cea7123d7ee4e8469b382061a31c,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3541500971454070496, guid: 1964cea7123d7ee4e8469b382061a31c,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4542403601354047040, guid: 1964cea7123d7ee4e8469b382061a31c,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717559169395049097, guid: 1964cea7123d7ee4e8469b382061a31c,
+        type: 3}
+      propertyPath: playOnAwake
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8701811806422902059, guid: 1964cea7123d7ee4e8469b382061a31c,
