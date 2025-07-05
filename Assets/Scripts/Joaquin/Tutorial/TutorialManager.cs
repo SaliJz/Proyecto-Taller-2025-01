@@ -194,11 +194,15 @@ public class TutorialManager : MonoBehaviour
      
         if (HasNextScene()) //Verificamos que la escena exista
         {
-            tutorialCurrentScene = GetTutorialCurrentScene(); //Actualizamos la escena con la escena del indice actual
-               
-          //Estos metodos se activan automaticamente al comprobar el indice actual, el cual fue incrementado previamente en 1
-          ScenarioActivationCheckerByTime();     
-          ScenarioActivationCheckByManually();
+            if (currentSceneIndex < tutorialScenes.Count)
+            {
+                tutorialCurrentScene = GetTutorialCurrentScene(); //Actualizamos la escena con la escena del indice actual
+
+                //Estos metodos se activan automaticamente al comprobar el indice actual, el cual fue incrementado previamente en 1
+                ScenarioActivationCheckerByTime();
+                ScenarioActivationCheckByManually();
+            }
+           
         }
     }
     //private IEnumerator AnimateTextTyping(string text)
@@ -237,15 +241,9 @@ public class TutorialManager : MonoBehaviour
         return tutorialScenes[currentSceneIndex];
     }
     public ActivationType GetCurrentSceneActivationType()
-    {
-        if (currentSceneIndex < tutorialScenes.Count)
-        {
-            return tutorialScenes[currentSceneIndex].tutorialSceneData.activationType;
-        }
-        else
-        {
-            return ActivationType.ByKills;
-        }
+    {      
+       return tutorialScenes[currentSceneIndex].tutorialSceneData.activationType;
+       
     }
 
     private void SelectCameraToRender(int indexCamera)
