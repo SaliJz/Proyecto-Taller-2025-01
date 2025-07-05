@@ -107,6 +107,7 @@ public class TutorialSceneController : MonoBehaviour
             foreach (var enemy in normalEnemies)
             {
                 enemy.SetActive(true);
+                yield return new WaitForSeconds(0.5f);
             }
         }
 
@@ -115,6 +116,7 @@ public class TutorialSceneController : MonoBehaviour
             foreach (var enemy in invulnerableEnemies)
             {
                 enemy.SetActive(true);
+                yield return new WaitForSeconds(1f);
             }
         }
 
@@ -207,8 +209,8 @@ public class TutorialSceneController : MonoBehaviour
     {
         Debug.Log("[tutorialSceneController] Activando primera misión.");
 
-        spawners.SetActive(true);
-        spawnerManager.SetActive(true);
+        //spawners.SetActive(true);
+        //spawnerManager.SetActive(true);
         missionManager.SetActive(true);
     }
 

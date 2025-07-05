@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class MenuController : MonoBehaviour
 {
@@ -50,6 +51,14 @@ public class MenuController : MonoBehaviour
         if (GameManager.Instance != null && replayTutorialsToggle != null)
         {
             replayTutorialsToggle.gameObject.SetActive(GameManager.Instance.TutorialsCompleted);
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.P))
+        {
+            replayTutorialsToggle.gameObject.SetActive(true);
         }
     }
 

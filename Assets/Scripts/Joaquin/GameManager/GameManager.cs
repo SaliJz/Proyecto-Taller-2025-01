@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log($"[GameManager] Tutorials Completed: {tutorialsCompleted}");
+
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -38,11 +40,19 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.L))
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.L))
         {
             OnLevelCompleted();
         }
+        /*
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.P))
+        {
+            tutorialsCompleted = !tutorialsCompleted;
+            Debug.Log($"Tutorials Completed: {tutorialsCompleted}");
+        }
+        */
     }
+
 
     private void LoadGameData()
     {
