@@ -32,6 +32,9 @@ public class Weapon : MonoBehaviour
     [Header("Configuración de Animación por codigo")]
     [SerializeField] private bool useProceduralAnimations = true;
 
+    [Header("Animation")]
+    [SerializeField] private int weaponAnimationID = 0;
+
     #endregion
 
     #region Properties and States
@@ -218,6 +221,8 @@ public class Weapon : MonoBehaviour
 
     private void Shoot()
     {
+        PlayerAnimatorController.Instance?.PlayFireWeaponAnim(weaponAnimationID);
+
         currentAmmo --;
         HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
 

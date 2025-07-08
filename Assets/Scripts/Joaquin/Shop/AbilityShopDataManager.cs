@@ -29,6 +29,9 @@ public static class AbilityShopDataManager
     private static readonly HashSet<string> PurchasedAbilities = new HashSet<string>();
     private static readonly Dictionary<string, AbilityStats> UpgradeLevels = new Dictionary<string, AbilityStats>();
 
+    private static List<string> EquippedAbilityNames = new List<string>();
+    private static int LastEquippedIndex = 0;
+
     private static void EnsureAbilityExists(string abilityName)
     {
         if (!UpgradeLevels.ContainsKey(abilityName))
@@ -70,6 +73,23 @@ public static class AbilityShopDataManager
         NotifyDataChanged();
     }
     public static bool IsPurchased(string abilityName) => PurchasedAbilities.Contains(abilityName);
+
+    public static void SavePlayerEquippedState(List<string> equippedNames, int currentIndex)
+    {
+        EquippedAbilityNames = new List<string>(equippedNames);
+        LastEquippedIndex = currentIndex;
+    }
+
+    public static List<string> GetSavedEquippedAbilities()
+    {
+        return EquippedAbilityNames;
+    }
+
+    public static int GetSavedEquippedIndex()
+    {
+        return LastEquippedIndex;
+    }
+
     public static AbilityStats GetStats(string abilityName)
     {
         EnsureAbilityExists(abilityName);
@@ -82,6 +102,8 @@ public static class AbilityShopDataManager
     {
         PurchasedAbilities.Clear();
         UpgradeLevels.Clear();
+        EquippedAbilityNames.Clear();
+        LastEquippedIndex = 0;
         NotifyDataChanged();
     }
 }

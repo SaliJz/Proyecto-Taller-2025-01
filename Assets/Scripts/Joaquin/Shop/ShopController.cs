@@ -18,7 +18,7 @@ public class ShopController : MonoBehaviour
 
     [SerializeField] private Button skipButton;
 
-    //[SerializeField] private string nextScene = "";
+    [SerializeField] private string nextScene = "";
 
     [SerializeField] private TextMeshProUGUI currentInfoFragments;
 
@@ -83,8 +83,8 @@ public class ShopController : MonoBehaviour
         Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        GameManager.Instance?.LoadNextLevelAfterShop();
+        SceneManager.LoadScene(nextScene); // Carga la escena siguiente si se ha especificado
+        //GameManager.Instance?.LoadNextLevelAfterShop();
     }
 
     public void OpenAbilityShopMenu()

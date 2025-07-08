@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AbilityManager : MonoBehaviour
 {
+    [Tooltip("Marca esta casilla SOLO en la escena del Nivel 1 para reiniciar todo el progreso.")]
     [SerializeField] private bool isLevel1 = false;
 
     [Header("Todas las habilidades posibles")]
@@ -16,7 +17,6 @@ public class AbilityManager : MonoBehaviour
 
     private int currentIndex = 0;
     private Dictionary<string, GameObject> abilityMap = new Dictionary<string, GameObject>();
-    private VFXController vfxController;
 
     public List<GameObject> activedAbilities => activeAbilities;
     public GameObject CurrentAbility => activeAbilities.Count > 0 ? activeAbilities[currentIndex] : null;
@@ -35,8 +35,6 @@ public class AbilityManager : MonoBehaviour
 
     private void Start()
     {
-        vfxController = FindObjectOfType<VFXController>();
-
         if (isLevel1) AbilityShopDataManager.ResetData();
 
         foreach (var ability in allAbilities)
@@ -48,7 +46,7 @@ public class AbilityManager : MonoBehaviour
 
         if (allowFirstAbility)
         {
-            if (activeAbilities.Count == 0 && allAbilities.Count > 0)
+            if (activeAbilities.Count >= 0)
             {
                 GameObject random = allAbilities[Random.Range(0, allAbilities.Count)];
                 activeAbilities.Add(random);
@@ -90,12 +88,6 @@ public class AbilityManager : MonoBehaviour
     public void CycleAbility()
     {
         if (activeAbilities.Count <= 1) return;
-
-        if (vfxController != null)
-        {
-            vfxController.DeactivateAll();
-            vfxController.ActivateVFX(CurrentAbility.name);
-        }
 
         currentIndex = (currentIndex + 1) % activeAbilities.Count;
         SaveToDataStore();
@@ -184,12 +176,12 @@ public class AbilityManager : MonoBehaviour
 
         foreach (var ability in allAbilities)
         {
-            ability.SetActive(false);
+            if (ability != null) ability.SetActive(false);
         }
 
-        for (int i = 0; i < activeAbilities.Count; i++)
+        if (CurrentAbility != null)
         {
-            activeAbilities[i].SetActive(i == currentIndex);
+            CurrentAbility.SetActive(true);
         }
 
         HUDManager.Instance?.UpdateAbilityUI(CurrentAbility);
@@ -208,38 +200,29 @@ public class AbilityManager : MonoBehaviour
 
     private void SaveToDataStore()
     {
-        if (AbilityDataStore.Instance == null) return;
-
-        AbilityDataStore.Instance.AbilityNames.Clear();
-        foreach (var a in activeAbilities)
+        List<string> equippedNames = new List<string>();
+        foreach (var abilityGO in activeAbilities)
         {
-            AbilityDataStore.Instance.AbilityNames.Add(a.name);
+            equippedNames.Add(abilityGO.GetComponent<AbilityInfo>().abilityName);
         }
-
-        AbilityDataStore.Instance.SetCurrentIndex(currentIndex);
+        AbilityShopDataManager.SavePlayerEquippedState(equippedNames, currentIndex);
     }
 
     private void LoadFromDataStore()
     {
         activeAbilities.Clear();
+        List<string> savedNames = AbilityShopDataManager.GetSavedEquippedAbilities();
 
-        if (AbilityDataStore.Instance == null) return;
-
-        foreach (string abilityName in AbilityDataStore.Instance.AbilityNames)
+        foreach (string abilityName in savedNames)
         {
-            GameObject ability = allAbilities.Find(a => a.name == abilityName);
-            if (ability != null) activeAbilities.Add(ability);
+            GameObject ability = allAbilities.Find(a => a.GetComponent<AbilityInfo>().abilityName == abilityName);
+            if (ability != null)
+            {
+                activeAbilities.Add(ability);
+            }
         }
 
-        currentIndex = AbilityDataStore.Instance.CurrentIndex;
-        currentIndex = Mathf.Clamp(currentIndex, 0, activeAbilities.Count - 1);
-    }
-
-    public void ClearAbilities()
-    {
-        activeAbilities.Clear();
-        currentIndex = 0;
-        SaveToDataStore();
-        UpdateAbilitiesActiveState();
+        currentIndex = AbilityShopDataManager.GetSavedEquippedIndex();
+        currentIndex = Mathf.Clamp(currentIndex, 0, activeAbilities.Count > 0 ? activeAbilities.Count - 1 : 0);
     }
 }
