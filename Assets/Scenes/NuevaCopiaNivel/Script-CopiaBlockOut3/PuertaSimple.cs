@@ -12,10 +12,12 @@ public class PuertaSimple : MonoBehaviour
     public Vector3 posicionCerradaIzquierda;
     public Vector3 posicionCerradaDerecha;
 
+
     public float velocidad = 2f;
     public bool estaEnZonaA = false;
     public bool puertaBloqueada = false;
     private bool abriendo = true;
+
 
     void Update()
     {
@@ -42,15 +44,15 @@ public class PuertaSimple : MonoBehaviour
         }
     }
 
+
     public void ActivarZonaA() => estaEnZonaA = true;
     public void ActivarZonaB()
-
     {
         estaEnZonaA = false;
         puertaBloqueada = true;
 
+       
         puertaIzquierda.position = posicionCerradaIzquierda;
         puertaDerecha.position = posicionCerradaDerecha;
     }
-
 }
