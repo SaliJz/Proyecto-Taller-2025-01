@@ -24,6 +24,7 @@ public class MenuPausa : MonoBehaviour
     [SerializeField] private AudioClip buttonClip;
 
     private ShopController shopController;
+    private ClipManager clipManager;
     private bool isDead = false; 
     private bool pausedGame = false;
 
@@ -39,6 +40,7 @@ public class MenuPausa : MonoBehaviour
         quitButton.onClick.AddListener(QuitGame);
 
         shopController = FindObjectOfType<ShopController>();
+        clipManager = FindObjectOfType<ClipManager>();
     }
 
     private void Start()
@@ -50,6 +52,7 @@ public class MenuPausa : MonoBehaviour
     private void Update()
     {
         if (shopController != null && shopController.ShopPauseGame) return;
+        if (clipManager != null && clipManager.ClipPauseGame) return;
 
         if (Input.GetKeyDown(KeyCode.Escape) && !isDead)
         {

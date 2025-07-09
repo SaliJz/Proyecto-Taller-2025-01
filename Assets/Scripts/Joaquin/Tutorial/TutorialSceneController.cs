@@ -72,7 +72,7 @@ public class TutorialSceneController : MonoBehaviour
       
         if (gunWeapon != null)
         {
-            HUDManager.Instance.UpdateAmmo(gunWeapon.CurrentAmmo, gunWeapon.TotalAmmo);
+            HUDManager.Instance.UpdateAmmo(0, gunWeapon.CurrentAmmo, gunWeapon.TotalAmmo);
             HUDManager.Instance.UpdateWeaponIcon(gunWeapon.Stats.weaponIcon);
             HUDManager.Instance.UpdateWeaponName(gunWeapon.Stats.weaponName);
         }

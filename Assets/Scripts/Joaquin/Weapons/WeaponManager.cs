@@ -202,10 +202,22 @@ public class WeaponManager : MonoBehaviour
     {
         if (HUDManager.Instance != null)
         {
-            HUDManager.Instance.UpdateAmmo(newWeapon.CurrentAmmo, newWeapon.TotalAmmo);
+            HUDManager.Instance.UpdateAmmo(currentIndex, newWeapon.CurrentAmmo, newWeapon.TotalAmmo);
             HUDManager.Instance.UpdateWeaponIcon(newWeapon.Stats.weaponIcon);
             HUDManager.Instance.UpdateWeaponName(newWeapon.Stats.weaponName);
         }
+    }
+
+    public bool NeedsAmmo(Weapon.ShootingMode mode)
+    {
+        foreach (Weapon weapon in weapons)
+        {
+            if (weapon != null && weapon.BaseMode == mode)
+            {
+                return weapon.TotalAmmo < (weapon.Stats.totalAmmo + UpgradeDataStore.Instance.weaponAmmoBonus);
+            }
+        }
+        return false;
     }
 
     public bool TryAddAmmoToWeapon(Weapon.ShootingMode mode, int amountToAdd, out int amountActuallyAdded)
@@ -222,7 +234,7 @@ public class WeaponManager : MonoBehaviour
 
                     if (weapon == weapons[currentIndex])
                     {
-                        HUDManager.Instance.UpdateAmmo(weapon.CurrentAmmo, weapon.TotalAmmo);
+                        HUDManager.Instance.UpdateAmmo(currentIndex, weapon.CurrentAmmo, weapon.TotalAmmo);
                     }
                     return true;
                 }

@@ -16,7 +16,6 @@ public class PlayerCamera : MonoBehaviour
         Cursor.visible = false;
 
         sensitivity = SettingsService.Sensitivity * 100;
-
     }
 
     private void LateUpdate()

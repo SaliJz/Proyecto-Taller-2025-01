@@ -22,6 +22,8 @@ public class ShopController : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI currentInfoFragments;
 
+    [SerializeField] private bool isTutorial = false;
+
     private bool shopPauseGame = false;
 
     public bool ShopPauseGame
@@ -83,8 +85,24 @@ public class ShopController : MonoBehaviour
         Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        SceneManager.LoadScene(nextScene); // Carga la escena siguiente si se ha especificado
-        //GameManager.Instance?.LoadNextLevelAfterShop();
+
+        if (isTutorial)
+        {
+            if (string.IsNullOrEmpty(nextScene))
+            {
+                mainShopMenu.SetActive(false);
+                abilityShopMenu.SetActive(false);
+                weaponShopMenu.SetActive(false);
+                generalShopMenu.SetActive(false);
+                currentInfoFragments.gameObject.SetActive(false);
+                return;
+            }
+            else
+            {
+                SceneManager.LoadScene(nextScene);
+            }
+        }
+        else GameManager.Instance?.LoadNextLevelAfterShop();
     }
 
     public void OpenAbilityShopMenu()

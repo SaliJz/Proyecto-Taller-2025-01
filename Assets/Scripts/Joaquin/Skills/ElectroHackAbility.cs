@@ -62,7 +62,8 @@ public class ElectroHackAbility : MonoBehaviour
     private void Start()
     {
         ApplyUpgrades();
-        HUDManager.Instance.UpdateAbilityStatus(abilityInfo.abilityName, 0f, true, currentCooldown);
+        HUDManager.Instance?.UpdateAbilityUI(gameObject);
+        HUDManager.Instance?.UpdateAbilityStatus(abilityInfo.abilityName, 0f, true, currentCooldown);
     }
 
     private void ApplyUpgrades()

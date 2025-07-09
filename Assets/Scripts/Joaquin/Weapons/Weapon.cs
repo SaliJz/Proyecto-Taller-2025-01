@@ -86,7 +86,7 @@ public class Weapon : MonoBehaviour
     {
         if (HUDManager.Instance != null)
         {
-            HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
+            HUDManager.Instance.UpdateAmmo(weaponAnimationID, currentAmmo, totalAmmo);
         }
     }
 
@@ -224,7 +224,7 @@ public class Weapon : MonoBehaviour
         PlayerAnimatorController.Instance?.PlayFireWeaponAnim(weaponAnimationID);
 
         currentAmmo --;
-        HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
+        HUDManager.Instance.UpdateAmmo(weaponAnimationID, currentAmmo, totalAmmo);
 
         if (CurrentMode == ShootingMode.SemiAuto)
         {
@@ -340,7 +340,7 @@ public class Weapon : MonoBehaviour
             ammoReloadedThisCycle++;
             if (HUDManager.Instance != null)
             {
-                HUDManager.Instance.UpdateAmmo(currentAmmo, totalAmmo);
+                HUDManager.Instance.UpdateAmmo(weaponAnimationID, currentAmmo, totalAmmo);
             }
         }
 
