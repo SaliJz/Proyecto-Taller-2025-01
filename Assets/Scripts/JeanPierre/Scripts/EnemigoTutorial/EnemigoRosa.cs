@@ -142,14 +142,14 @@ public class EnemigoRosa : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        if (TutorialManager.Instance != null)
-        {
-            int index = TutorialManager.Instance.currentSceneIndex;
-            if (TutorialManager.Instance.GetCurrentSceneActivationType() == ActivationType.ByKills)
-            {
-                TutorialManager.Instance.ScenarioActivationCheckerByKills();
-            }
-        }
+        //if (TutorialManager.Instance != null)
+        //{
+        //    int index = TutorialManager.Instance.currentDialogue;
+        //    if (TutorialManager.Instance.GetCurrentSceneActivationType() == ActivationType.ByKills)
+        //    {
+        //        TutorialManager.Instance.ScenarioActivationCheckerByKills();
+        //    }
+        //}
 
         if (prefabsAlMorir != null && prefabsAlMorir.Length > 0)
             Instantiate(prefabsAlMorir[UnityEngine.Random.Range(0, prefabsAlMorir.Length)],

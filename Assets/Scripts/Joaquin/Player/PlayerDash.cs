@@ -11,7 +11,6 @@ public class PlayerDash : MonoBehaviour
     [SerializeField] private float dashDistance = 15f;
     [SerializeField] private float dashDuration = 0.25f;
     [SerializeField] private float dashCooldown = 1f;
-    //[SerializeField] private float minPostDashSpeed = 2.5f;
     [SerializeField] private float dashCollisionCheckDistance = 2f;
     [SerializeField] private float postDashImpulse = 2.5f;
     [SerializeField] private float bounceImpulse = 5f;
@@ -39,6 +38,7 @@ public class PlayerDash : MonoBehaviour
     private float targetFov;
 
     private bool isDashing = false;
+    public bool IsDashing => isDashing;
     private bool canDash = true;
     private float dashTimer = 0f;
 
@@ -46,17 +46,30 @@ public class PlayerDash : MonoBehaviour
     private Vector3 dashStartPos;
     private Vector3 dashEndPos;
 
-    private void Start()
+    private void OnEnable()
+    {
+        Initialize();
+        isDashing = false;
+        dashTimer = 0f;
+    }
+    private void OnDisable()
+    {
+        isDashing = false;
+        canDash = true;
+        rb.useGravity = true;
+        if (dashEffect != null) dashEffect.Stop();
+        if (!playerMovement.MovementEnabled)
+            playerMovement.MovementEnabled = true;
+    }
+
+
+    private void Initialize()
     {
         if (rb == null)
-        {
             rb = GetComponent<Rigidbody>();
-        }
 
         if (playerMovement == null)
-        {
             playerMovement = GetComponent<PlayerMovement>();
-        }
 
         if (virtualCam != null)
         {
@@ -68,9 +81,7 @@ public class PlayerDash : MonoBehaviour
         {
             sfxSource = GameObject.Find("SFXSource")?.GetComponent<AudioSource>();
             if (sfxSource == null)
-            {
-                Debug.LogError("No se encontró el AudioSource para efectos de sonido. Asegúrate de que haya un GameObject llamado 'SFXSource' con un AudioSource en la escena.");
-            }
+                Debug.LogError("No se encontró el AudioSource para efectos de sonido.");
         }
 
         rb.useGravity = true;
@@ -86,11 +97,9 @@ public class PlayerDash : MonoBehaviour
             virtualCam.m_Lens.FieldOfView = Mathf.Lerp(currentFov, targetFov, Time.deltaTime * fovTransitionSpeed);
         }
 
-        // bool isMovingForward = vertical > 0.1f;
-
-        // Modifica la condici�n del if:
         if (Input.GetKeyDown(dashKey) && canDash && !isDashing)
         {
+            Debug.Log("Intentando dashear");
             Vector3 dashDirection = GetDashDirection();
             if (IsPathClear(dashDirection, dashCollisionCheckDistance))
             {
@@ -121,7 +130,6 @@ public class PlayerDash : MonoBehaviour
             }
         }
 
-
         rb.MovePosition(targetPos);
 
         if (!isDashing || t >= 1f)
@@ -133,16 +141,15 @@ public class PlayerDash : MonoBehaviour
     private IEnumerator DashFovEffect()
     {
         targetFov = dashFov;
-
         yield return new WaitForSeconds(dashDuration);
-
         targetFov = defaultFov;
     }
 
     private void StartDashState(Vector3 dashDirection)
     {
-        if (dashEffect != null) dashEffect?.Play();
-        if (sfxSource != null && dashSound != null) sfxSource.PlayOneShot(dashSound);
+        dashEffect?.Play();
+        if (sfxSource != null && dashSound != null)
+            sfxSource.PlayOneShot(dashSound);
 
         PlayerAnimatorController.Instance?.PlayDashAnim();
 
@@ -151,32 +158,31 @@ public class PlayerDash : MonoBehaviour
         dashTimer = 0f;
 
         currentDashDirection = dashDirection;
-        dashStartPos = transform.position;
+
+        dashStartPos = rb.position;
         dashEndPos = dashStartPos + dashDirection * dashDistance;
 
         rb.velocity = Vector3.zero;
         rb.useGravity = false;
 
         if (playerMovement.IsGrounded)
-        {
             playerMovement.MovementEnabled = false;
-        }
+
+        Debug.Log("DASH START POS: " + dashStartPos);
+        Debug.Log("DASH END POS: " + dashEndPos);
     }
-    
+
     private void ResetDashState()
     {
-        if (dashEffect != null) dashEffect.Stop();
+        dashEffect?.Stop();
 
         isDashing = false;
         rb.useGravity = true;
 
-        //AdjustPostDashVelocity();
         ApplyPostDashImpulse();
 
         if (!playerMovement.MovementEnabled)
-        {
             playerMovement.MovementEnabled = true;
-        }
 
         Invoke(nameof(ResetDashCooldown), dashCooldown);
     }
@@ -201,49 +207,24 @@ public class PlayerDash : MonoBehaviour
     private Vector3 GetDashDirection()
     {
         Transform forwardSource = useCameraForward ? playerCam : orientation;
-
         if (forwardSource == null)
-        {
             return transform.forward;
-        }
 
         Vector3 direction = forwardSource.forward;
-
         if (flattenDashDirection)
-        {
             direction = Vector3.ProjectOnPlane(direction, Vector3.up).normalized;
-        }
 
         return direction.normalized;
     }
-    /*
-    private void AdjustPostDashVelocity()
-    {
-        Vector3 horizontalVel = new Vector3(currentDashDirection.x, 0f, currentDashDirection.z).normalized * minPostDashSpeed;
 
-        if (playerMovement.IsGrounded)
-        {
-            rb.velocity = horizontalVel;
-        }
-        else
-        {
-            rb.velocity = new Vector3(horizontalVel.x, rb.velocity.y, horizontalVel.z);
-        }
-    }
-    */
     private bool IsPathClear(Vector3 direction, float distance)
     {
         RaycastHit hit;
         if (Physics.Raycast(transform.position, direction, out hit, distance))
-        {
-            // Si colisiona, pero el tag es "Fragment", lo consideramos como "camino libre"
             return hit.collider.CompareTag("Fragment");
-        }
 
-        // Si no colisionó con nada, el camino está libre
         return true;
     }
-
 
     private void OnCollisionEnter(Collision collision)
     {

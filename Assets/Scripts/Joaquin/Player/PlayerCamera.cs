@@ -4,21 +4,24 @@ public class PlayerCamera : MonoBehaviour
 {
     [SerializeField] private float sensitivity = 2f;
     [SerializeField] private float verticalClamp = 90f;
-
     [SerializeField] private Transform orientation;
 
-    private float rotationX = 0f;
-    private float rotationY = -90f;
+    private float rotationX;
+    private float rotationY;
 
-    private void Start()
+    private void Awake()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
         sensitivity = SettingsService.Sensitivity * 100;
-
     }
-
+    private void Start()
+    {
+        // Captura rotación inicial desde la escena
+        Vector3 eulerAngles = transform.rotation.eulerAngles;
+        rotationX = eulerAngles.x;
+        rotationY = eulerAngles.y;
+    }
     private void LateUpdate()
     {
         float mouseX = Input.GetAxis("Mouse X") * Time.deltaTime * sensitivity;

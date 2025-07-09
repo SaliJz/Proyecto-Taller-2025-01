@@ -133,7 +133,7 @@ public class PositionAboveAndFacePlayer : MonoBehaviour
 //    [Tooltip("Mantener altura constante respecto al objetivo")]
 //    public bool maintainHeight = true;
 
-//    private Vector3 targetPosition;
+//    private Vector3 targetPosition1;
 //    private Quaternion targetRotation;
 //    private Vector3 originalOffset;
 
@@ -158,11 +158,11 @@ public class PositionAboveAndFacePlayer : MonoBehaviour
 //    {
 //        // Calcular posición con offset vertical
 //        Vector3 basePosition = targetObject.transform.position;
-//        targetPosition = maintainHeight ?
+//        targetPosition1 = maintainHeight ?
 //            basePosition + originalOffset :
 //            basePosition + Vector3.up * verticalOffset;
 
-//        transform.position = targetPosition;
+//        transform.position = targetPosition1;
 //    }
 
 //    void UpdateRotation()

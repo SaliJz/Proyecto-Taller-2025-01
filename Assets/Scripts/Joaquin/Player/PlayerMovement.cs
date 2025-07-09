@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -28,6 +29,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Debug Options")]
     [SerializeField] private bool showDetailsOptions = false;
 
+    TutorialManager0 manager;
+    private PlayerDash playerDash;
     public bool IsMoving => rb.velocity.magnitude > 0.1f;
     public bool IsGrounded => isGrounded;
     public bool MovementEnabled { get; set; } = true;
@@ -37,10 +40,17 @@ public class PlayerMovement : MonoBehaviour
         if (rb == null) rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
     }
+    private void Start()
+    {
+        playerDash = GetComponent<PlayerDash>();
+
+        manager = TutorialManager0.Instance;
+
+    }
 
     private void Update()
     {
-        if (!MovementEnabled) return;
+        if (!MovementEnabled || (playerDash != null && playerDash.IsDashing)) return;
 
         CheckGround();
         HandleJumpInput();
@@ -49,7 +59,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!MovementEnabled) return;
+        if (!MovementEnabled || (playerDash != null && playerDash.IsDashing)) return;
 
         if (isGrounded && Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0)
         {
@@ -108,10 +118,20 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleJumpInput()
     {
+        
         if (Input.GetKeyDown(jumpKey) && isGrounded)
         {
-            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            if(manager!=null && manager.currentDialogueIndex <2)
+            {
+                return ;
+            }
+
+            else
+            {
+                rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            }
+          
         }
     }
 

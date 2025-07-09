@@ -144,13 +144,13 @@ public class EnemigoPistolaTutorial : MonoBehaviour
         isDead = true;
 
         TutorialEnemies tutorial = GetComponent<TutorialEnemies>();
-        if (tutorial != null)
-        {
-            foreach (int index in tutorial.IndexScenes)
-            {
-                TutorialManager.Instance.ScenarioActivationCheckerByKills();
-            }
-        }
+        //if (tutorial != null)
+        //{
+        //    foreach (int index in tutorial.IndexScenes)
+        //    {
+        //        TutorialManager.Instance.ScenarioActivationCheckerByKills();
+        //    }
+        //}
 
         if (prefabsAlMorir != null && prefabsAlMorir.Length > 0)
             Instantiate(prefabsAlMorir[Random.Range(0, prefabsAlMorir.Length)], transform.position, transform.rotation);
