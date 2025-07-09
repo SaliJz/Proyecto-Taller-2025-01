@@ -122,6 +122,85 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!4 &1006502156 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5858955471630284768, guid: 8b4822e58770d3f48a66cfd2bbe5bbfe,
+    type: 3}
+  m_PrefabInstance: {fileID: 1446828126329767947}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1006861754
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1006861757}
+  - component: {fileID: 1006861756}
+  - component: {fileID: 1006861755}
+  m_Layer: 0
+  m_Name: ZonaB
+  m_TagString: Untagged
+  m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1006861755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1006861754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f26ef046d889c1947a712ad152f294c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  puertaIzquierda: {fileID: 1006502156}
+  puertaDerecha: {fileID: 1948118600}
+  posicionAbiertaIzquierda: {fileID: 1006502156}
+  posicionAbiertaDerecha: {fileID: 1948118600}
+  posicionCerradaIzquierda: {fileID: 1006502156}
+  posicionCerradaDerecha: {fileID: 1948118600}
+  velocidad: 2
+--- !u!65 &1006861756
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1006861754}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!4 &1006861757
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1006861754}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 32.58, y: 2.18, z: 18.04}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1355823049
 GameObject:
   m_ObjectHideFlags: 0
@@ -214,6 +293,79 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1458415430
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1458415433}
+  - component: {fileID: 1458415432}
+  - component: {fileID: 1458415431}
+  m_Layer: 0
+  m_Name: ZonaA
+  m_TagString: Untagged
+  m_Icon: {fileID: 2488908585195742037, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1458415431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1458415430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f26ef046d889c1947a712ad152f294c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  puertaIzquierda: {fileID: 1006502156}
+  puertaDerecha: {fileID: 1948118600}
+  posicionAbiertaIzquierda: {fileID: 1006502156}
+  posicionAbiertaDerecha: {fileID: 1948118600}
+  posicionCerradaIzquierda: {fileID: 1006502156}
+  posicionCerradaDerecha: {fileID: 1948118600}
+  velocidad: 2
+--- !u!65 &1458415432
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1458415430}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!4 &1458415433
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1458415430}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 34.436, y: 0.293, z: -6.176}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1862870985
 GameObject:
   m_ObjectHideFlags: 0
@@ -230,7 +382,7 @@ GameObject:
   - component: {fileID: 1862870986}
   m_Layer: 0
   m_Name: Jugador
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -363,6 +515,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1948118600 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4080398456096445915, guid: 8b4822e58770d3f48a66cfd2bbe5bbfe,
+    type: 3}
+  m_PrefabInstance: {fileID: 1446828126329767947}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2061387058
 GameObject:
   m_ObjectHideFlags: 0
@@ -544,6 +702,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: LevelBoss
       objectReference: {fileID: 0}
+    - target: {fileID: 4080398456096445915, guid: 8b4822e58770d3f48a66cfd2bbe5bbfe,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5858955471630284768, guid: 8b4822e58770d3f48a66cfd2bbe5bbfe,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -557,3 +725,5 @@ SceneRoots:
   - {fileID: 2061387060}
   - {fileID: 1446828126329767947}
   - {fileID: 1862870991}
+  - {fileID: 1458415433}
+  - {fileID: 1006861757}
