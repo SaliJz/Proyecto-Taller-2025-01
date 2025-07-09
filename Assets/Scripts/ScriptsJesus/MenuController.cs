@@ -9,7 +9,8 @@ using Unity.VisualScripting;
 public class MenuController : MonoBehaviour
 {
     [Header("Buttons")]
-    [SerializeField] private Button playButton;
+    [SerializeField] private Button tutorialButton;
+    [SerializeField] private Button startLevel1Button;
     [SerializeField] private Button creditsButton;
     [SerializeField] private Button settingsButton;
     [SerializeField] private Button quitButton;
@@ -26,11 +27,12 @@ public class MenuController : MonoBehaviour
     //[SerializeField] private string levelSceneName = "";
     [SerializeField] private string creditsSceneName = "Creditos";
 
-    [SerializeField] private Toggle replayTutorialsToggle;
+    //[SerializeField] private Toggle replayTutorialsToggle;
 
     private void Awake()
     {
-        playButton.onClick.AddListener(StartGame);
+        tutorialButton.onClick.AddListener(PlayTutorial);
+        startLevel1Button.onClick.AddListener(PlayFromLevel1);
         creditsButton.onClick.AddListener(OpenCredits);
         quitButton.onClick.AddListener(QuitGame);
     }
@@ -47,39 +49,37 @@ public class MenuController : MonoBehaviour
         {
             settingsButton.onClick.AddListener(OpenSettings);
         }
-
+        /*
         if (GameManager.Instance != null && replayTutorialsToggle != null)
         {
             replayTutorialsToggle.gameObject.SetActive(GameManager.Instance.TutorialsCompleted);
         }
+        */
     }
 
-    private void Update()
-    {
-        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.P))
-        {
-            replayTutorialsToggle.gameObject.SetActive(true);
-        }
-    }
-
-    public void StartGame()
+    public void PlayTutorial()
     {
         PlayButtonAudio();
-        bool forceTutorials = replayTutorialsToggle != null && replayTutorialsToggle.isOn;
-        GameManager.Instance?.StartGame(forceTutorials);
+        GameManager.Instance?.StartTutorial();
+    }
+
+    public void PlayFromLevel1()
+    {
+        PlayButtonAudio();
+        GameManager.Instance?.StartFromLevel1();
+        //bool forceTutorials = replayTutorialsToggle != null && replayTutorialsToggle.isOn;
+        //GameManager.Instance?.StartGame(forceTutorials);
     }
 
     public void OpenCredits()
     {
         PlayButtonAudio();
-
         SceneManager.LoadScene(creditsSceneName);  
     }
 
     public void OpenSettings()
     {
         PlayButtonAudio();
-
         mainMenuPanel.SetActive(false);
         settingsPanel.SetActive(true);
     }

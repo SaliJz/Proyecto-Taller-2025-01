@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,7 +24,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI shieldText;
 
     [Header("Ammo")]
-    [SerializeField] private TextMeshProUGUI ammoText;
+    [SerializeField] private List<TextMeshProUGUI> ammoTexts;
 
     [Header("Weapon")]
     [SerializeField] private TextMeshProUGUI weaponNameText;
@@ -91,7 +92,14 @@ public class HUDManager : MonoBehaviour
             infoFragments = 100;
         }
 
-        if (ammoText !=null) ammoText.gameObject.SetActive(false);
+        if (ammoTexts != null)
+        {
+            foreach (var text in ammoTexts)
+            {
+                text.gameObject.SetActive(false);
+            }
+        }
+
         if (floatingInfoFragmentsText != null) floatingInfoFragmentsText.gameObject.SetActive(false);
 
         if (missionPanel != null) missionPanel.SetActive(false);
@@ -152,20 +160,27 @@ public class HUDManager : MonoBehaviour
 
     #region Weapon and Ammo Updates
 
-    public void UpdateAmmo(int current, int total)
+    public void UpdateAmmo(int weaponIndex, int current, int total)
     {
-        if (ammoText != null) 
+        if (ammoTexts == null || weaponIndex < 0 || weaponIndex >= ammoTexts.Count) return;
+
+        // Desactiva todos los textos de munición
+        foreach (var text in ammoTexts)
         {
-            if (!ammoText.gameObject.activeSelf) ammoText.gameObject.SetActive(true);
-            ammoText.text = $"{current} / {total}";
+            text.gameObject.SetActive(false);
         }
+
+        // Activa y actualiza solo el texto del arma actual
+        var currentAmmoText = ammoTexts[weaponIndex];
+        currentAmmoText.gameObject.SetActive(true);
+        currentAmmoText.text = $"{current} / {total}";
     }
 
     public void UpdateWeaponName(string name)
     {
         if (weaponNameText != null || name != null)
         {
-            if (!weaponNameText.gameObject.activeSelf) weaponNameText.gameObject.SetActive(true);
+            //if (!weaponNameText.gameObject.activeSelf) weaponNameText.gameObject.SetActive(true);
             weaponNameText.text = name;
         }
     }
@@ -174,7 +189,7 @@ public class HUDManager : MonoBehaviour
     {
         if (weaponIcon != null || icon != null)
         {
-            if (!weaponIcon.gameObject.activeSelf) weaponIcon.gameObject.SetActive(true);
+            //if (!weaponIcon.gameObject.activeSelf) weaponIcon.gameObject.SetActive(true);
             weaponIcon.sprite = icon;
         }
     }

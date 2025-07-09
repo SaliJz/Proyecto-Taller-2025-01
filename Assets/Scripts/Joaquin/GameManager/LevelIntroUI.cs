@@ -16,8 +16,9 @@ public class LevelIntroUI : MonoBehaviour
             return;
         }
 
-        int displayLevel = GameManager.Instance.CurrentLevelIndex + 1;
-        if (GameManager.Instance.CurrentLevelIndex > 9) levelText.text = $"Nivel {displayLevel} (Jefe)";
+        int displayLevel = GameManager.Instance.CurrentLevelIndex;
+        if (GameManager.Instance.CurrentLevelIndex <= 0) levelText.text = $"Nivel {displayLevel} (Tutorial)";
+        else if (GameManager.Instance.CurrentLevelIndex >= 5) levelText.text = $"Nivel {displayLevel} (Jefe)";
         else levelText.text = $"Nivel {displayLevel}";
         StartCoroutine(FadeOutRoutine());
     }

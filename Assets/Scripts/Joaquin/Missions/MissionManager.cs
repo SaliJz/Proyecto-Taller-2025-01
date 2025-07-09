@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 
 public class MissionManager : MonoBehaviour
 {
-    // ... (Enum MissionMode y las variables del Inspector se mantienen igual)
     private enum MissionMode { Purgador, JSS, ElUnico }
 
     [Header("Misión base")]
@@ -154,7 +153,7 @@ public class MissionManager : MonoBehaviour
         else
         {
             string progress = $"{currentMissionSO.killConditions[0].currentAmount}/{currentMissionSO.killConditions[0].requiredAmount}";
-            HUDManager.Instance?.ShowMission($"{currentMissionSO.missionName}\n{progress}");
+            HUDManager.Instance?.ShowMission($"Objetivo: Elimina enemigos\nProgreso: \n{progress}");
         }
     }
 

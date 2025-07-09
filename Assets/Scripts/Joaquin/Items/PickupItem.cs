@@ -30,9 +30,12 @@ public class PickupItem : MonoBehaviour
     private bool isFlyingToPlayer = false;
     private Transform playerTarget;
     private Rigidbody rb;
+    private WeaponManager weaponManager;
 
     private void Start()
     {
+        weaponManager = FindObjectOfType<WeaponManager>();
+
         Invoke(nameof(DestroyPickup), lifetime);
 
         amountRange = pickupType switch
@@ -102,9 +105,26 @@ public class PickupItem : MonoBehaviour
 
             FollowAtPlayer(); // llamado constante desde Update
         }
-        else if (playerInRange)
+        else // Lógica para munición
         {
-            TryPickup(); // solo para munición
+            if (playerTarget != null && !isFlyingToPlayer)
+            {
+                float distance = Vector3.Distance(transform.position, playerTarget.position);
+                if (distance <= pickUpRange)
+                {
+                    // Comprueba si el jugador necesita este tipo de munición
+                    if (NeedsThisAmmoType())
+                    {
+                        isFlyingToPlayer = true;
+                        if (rb != null) rb.isKinematic = true;
+                    }
+                }
+            }
+
+            if (isFlyingToPlayer)
+            {
+                FollowAndPickupAmmo();
+            }
         }
     }
 
@@ -166,6 +186,34 @@ public class PickupItem : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    private bool NeedsThisAmmoType()
+    {
+        if (weaponManager == null) return false;
+
+        return pickupType switch
+        {
+            PickupType.AmmoSingle => weaponManager.NeedsAmmo(Weapon.ShootingMode.Single),
+            PickupType.AmmoSemiAuto => weaponManager.NeedsAmmo(Weapon.ShootingMode.SemiAuto),
+            PickupType.AmmoAuto => weaponManager.NeedsAmmo(Weapon.ShootingMode.Auto),
+            _ => false,
+        };
+    }
+
+    private void FollowAndPickupAmmo()
+    {
+        if (playerTarget == null) return;
+
+        Vector3 targetPosition = playerTarget.position + Vector3.up * positionOffset;
+        transform.position = Vector3.MoveTowards(transform.position, targetPosition, flySpeed * Time.deltaTime);
+
+        if (Vector3.Distance(transform.position, targetPosition) < 0.2f)
+        {
+            TryPickup();
+            // El objeto se destruirá dentro de TryPickup si se recoge toda la munición
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<PlayerHealth>() != null)
