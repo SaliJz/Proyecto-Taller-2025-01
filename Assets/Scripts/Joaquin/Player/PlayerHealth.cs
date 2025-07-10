@@ -172,6 +172,14 @@ public class PlayerHealth : MonoBehaviour
     {
         insertKillsCount = fatherWithCode.GetComponent<InsertKillsCount>();
         insertKillsCount.SendDataToServer();
+
+        SendPosition enviar = GetComponent<SendPosition>();
+        if (enviar != null)
+        {
+            enviar.EnviarPosicionActual();
+        }
+
+
         EnemySpawner enemySpawner = FindObjectOfType<EnemySpawner>();
         if (enemySpawner != null)
         {
