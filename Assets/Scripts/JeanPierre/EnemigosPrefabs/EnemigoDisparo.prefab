@@ -225,6 +225,7 @@ GameObject:
   - component: {fileID: 9149050916778795530}
   - component: {fileID: 5845595052393315804}
   - component: {fileID: 1875104927599053000}
+  - component: {fileID: 8539956855257585862}
   m_Layer: 6
   m_Name: EnemigoDisparo
   m_TagString: Enemy
@@ -560,6 +561,18 @@ CapsuleCollider:
   m_Height: 2.38
   m_Direction: 1
   m_Center: {x: 0.03, y: 0.15, z: 0}
+--- !u!114 &8539956855257585862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3775705321392681890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d96bd9c038dab543b15b070274376e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6177287622287384025
 GameObject:
   m_ObjectHideFlags: 0

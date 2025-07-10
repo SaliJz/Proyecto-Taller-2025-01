@@ -397,6 +397,7 @@ GameObject:
   - component: {fileID: 7170101365556741992}
   - component: {fileID: 3574586187406627060}
   - component: {fileID: 411004352547346062}
+  - component: {fileID: 8904910027556072218}
   m_Layer: 6
   m_Name: EnemigoExplosion
   m_TagString: Enemy
@@ -654,6 +655,18 @@ NavMeshAgent:
   m_BaseOffset: 1.03
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &8904910027556072218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4394272956414374065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d96bd9c038dab543b15b070274376e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6482934429859103929
 GameObject:
   m_ObjectHideFlags: 0

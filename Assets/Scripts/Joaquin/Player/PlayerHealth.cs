@@ -28,6 +28,10 @@ public class PlayerHealth : MonoBehaviour
     private bool isIgnited = false;
     private Coroutine ignitionCoroutine;
 
+    [Header("DataBase")]
+    [SerializeField] GameObject fatherWithCode;
+    InsertKillsCount insertKillsCount;
+
     private void Start()
     {
         if (directionalDamageHUD == null) directionalDamageHUD = FindObjectOfType<Active_ShieldHUD>();
@@ -166,6 +170,8 @@ public class PlayerHealth : MonoBehaviour
 
     public void Die()
     {
+        insertKillsCount = fatherWithCode.GetComponent<InsertKillsCount>();
+        insertKillsCount.SendDataToServer();
         EnemySpawner enemySpawner = FindObjectOfType<EnemySpawner>();
         if (enemySpawner != null)
         {

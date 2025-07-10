@@ -446,6 +446,7 @@ GameObject:
   - component: {fileID: 3247441937836668493}
   - component: {fileID: 4966090092420306200}
   - component: {fileID: 7746980232694710388}
+  - component: {fileID: 7253515416094102518}
   m_Layer: 6
   m_Name: EnemigoMelee
   m_TagString: Enemy
@@ -793,6 +794,18 @@ MonoBehaviour:
     type: 2}
   materialPistola: {fileID: 2100000, guid: d56d5a37307e9fc4fa261b3239124b38, type: 2}
   materialEscopeta: {fileID: 2100000, guid: b9726c6f76e03234989e4ab2a98fb100, type: 2}
+--- !u!114 &7253515416094102518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5120538479886475079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d96bd9c038dab543b15b070274376e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6642947135343746201
 GameObject:
   m_ObjectHideFlags: 0
