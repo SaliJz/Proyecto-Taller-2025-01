@@ -7,7 +7,7 @@ public class SendPosition : MonoBehaviour
 {
     public int player_id = 1;    
     public int level_id = 1;    
-    private string url = "http://localhost/juego/insert_player_location.php";
+    private string url = "http://localhost/workshop_project/insert_player_location.php";
 
     public void EnviarPosicionActual()
     {
