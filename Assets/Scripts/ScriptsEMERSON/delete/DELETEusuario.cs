@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
+
 
 public class DELETEusuario : MonoBehaviour
 {
@@ -21,5 +23,8 @@ public class DELETEusuario : MonoBehaviour
         yield return www.SendWebRequest();
 
         Debug.Log(www.downloadHandler.text);
+
+        SceneManager.LoadScene("LOGIN");
+
     }
 }
