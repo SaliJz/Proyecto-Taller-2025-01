@@ -15,6 +15,10 @@ public class SnakeAutoColumnWrap : MonoBehaviour
     [Tooltip("Transform de la columna alrededor de la cual se enrollará la serpiente")]
     public Transform columna;
 
+    [Header("Jugador")]
+    [Tooltip("Transform del jugador que se asignará al destruir este componente")]
+    public Transform jugador;
+
     [Header("Ajustes de espera")]
     [Tooltip("Tiempo máximo de espera para que aparezcan los segmentos (segundos)")]
     public float timeoutSeconds = 5f;
@@ -67,4 +71,20 @@ public class SnakeAutoColumnWrap : MonoBehaviour
         // 3) Disparar automáticamente el wrap y elevación
         columnWrapper.TriggerWrap();
     }
+
+    private void OnDestroy()
+    {
+        // Antes de destruir este componente, asignamos el Transform del jugador
+        if (snakeController != null)
+        {
+            jugador = snakeController.transform;
+        }
+        else
+        {
+            Debug.LogWarning("SnakeAutoColumnWrap: no se pudo asignar 'jugador' porque snakeController es null.");
+        }
+    }
 }
+
+
+

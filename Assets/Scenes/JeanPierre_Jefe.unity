@@ -2020,7 +2020,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 561226448}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45842e03a2d8afc4ea47d4d100d26050, type: 3}
   m_Name: 
@@ -2029,12 +2029,12 @@ MonoBehaviour:
   umbralLlegada: 0.2
   vueltasCompletas: 2
   offsetRadio: 0.2
-  headOffset: 3.5
+  headOffset: 0
   velocidadEnrollado: 1
-  segmentosCuello: 0
+  segmentosCuello: 2
   alturaTotal: 3
-  headElevationOffset: 2
-  headForwardOffset: 3
+  headElevationOffset: 0
+  headForwardOffset: 2
 --- !u!114 &561226458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2090,7 +2090,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 561226448}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2aaed50ba3360a841b5650f4c0408ef7, type: 3}
   m_Name: 
@@ -2126,22 +2126,27 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 561226448}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d6682bedd2720c643bac3689c7afcb1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vidaFasePrevia: 1
+  preScriptsToActivate:
+  - {fileID: 561226452}
+  preScriptsToRemove:
+  - {fileID: 561226466}
   vida: 300
   danioAmetralladora: 15
   danioPistola: 20
   danioEscopeta: 30
-  scriptsToRemove:
-  - {fileID: 561226452}
-  - {fileID: 561226462}
   scriptsToActivate:
   - {fileID: 561226459}
   - {fileID: 561226457}
   - {fileID: 561226456}
+  scriptsToRemove:
+  - {fileID: 561226452}
+  - {fileID: 561226462}
 --- !u!114 &561226463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2204,6 +2209,7 @@ MonoBehaviour:
   snakeController: {fileID: 561226449}
   columnWrapper: {fileID: 561226457}
   columna: {fileID: 828388134}
+  jugador: {fileID: 0}
   timeoutSeconds: 5
   checkInterval: 0.1
 --- !u!1 &571849479
@@ -2306,13 +2312,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 571849479}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: 0.4452296, z: -0, w: 0.89541644}
   m_LocalPosition: {x: 26.3, y: -0.47718608, z: -167.8}
   m_LocalScale: {x: 3.5063376, y: 27.847904, z: 3.5063376}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 52.876, z: 0}
 --- !u!1 &580174465 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4722166011011013835, guid: 7c976d521131d754a912369e31821219,
@@ -2608,13 +2614,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 707204832}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0.44332927, z: -0, w: 0.8963589}
   m_LocalPosition: {x: 54.5, y: -0.47718608, z: -168.1}
   m_LocalScale: {x: 3.5063376, y: 27.847904, z: 3.5063376}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -52.633, z: 0}
 --- !u!1 &711814726
 GameObject:
   m_ObjectHideFlags: 0
