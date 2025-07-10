@@ -1800,11 +1800,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 561226450}
-  - component: {fileID: 561226465}
-  - component: {fileID: 561226460}
-  - component: {fileID: 561226458}
-  - component: {fileID: 561226453}
-  - component: {fileID: 561226454}
+  - component: {fileID: 561226466}
   - component: {fileID: 561226449}
   - component: {fileID: 561226462}
   - component: {fileID: 561226452}
@@ -1815,13 +1811,18 @@ GameObject:
   - component: {fileID: 561226461}
   - component: {fileID: 561226455}
   - component: {fileID: 561226464}
+  - component: {fileID: 561226465}
+  - component: {fileID: 561226460}
+  - component: {fileID: 561226458}
+  - component: {fileID: 561226454}
+  - component: {fileID: 561226453}
   m_Layer: 0
   m_Name: SERPIENTE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &561226449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1848,7 +1849,7 @@ MonoBehaviour:
   - {fileID: 2794161419048916778, guid: 2e0c4843a1f52ac429b5ce25dc0e31e5, type: 3}
   prefabCola: {fileID: 6889553621689296843, guid: b4902a2a3c4b7f847b42cd74d007816f,
     type: 3}
-  cantidadSegmentosCuerpo: 17
+  cantidadSegmentosCuerpo: 16
   distanciaCabezaCuerpo: 0
   separacionCola: 1
   separacionSegmentos: 1.3
@@ -1891,7 +1892,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 561226448}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6d69fde7da1e7c44ba462e26d16c064, type: 3}
   m_Name: 
@@ -1928,7 +1929,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3fad1a1674fb7c4ba844139665612ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  columna: {fileID: 707204836}
+  columna: {fileID: 828388134}
   umbralLlegada: 0.2
   vueltasCompletas: 3
   offsetRadio: 0.2
@@ -2019,7 +2020,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 561226448}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45842e03a2d8afc4ea47d4d100d26050, type: 3}
   m_Name: 
@@ -2028,10 +2029,12 @@ MonoBehaviour:
   umbralLlegada: 0.2
   vueltasCompletas: 2
   offsetRadio: 0.2
-  headOffset: 2.5
+  headOffset: 3.5
   velocidadEnrollado: 1
-  segmentosCuello: 1
-  alturaTotal: 2
+  segmentosCuello: 0
+  alturaTotal: 3
+  headElevationOffset: 2
+  headForwardOffset: 3
 --- !u!114 &561226458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2087,7 +2090,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 561226448}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2aaed50ba3360a841b5650f4c0408ef7, type: 3}
   m_Name: 
@@ -2123,7 +2126,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 561226448}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d6682bedd2720c643bac3689c7afcb1f, type: 3}
   m_Name: 
@@ -2186,6 +2189,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   retrasoAsignacion: 0.3
   activar: 1
+--- !u!114 &561226466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561226448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 973860463215cd7498746b0f255c5beb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  snakeController: {fileID: 561226449}
+  columnWrapper: {fileID: 561226457}
+  columna: {fileID: 828388134}
+  timeoutSeconds: 5
+  checkInterval: 0.1
 --- !u!1 &571849479
 GameObject:
   m_ObjectHideFlags: 0
@@ -3042,13 +3062,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 828388130}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.7154845, z: -0, w: 0.69862866}
+  m_LocalRotation: {x: -0, y: -0.99999803, z: -0, w: -0.0019852775}
   m_LocalPosition: {x: 41, y: -0.47718608, z: -142.1}
-  m_LocalScale: {x: 3.5063376, y: 27.847904, z: 3.5063376}
+  m_LocalScale: {x: 3.5063376, y: 69.30229, z: 3.5063376}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 91.366, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 539.772, z: 0}
 --- !u!1 &829069548
 GameObject:
   m_ObjectHideFlags: 0
@@ -3907,7 +3927,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1295209692
 MonoBehaviour:
   m_ObjectHideFlags: 0
