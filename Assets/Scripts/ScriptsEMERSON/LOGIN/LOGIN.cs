@@ -7,7 +7,7 @@ public class LOGIN : MonoBehaviour
 {
     public static int currentPlayer_id=0;
     public static LOGINMODE loginmode;
-    private string url = "http://localhost/EdenDataBase/select.php";
+    private string url = "https://progra251ch.samidareno.com/select.php";
 
     public void Execute(string player_name, string password)
     {

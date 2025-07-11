@@ -9,7 +9,7 @@ public class ReadPositions : MonoBehaviour
     [SerializeField] private int player_id = 1;
     
 
-    private string url = "http://localhost/workshop_project/get_player_locations.php";
+    private string url = "https://progra251ch.samidareno.com/get_player_locations.php";
 
     void Start()
     {

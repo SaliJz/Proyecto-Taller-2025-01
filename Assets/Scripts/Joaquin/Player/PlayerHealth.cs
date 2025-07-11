@@ -170,8 +170,8 @@ public class PlayerHealth : MonoBehaviour
 
     public void Die()
     {
-        //insertKillsCount = fatherWithCode.GetComponent<InsertKillsCount>();
-        //insertKillsCount.SendDataToServer();
+        insertKillsCount = fatherWithCode.GetComponent<InsertKillsCount>();
+        insertKillsCount.SendDataToServer();
 
         SendPosition enviar = GetComponent<SendPosition>();
         if (enviar != null)

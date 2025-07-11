@@ -7,7 +7,7 @@ public class DeletePositions : MonoBehaviour
 {
     [SerializeField] private int player_id = 1;
 
-    private string url = "http://localhost/workshop_project/Delete_old_positions.php";
+    private string url = "https://progra251ch.samidareno.com/Delete_old_positions.php";
 
     public void Eliminar()
     {

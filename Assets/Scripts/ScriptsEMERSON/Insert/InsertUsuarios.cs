@@ -9,7 +9,7 @@ public class InsertUsuario : MonoBehaviour
 {
     public Action<string> OnMensajeRecibido;
 
-    private string url = "http://localhost/login/insert.php";
+    private string url = "https://progra251ch.samidareno.com/insert.php";
 
     public void Execute(string player_name, string password)
     {

@@ -11,7 +11,7 @@ public class SendPosition : MonoBehaviour
 
     public GameObject eliminador;
 
-    private string url = "http://localhost/workshop_project/insert_player_location.php";
+    private string url = "https://progra251ch.samidareno.com/insert_player_location.php";
 
     public void EnviarPosicionActual()
     {
