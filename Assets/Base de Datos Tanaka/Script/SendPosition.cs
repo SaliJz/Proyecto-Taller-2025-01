@@ -7,7 +7,10 @@ using UnityEngine.Networking;
 public class SendPosition : MonoBehaviour
 {
     [SerializeField] private int player_id = 1;    
-    [SerializeField] private int level_id = 1;    
+    [SerializeField] private int level_id = 1;
+
+    public GameObject eliminador;
+
     private string url = "http://localhost/workshop_project/insert_player_location.php";
 
     public void EnviarPosicionActual()
@@ -35,6 +38,7 @@ public class SendPosition : MonoBehaviour
         else
         {
             Debug.Log("Datos enviados: " + www.downloadHandler.text);
+            eliminador.GetComponent<DeletePositions>().Eliminar();
         }
     }
 }
