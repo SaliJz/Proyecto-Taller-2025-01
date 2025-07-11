@@ -11,6 +11,7 @@ public class ReadPositions : MonoBehaviour
 
     void Start()
     {
+        Debug.Log(" ReadPositions.cs: Start ejecutado");
         StartCoroutine(LeerDatos());
     }
 
