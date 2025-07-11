@@ -13,8 +13,8 @@ public class PlayerCamera : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        sensitivity = SettingsService.Sensitivity * 100;
     }
+
     private void Start()
     {
         // Captura rotación inicial desde la escena
@@ -22,10 +22,14 @@ public class PlayerCamera : MonoBehaviour
         rotationX = eulerAngles.x;
         rotationY = eulerAngles.y;
     }
+
     private void LateUpdate()
     {
-        float mouseX = Input.GetAxis("Mouse X") * Time.deltaTime * sensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * Time.deltaTime * sensitivity;
+        float currentSensitivity = SettingsService.Sensitivity * 100f;
+        sensitivity = currentSensitivity;
+
+        float mouseX = Input.GetAxis("Mouse X") * Time.fixedDeltaTime * sensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * Time.fixedDeltaTime * sensitivity;
 
         rotationX -= mouseY;
         rotationY += mouseX;

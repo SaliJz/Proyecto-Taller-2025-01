@@ -180,7 +180,6 @@ public class Weapon : MonoBehaviour
             if (ammoReloadedThisCycle >= minAmmoToInterruptReload)
             {
                 CancelReload();
-                if (CanShoot()) Shoot();
             }
             return;
         }

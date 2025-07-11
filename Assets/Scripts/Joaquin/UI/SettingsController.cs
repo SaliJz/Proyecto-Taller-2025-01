@@ -94,8 +94,6 @@ public class SettingsController : MonoBehaviour
         fpsToggle.onValueChanged.AddListener(value =>
         {
             tempSettings.ShowFps = value;
-            if (!value) fpsText.gameObject.SetActive(false);
-            else fpsText.gameObject.SetActive(value);
         });
 
         applyButton.onClick.AddListener(ApplySettings);
@@ -155,6 +153,8 @@ public class SettingsController : MonoBehaviour
 
         SettingsService.Save();
         SettingsService.Apply(audioMixer);
+
+        fpsText.gameObject.SetActive(SettingsService.ShowFps);
 
         StartCoroutine(ShowConfirmation("Configuración aplicada"));
     }

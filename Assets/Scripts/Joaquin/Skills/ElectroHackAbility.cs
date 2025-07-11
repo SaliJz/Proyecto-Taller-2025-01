@@ -66,6 +66,11 @@ public class ElectroHackAbility : MonoBehaviour
         HUDManager.Instance?.UpdateAbilityStatus(abilityInfo.abilityName, 0f, true, currentCooldown);
     }
 
+    private void OnEnable()
+    {
+        HUDManager.Instance?.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
+    }
+
     private void ApplyUpgrades()
     {
         AbilityStats stats = AbilityShopDataManager.GetStats(abilityInfo.abilityName);
