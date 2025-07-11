@@ -8,7 +8,7 @@ public class UpdatePosition : MonoBehaviour
     public int player_level_id = 1; 
     public Vector3 nuevaPosicion;
 
-    private string url = "http://localhost/juego/Update_player_position.php";
+    private string url = "http://localhost/workshop_project/Update_player_position.php";
 
     public void Actualizar()
     {
