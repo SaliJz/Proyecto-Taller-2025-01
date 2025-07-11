@@ -5,14 +5,15 @@ using UnityEngine.Networking;
 
 public class UpdatePosition : MonoBehaviour
 {
-    public int player_level_id = 1; 
-    public Vector3 nuevaPosicion;
+    public int player_level_id = 1;
+    public GameObject jugador;
 
     private string url = "http://localhost/workshop_project/Update_player_position.php";
 
     public void Actualizar()
     {
-        StartCoroutine(EnviarUpdate(nuevaPosicion));
+        Vector3 pos = jugador.transform.position;
+        StartCoroutine(EnviarUpdate(pos));
     }
 
     IEnumerator EnviarUpdate(Vector3 pos)
