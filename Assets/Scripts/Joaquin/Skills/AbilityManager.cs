@@ -23,26 +23,17 @@ public class AbilityManager : MonoBehaviour
 
     private void Awake()
     {
-        foreach (var abilityGO in allAbilities)
-        {
-            var info = abilityGO.GetComponent<AbilityInfo>();
-            if (info != null && !abilityMap.ContainsKey(info.abilityName))
-            {
-                abilityMap.Add(info.abilityName, abilityGO);
-            }
-        }
+        if (isLevel1) AbilityShopDataManager.ResetData();
+        LoadFromDataStore();
+        UpdateAbilitiesActiveState();
     }
 
     private void Start()
     {
-        if (isLevel1) AbilityShopDataManager.ResetData();
-
         foreach (var ability in allAbilities)
         {
             ability.SetActive(false);
         }
-
-        LoadFromDataStore();
 
         if (allowFirstAbility)
         {
@@ -55,7 +46,14 @@ public class AbilityManager : MonoBehaviour
             }
         }
 
-        UpdateAbilitiesActiveState();
+        foreach (var abilityGO in allAbilities)
+        {
+            var info = abilityGO.GetComponent<AbilityInfo>();
+            if (info != null && !abilityMap.ContainsKey(info.abilityName))
+            {
+                abilityMap.Add(info.abilityName, abilityGO);
+            }
+        }
     }
 
     private void OnEnable()

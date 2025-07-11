@@ -1,119 +1,255 @@
-﻿using UnityEngine;
+﻿// Fase1Vida.cs
+using System;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class Fase1Vida : MonoBehaviour
 {
+    [Header("Vida de Fase Previa")]
+    [Tooltip("Vida inicial de la fase previa.")]
+    public int vidaFasePrevia = 1;
+
+    [Header("Scripts a activar en fase previa")]
+    [Tooltip("Se habilitan cuando vidaFasePrevia llega a 0.")]
+    public MonoBehaviour[] preScriptsToActivate;
+    [Tooltip("Se destruyen cuando vidaFasePrevia llega a 0.")]
+    public MonoBehaviour[] preScriptsToRemove;
+
+    [Header("GameObject a activar al completar fase previa")]
+    [Tooltip("Asignar aquí el GameObject que debe activarse.")]
+    public GameObject objetoToActivateOnPhaseComplete;
+
+    [Header("Retardo antes de fase normal")]
+    [Tooltip("Segundos a esperar tras completar la fase previa.")]
+    public float normalPhaseDelay = 3f;
+
     [Header("Vida total de este objeto")]
-    [Tooltip("Vida acumulada de todas las interacciones.")]
+    [Tooltip("Vida acumulada de todas las interacciones después de la fase previa.")]
     public int vida = 300;
 
     [Header("Daño por tipo de bala")]
-    [Tooltip("Daño aplicado si la bala es de tipo Ametralladora.")]
     public int danioAmetralladora = 15;
-    [Tooltip("Daño aplicado si la bala es de tipo Pistola.")]
     public int danioPistola = 20;
-    [Tooltip("Daño aplicado si la bala es de tipo Escopeta.")]
     public int danioEscopeta = 30;
 
+    [Header("Scripts a activar al morir")]
+    public MonoBehaviour[] scriptsToActivate;
     [Header("Scripts a eliminar al morir")]
-    [Tooltip("Arrastra aquí los componentes que quieras destruir cuando la vida llegue a 0.")]
     public MonoBehaviour[] scriptsToRemove;
 
-    [Header("Scripts a activar al morir")]
-    [Tooltip("Arrastra aquí los componentes que quieras habilitar cuando la vida llegue a 0.")]
-    public MonoBehaviour[] scriptsToActivate;
+    [Header("Slider de vida normal")]
+    [Tooltip("Slider que mostrará la vida normal una vez termine la animación.")]
+    public Slider vidaSlider;
 
+    [Header("Parpadeo al recibir daño")]
+    [Tooltip("Duración (s) de la fase de oscilación.")]
+    public float blinkDuration = 0.2f;
+    [Tooltip("Duración (s) de la transición de vuelta al color original.")]
+    public float returnDuration = 0.1f;
+    [Tooltip("Ciclos de oscilación por segundo.")]
+    public float blinkFrequency = 10f;
+
+    private bool fasePreviaCompleted = false;
+    private bool normalPhaseActive = false;
     private bool isDead = false;
+
     private TipoColorController tipoColorController;
+    private Image fillImage;
+    private Color originalColor;
+    private bool blinkInProgress = false;
+    private float blinkTimer = 0f;
 
     void Start()
     {
-        // Intentar obtener el componente TipoColorController en este GameObject
+        // 1) Captura del ColorController
         tipoColorController = GetComponent<TipoColorController>();
         if (tipoColorController == null)
+            Debug.LogError("[Fase1Vida] No se encontró TipoColorController.");
+
+        // 2) Preparar componente de imagen del slider
+        if (vidaSlider != null && vidaSlider.fillRect != null)
         {
-            Debug.LogError("[Fase1Vida] No se encontró TipoColorController en este GameObject.");
+            fillImage = vidaSlider.fillRect.GetComponent<Image>();
+            originalColor = fillImage != null ? fillImage.color : Color.white;
+        }
+        else
+        {
+            Debug.LogWarning("[Fase1Vida] Slider 'vidaSlider' o su fillRect no asignados.");
         }
     }
 
-    /// <summary>
-    /// Llamado por BalaPlayer al impactar este objeto.
-    /// Solo resta vida si el tipo de bala NO coincide con el tipo actual del jefe.
-    /// </summary>
+    // Ajusta el slider de vida al inicio de fase normal
+    void SetupVidaSlider()
+    {
+        if (vidaSlider != null)
+        {
+            vidaSlider.maxValue = vida;
+            vidaSlider.value = vida;
+        }
+        else
+        {
+            Debug.LogWarning("[Fase1Vida] Slider 'vidaSlider' no asignado.");
+        }
+    }
+
     public void RecibirDanioPorBala(BalaPlayer.TipoBala tipoBala)
     {
         if (isDead) return;
 
-        // Convertir TipoBala a TipoEnemigo para comparar contra el tipo actual
-        TipoColorController.TipoEnemigo balaComoEnemigo = (TipoColorController.TipoEnemigo)System.Enum.Parse(
-            typeof(TipoColorController.TipoEnemigo),
-            tipoBala.ToString()
-        );
-
-        // Solo aplicar daño si no coinciden
-        if (tipoColorController != null && tipoColorController.CurrentTipo == balaComoEnemigo)
+        // --- Fase previa ---
+        if (!fasePreviaCompleted)
         {
-            Debug.Log("[Fase1Vida] Bala de tipo correcto: no se aplica daño.");
+            vidaFasePrevia--;
+            if (vidaFasePrevia <= 0)
+            {
+                fasePreviaCompleted = true;
+                Debug.Log("[Fase1Vida] Fase previa completada.");
+
+                // Activar y destruir scripts de fase previa
+                if (preScriptsToActivate != null)
+                    foreach (var s in preScriptsToActivate)
+                        if (s != null) s.enabled = true;
+
+                if (preScriptsToRemove != null)
+                    foreach (var s in preScriptsToRemove)
+                        if (s != null) Destroy(s);
+
+                // Activar objeto con SequentialSliderFill
+                if (objetoToActivateOnPhaseComplete != null)
+                {
+                    objetoToActivateOnPhaseComplete.SetActive(true);
+                    var seqFill = objetoToActivateOnPhaseComplete.GetComponent<SequentialSliderFill>();
+                    if (seqFill != null)
+                        seqFill.OnSequenceComplete += SetupVidaSlider;
+                    else
+                        Debug.LogWarning("[Fase1Vida] No se encontró SequentialSliderFill en el objeto activado.");
+
+                    // Reasignar jugador en SnakeController
+                    var snake = GetComponent<SnakeController>();
+                    if (snake != null)
+                    {
+                        var playerObj = GameObject.FindWithTag("Player");
+                        if (playerObj != null)
+                            snake.jugador = playerObj.transform;
+                        else
+                            Debug.LogWarning("[Fase1Vida] No se encontró GameObject con tag 'Player'.");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("[Fase1Vida] 'objetoToActivateOnPhaseComplete' no asignado.");
+                    SetupVidaSlider();
+                }
+
+                StartCoroutine(NormalPhaseDelayRoutine());
+            }
             return;
         }
 
-        int danioAplicado = 0;
-        switch (tipoBala)
+        // --- Retardo de fase normal aún en curso ---
+        if (!normalPhaseActive)
         {
-            case BalaPlayer.TipoBala.Ametralladora:
-                danioAplicado = danioAmetralladora;
-                break;
-            case BalaPlayer.TipoBala.Pistola:
-                danioAplicado = danioPistola;
-                break;
-            case BalaPlayer.TipoBala.Escopeta:
-                danioAplicado = danioEscopeta;
-                break;
+            Debug.Log("[Fase1Vida] Fase normal aún no activa, daño ignorado.");
+            return;
         }
 
-        // Disparar parpadeo si existe TipoColorController
-        if (tipoColorController != null)
+        // --- Fase normal: aplicar daño ---
+        var balaComoEnemigo = (TipoColorController.TipoEnemigo)
+            Enum.Parse(typeof(TipoColorController.TipoEnemigo), tipoBala.ToString());
+
+        // Sin daño si coinciden colores
+        if (tipoColorController != null && tipoColorController.CurrentTipo == balaComoEnemigo)
         {
-            tipoColorController.RecibirDanio(0f);
+            Debug.Log("[Fase1Vida] Bala de tipo correcto: sin daño.");
+            return;
         }
 
-        vida -= danioAplicado;
+        int danio = tipoBala switch
+        {
+            BalaPlayer.TipoBala.Ametralladora => danioAmetralladora,
+            BalaPlayer.TipoBala.Pistola => danioPistola,
+            BalaPlayer.TipoBala.Escopeta => danioEscopeta,
+            _ => 0
+        };
+
+        // Iniciar parpadeo
+        blinkTimer = 0f;
+        if (!blinkInProgress && fillImage != null)
+            StartCoroutine(BlinkRoutine());
+
+        tipoColorController?.RecibirDanio(0f);
+
+        vida = Mathf.Max(0, vida - danio);
+        if (vidaSlider != null)
+            vidaSlider.value = vida;
 
         if (vida <= 0)
-        {
-            vida = 0;
-            isDead = true;
-            Debug.Log("[Fase1Vida] El objeto ha muerto.");
-
-            // 1. Activar los scripts que estén en el array 'scriptsToActivate'
-            if (scriptsToActivate != null)
-            {
-                foreach (MonoBehaviour script in scriptsToActivate)
-                    if (script != null) script.enabled = true;
-            }
-
-            // 2. Eliminar los scripts que estén en el array 'scriptsToRemove'
-            if (scriptsToRemove != null)
-            {
-                foreach (MonoBehaviour script in scriptsToRemove)
-                    if (script != null) Destroy(script);
-            }
-
-            // 3. Eliminar este mismo componente (Fase1Vida)
-            Destroy(this);
-        }
+            Morir();
         else
-        {
-            Debug.Log($"[Fase1Vida] Se recibió {danioAplicado} de daño. Vida restante: {vida}.");
-        }
+            Debug.Log($"[Fase1Vida] Daño {danio}. Vida restante: {vida}.");
     }
 
-    /// <summary>
-    /// Indica si la vida ya llegó a cero.
-    /// </summary>
-    public bool IsDead()
+    private IEnumerator NormalPhaseDelayRoutine()
     {
-        return isDead;
+        yield return new WaitForSeconds(normalPhaseDelay);
+        normalPhaseActive = true;
+        Debug.Log($"[Fase1Vida] Fase normal activada tras {normalPhaseDelay} segundos.");
     }
+
+    private IEnumerator BlinkRoutine()
+    {
+        blinkInProgress = true;
+        float total = blinkDuration + returnDuration;
+
+        while (blinkTimer < total)
+        {
+            blinkTimer += Time.deltaTime;
+
+            if (blinkTimer <= blinkDuration)
+            {
+                float t = Mathf.PingPong(blinkTimer * blinkFrequency, 1f);
+                fillImage.color = Color.Lerp(originalColor, Color.white, t);
+            }
+            else
+            {
+                float t2 = (blinkTimer - blinkDuration) / returnDuration;
+                fillImage.color = Color.Lerp(Color.white, originalColor, t2);
+            }
+
+            yield return null;
+        }
+
+        fillImage.color = originalColor;
+        blinkInProgress = false;
+    }
+
+    private void Morir()
+    {
+        isDead = true;
+        Debug.Log("[Fase1Vida] El objeto ha muerto.");
+
+        // Activar scripts finales
+        if (scriptsToActivate != null)
+            foreach (var s in scriptsToActivate)
+                if (s != null) s.enabled = true;
+
+        // Destruir scripts finales
+        if (scriptsToRemove != null)
+            foreach (var s in scriptsToRemove)
+                if (s != null) Destroy(s);
+
+        // Destruir todo el GameObject para limpiar componentes
+        Destroy(gameObject);
+    }
+
+    void OnDestroy()
+    {
+        if (vidaSlider != null)
+            Destroy(vidaSlider.gameObject);
+    }
+
+    public bool IsDead() => isDead;
 }
 
 
@@ -125,141 +261,279 @@ public class Fase1Vida : MonoBehaviour
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//// Fase1Vida.cs
+//using System.Collections;
 //using UnityEngine;
+//using UnityEngine.UI;
 
 //public class Fase1Vida : MonoBehaviour
 //{
+//    [Header("Vida de Fase Previa")]
+//    [Tooltip("Vida inicial de la fase previa.")]
+//    public int vidaFasePrevia = 1;
+
+//    [Header("Scripts a activar en fase previa")]
+//    [Tooltip("Se habilitan cuando vidaFasePrevia llega a 0.")]
+//    public MonoBehaviour[] preScriptsToActivate;
+//    [Tooltip("Se destruyen cuando vidaFasePrevia llega a 0.")]
+//    public MonoBehaviour[] preScriptsToRemove;
+
+//    [Header("GameObject a activar al completar fase previa")]
+//    [Tooltip("Asignar aquí el GameObject que debe activarse.")]
+//    public GameObject objetoToActivateOnPhaseComplete;
+
 //    [Header("Vida total de este objeto")]
-//    [Tooltip("Vida acumulada de todas las interacciones.")]
+//    [Tooltip("Vida acumulada de todas las interacciones después de la fase previa.")]
 //    public int vida = 300;
 
 //    [Header("Daño por tipo de bala")]
-//    [Tooltip("Daño aplicado si la bala es de tipo Ametralladora.")]
 //    public int danioAmetralladora = 15;
-//    [Tooltip("Daño aplicado si la bala es de tipo Pistola.")]
 //    public int danioPistola = 20;
-//    [Tooltip("Daño aplicado si la bala es de tipo Escopeta.")]
 //    public int danioEscopeta = 30;
 
+//    [Header("Scripts a activar al morir")]
+//    public MonoBehaviour[] scriptsToActivate;
 //    [Header("Scripts a eliminar al morir")]
-//    [Tooltip("Arrastra aquí los componentes que quieras destruir cuando la vida llegue a 0.")]
 //    public MonoBehaviour[] scriptsToRemove;
 
-//    [Header("Scripts a activar al morir")]
-//    [Tooltip("Arrastra aquí los componentes que quieras habilitar cuando la vida llegue a 0.")]
-//    public MonoBehaviour[] scriptsToActivate;
+//    [Header("Slider de vida normal")]
+//    [Tooltip("Slider que mostrará la vida normal una vez termine la animación.")]
+//    public Slider vidaSlider;
 
+//    [Header("Parpadeo al recibir daño")]
+//    [Tooltip("Duración (s) de la fase de oscilación.")]
+//    public float blinkDuration = 0.2f;
+//    [Tooltip("Duración (s) de la transición de vuelta al color original.")]
+//    public float returnDuration = 0.1f;
+//    [Tooltip("Ciclos de oscilación por segundo.")]
+//    public float blinkFrequency = 10f;
+
+//    private bool fasePreviaCompleted = false;
 //    private bool isDead = false;
+
 //    private TipoColorController tipoColorController;
+//    private SequentialSliderFill seqFill;
+
+//    // Para parpadeo fluido
+//    private Image fillImage;
+//    private Color originalColor;
+//    private bool blinkInProgress = false;
+//    private float blinkTimer = 0f;
 
 //    void Start()
 //    {
-//        // Intentar obtener el componente TipoColorController en este GameObject
+//        // 1) Color controller
 //        tipoColorController = GetComponent<TipoColorController>();
+//        if (tipoColorController == null)
+//            Debug.LogError("[Fase1Vida] No se encontró TipoColorController en este GameObject.");
+
+//        // 2) Secuencia de sliders
+//        seqFill = FindObjectOfType<SequentialSliderFill>();
+//        if (seqFill != null)
+//            seqFill.OnSequenceComplete += SetupVidaSlider;
+//        else
+//        {
+//            Debug.LogWarning("[Fase1Vida] No hay SequentialSliderFill en la escena; inicializando slider de vida de inmediato.");
+//            SetupVidaSlider();
+//        }
+
+//        // 3) Preparar componente de imagen del slider
+//        if (vidaSlider != null && vidaSlider.fillRect != null)
+//        {
+//            fillImage = vidaSlider.fillRect.GetComponent<Image>();
+//            originalColor = fillImage != null ? fillImage.color : Color.white;
+//        }
 //    }
 
-//    /// <summary>
-//    /// Llamado por BalaPlayer al impactar este objeto.
-//    /// Resta vida según el tipo de bala y activa parpadeo si existe TipoColorController.
-//    /// </summary>
+//    void SetupVidaSlider()
+//    {
+//        if (vidaSlider != null)
+//        {
+//            vidaSlider.maxValue = vida;
+//            vidaSlider.value = vida;
+//        }
+//        else
+//            Debug.LogWarning("[Fase1Vida] No asignaste el Slider 'vidaSlider' en el Inspector.");
+//    }
+
 //    public void RecibirDanioPorBala(BalaPlayer.TipoBala tipoBala)
 //    {
 //        if (isDead) return;
 
-//        int danioAplicado = 0;
-//        switch (tipoBala)
+//        // --- Fase previa ---
+//        if (!fasePreviaCompleted)
 //        {
-//            case BalaPlayer.TipoBala.Ametralladora:
-//                danioAplicado = danioAmetralladora;
-//                break;
-//            case BalaPlayer.TipoBala.Pistola:
-//                danioAplicado = danioPistola;
-//                break;
-//            case BalaPlayer.TipoBala.Escopeta:
-//                danioAplicado = danioEscopeta;
-//                break;
+//            vidaFasePrevia--;
+//            if (vidaFasePrevia <= 0)
+//            {
+//                fasePreviaCompleted = true;
+//                Debug.Log("[Fase1Vida] Fase previa completada.");
+
+//                // activar y destruir pre-scripts
+//                if (preScriptsToActivate != null)
+//                    foreach (var s in preScriptsToActivate)
+//                        if (s != null) s.enabled = true;
+//                if (preScriptsToRemove != null)
+//                    foreach (var s in preScriptsToRemove)
+//                        if (s != null) Destroy(s);
+
+//                // activar el GameObject asignado
+//                if (objetoToActivateOnPhaseComplete != null)
+//                    objetoToActivateOnPhaseComplete.SetActive(true);
+//                else
+//                    Debug.LogWarning("[Fase1Vida] No asignaste 'objetoToActivateOnPhaseComplete' en el Inspector.");
+
+//                // asignar jugador a SnakeController
+//                var snake = GetComponent<SnakeController>();
+//                if (snake != null)
+//                {
+//                    var playerObj = GameObject.FindWithTag("Player");
+//                    if (playerObj != null)
+//                        snake.jugador = playerObj.transform;
+//                    else
+//                        Debug.LogWarning("[Fase1Vida] No se encontró GameObject con tag 'Player'.");
+//                }
+//                else
+//                    Debug.LogWarning("[Fase1Vida] No se encontró SnakeController.");
+//            }
+//            return;
 //        }
 
-//        vida -= danioAplicado;
+//        // --- Fase normal ---
+//        var balaComoEnemigo = (TipoColorController.TipoEnemigo)
+//            System.Enum.Parse(typeof(TipoColorController.TipoEnemigo), tipoBala.ToString());
 
-//        // Si existe TipoColorController, pedirle que parpadee
-//        if (tipoColorController != null)
+//        // sin daño si coinciden colores
+//        if (tipoColorController != null && tipoColorController.CurrentTipo == balaComoEnemigo)
 //        {
-//            // El método RecibirDanio de TipoColorController dispara el parpadeo
-//            tipoColorController.RecibirDanio(danioAplicado);
+//            Debug.Log("[Fase1Vida] Bala de tipo correcto: no se aplica daño.");
+//            return;
 //        }
 
+//        // calcular daño
+//        int danio = tipoBala switch
+//        {
+//            BalaPlayer.TipoBala.Ametralladora => danioAmetralladora,
+//            BalaPlayer.TipoBala.Pistola => danioPistola,
+//            BalaPlayer.TipoBala.Escopeta => danioEscopeta,
+//            _ => 0
+//        };
+
+//        // iniciar parpadeo (si ya está, no reinicia corrutina, solo resetea timer)
+//        blinkTimer = 0f;
+//        if (!blinkInProgress && fillImage != null)
+//            StartCoroutine(BlinkRoutine());
+
+//        // efecto visual de daño
+//        tipoColorController?.RecibirDanio(0f);
+
+//        // restar vida y actualizar slider
+//        vida = Mathf.Max(0, vida - danio);
+//        if (vidaSlider != null)
+//            vidaSlider.value = vida;
+
+//        // muerte
 //        if (vida <= 0)
 //        {
-//            vida = 0;
-//            isDead = true;
-//            Debug.Log("[Fase1Vida] El objeto ha muerto.");
-
-//            // 1. Activar los scripts que estén en el array 'scriptsToActivate'
-//            if (scriptsToActivate != null && scriptsToActivate.Length > 0)
-//            {
-//                foreach (MonoBehaviour script in scriptsToActivate)
-//                {
-//                    if (script != null)
-//                    {
-//                        script.enabled = true;
-//                    }
-//                }
-//            }
-
-//            // 2. Eliminar los scripts que estén en el array 'scriptsToRemove'
-//            if (scriptsToRemove != null && scriptsToRemove.Length > 0)
-//            {
-//                foreach (MonoBehaviour script in scriptsToRemove)
-//                {
-//                    if (script != null)
-//                    {
-//                        Destroy(script);
-//                    }
-//                }
-//            }
-
-//            // 3. Eliminar este mismo componente (Fase1Vida)
-//            Destroy(this);
-
-//            // Aquí podrías añadir lógica adicional de muerte, por ejemplo:
-//            // - Reproducir animación de muerte
-//            // - Desactivar colisiones
-//            // - Destruir el GameObject después de un retardo, etc.
+//            Morir();
 //        }
 //        else
 //        {
-//            Debug.Log($"[Fase1Vida] Se recibió {danioAplicado} de daño. Vida restante: {vida}.");
+//            Debug.Log($"[Fase1Vida] Daño {danio}. Vida restante: {vida}.");
 //        }
 //    }
 
-//    /// <summary>
-//    /// Indica si la vida ya llegó a cero.
-//    /// </summary>
-//    public bool IsDead()
+//    private IEnumerator BlinkRoutine()
 //    {
-//        return isDead;
+//        blinkInProgress = true;
+//        float total = blinkDuration + returnDuration;
+
+//        while (blinkTimer < total)
+//        {
+//            blinkTimer += Time.deltaTime;
+
+//            if (blinkTimer <= blinkDuration)
+//            {
+//                float t = Mathf.PingPong(blinkTimer * blinkFrequency, 1f);
+//                fillImage.color = Color.Lerp(originalColor, Color.white, t);
+//            }
+//            else
+//            {
+//                float t2 = (blinkTimer - blinkDuration) / returnDuration;
+//                fillImage.color = Color.Lerp(Color.white, originalColor, t2);
+//            }
+
+//            yield return null;
+//        }
+
+//        fillImage.color = originalColor;
+//        blinkInProgress = false;
 //    }
+
+//    private void Morir()
+//    {
+//        isDead = true;
+//        Debug.Log("[Fase1Vida] El objeto ha muerto.");
+
+//        if (scriptsToActivate != null)
+//            foreach (var s in scriptsToActivate)
+//                if (s != null) s.enabled = true;
+//        if (scriptsToRemove != null)
+//            foreach (var s in scriptsToRemove)
+//                if (s != null) Destroy(s);
+
+//        Destroy(this);
+//    }
+
+//    void OnDestroy()
+//    {
+//        if (vidaSlider != null)
+//            Destroy(vidaSlider.gameObject);
+//    }
+
+//    public bool IsDead() => isDead;
 //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
