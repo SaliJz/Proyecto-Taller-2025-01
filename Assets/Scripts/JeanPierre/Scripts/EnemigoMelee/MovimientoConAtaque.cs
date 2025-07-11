@@ -31,8 +31,11 @@ public class MovimientoConAtaque : MonoBehaviour
 
     Animator animator;
 
+    private EnemyAbilityReceiver abilityReceiver;
+
     void Start()
     {
+        abilityReceiver = GetComponent<EnemyAbilityReceiver>();
         animator = GetComponentInChildren<Animator>();
 
         if (playerTransform == null)
@@ -89,6 +92,7 @@ public class MovimientoConAtaque : MonoBehaviour
     {
         Vector3 posJugador = PosicionJugadorSinY();
         Vector3 dir = (posJugador - transform.position).normalized;
+        float velocidadActual = abilityReceiver.CurrentSpeed;
         transform.position += dir * velocidadPersecucion * Time.deltaTime;
 
         if (Vector3.Distance(transform.position, posJugador) <= distanciaAtaqueActual)

@@ -67,7 +67,7 @@ public class AbilityShopController : MonoBehaviour
         UpdateAllButtonVisuals();
         UpdateTotalCost();
         descriptionText.text = string.Empty;
-        returnConfirmationPanel.SetActive(false);
+        if (returnConfirmationPanel != null) returnConfirmationPanel.SetActive(false);
     }
 
     private void OnEnable()
@@ -111,7 +111,16 @@ public class AbilityShopController : MonoBehaviour
     private void FinalizePurchase()
     {
         int totalCost = CalculateTotalCost();
-        if (totalCost <= 0 || HUDManager.Instance.CurrentFragments < totalCost) return;
+        if (totalCost <= 0)
+        {
+            ShowConfirmation("Nada seleccionado para comprar.");
+            return;
+        }
+        if (HUDManager.Instance.CurrentFragments < totalCost)
+        {
+            ShowConfirmation("No tienes suficientes F. Cod.");
+            return;
+        }
 
         var itemsToProcess = new List<AbilityButtonController>(selectedItems);
         selectedItems.Clear();

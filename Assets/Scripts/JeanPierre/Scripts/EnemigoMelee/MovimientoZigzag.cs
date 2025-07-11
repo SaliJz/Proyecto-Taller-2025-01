@@ -49,6 +49,8 @@ public class MovimientoDirectoNavMesh : MonoBehaviour
 
     void Update()
     {
+        velocidadActual = abilityReceiver.CurrentSpeed;
+
         if (playerTransform == null) return;
         if (!agent.enabled || !agent.isOnNavMesh) return;
 

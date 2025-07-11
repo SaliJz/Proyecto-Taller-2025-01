@@ -28,9 +28,16 @@ public static class AbilityShopDataManager
 
     private static readonly HashSet<string> PurchasedAbilities = new HashSet<string>();
     private static readonly Dictionary<string, AbilityStats> UpgradeLevels = new Dictionary<string, AbilityStats>();
-
     private static List<string> EquippedAbilityNames = new List<string>();
     private static int LastEquippedIndex = 0;
+
+    static AbilityShopDataManager()
+    {
+        PurchasedAbilities = new HashSet<string>();
+        UpgradeLevels = new Dictionary<string, AbilityStats>();
+        EquippedAbilityNames = new List<string>();
+        LastEquippedIndex = 0;
+    }
 
     private static void EnsureAbilityExists(string abilityName)
     {
