@@ -10,7 +10,7 @@ public class InsertKillsCount : MonoBehaviour
 
     [SerializeField] int playerID;
 
-    private int totalDestroyed = 0;
+    [SerializeField] int totalDestroyed = 0;
 
     private void Awake()
     {
@@ -28,7 +28,6 @@ public class InsertKillsCount : MonoBehaviour
     private void Start()
     {
         playerID = LOGIN.currentPlayer_id;
-        Debug.Log($"InsertKillsCount → playerID sincronizado: {playerID}");
     }
 
     public void ReportDestruction(string tag)
@@ -36,13 +35,18 @@ public class InsertKillsCount : MonoBehaviour
         if (tag == "Enemy")
         {
             totalDestroyed++;
-            Debug.Log("Enemigos destruidos: " + totalDestroyed);
         }
     }
 
-    //public int GetDestroyedCount() => totalDestroyed;
+    public int GetDestroyedCount()
+    {
+        return totalDestroyed;
+    }
 
-    public void SendDataToServer() => StartCoroutine(PostKills());
+    public void SendDataToServer()
+    {
+        StartCoroutine(PostKills());
+    }
 
     private IEnumerator PostKills()
     {
@@ -51,7 +55,7 @@ public class InsertKillsCount : MonoBehaviour
         form.AddField("totalEnemyKills", totalDestroyed);
 
         using (UnityWebRequest www =
-               UnityWebRequest.Post("http://localhost/EdenDataBase/InsertKills.php", form))
+               UnityWebRequest.Post("https://progra251ch.samidareno.com/InsertKills.php", form))
         {
             yield return www.SendWebRequest();
 
