@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class SelectEnemyWeaponStatModel : MonoBehaviour
+public class SelectEnemyWeaponStatModel 
 {
     public EnemyWeaponStatModel[] dataStats;
 }

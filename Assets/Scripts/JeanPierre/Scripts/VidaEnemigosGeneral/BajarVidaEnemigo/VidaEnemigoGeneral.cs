@@ -8,6 +8,8 @@ using UnityEngine.AI;
 
 public class VidaEnemigoGeneral : MonoBehaviour
 {
+    private BalaPlayer.TipoBala? lastWeaponUsedToKill = null;
+
     public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
 
     [Header("Configuración de vida")]
@@ -39,7 +41,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
     [ColorUsage(true, true)]
     public Color hdrColorPistola = Color.green;    // antes rojo, ahora verde
     [ColorUsage(true, true)]
-    public Color hdrColorEscopeta = Color.red;     // antes verde, ahora rojo
+    public Color hdrColorEscopeta  = Color.red;     // antes verde, ahora rojo
 
     [Header("Renderizado")]
     // Para mallas con skin
@@ -64,7 +66,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
     [Tooltip("Duración del efecto dissolve en segundos")]
     public float dissolveDuration = 1f;   // ADICIÓN
 
-    private TipoEnemigo tipo;
+  [SerializeField] private TipoEnemigo tipo;
     private bool isDead = false;
 
     // Color final que se determinó al inicio y que no debe cambiar
@@ -80,6 +82,8 @@ public class VidaEnemigoGeneral : MonoBehaviour
     // Lista de materiales sobre los que se aplicará dissolve
     private List<Material> dissolveMaterials; // ADICIÓN
 
+    private GameObject dataBaseManager;
+
     void Awake()
     {
         // Obtener ambos tipos de renderers de los hijos
@@ -93,16 +97,17 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
     void Start()
     {
+        dataBaseManager = GameObject.Find("DataBaseManager");
         animator = GetComponentInChildren<Animator>();
 
-        tipo = (TipoEnemigo)UnityEngine.Random.Range(0, 3);
+        //tipo = (TipoEnemigo)UnityEngine.Random.Range(0, 3);
 #if UNITY_EDITOR
         Debug.Log($"[VidaEnemigo] Tipo: {tipo}");
 #endif
-        finalColor = ObtenerColorPorTipo(tipo);
+        //finalColor = ObtenerColorPorTipo(tipo);
 
         // Asignar color y emisión a todos los materiales
-        AsignarColorYEmissionAMateriales(finalColor);
+        //AsignarColorYEmissionAMateriales(finalColor);
 
         if (sliderVida != null)
         {
@@ -114,11 +119,11 @@ public class VidaEnemigoGeneral : MonoBehaviour
         StartCoroutine(DetectarYAsignarNuevosMateriales(finalColor, 0.5f));
     }
 
-    void Update()
-    {
-        // Reaplicar color cada frame
-        ReaplicarColorYEmissionAMateriales(finalColor);
-    }
+    //void Update()
+    //{
+    //    // Reaplicar color cada frame
+    //    ReaplicarColorYEmissionAMateriales(finalColor);
+    //}
 
     private Color ObtenerColorPorTipo(TipoEnemigo t)
     {
@@ -135,7 +140,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
         }
     }
 
-    private void AsignarColorYEmissionAMateriales(Color color)
+    public void AsignarColorYEmissionAMateriales(Color color)
     {
         // SkinnedMeshRenderers
         foreach (var mr in meshRenderers)
@@ -260,12 +265,58 @@ public class VidaEnemigoGeneral : MonoBehaviour
             d *= headshotMultiplier;
 
         RecibirDanio(d);
+
+        if (vida - d <= 0f)
+        {
+            lastWeaponUsedToKill = tb;
+            Insert_Top_Weapon_Per_Enemy insert_Top_Weapon_Per_Enemy = dataBaseManager.GetComponent<Insert_Top_Weapon_Per_Enemy>();
+
+            int weapon_id = GetWeaponIdByName(lastWeaponUsedToKill);
+            if (weapon_id != -1)
+            {
+                insert_Top_Weapon_Per_Enemy.Execute(transform.gameObject.GetComponent<EnemyType>().enemy_id, weapon_id);
+                Debug.Log("Insertando datos de enemigo y arma");
+            }
+        }
+          
+
     }
+
+    public int GetWeaponIdByName(object lastWeaponUsedToKill)
+    {
+        WeaponType[] allWeapons = FindObjectsOfType<WeaponType>();
+        string armaNombre = lastWeaponUsedToKill.ToString();
+
+        foreach (WeaponType weapon in allWeapons)
+        {
+            switch (armaNombre)
+            {
+                case "Pistola":
+                    if (weapon.currentWeaponType == WeaponType.CurrentWeaponType.Gun)
+                        return weapon.weapon_id;
+                    break;
+
+                case "Ametralladora":
+                    if (weapon.currentWeaponType == WeaponType.CurrentWeaponType.Rifle)
+                        return weapon.weapon_id;
+                    break;
+
+                case "Escopeta":
+                    if (weapon.currentWeaponType == WeaponType.CurrentWeaponType.Shotgun)
+                        return weapon.weapon_id;
+                    break;
+            }
+        }
+
+        return -1;
+    }
+
 
     void Morir()
     {
         if (isDead) return;
         isDead = true;
+        Debug.Log($"Enemigo murió por arma: {lastWeaponUsedToKill}");
 
         //if (TutorialManager.Instance != null)
         //{
@@ -338,6 +389,21 @@ public class VidaEnemigoGeneral : MonoBehaviour
         if (animator != null) animator.SetBool("isDead", true);
         yield return new WaitForSeconds(2f);
         Destroy(gameObject);
+    }
+
+    public void SetTipoDesdeColor(Color color)
+    {
+        if (color == hdrColorAmetralladora)
+            tipo = TipoEnemigo.Ametralladora;
+
+        else if (color == hdrColorPistola)
+            tipo = TipoEnemigo.Pistola;
+        else if (color == hdrColorEscopeta)
+            tipo = TipoEnemigo.Escopeta;
+        else
+            tipo = TipoEnemigo.Ametralladora;
+
+        //finalColor = color;
     }
 }
 

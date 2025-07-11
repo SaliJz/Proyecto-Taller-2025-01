@@ -9,6 +9,7 @@ public class Get_Top_Weapon_Per_Enemy : MonoBehaviour
     private void Start()
     {
         levelManager_SQL = LevelManager_SQL.Instance;
+        Execute();
     }
     private string url = "http://localhost/proyecto_taller/get_top_weapon_per_enemy.php";
 

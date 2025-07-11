@@ -398,6 +398,7 @@ GameObject:
   - component: {fileID: 3574586187406627060}
   - component: {fileID: 411004352547346062}
   - component: {fileID: 8904910027556072218}
+  - component: {fileID: 6143885859752339441}
   m_Layer: 6
   m_Name: EnemigoExplosion
   m_TagString: Enemy
@@ -628,8 +629,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a095fac495bae6f44aa8b55f62c19d44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  intervaloCambio: 10
-  duracionTransicionColor: 1
   blinkCount: 4
   blinkInterval: 0.1
   delayInicial: 0.6
@@ -667,6 +666,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d96bd9c038dab543b15b070274376e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6143885859752339441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4394272956414374065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf38579475d26af4eb28af5f7e33957f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentEnemyType: 3
 --- !u!1 &6482934429859103929
 GameObject:
   m_ObjectHideFlags: 0

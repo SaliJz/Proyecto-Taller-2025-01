@@ -134,9 +134,9 @@ public class Weapon_Menu_Corregido : MonoBehaviour
         
             
     }
-    public void Update_Gun_Card_UI() => Update_Cards_UI(gunManager);
-    public void Update_Rifle_Card_UI() => Update_Cards_UI(rifleManager);
-    public void Update_Shotgun_Card_UI() => Update_Cards_UI(shotgunManager);
+    //public void Update_Gun_Card_UI() => Update_Cards_UI(gunManager);
+    //public void Update_Rifle_Card_UI() => Update_Cards_UI(rifleManager);
+    //public void Update_Shotgun_Card_UI() => Update_Cards_UI(shotgunManager);
   
     public void BuyCard(Weapon_Card_Corregido cardToBuy)
     {       

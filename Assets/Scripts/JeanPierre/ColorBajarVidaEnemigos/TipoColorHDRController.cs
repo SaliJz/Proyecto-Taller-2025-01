@@ -6,20 +6,20 @@ using System.Linq;
 
 public class TipoColorHDRController : MonoBehaviour
 {
-    public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
+    //public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
 
     [Header("Configuración")]
-    public float intervaloCambio = 10f;
-    public float duracionTransicionColor = 1f;
+    //public float intervaloCambio = 10f;
+    //public float duracionTransicionColor = 1f;
     public int blinkCount = 4;
     public float blinkInterval = 0.1f;
     public float delayInicial = 0.6f; // Espera antes de asignar SkinnedMeshRenderers
 
-    private TipoEnemigo currentTipo;
-    public TipoEnemigo CurrentTipo => currentTipo;
+    //private TipoEnemigo currentTipo;
+    //public TipoEnemigo CurrentTipo => currentTipo;
 
     private List<SkinnedMeshRenderer> skinnedRenderers = new List<SkinnedMeshRenderer>();
-    private Coroutine colorRoutine;
+    //private Coroutine colorRoutine;
     private bool isBlinking = false;
 
     void Start()
@@ -33,66 +33,66 @@ public class TipoColorHDRController : MonoBehaviour
 
         skinnedRenderers.AddRange(GetComponentsInChildren<SkinnedMeshRenderer>());
 
-        ActualizarTipoYColor();
-        InvokeRepeating(nameof(ActualizarTipoYColor), intervaloCambio, intervaloCambio);
+        //ActualizarTipoYColor();
+        //InvokeRepeating(nameof(ActualizarTipoYColor), intervaloCambio, intervaloCambio);
     }
 
-    private void ActualizarTipoYColor()
-    {
-        int rand = Random.Range(0, System.Enum.GetValues(typeof(TipoEnemigo)).Length);
-        currentTipo = (TipoEnemigo)rand;
+    //private void ActualizarTipoYColor()
+    //{
+    //    int rand = Random.Range(0, System.Enum.GetValues(typeof(TipoEnemigo)).Length);
+    //    currentTipo = (TipoEnemigo)rand;
 
-        // Ametralladora = azul, Pistola = verde, Escopeta = rojo
-        Color targetColor = currentTipo == TipoEnemigo.Ametralladora ? Color.blue
-                          : currentTipo == TipoEnemigo.Pistola ? Color.green
-                          : /* Escopeta */                            Color.red;
+    //    // Ametralladora = azul, Pistola = verde, Escopeta = rojo
+    //    Color targetColor = currentTipo == TipoEnemigo.Ametralladora ? Color.blue
+    //                      : currentTipo == TipoEnemigo.Pistola ? Color.green
+    //                      : /* Escopeta */                            Color.red;
 
-        if (colorRoutine != null)
-            StopCoroutine(colorRoutine);
-        colorRoutine = StartCoroutine(CambiarColorSuave(targetColor));
-    }
+    //    if (colorRoutine != null)
+    //        StopCoroutine(colorRoutine);
+    //    colorRoutine = StartCoroutine(CambiarColorSuave(targetColor));
+    //}
 
-    private IEnumerator CambiarColorSuave(Color targetColor)
-    {
-        // Determina qué renderizadores soportan la propiedad "_Color"
-        var supportsColor = skinnedRenderers
-            .Select(r => r.material.HasProperty("_Color"))
-            .ToList();
+    //private IEnumerator CambiarColorSuave(Color targetColor)
+    //{
+    //    // Determina qué renderizadores soportan la propiedad "_Color"
+    //    var supportsColor = skinnedRenderers
+    //        .Select(r => r.material.HasProperty("_Color"))
+    //        .ToList();
 
-        // Obtiene colores iniciales por renderer
-        var baseColors = skinnedRenderers
-            .Select((r, i) => supportsColor[i]
-                ? r.material.GetColor("_Color")
-                : Color.white)
-            .ToList();
+    //    // Obtiene colores iniciales por renderer
+    //    var baseColors = skinnedRenderers
+    //        .Select((r, i) => supportsColor[i]
+    //            ? r.material.GetColor("_Color")
+    //            : Color.white)
+    //        .ToList();
 
-        // Color de inicio para lerp
-        Color startColor = baseColors.FirstOrDefault();
+    //    // Color de inicio para lerp
+    //    Color startColor = baseColors.FirstOrDefault();
 
-        float elapsed = 0f;
-        while (elapsed < duracionTransicionColor)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duracionTransicionColor);
-            Color lerpCol = Color.Lerp(startColor, targetColor, t);
+    //    float elapsed = 0f;
+    //    while (elapsed < duracionTransicionColor)
+    //    {
+    //        elapsed += Time.deltaTime;
+    //        float t = Mathf.Clamp01(elapsed / duracionTransicionColor);
+    //        Color lerpCol = Color.Lerp(startColor, targetColor, t);
 
-            for (int i = 0; i < skinnedRenderers.Count; i++)
-            {
-                var rend = skinnedRenderers[i];
-                if (supportsColor[i])
-                    rend.material.SetColor("_Color", lerpCol);
-            }
-            yield return null;
-        }
+    //        for (int i = 0; i < skinnedRenderers.Count; i++)
+    //        {
+    //            var rend = skinnedRenderers[i];
+    //            if (supportsColor[i])
+    //                rend.material.SetColor("_Color", lerpCol);
+    //        }
+    //        yield return null;
+    //    }
 
-        // Asegura color final
-        for (int i = 0; i < skinnedRenderers.Count; i++)
-        {
-            var rend = skinnedRenderers[i];
-            if (supportsColor[i])
-                rend.material.SetColor("_Color", targetColor);
-        }
-    }
+    //    // Asegura color final
+    //    for (int i = 0; i < skinnedRenderers.Count; i++)
+    //    {
+    //        var rend = skinnedRenderers[i];
+    //        if (supportsColor[i])
+    //            rend.material.SetColor("_Color", targetColor);
+    //    }
+    //}
 
     public void RecibirDanio(float d)
     {

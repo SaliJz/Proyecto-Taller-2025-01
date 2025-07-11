@@ -447,6 +447,7 @@ GameObject:
   - component: {fileID: 4966090092420306200}
   - component: {fileID: 7746980232694710388}
   - component: {fileID: 7253515416094102518}
+  - component: {fileID: -930320930881841005}
   m_Layer: 6
   m_Name: EnemigoMelee
   m_TagString: Enemy
@@ -506,21 +507,22 @@ MonoBehaviour:
   headCollider: {fileID: 9012557896323379569}
   bodyColliders:
   - {fileID: 8893220702585947661}
-  hdrColorAmetralladora: {r: 0, g: 0, b: 0.8018868, a: 1}
-  hdrColorPistola: {r: 0.8207547, g: 0, b: 0, a: 1}
-  hdrColorEscopeta: {r: 0, g: 0.7924528, b: 0, a: 1}
+  hdrColorAmetralladora: {r: 0, g: 0, b: 1, a: 1}
+  hdrColorPistola: {r: 0, g: 1, b: 0, a: 1}
+  hdrColorEscopeta: {r: 1, g: 0, b: 0, a: 1}
   meshRenderers:
   - {fileID: 786921279410816824}
   staticMeshRenderers: []
   prefabMuerteAmetralladora: {fileID: 7597145721601309270, guid: 5c64e1320daef804f813dfca3682d4ae,
     type: 3}
-  prefabMuertePistola: {fileID: 7597145721601309270, guid: 33004dd31ce07794d8c3fde64d803892,
+  prefabMuertePistola: {fileID: 7597145721601309270, guid: 1799a004841c0c84487e26a08eadb035,
     type: 3}
-  prefabMuerteEscopeta: {fileID: 7597145721601309270, guid: 1799a004841c0c84487e26a08eadb035,
+  prefabMuerteEscopeta: {fileID: 7597145721601309270, guid: 33004dd31ce07794d8c3fde64d803892,
     type: 3}
   fragments: 50
   enableDissolve: 1
   dissolveDuration: 4
+  tipo: 1
   isTracker: 0
 --- !u!114 &4643872267189118312
 MonoBehaviour:
@@ -733,8 +735,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a095fac495bae6f44aa8b55f62c19d44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  intervaloCambio: 10
-  duracionTransicionColor: 1
   blinkCount: 4
   blinkInterval: 0.1
   delayInicial: 0.6
@@ -806,6 +806,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d96bd9c038dab543b15b070274376e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-930320930881841005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5120538479886475079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf38579475d26af4eb28af5f7e33957f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentEnemyType: 0
+  enemy_id: 94
 --- !u!1 &6642947135343746201
 GameObject:
   m_ObjectHideFlags: 0

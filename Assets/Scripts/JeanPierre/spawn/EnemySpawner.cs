@@ -2,11 +2,12 @@ using UnityEngine;
 using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
+using static LevelManager_SQL;
 
 public class EnemySpawner : MonoBehaviour
 {
     [Header("Configuración de Spawn")]
-    [SerializeField] private GameObject[] enemyPrefabs;
+    [SerializeField] public GameObject[] enemyPrefabs;
     [SerializeField] private SpawnPoint[] spawnPoints;
     [SerializeField] private float spawnRadius = 2f;
     private int maxEnemiesInScene = 20; // Este valor ahora será controlado por la misión
@@ -14,7 +15,14 @@ public class EnemySpawner : MonoBehaviour
     private HashSet<GameObject> activeEnemies = new HashSet<GameObject>();
     private Coroutine currentSpawnRoutine;
 
+    private GameObject dataBaseManager;
+
     // Detiene cualquier rutina de spawn anterior y limpia los enemigos
+
+    private void Start()
+    {
+        dataBaseManager = GameObject.Find("DataBaseManager");
+    }
     public void StopAndClearSpawner()
     {
         if (currentSpawnRoutine != null)
@@ -97,7 +105,10 @@ public class EnemySpawner : MonoBehaviour
             var availablePoints = spawnPoints.Where(sp => sp.IsAvailable).ToList();
             if (availablePoints.Count == 0) return;
 
-            GameObject randomEnemyPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+            GameObject randomEnemyPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)]; 
+
+           GetEnemyTypeToInsertData(randomEnemyPrefab);
+
             SpawnPoint randomPoint = availablePoints[Random.Range(0, availablePoints.Count)];
 
             Vector2 offset = Random.insideUnitCircle * spawnRadius;
@@ -105,6 +116,17 @@ public class EnemySpawner : MonoBehaviour
 
             GameObject enemy = Instantiate(randomEnemyPrefab, spawnPosition, randomPoint.transform.rotation);
             activeEnemies.Add(enemy); 
+    }
+
+    void GetEnemyTypeToInsertData(GameObject randomEnemyPrefab)
+    {
+        EnemyType enemyType = randomEnemyPrefab.GetComponent<EnemyType>();
+        if(dataBaseManager != null)
+        {
+          InsertEnemyController insertEnemyController= dataBaseManager.GetComponent<InsertEnemyController>();
+          insertEnemyController.Execute(enemyType);
+        }
+       
     }
 
     public void ResetSpawner()

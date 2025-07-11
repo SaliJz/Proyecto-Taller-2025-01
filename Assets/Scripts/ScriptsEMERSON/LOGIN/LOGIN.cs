@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class LOGIN : MonoBehaviour
 {
-    public static int currentPlayer_id;
+    public static int currentPlayer_id=0;
     public static LOGINMODE loginmode;
     private string url = "http://localhost/EdenDataBase/select.php";
 

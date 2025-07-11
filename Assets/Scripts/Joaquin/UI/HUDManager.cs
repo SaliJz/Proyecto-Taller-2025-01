@@ -319,7 +319,7 @@ public class HUDManager : MonoBehaviour
 
     public void ShowMission(string message, bool isTimer = false)
     {
-        Debug.Log($"[HUDManager] Mostrando mensaje: {message}");
+        //Debug.Log($"[HUDManager] Mostrando mensaje: {message}");
 
         missionPanel?.SetActive(true);
         missionText.gameObject?.SetActive(true);

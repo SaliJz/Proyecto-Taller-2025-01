@@ -168,8 +168,8 @@ public class PlayerDash : MonoBehaviour
         if (playerMovement.IsGrounded)
             playerMovement.MovementEnabled = false;
 
-        Debug.Log("DASH START POS: " + dashStartPos);
-        Debug.Log("DASH END POS: " + dashEndPos);
+        //Debug.Log("DASH START POS: " + dashStartPos);
+        //Debug.Log("DASH END POS: " + dashEndPos);
     }
 
     private void ResetDashState()
