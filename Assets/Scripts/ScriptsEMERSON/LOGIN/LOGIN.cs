@@ -5,9 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class LOGIN : MonoBehaviour
 {
-    public int currentPlayer_id;
+    public static int currentPlayer_id;
     public static LOGINMODE loginmode;
-    private string url = "http://localhost/login/select.php";
+    private string url = "http://localhost/EdenDataBase/select.php";
 
     public void Execute(string player_name, string password)
     {

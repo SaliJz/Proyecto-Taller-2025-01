@@ -26,7 +26,7 @@ public class Select : MonoBehaviour
 
     IEnumerator GetTopPlayers()
     {
-        UnityWebRequest www = UnityWebRequest.Get("http://localhost/prographp/EdenDataBase/CountKill.php");
+        UnityWebRequest www = UnityWebRequest.Get("http://localhost/EdenDataBase/CountKill.php");
 
         yield return www.SendWebRequest();
 
