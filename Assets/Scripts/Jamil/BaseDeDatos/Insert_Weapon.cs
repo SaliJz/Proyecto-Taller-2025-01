@@ -17,7 +17,7 @@ public class Insert_Weapon : MonoBehaviour
     {
         WWWForm form = new WWWForm();
         form.AddField("weapon_name",weaponType.currentWeaponType.ToString());
-        form.AddField("player_id",1);/*LOGIN.currentPlayer_id*/
+        form.AddField("player_id", LOGIN.currentPlayer_id);/*LOGIN.currentPlayer_id*/
         form.AddField("bullet_spent",0); 
 
         using (UnityWebRequest www = UnityWebRequest.Post(url, form))

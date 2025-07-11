@@ -1134,6 +1134,7 @@ GameObject:
   - component: {fileID: 5484496777286721899}
   - component: {fileID: 7172923995101443218}
   - component: {fileID: 150223545839985364}
+  - component: {fileID: 2412337699645254680}
   m_Layer: 9
   m_Name: GunWeapon
   m_TagString: Untagged
@@ -1260,6 +1261,20 @@ MonoBehaviour:
   reloadClip: {fileID: 8300000, guid: 4a57e6306c15b284db65b976b4b59f6b, type: 3}
   useProceduralAnimations: 1
   weaponAnimationID: 0
+--- !u!114 &2412337699645254680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2027354105013685677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4a231532b510894ca062ad555f3fd9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentWeaponType: 0
+  weapon_id: 0
 --- !u!1 &2231203974194606765
 GameObject:
   m_ObjectHideFlags: 0
@@ -3012,6 +3027,7 @@ GameObject:
   - component: {fileID: 1511923665423716957}
   - component: {fileID: 3329308664804035575}
   - component: {fileID: 1623021693395869078}
+  - component: {fileID: 3351867310692193259}
   m_Layer: 9
   m_Name: ShotgunWeapon
   m_TagString: Untagged
@@ -3138,6 +3154,20 @@ MonoBehaviour:
   reloadClip: {fileID: 8300000, guid: 4a57e6306c15b284db65b976b4b59f6b, type: 3}
   useProceduralAnimations: 1
   weaponAnimationID: 2
+--- !u!114 &3351867310692193259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4841268610612793011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4a231532b510894ca062ad555f3fd9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentWeaponType: 2
+  weapon_id: 0
 --- !u!1 &4870134526752997112
 GameObject:
   m_ObjectHideFlags: 0
@@ -3283,7 +3313,7 @@ MonoBehaviour:
   m_StreamingVersion: 20170927
   m_Priority: 2
   m_StandbyUpdate: 2
-  m_LookAt: {fileID: 0}
+  m_LookAt: {fileID: 8129634047586214791}
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 55
@@ -3996,6 +4026,7 @@ GameObject:
   - component: {fileID: 5258885506803910284}
   - component: {fileID: 715431773042724820}
   - component: {fileID: 2868914639831439354}
+  - component: {fileID: 297615942115855101}
   m_Layer: 9
   m_Name: RifleWeapon
   m_TagString: Untagged
@@ -4122,6 +4153,20 @@ MonoBehaviour:
   reloadClip: {fileID: 8300000, guid: 4a57e6306c15b284db65b976b4b59f6b, type: 3}
   useProceduralAnimations: 1
   weaponAnimationID: 1
+--- !u!114 &297615942115855101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8303624827461931493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4a231532b510894ca062ad555f3fd9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentWeaponType: 1
+  weapon_id: 0
 --- !u!1 &8520766479831504860
 GameObject:
   m_ObjectHideFlags: 0

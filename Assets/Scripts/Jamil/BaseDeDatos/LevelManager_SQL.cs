@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using static EnemyType;
 
 public class LevelManager_SQL : MonoBehaviour
 {
