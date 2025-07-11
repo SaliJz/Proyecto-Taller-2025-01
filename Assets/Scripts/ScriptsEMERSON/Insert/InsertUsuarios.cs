@@ -1,9 +1,14 @@
-using System.Collections;
+﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Collections;
+
 
 public class InsertUsuario : MonoBehaviour
 {
+    public Action<string> OnMensajeRecibido;
+
     private string url = "http://localhost/login/insert.php";
 
     public void Execute(string player_name, string password)
@@ -17,18 +22,22 @@ public class InsertUsuario : MonoBehaviour
         form.AddField("player_name", player_name);
         form.AddField("password", password);
 
-        using(UnityWebRequest www = UnityWebRequest.Post(url,form))
+        using (UnityWebRequest www = UnityWebRequest.Post(url, form))
         {
             yield return www.SendWebRequest();
 
+            string mensaje;
             if (www.result == UnityWebRequest.Result.Success)
             {
-                Debug.Log(www.downloadHandler.text);
+                mensaje = www.downloadHandler.text;
             }
             else
             {
-                Debug.Log(www.error);
+                mensaje = "Error al conectar";
             }
+
+            OnMensajeRecibido?.Invoke(mensaje);
+            Debug.Log(mensaje);
         }
     }
 }
