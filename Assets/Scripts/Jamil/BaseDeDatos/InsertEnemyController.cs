@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.SceneManagement;
-using static LevelManager_SQL;
 
 public class InsertEnemyController : MonoBehaviour
 {
