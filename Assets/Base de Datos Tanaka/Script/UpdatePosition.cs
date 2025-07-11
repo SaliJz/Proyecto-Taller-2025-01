@@ -10,6 +10,17 @@ public class UpdatePosition : MonoBehaviour
 
     private string url = "http://localhost/workshop_project/Update_player_position.php";
 
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.M)) 
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+    }
+
+
     public void Actualizar()
     {
         Vector3 pos = jugador.transform.position;
