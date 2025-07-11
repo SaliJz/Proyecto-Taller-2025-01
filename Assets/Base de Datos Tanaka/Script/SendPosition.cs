@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+
 public class SendPosition : MonoBehaviour
 {
     public int player_id = 1;    

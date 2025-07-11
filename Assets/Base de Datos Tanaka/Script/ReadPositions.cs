@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+
 public class ReadPositions : MonoBehaviour
 {
     public int player_id = 1;
+    
 
     private string url = "http://localhost/workshop_project/get_player_locations.php";
 
     void Start()
     {
-        Debug.Log(" ReadPositions.cs: Start ejecutado");
         StartCoroutine(LeerDatos());
     }
 
