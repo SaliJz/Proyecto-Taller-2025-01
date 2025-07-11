@@ -25,11 +25,12 @@ public class AbilityManager : MonoBehaviour
     {
         if (isLevel1) AbilityShopDataManager.ResetData();
         LoadFromDataStore();
-        UpdateAbilitiesActiveState();
+       
     }
 
     private void Start()
     {
+        UpdateAbilitiesActiveState();
         foreach (var ability in allAbilities)
         {
             ability.SetActive(false);
