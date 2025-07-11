@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 public class ReadPositions : MonoBehaviour
 {
-    public int player_id = 1;
+    [SerializeField] private int player_id = 1;
     
 
     private string url = "http://localhost/workshop_project/get_player_locations.php";

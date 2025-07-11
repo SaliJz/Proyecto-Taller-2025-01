@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 public class UpdatePosition : MonoBehaviour
 {
-    public int player_level_id = 1;
+    [SerializeField] private int player_level_id = 1;
     public GameObject jugador;
 
     private string url = "http://localhost/workshop_project/Update_player_position.php";
