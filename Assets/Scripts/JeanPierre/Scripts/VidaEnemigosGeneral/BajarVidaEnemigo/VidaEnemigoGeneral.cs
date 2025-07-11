@@ -66,7 +66,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
     [Tooltip("Duración del efecto dissolve en segundos")]
     public float dissolveDuration = 1f;   // ADICIÓN
 
-  [SerializeField] private TipoEnemigo tipo;
+    private TipoEnemigo tipo;
     private bool isDead = false;
 
     // Color final que se determinó al inicio y que no debe cambiar

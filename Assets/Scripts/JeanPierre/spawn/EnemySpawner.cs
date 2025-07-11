@@ -94,7 +94,7 @@ public class EnemySpawner : MonoBehaviour
 
     private bool CanSpawn()
     {
-        activeEnemies.RemoveWhere(e => e == null); // Limpieza de enemigos muertos
+        activeEnemies.RemoveWhere(e => e == null); 
         return activeEnemies.Count < maxEnemiesInScene;
     }
 
@@ -115,7 +115,16 @@ public class EnemySpawner : MonoBehaviour
             Vector3 spawnPosition = randomPoint.transform.position + new Vector3(offset.x, 0, offset.y);
 
             GameObject enemy = Instantiate(randomEnemyPrefab, spawnPosition, randomPoint.transform.rotation);
-            activeEnemies.Add(enemy); 
+            activeEnemies.Add(enemy);
+
+        EnemyType.CurrentEnemyType tipo = enemy.GetComponent<EnemyType>().currentEnemyType;
+
+     
+        Color color = LevelManager_SQL.Instance.GetColorByEnemyType(tipo);
+
+        VidaEnemigoGeneral vida = enemy.GetComponent<VidaEnemigoGeneral>();
+        vida.AsignarColorYEmissionAMateriales(color);
+        vida.SetTipoDesdeColor(color);
     }
 
     void GetEnemyTypeToInsertData(GameObject randomEnemyPrefab)

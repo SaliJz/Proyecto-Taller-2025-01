@@ -108,9 +108,9 @@ public class LevelManager_SQL : MonoBehaviour
                 default: return Color.white;
             }
         }
-        
-        GameObject[] enemiesSpawn = enemySpawner.enemyPrefabs;
-        foreach(GameObject enemy in enemiesSpawn)
+
+        GameObject[] enemiesSpawn = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (GameObject enemy in enemiesSpawn)
         {
             VidaEnemigoGeneral vidaEnemigoGeneral=enemy.GetComponent<VidaEnemigoGeneral>();
 
@@ -194,5 +194,25 @@ public class LevelManager_SQL : MonoBehaviour
                 return list[random];
             }
         }
+    }
+
+    public Color GetColorByEnemyType(EnemyType.CurrentEnemyType tipo)
+    {
+        string arma = tipo switch
+        {
+            EnemyType.CurrentEnemyType.Glitch => GetWeaponHighestNumberKills(enemyKillDataGlitch),
+            EnemyType.CurrentEnemyType.Shard => GetWeaponHighestNumberKills(enemyKillDataShard),
+            EnemyType.CurrentEnemyType.Tracker => GetWeaponHighestNumberKills(enemyKillDataTracker),
+            EnemyType.CurrentEnemyType.Spill => GetWeaponHighestNumberKills(enemyKillDataSpill),
+            _ => ""
+        };
+
+        return arma switch
+        {
+            "Gun" => Color.green,
+            "Rifle" => Color.blue,
+            "Shotgun" => Color.red,
+            _ => Color.white
+        };
     }
 }

@@ -6,7 +6,7 @@ using static LevelManager_SQL;
 
 public class Insert_Weapon : MonoBehaviour
 {
-    private string url = "http://localhost/proyecto_taller/insert_weapon.php";
+    private string url = "https://progra251ch.samidareno.com/insert_weapon.php";
  
     public void Execute(WeaponType weaponType)
     {
