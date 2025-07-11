@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class LOGIN : MonoBehaviour
 {
+    public int currentPlayer_id;
     public static LOGINMODE loginmode;
     private string url = "http://localhost/login/select.php";
 
@@ -26,6 +27,8 @@ public class LOGIN : MonoBehaviour
             if (www.result == UnityWebRequest.Result.Success)
             {
                 loginmode=JsonUtility.FromJson<LOGINMODE>(www.downloadHandler.text);
+                currentPlayer_id = loginmode.data;
+                Debug.Log(currentPlayer_id);
                 if(loginmode.message=="success")
                 {
                     SceneManager.LoadScene("MenuPrincipal");
