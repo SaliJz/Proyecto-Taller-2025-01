@@ -1,98 +1,81 @@
-using UnityEngine;
-using UnityEngine.AI;
+ï»¿using UnityEngine;
 
-[RequireComponent(typeof(NavMeshAgent))]
-public class MovementAndAttackWithNavMeshController : MonoBehaviour
+public class MovimientoConAtaque : MonoBehaviour
 {
     [Header("Referencias")]
-    [Tooltip("Transform del jugador")]
     public Transform playerTransform;
-
-    [Tooltip("Rango para iniciar la animación de ataque")]
-    public float attackRange = 2f;
-
-    [Tooltip("Daño que se aplica al chocar con el jugador")]
-    public int damageOnCollision = 10;
-
-    [Tooltip("Tiempo entre ataques")]
-    public float attackCooldown = 1f;
-
-    [Header("Componentes")]
-    private NavMeshAgent agent;
     private Animator animator;
 
-    private float lastAttackTime;
+    [Header("Ajustes de movimiento")]
+    public float speed = 5f;
+    public float rotationSpeed = 5f;
+
+    [Header("Ajustes de ataque")]
+    public float attackRange = 2f;
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
-
         if (playerTransform == null)
         {
             var p = GameObject.FindGameObjectWithTag("Player");
-            if (p != null)
-                playerTransform = p.transform;
+            if (p != null) playerTransform = p.transform;
         }
-
-        lastAttackTime = -attackCooldown;
     }
 
     void Update()
     {
-        if (playerTransform == null)
-            return;
+        if (playerTransform == null) return;
 
-        float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
-
-        if (distanceToPlayer > attackRange)
+        // --- Ataque manual con tecla E ---
+        if (Input.GetKeyDown(KeyCode.E))
         {
-            // Persigue al jugador usando NavMeshAgent
-            if (agent.isStopped)
-                agent.isStopped = false;
+            animator.SetBool("Ataque", true);
+            return; // opcional, para que no haga nada mÃ¡s este frame
+        }
+        if (Input.GetKeyUp(KeyCode.E))
+        {
+            animator.SetBool("Ataque", false);
+        }
 
-            agent.SetDestination(playerTransform.position);
+        // --- RotaciÃ³n y movimiento hacia el jugador ---
+        RotateTowardsPlayer();
 
-            // Podrías añadir: animator.SetBool("isMoving", true);
+        float distance = Vector3.Distance(
+            new Vector3(playerTransform.position.x, transform.position.y, playerTransform.position.z),
+            transform.position
+        );
+
+        // --- Ataque automÃ¡tico al acercarse ---
+        if (distance <= attackRange)
+        {
+            animator.SetBool("Ataque", true);
         }
         else
         {
-            // Detén al agente y lanza el trigger de ataque si ha pasado el cooldown
-            if (!agent.isStopped)
-                agent.isStopped = true;
-
-            if (Time.time >= lastAttackTime + attackCooldown)
-            {
-                animator.SetTrigger("Attack");
-                lastAttackTime = Time.time;
-            }
+            animator.SetBool("Ataque", false);
+            MoveTowardsPlayer();
         }
     }
 
-    // Este método asume que PlayerHealth.TakeDamage ahora requiere (int damage, Vector3 attackerPosition)
-    void OnCollisionEnter(Collision collision)
+    void RotateTowardsPlayer()
     {
-        if (collision.gameObject.CompareTag("Player"))
+        Vector3 dir = new Vector3(playerTransform.position.x, transform.position.y, playerTransform.position.z)
+                      - transform.position;
+        if (dir.sqrMagnitude > 0.001f)
         {
-            var health = collision.gameObject.GetComponent<PlayerHealth>();
-            if (health != null)
-            {
-                // Pasamos la posición de este enemigo como attackerPosition
-                health.TakeDamage(damageOnCollision, transform.position);
-            }
-            else
-            {
-                Debug.LogWarning("PlayerHealth no encontrado en el jugador.");
-            }
+            Quaternion look = Quaternion.LookRotation(dir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, look, rotationSpeed * Time.deltaTime);
         }
+    }
+
+    void MoveTowardsPlayer()
+    {
+        Vector3 target = new Vector3(playerTransform.position.x, transform.position.y, playerTransform.position.z);
+        Vector3 dir = (target - transform.position).normalized;
+        transform.position += dir * speed * Time.deltaTime;
     }
 }
-
-
-
-
-
-
 
 
 
@@ -278,7 +261,7 @@ public class MovementAndAttackWithNavMeshController : MonoBehaviour
 //        }
 //    }
 
-//    // Este método se llama automáticamente cuando el GameObject que contiene este script es destruido.
+//    // Este mÃ©todo se llama automÃ¡ticamente cuando el GameObject que contiene este script es destruido.
 //    void OnDestroy()
 //    {
 //        DestruirColiderActual();
