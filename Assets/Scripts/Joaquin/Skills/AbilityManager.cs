@@ -5,7 +5,7 @@ using UnityEngine;
 public class AbilityManager : MonoBehaviour
 {
     [Tooltip("Marca esta casilla SOLO en la escena del Nivel 1 para reiniciar todo el progreso.")]
-    [SerializeField] private bool isLevel1 = false;
+    [SerializeField] private bool isLevelTutorial = false;
 
     [Header("Todas las habilidades posibles")]
     [SerializeField] private List<GameObject> allAbilities;
@@ -23,7 +23,7 @@ public class AbilityManager : MonoBehaviour
 
     private void Awake()
     {
-        if (isLevel1) AbilityShopDataManager.ResetData();
+        if (isLevelTutorial) AbilityShopDataManager.ResetData();
         LoadFromDataStore();
         UpdateAbilitiesActiveState();
     }

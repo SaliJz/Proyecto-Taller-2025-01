@@ -4,7 +4,7 @@ using UnityEngine;
 public class GeneralUpgradeManager : MonoBehaviour
 {
     public static event Action OnPlayerStatsChanged;
-    public static bool IsNivel1 { get; set; } = true;
+    public static bool IsTutorial { get; set; } = true;
 
     private const int BASE_HEALTH = 100;
     private const int BASE_SHIELD = 20;
@@ -23,14 +23,19 @@ public class GeneralUpgradeManager : MonoBehaviour
 
     public static void ResetUpgrades()
     {
-        if (IsNivel1)
+        if (IsTutorial)
         {
             HealthLevel = 0;
             ShieldLevel = 0;
 
-            Debug.Log("Mejoras generales reiniciadas para el Nivel 1.");
-            IsNivel1 = true;
+            Debug.Log("Mejoras generales reiniciadas a nivel 0.");
+
             NotifyStatsChanged();
+            SaveLoadManager.DeleteSaveFile();
+        }
+        else
+        {
+            Debug.LogWarning("No se pueden reiniciar las mejoras generales en el Nivel 1.");
         }
     }
 
