@@ -46,7 +46,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private float displayDuration = 2f;
     [SerializeField] private Vector2 floatingStartPos = new Vector2(480f, 0f);
     [SerializeField] private Vector2 floatingEndPos = new Vector2(-10, 0f);
-    [SerializeField] private bool isNivel1 = false;
+    [SerializeField] private bool isTutorial = false;
  
     [Header("Mission UI")]
     [SerializeField] private RectTransform missionTextObject;
@@ -87,7 +87,7 @@ public class HUDManager : MonoBehaviour
 
     private void Start()
     {
-        if (isNivel1)
+        if (isTutorial)
         {             
             infoFragments = 100;
         }

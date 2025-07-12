@@ -13,6 +13,8 @@ public enum AbilityType
     Mindjack
 }
 
+
+[System.Serializable]
 public class AbilityStats
 {
     public int CooldownLevel;
@@ -30,14 +32,6 @@ public static class AbilityShopDataManager
     private static readonly Dictionary<string, AbilityStats> UpgradeLevels = new Dictionary<string, AbilityStats>();
     private static List<string> EquippedAbilityNames = new List<string>();
     private static int LastEquippedIndex = 0;
-
-    static AbilityShopDataManager()
-    {
-        PurchasedAbilities = new HashSet<string>();
-        UpgradeLevels = new Dictionary<string, AbilityStats>();
-        EquippedAbilityNames = new List<string>();
-        LastEquippedIndex = 0;
-    }
 
     private static void EnsureAbilityExists(string abilityName)
     {
@@ -78,14 +72,21 @@ public static class AbilityShopDataManager
             }
         }
         NotifyDataChanged();
+        SaveLoadManager.SaveGame();
     }
-    public static bool IsPurchased(string abilityName) => PurchasedAbilities.Contains(abilityName);
 
     public static void SavePlayerEquippedState(List<string> equippedNames, int currentIndex)
     {
         EquippedAbilityNames = new List<string>(equippedNames);
         LastEquippedIndex = currentIndex;
+        SaveLoadManager.SaveGame();
     }
+
+    public static bool IsPurchased(string abilityName) => PurchasedAbilities.Contains(abilityName);
+
+    public static HashSet<string> GetPurchasedAbilities() => PurchasedAbilities;
+
+    public static Dictionary<string, AbilityStats> GetUpgradeLevels() => UpgradeLevels;
 
     public static List<string> GetSavedEquippedAbilities()
     {
@@ -105,12 +106,38 @@ public static class AbilityShopDataManager
 
     public static void NotifyDataChanged() => OnAbilityShopDataChanged?.Invoke();
 
+    public static void LoadDataFromSave(List<string> purchased, List<string> equipped, int index, List<string> upgradeNames, List<AbilityStats> upgradeStats)
+    {
+        // Utilizar un método auxiliar para asignar valores al campo de solo lectura estático
+        UpdatePurchasedAbilities(purchased);
+        EquippedAbilityNames = new List<string>(equipped);
+        LastEquippedIndex = index;
+
+        // Reconstruir el diccionario desde las listas
+        UpgradeLevels.Clear();
+        for (int i = 0; i < upgradeNames.Count; i++)
+        {
+            UpgradeLevels[upgradeNames[i]] = upgradeStats[i];
+        }
+    }
+
+    private static void UpdatePurchasedAbilities(List<string> purchased)
+    {
+        // Asignar valores al campo de solo lectura estático dentro de un método auxiliar
+        PurchasedAbilities.Clear();
+        foreach (var ability in purchased)
+        {
+            PurchasedAbilities.Add(ability);
+        }
+    }
+
     public static void ResetData()
     {
         PurchasedAbilities.Clear();
         UpgradeLevels.Clear();
         EquippedAbilityNames.Clear();
         LastEquippedIndex = 0;
+
         NotifyDataChanged();
     }
 }
