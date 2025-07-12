@@ -2783,13 +2783,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e2e16ce8a014e24abbceb7f91c04361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  segmentosAnticipacion: 10
-  alturaElevacion: 5
-  duracionElevacion: 1
-  duracionCurvatura: 0.4
-  anguloCurvatura: 90
-  duracionPulso: 0.4
-  retrasoTrasAnticipacion: 0.1
+  snakeAttack: {fileID: 561226456}
+  columnWrapper: {fileID: 561226457}
+  anticipationSegmentsCount: 10
+  anticipationDuration: 1
+  uRadius: 10
+  uHeight: 10
 --- !u!1 &571849479
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -234,27 +235,4 @@ public class ColumnWrapOnInput : MonoBehaviour
         return Mathf.Max(col.bounds.extents.x, col.bounds.extents.z);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

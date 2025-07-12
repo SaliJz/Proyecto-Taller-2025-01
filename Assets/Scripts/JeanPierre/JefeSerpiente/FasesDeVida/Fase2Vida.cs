@@ -1,3 +1,12 @@
+
+
+
+
+
+
+
+
+
 // Fase2Vida.cs
 using System.Collections;
 using System.Collections.Generic;
@@ -245,7 +254,6 @@ public class Fase2Vida : MonoBehaviour
             Destroy(vidaSlider.gameObject);
     }
 }
-
 
 
 
