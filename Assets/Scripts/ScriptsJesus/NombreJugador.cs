@@ -1,18 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
 using UnityEngine.UI;
 
 
 
-public class NombreJugador: MonoBehaviour
+public class NombreJugador : MonoBehaviour
 {
-    public TMP_InputField inputNombre; 
-    public Button botonComenzar;       
+    public TMP_InputField inputNombre;
+    public Button botonComenzar;
 
-    public static string nombreJugador; 
+    public static string nombreJugador;
 
     void Start()
     {
@@ -24,7 +22,7 @@ public class NombreJugador: MonoBehaviour
         nombreJugador = inputNombre.text;
         Debug.Log("Nombre del jugador: " + nombreJugador);
 
-        SceneManager.LoadScene("Jesus"); 
+        SceneManager.LoadScene("Jesus");
     }
 
 }

@@ -1,6 +1,6 @@
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class EnemigoVolador : MonoBehaviour
 {
@@ -121,7 +121,7 @@ public class EnemigoVolador : MonoBehaviour
             estadoActual = Estado.Avisando;
             StartCoroutine(EsperarYCaer());
         }
-        
+
     }
 
     IEnumerator EsperarYCaer()

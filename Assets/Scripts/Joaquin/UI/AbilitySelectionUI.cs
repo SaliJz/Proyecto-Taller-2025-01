@@ -1,14 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class AbilitySelectionUI : MonoBehaviour
 {
-    [Header("Elementos UI")]
+    [Header("Elementos HUD")]
     [SerializeField] private Button passiveUpgradeButton;
     [SerializeField] private Button abilityButton;
     [SerializeField] private Button rerollButton;
@@ -66,7 +65,7 @@ public class AbilitySelectionUI : MonoBehaviour
         UpdatePassiveButton(proposedUpgrade);
 
         rerollText.text = $"Rerolls restantes: {rerollAttempts}";
-        promptText.text = abilityMgr.activedAbilities.Count < 2 ? "Selecciona una nueva habilidad" : 
+        promptText.text = abilityMgr.activedAbilities.Count < 2 ? "Selecciona una nueva habilidad" :
                                                         "Seleccione una habilidad para reemplazar";
     }
 

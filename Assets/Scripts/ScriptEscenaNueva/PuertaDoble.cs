@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,12 +21,12 @@ public class PuertaDoble : MonoBehaviour
         posInicialIzquierda = puertaIzquierda.localPosition;
         posInicialDerecha = puertaDerecha.localPosition;
 
-     
+
         posFinalIzquierda = posInicialIzquierda + puertaIzquierda.right * -distanciaApertura;
         posFinalDerecha = posInicialDerecha + puertaDerecha.right * distanciaApertura;
     }
 
-    
+
     void Update()
     {
         if (abrir && !cambiarEscena)

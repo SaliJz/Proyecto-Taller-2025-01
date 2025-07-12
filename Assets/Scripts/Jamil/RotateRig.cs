@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class RotateRig : MonoBehaviour
@@ -11,14 +9,14 @@ public class RotateRig : MonoBehaviour
     public Transform cameraTransform;
 
     [Header("Órbita")]
-    public float radius = 5f;  
-    public float height = 2f;  
+    public float radius = 5f;
+    public float height = 2f;
 
-    public bool isActive=false;
+    public bool isActive = false;
 
     void Start()
     {
-      
+
         ActualizarPosicionCamara();
     }
 

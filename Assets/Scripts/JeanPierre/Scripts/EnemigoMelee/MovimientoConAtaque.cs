@@ -129,7 +129,7 @@ public class MovimientoConAtaque : MonoBehaviour
         for (int i = 0; i < numAtaques; i++)
         {
 
-            
+
 
             posicionObjetivoAtaque = PosicionJugadorSinY();
 

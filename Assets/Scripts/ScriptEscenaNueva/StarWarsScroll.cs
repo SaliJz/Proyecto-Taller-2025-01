@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class StarWarsScroll : MonoBehaviour
 {
-    [SerializeField] private float speed = 10f; 
+    [SerializeField] private float speed = 10f;
     [SerializeField] private float angle = 30f;
 
     [SerializeField] private Transform cameraTransform;

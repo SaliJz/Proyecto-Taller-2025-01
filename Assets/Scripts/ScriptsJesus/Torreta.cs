@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
-public class Torreta: MonoBehaviour
+public class Torreta : MonoBehaviour
 {
     public Transform cabezaTorreta;
     public Transform puntoDisparo;
@@ -110,8 +108,8 @@ public class Torreta: MonoBehaviour
     {
         if (other.CompareTag("Laser"))
         {
-            
-            TomarDaño(10); 
+
+            TomarDaño(10);
             Debug.Log("¡La torreta recibió daño por el láser!");
         }
     }

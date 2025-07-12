@@ -1,9 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
-using static PickupItem;
 
 public class SupplyBox : MonoBehaviour
 {
@@ -100,7 +97,7 @@ public class SupplyBox : MonoBehaviour
         actualAmount = Random.Range((int)amountRange.x, (int)amountRange.y + 1);
         UpdateVisual();
     }
-    
+
     private void OnTriggerStay(Collider other)
     {
         if (other.GetComponent<PlayerHealth>() != null)

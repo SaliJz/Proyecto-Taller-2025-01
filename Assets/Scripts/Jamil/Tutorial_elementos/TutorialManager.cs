@@ -109,7 +109,7 @@
 //            IncreaseFragmentCounterInCurrentScene();
 //            Debug.Log($"Fragmentos para escena {currentDialogue}: " +
 //                $"{fragmentCounters[currentDialogue]}/{GetCurrentDialogueData().tutorialSceneData.necessaryFragments}");
-           
+
 //            if (fragmentCounters[currentDialogue] == GetCurrentDialogueData().tutorialSceneData.necessaryFragments)
 //            {
 //                ActivateCurrentScenario();
@@ -142,14 +142,14 @@
 //            {
 //               SetTextUI(dialogue.dialogueText);
 //            }
-               
+
 //            if (dialogue.dialogueVoice != null)
 //            {
 //                voiceAudioSource.PlayOneShot(dialogue.dialogueVoice);
 //                yield return new WaitForSecondsRealtime(dialogue.dialogueVoice.length);
 //            }
-              
-                          
+
+
 //        }
 //        if (currentDialogue == 3) 
 //        {
@@ -171,7 +171,7 @@
 //                tutorialSceneController.StartHaloCorutine();
 //            }
 
-           
+
 //        }
 //        if (currentDialogue == 1)
 //        {
@@ -191,7 +191,7 @@
 //    {
 //        GetCurrentDialogueData().isActive = false;
 //        IncreaseDialogueIndex(); 
-     
+
 //        if (HasNextScene()) //Verificamos que la escena exista
 //        {
 //            if (currentDialogue < tutorialScenes.Count)
@@ -202,7 +202,7 @@
 //                ScenarioActivationCheckerByTime();
 //                ScenarioActivationCheckByManually();
 //            }
-           
+
 //        }
 //    }
 //    //private IEnumerator AnimateTextTyping(string text)
@@ -243,7 +243,7 @@
 //    public ActivationType GetCurrentSceneActivationType()
 //    {      
 //       return tutorialScenes[currentDialogue].tutorialSceneData.activationType;
-       
+
 //    }
 
 //    private void SelectCameraToRender(int indexCamera)

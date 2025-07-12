@@ -1,17 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 
 public class PickupItem : MonoBehaviour
 {
-    public enum PickupType 
-    { 
-        CodeFragment, 
-        AmmoSingle, 
-        AmmoSemiAuto, 
-        AmmoAuto 
+    public enum PickupType
+    {
+        CodeFragment,
+        AmmoSingle,
+        AmmoSemiAuto,
+        AmmoAuto
     }
 
     [SerializeField] private PickupType pickupType;
@@ -148,7 +145,7 @@ public class PickupItem : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    
+
     private void TryPickup()
     {
         Debug.Log("Recogiendo objeto");
@@ -158,7 +155,7 @@ public class PickupItem : MonoBehaviour
 
         WeaponManager weaponManager = FindAnyObjectByType<WeaponManager>();
         if (weaponManager == null) return;
-        
+
         int added = 0;
 
         switch (pickupType)

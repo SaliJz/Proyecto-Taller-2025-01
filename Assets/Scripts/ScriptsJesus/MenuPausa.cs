@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -25,7 +23,7 @@ public class MenuPausa : MonoBehaviour
 
     private ShopController shopController;
     private ClipManager clipManager;
-    private bool isDead = false; 
+    private bool isDead = false;
     private bool pausedGame = false;
 
     private void Awake()
@@ -85,7 +83,7 @@ public class MenuPausa : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        Time.timeScale = 1f; 
+        Time.timeScale = 1f;
         pauseMenuPanel.SetActive(false);
         settingsPanel.SetActive(false);
         pausedGame = false;
@@ -101,7 +99,7 @@ public class MenuPausa : MonoBehaviour
     public void GoToMainMenu()
     {
         PlayButtonAudio();
-        Time.timeScale = 1f; 
+        Time.timeScale = 1f;
         SceneManager.LoadScene(mainSceneName);
     }
 

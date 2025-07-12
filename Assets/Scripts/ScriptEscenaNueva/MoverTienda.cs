@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -30,7 +28,7 @@ public class MoverTienda : MonoBehaviour
         }
     }
 
-    
+
     void Update()
     {
         float h = Input.GetAxis("Horizontal");
@@ -43,7 +41,7 @@ public class MoverTienda : MonoBehaviour
         rb.velocity = moveVelocity;
 
 
-        
+
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);

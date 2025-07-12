@@ -8,13 +8,13 @@ public class HUDManager : MonoBehaviour
 {
     #region Datos
 
-    public static HUDManager Instance 
-    { 
-        get; 
-        private set; 
+    public static HUDManager Instance
+    {
+        get;
+        private set;
     }
 
-    [Header("UI Elements")]
+    [Header("HUD Elements")]
     [Header("Health")]
     [SerializeField] private Slider healthBar;
     [SerializeField] private TextMeshProUGUI healthBarText;
@@ -35,7 +35,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI abilityStatusText;
     [SerializeField] private Image abilityIcon;
     [SerializeField] private Image abilityCooldownFill;
-    [SerializeField] private bool showAbilityUI = false; // Si se debe mostrar la UI de habilidades
+    [SerializeField] private bool showAbilityUI = false; // Si se debe mostrar la HUD de habilidades
 
     [Header("Info Fragments")]
     [SerializeField] private RectTransform floatingInfoFragmentsText;
@@ -47,8 +47,8 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private Vector2 floatingStartPos = new Vector2(480f, 0f);
     [SerializeField] private Vector2 floatingEndPos = new Vector2(-10, 0f);
     [SerializeField] private bool isNivel1 = false;
- 
-    [Header("Mission UI")]
+
+    [Header("Mission HUD")]
     [SerializeField] private RectTransform missionTextObject;
     [SerializeField] private GameObject missionPanel;
     [SerializeField] private TextMeshProUGUI missionText;
@@ -88,7 +88,7 @@ public class HUDManager : MonoBehaviour
     private void Start()
     {
         if (isNivel1)
-        {             
+        {
             infoFragments = 100;
         }
 
@@ -199,7 +199,7 @@ public class HUDManager : MonoBehaviour
     #region Info Fragments
     private void Update()
     {
-        if (floatingInfoFragmentsText.gameObject.activeInHierarchy && !activecurrentInfoFragment )
+        if (floatingInfoFragmentsText.gameObject.activeInHierarchy && !activecurrentInfoFragment)
         {
             activecurrentInfoFragment = true;
             currentInfoFragments.transform.gameObject.SetActive(true);
@@ -215,10 +215,10 @@ public class HUDManager : MonoBehaviour
         }
 
         if (floatingInfoFragmentsText.gameObject.activeInHierarchy)
-        {  
+        {
             floatingTextCoroutine = StartCoroutine(ShowFloatingText($"|F. Cod.: + {amount}"));
             currentInfoFragments.text = $"|F. Cod. {infoFragments.ToString("N0")}"; // Formatear con separador de miles
-        }    
+        }
 
         //Debug.Log($"F. Cod.: + {amount} -> {infoFragments}");
     }
@@ -266,7 +266,7 @@ public class HUDManager : MonoBehaviour
         infoFragments = Mathf.Max(0, infoFragments);
         if (floatingInfoFragmentsText.gameObject.activeInHierarchy)
         {
-            floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: + {amount} -> {infoFragments}"));        
+            floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: + {amount} -> {infoFragments}"));
         }
     }
 
@@ -314,7 +314,7 @@ public class HUDManager : MonoBehaviour
     public void HideMission()
     {
         missionTextObject.gameObject?.SetActive(false);
-        timerText.gameObject?.SetActive(false); 
+        timerText.gameObject?.SetActive(false);
     }
 
     public void ShowMission(string message, bool isTimer = false)

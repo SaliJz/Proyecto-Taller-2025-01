@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PuertaSimple : MonoBehaviour
@@ -42,14 +40,14 @@ public class PuertaSimple : MonoBehaviour
         }
     }
 
-   
+
     public void ActivarZonaA() => estaEnZonaA = true;
     public void ActivarZonaB()
     {
         estaEnZonaA = false;
         puertaBloqueada = true;
 
-       
+
         puertaIzquierda.position = posicionCerradaIzquierda;
         puertaDerecha.position = posicionCerradaDerecha;
     }

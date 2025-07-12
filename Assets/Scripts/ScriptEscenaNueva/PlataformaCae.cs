@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlataformaCae : MonoBehaviour
@@ -10,9 +9,9 @@ public class PlataformaCae : MonoBehaviour
 
     private void Start()
     {
-        
+
         rb = GetComponent<Rigidbody>();
-        rb.isKinematic = true; 
+        rb.isKinematic = true;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -22,7 +21,7 @@ public class PlataformaCae : MonoBehaviour
 
             if (collision.contacts[0].point.y > transform.position.y + 0.2f)
             {
-                
+
                 Debug.Log("¡Jugador encima! Plataforma caerá después de " + delayAntesDeCaer + " segundos.");
                 StartCoroutine(CaerConRetardo());
             }

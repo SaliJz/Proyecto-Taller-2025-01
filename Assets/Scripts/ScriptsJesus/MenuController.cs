@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using Unity.VisualScripting;
+using UnityEngine.UI;
 
 public class MenuController : MonoBehaviour
 {
@@ -44,7 +40,7 @@ public class MenuController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        
+
         if (settingsPanel != null)
         {
             settingsButton.onClick.AddListener(OpenSettings);
@@ -74,7 +70,7 @@ public class MenuController : MonoBehaviour
     public void OpenCredits()
     {
         PlayButtonAudio();
-        SceneManager.LoadScene(creditsSceneName);  
+        SceneManager.LoadScene(creditsSceneName);
     }
 
     public void OpenSettings()

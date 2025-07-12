@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class BalaSimple: MonoBehaviour
+public class BalaSimple : MonoBehaviour
 {
     public float velocidad = 20f;
     public int daño = 10;

@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlataformaLateral: MonoBehaviour
+public class PlataformaLateral : MonoBehaviour
 {
     public float velocidad = 2f;
     public float distancia = 3f;
@@ -15,13 +13,13 @@ public class PlataformaLateral: MonoBehaviour
         posicionInicial = transform.position;
     }
 
-    
+
     void Update()
     {
         if (moviendoDerecha)
         {
             transform.position += Vector3.right * velocidad * Time.deltaTime;
-            if(transform.position.x >= posicionInicial.x + distancia)
+            if (transform.position.x >= posicionInicial.x + distancia)
             {
                 moviendoDerecha = false;
             }
@@ -29,7 +27,7 @@ public class PlataformaLateral: MonoBehaviour
         else
         {
             transform.position += Vector3.left * velocidad * Time.deltaTime;
-            if(transform.position.x<= posicionInicial.x - distancia)
+            if (transform.position.x <= posicionInicial.x - distancia)
             {
                 moviendoDerecha = true;
             }

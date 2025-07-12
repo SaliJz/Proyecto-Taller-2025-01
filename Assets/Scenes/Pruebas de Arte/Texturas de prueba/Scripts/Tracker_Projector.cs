@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
 
 public class Tracker_Projector : MonoBehaviour
@@ -11,7 +8,7 @@ public class Tracker_Projector : MonoBehaviour
 
     private void Update()
     {
-        if (MarkerProjected != null) 
+        if (MarkerProjected != null)
         {
             transform.rotation = Quaternion.LookRotation(MarkerProjected.position - transform.position);
 

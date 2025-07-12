@@ -3,12 +3,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public enum ButtonFunction 
-{ 
-    PurchaseAbility, 
+public enum ButtonFunction
+{
+    PurchaseAbility,
     EquipAbility,
     UnequipAbility,
-    UpgradeStat 
+    UpgradeStat
 }
 
 public class AbilityButtonController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler

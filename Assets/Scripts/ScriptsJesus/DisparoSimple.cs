@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DisparoSimple : MonoBehaviour
 {
-    public GameObject balaPrefab;         
+    public GameObject balaPrefab;
     public float velocidadBala = 20f;
     public float tiempoEntreDisparos = 0.2f;
 
@@ -32,13 +30,13 @@ public class DisparoSimple : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, 100f))
         {
-            
+
             direccionDisparo = (hit.point - transform.position).normalized;
         }
 
         else
         {
-           
+
             direccionDisparo = (ray.direction).normalized;
         }
 
@@ -52,7 +50,7 @@ public class DisparoSimple : MonoBehaviour
         Rigidbody rb = bala.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.velocity = direccionDisparo * velocidadBala;  
+            rb.velocity = direccionDisparo * velocidadBala;
         }
 
         Debug.Log("¡Disparo realizado!");

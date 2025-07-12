@@ -1,7 +1,5 @@
 
 using UnityEngine;
-using UnityEngine.AI;
-using System.Collections;
 
 
 public class TutorialSceneController : MonoBehaviour
@@ -44,7 +42,7 @@ public class TutorialSceneController : MonoBehaviour
 
     private void Start()
     {
-       
+
         //if (AbilityHolder != null) AbilityHolder.SetActive(false);
         if (abilityIcon != null) abilityIcon.SetActive(false);
 
@@ -69,7 +67,7 @@ public class TutorialSceneController : MonoBehaviour
         if (weaponManager != null) weaponManager.EquipWeaponInstant(0);
         if (weaponIcon != null) weaponIcon.SetActive(true);
 
-      
+
         if (gunWeapon != null)
         {
             HUDManager.Instance.UpdateAmmo(0, gunWeapon.CurrentAmmo, gunWeapon.TotalAmmo);
@@ -130,7 +128,7 @@ public class TutorialSceneController : MonoBehaviour
     {
         foreach (var enemy in normalEnemies)
         {
-            if (enemy == null) continue; 
+            if (enemy == null) continue;
 
             Canvas canvas = enemy.GetComponentInChildren<Canvas>(true);
             if (canvas != null)
@@ -191,10 +189,10 @@ public class TutorialSceneController : MonoBehaviour
     }
 
     public void StopGlitchDeathCinematic()
-    {           
+    {
         GlitchDeathCinematicContainer.SetActive(false);
         //Time.timeScale = 1f;
-         // Inicia el siguiente escenario (escena 5)        
+        // Inicia el siguiente escenario (escena 5)        
     }
 
     public void ActivateInfoFragments()
@@ -220,7 +218,7 @@ public class TutorialSceneController : MonoBehaviour
     }
 
     public void ActivateFadeOutOnCameraSwitch()
-    {    
+    {
         fadeTransition.fadeDuration = 0.2f;
         fadeTransition.delayBeforeFade = 0;
         fadeTransition.StartCoroutine(fadeTransition.FadeInOut(1));

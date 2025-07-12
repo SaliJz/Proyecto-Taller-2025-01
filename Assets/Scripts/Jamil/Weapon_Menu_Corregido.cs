@@ -1,9 +1,9 @@
 
 using System.Collections.Generic;
 using TMPro;
-using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Weapon_Menu_Corregido : MonoBehaviour
 {
@@ -32,7 +32,7 @@ public class Weapon_Menu_Corregido : MonoBehaviour
     [SerializeField] private TextMeshProUGUI shotgunDescription_UI_TMP;
     [SerializeField] private TextMeshProUGUI shotgunPrice_UI_TMP;
 
-    
+
     [System.Serializable]
     public class Weapon_Manager_Card
     {
@@ -40,16 +40,16 @@ public class Weapon_Menu_Corregido : MonoBehaviour
         [SerializeField] public TextMeshProUGUI descriptionTMP;
         [SerializeField] public TextMeshProUGUI priceTMP;
         [SerializeField] public Button buttonPrice;
-        [SerializeField] public int currentIndex=0;
+        [SerializeField] public int currentIndex = 0;
     }
 
-    private Weapon_Manager_Card gunManager=new Weapon_Manager_Card();
-    private Weapon_Manager_Card rifleManager=new Weapon_Manager_Card();
-    private Weapon_Manager_Card shotgunManager=new Weapon_Manager_Card();
+    private Weapon_Manager_Card gunManager = new Weapon_Manager_Card();
+    private Weapon_Manager_Card rifleManager = new Weapon_Manager_Card();
+    private Weapon_Manager_Card shotgunManager = new Weapon_Manager_Card();
 
     private void Start()
     {
-        MoveInspectorListsToWeaponManagerCard();  
+        MoveInspectorListsToWeaponManagerCard();
     }
 
     private void Awake()
@@ -80,9 +80,9 @@ public class Weapon_Menu_Corregido : MonoBehaviour
         shotgunManager.descriptionTMP = shotgunDescription_UI_TMP;
         shotgunManager.priceTMP = shotgunPrice_UI_TMP;
 
-        gunManager.buttonPrice=buttonGunPrice_UI;
+        gunManager.buttonPrice = buttonGunPrice_UI;
         rifleManager.buttonPrice = buttonRiflePrice_UI;
-        shotgunManager.buttonPrice= buttonShotgunPrice_UI;
+        shotgunManager.buttonPrice = buttonShotgunPrice_UI;
 
         Display_Initial_Card(gunManager);
         Display_Initial_Card(rifleManager);
@@ -90,7 +90,7 @@ public class Weapon_Menu_Corregido : MonoBehaviour
     }
     void IncreaseIndex(Weapon_Manager_Card currentManagerCard)
     {
-        currentManagerCard.currentIndex +=1;
+        currentManagerCard.currentIndex += 1;
     }
     public void Display_Initial_Card(Weapon_Manager_Card manager)
     {
@@ -100,9 +100,9 @@ public class Weapon_Menu_Corregido : MonoBehaviour
     }
     void Update_Cards_UI(Weapon_Manager_Card manager)
     {
-       
-        if(manager.currentIndex>=manager.weaponCardList.Count) return;
-        int index= manager.currentIndex;
+
+        if (manager.currentIndex >= manager.weaponCardList.Count) return;
+        int index = manager.currentIndex;
         Weapon_Card_Corregido currentCard = manager.weaponCardList[index];
 
         if (HUDManager.Instance.CurrentFragments >= currentCard.price)
@@ -113,8 +113,8 @@ public class Weapon_Menu_Corregido : MonoBehaviour
 
             if (manager.currentIndex >= manager.weaponCardList.Count)
             {
-               
-                DisableBuyButton(manager.buttonPrice, manager.descriptionTMP,manager.priceTMP, true);
+
+                DisableBuyButton(manager.buttonPrice, manager.descriptionTMP, manager.priceTMP, true);
                 return;//Si la siguiente carta no esta en la lista devolvemos nada
             }
 
@@ -129,19 +129,19 @@ public class Weapon_Menu_Corregido : MonoBehaviour
 
         else
         {
-            DisableBuyButton(manager.buttonPrice, manager.descriptionTMP,manager.priceTMP, false);
+            DisableBuyButton(manager.buttonPrice, manager.descriptionTMP, manager.priceTMP, false);
         }
-        
-            
+
+
     }
     public void Update_Gun_Card_UI() => Update_Cards_UI(gunManager);
     public void Update_Rifle_Card_UI() => Update_Cards_UI(rifleManager);
     public void Update_Shotgun_Card_UI() => Update_Cards_UI(shotgunManager);
-  
+
     public void BuyCard(Weapon_Card_Corregido cardToBuy)
-    {       
-       HUDManager.Instance.DiscountInfoFragment(cardToBuy.price);
-       UpgradeDataStore.Instance.ApplyWeaponUpgrade(cardToBuy);
+    {
+        HUDManager.Instance.DiscountInfoFragment(cardToBuy.price);
+        UpgradeDataStore.Instance.ApplyWeaponUpgrade(cardToBuy);
     }
     public void CheckPurchasableCards()
     {
@@ -158,7 +158,7 @@ public class Weapon_Menu_Corregido : MonoBehaviour
             var card = manager.weaponCardList[manager.currentIndex];
             if (card.price >= HUDManager.Instance.CurrentFragments)
             {
-                DisableBuyButton(manager.buttonPrice, manager.descriptionTMP,manager.priceTMP, false);
+                DisableBuyButton(manager.buttonPrice, manager.descriptionTMP, manager.priceTMP, false);
             }
         }
     }
@@ -169,10 +169,10 @@ public class Weapon_Menu_Corregido : MonoBehaviour
 
         if (reachedMaximunLevel)
         {
-           description.text = "Nivel máximo alcanzado";
-           price.text = "";
+            description.text = "Nivel máximo alcanzado";
+            price.text = "";
         }
-      
+
     }
     public void LoadScene()
     {

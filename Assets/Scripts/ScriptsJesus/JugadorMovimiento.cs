@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -37,7 +35,7 @@ public class JugadorMovimiento : MonoBehaviour
 
     void Update()
     {
-        
+
         float movX = Input.GetAxis("Horizontal");
         float movZ = Input.GetAxis("Vertical");
 
@@ -62,13 +60,13 @@ public class JugadorMovimiento : MonoBehaviour
 
     private bool EstaEnSuelo()
     {
-        return Physics.Raycast(transform.position, Vector3.down, 1.1f); 
+        return Physics.Raycast(transform.position, Vector3.down, 1.1f);
     }
 
 
     private void OnCollisionEnter(Collision collision)
     {
-        
+
         if (collision.gameObject.CompareTag("Plataforma"))
         {
             transform.parent = collision.transform;
@@ -77,7 +75,7 @@ public class JugadorMovimiento : MonoBehaviour
 
     private void OnCollisionExit(Collision collision)
     {
-        
+
         if (collision.gameObject.CompareTag("Plataforma"))
         {
             transform.parent = null;

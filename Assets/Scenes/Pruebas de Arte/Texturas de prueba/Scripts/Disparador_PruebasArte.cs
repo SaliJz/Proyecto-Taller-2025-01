@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Disparador_PruebasArte : MonoBehaviour
@@ -18,9 +16,9 @@ public class Disparador_PruebasArte : MonoBehaviour
 
             Rigidbody rb = proyectil.GetComponent<Rigidbody>();
 
-            rb.velocity = new Vector3 (vel, 0, 0);
+            rb.velocity = new Vector3(vel, 0, 0);
 
-            if(MuzzleFlash != null)
+            if (MuzzleFlash != null)
             {
                 GameObject muzzle = Instantiate(MuzzleFlash);
                 muzzle.transform.position = transform.position;

@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class OpcionesMenuManager : MonoBehaviour
 {
@@ -67,12 +65,12 @@ public class OpcionesMenuManager : MonoBehaviour
     {
         sensitivityValueText.text = Mathf.RoundToInt(value * 100) + "%";
         Debug.Log("Sensibilidad: " + value);
-        
+
     }
 
     void ReturnToMainMenu()
     {
-        
+
         SceneManager.LoadScene("MenuPrincipalJesus");
     }
 

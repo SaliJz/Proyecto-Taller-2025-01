@@ -1,8 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class HaloMoveController : MonoBehaviour
 {
@@ -12,9 +9,9 @@ public class HaloMoveController : MonoBehaviour
     [SerializeField] private float roundTripSpeed;
 
 
-   public IEnumerator MoveHaloAparition()
+    public IEnumerator MoveHaloAparition()
     {
-        bool isHaloArrive=false;
+        bool isHaloArrive = false;
         while (!isHaloArrive)
         {
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, arriveSpeed * Time.deltaTime);
@@ -34,7 +31,7 @@ public class HaloMoveController : MonoBehaviour
         bool isHaloRoundTrip = true;
         float minY = transform.position.y;
         float maxY = -2.34f;
-        float range = maxY - minY; 
+        float range = maxY - minY;
 
         while (isHaloRoundTrip)
         {

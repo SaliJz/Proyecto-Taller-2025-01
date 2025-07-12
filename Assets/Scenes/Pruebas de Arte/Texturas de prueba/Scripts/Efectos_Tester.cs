@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Efectos_Tester : MonoBehaviour
@@ -21,7 +19,7 @@ public class Efectos_Tester : MonoBehaviour
         {
             GameObject obj = Instantiate(VFX);
             obj.transform.position = transform.position;
-            
+
         }
     }
 }

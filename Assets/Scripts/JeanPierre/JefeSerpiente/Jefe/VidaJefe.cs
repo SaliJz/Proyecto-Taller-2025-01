@@ -1,8 +1,8 @@
 ﻿// VidaJefe.cs
-using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(SnakeController))]
 public class VidaJefe : MonoBehaviour
@@ -10,7 +10,7 @@ public class VidaJefe : MonoBehaviour
     public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
 
     [Header("Configuración de vida")]
-    public float vida = 500f; 
+    public float vida = 500f;
     public Slider sliderVida;
 
     [Header("Umbrales de vida (%)")]

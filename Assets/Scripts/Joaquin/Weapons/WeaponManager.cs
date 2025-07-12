@@ -48,7 +48,7 @@ public class WeaponManager : MonoBehaviour
         }
 
         int savedIndex = PlayerPrefs.GetInt("LastWeaponIndex", 0);
-       
+
         if (canEquipFirstWeapon)
         {
             EquipWeaponInstant(savedIndex);
@@ -57,8 +57,8 @@ public class WeaponManager : MonoBehaviour
 
     private void Update()
     {
-        if (!canChangeWeapon) return;           
-        
+        if (!canChangeWeapon) return;
+
         if (Input.GetKeyDown(KeyCode.Alpha1)) ChangeWeapon(0);
         if (Input.GetKeyDown(KeyCode.Alpha2)) ChangeWeapon(1);
         if (Input.GetKeyDown(KeyCode.Alpha3)) ChangeWeapon(2);
