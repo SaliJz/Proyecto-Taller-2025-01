@@ -33,19 +33,13 @@ public class PlayerHealth : MonoBehaviour
         else GeneralUpgradeManager.IsTutorial = false;
 
         GeneralUpgradeManager.ResetUpgrades();
-
-        if (TutorialManager0.Instance == null)
-        {
-            UpdateMaxStats();
-            HUDManager.Instance.UpdateHealth(currentHealth, maxHealth);
-            HUDManager.Instance.UpdateShield(currentShield, maxShield);
-        }
         
-
         currentHealth = maxHealth;
         currentShield = maxShield;
 
-       
+        UpdateMaxStats();
+        HUDManager.Instance?.UpdateHealth(currentHealth, maxHealth);
+        HUDManager.Instance?.UpdateShield(currentShield, maxShield);
     }
 
     private void OnEnable()

@@ -159,6 +159,8 @@ public class HUDManager : MonoBehaviour
     {
         if (healthBar != null && healthBarText != null)
         {
+            Debug.Log($"Updating health: {current}/{max}");
+
             float healthPercentage = (float)current / max;
             healthBar.value = healthPercentage;
             healthBarText.text = $"{healthPercentage * 100} %";
@@ -169,6 +171,8 @@ public class HUDManager : MonoBehaviour
     {
         if (shieldBar != null && shieldText != null)
         {
+            Debug.Log($"Updating shield: {current}/{max}");
+
             float shieldPercentage = (float)current / max;
             shieldBar.value = shieldPercentage;
             shieldText.text = $"{shieldPercentage * 100} %";
