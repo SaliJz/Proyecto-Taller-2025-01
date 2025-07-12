@@ -1788,8 +1788,6 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 432355534}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.9999286, z: 0, w: 0.011951277}
-  m_LocalPosition: {x: 41.38805, y: 3.21, z: -172.80014}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 40, y: 0.7, z: -175.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -1975,6 +1973,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMin.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5009799820183129853, guid: c6bad594ba909a64e8e0ce6a78d37953,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -11.5998535
       objectReference: {fileID: 0}
     - target: {fileID: 5174083155876279472, guid: c6bad594ba909a64e8e0ce6a78d37953,
         type: 3}
@@ -7754,6 +7757,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 534592475667364170, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3861835015316622551, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
       propertyPath: jumpForce
@@ -7763,6 +7771,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlayerWithCamera
+      objectReference: {fileID: 0}
+    - target: {fileID: 4187975560967645531, guid: d7e6ddd8dcf450448b946a2962591afb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8129634047586214791, guid: d7e6ddd8dcf450448b946a2962591afb,
         type: 3}
@@ -8386,3 +8399,5 @@ SceneRoots:
   - {fileID: 174555484}
   - {fileID: 186109672}
   - {fileID: 793239838}
+  - {fileID: 1212294222096492786}
+  - {fileID: 1232394381918650955}
