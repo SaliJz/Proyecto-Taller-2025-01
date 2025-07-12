@@ -1,14 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class IntroManager : MonoBehaviour
 {
-    public GameObject introPanel; 
-    public float displayTime = 5f; 
-    public string nextSceneName; 
+    public GameObject introPanel;
+    public float displayTime = 5f;
+    public string nextSceneName;
 
     void Start()
     {
@@ -22,6 +20,6 @@ public class IntroManager : MonoBehaviour
         introPanel.SetActive(true);
         yield return new WaitForSeconds(displayTime);
         introPanel.SetActive(false);
-        SceneManager.LoadScene(nextSceneName); 
+        SceneManager.LoadScene(nextSceneName);
     }
 }

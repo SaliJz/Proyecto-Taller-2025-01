@@ -31,7 +31,7 @@ public class Mission : ScriptableObject
 [System.Serializable]
 public class KillCondition
 {
-    public enum ConditionType { ByTag, ByName, ByType}
+    public enum ConditionType { ByTag, ByName, ByType }
 
     public ConditionType conditionType;
     public string value;

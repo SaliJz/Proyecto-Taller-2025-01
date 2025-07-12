@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;  // Necesario para trabajar con los botones
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;  // Necesario para trabajar con los botones
 
 public class CreditosController : MonoBehaviour
 {

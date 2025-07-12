@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -36,13 +34,18 @@ public class PlayerHealth : MonoBehaviour
 
         GeneralUpgradeManager.ResetUpgrades();
 
-        UpdateMaxStats();
+        if (TutorialManager0.Instance == null)
+        {
+            UpdateMaxStats();
+            HUDManager.Instance.UpdateHealth(currentHealth, maxHealth);
+            HUDManager.Instance.UpdateShield(currentShield, maxShield);
+        }
+        
 
         currentHealth = maxHealth;
         currentShield = maxShield;
 
-        HUDManager.Instance.UpdateHealth(currentHealth, maxHealth);
-        HUDManager.Instance.UpdateShield(currentShield, maxShield);
+       
     }
 
     private void OnEnable()
@@ -178,7 +181,7 @@ public class PlayerHealth : MonoBehaviour
         {
             DeathManager.Instance.RegisterDeath(deathPrefab, transform.position);
         }
-        
+
         GameManager.Instance?.PlayerDied();
     }
     public class DetectarObjetosEnContacto : MonoBehaviour

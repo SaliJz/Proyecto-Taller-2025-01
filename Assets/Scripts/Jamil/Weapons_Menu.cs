@@ -1,8 +1,5 @@
-using JetBrains.Annotations;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -14,17 +11,17 @@ public class Weapons_Menu : MonoBehaviour
     [SerializeField] private List<Weapons_Cards> rifleAllCards;
     [SerializeField] private List<Weapons_Cards> shotgunAllCards;
 
-    [Header("UI Gun")]
+    [Header("HUD Gun")]
     [SerializeField] private TextMeshProUGUI gunBuffDescriptionTMP;
     [SerializeField] private TextMeshProUGUI gunPriceTMP;
     [SerializeField] private Button gunBuyButton;
 
-    [Header("UI Rifle")]
+    [Header("HUD Rifle")]
     [SerializeField] private TextMeshProUGUI rifleBuffDescriptionTMP;
     [SerializeField] private TextMeshProUGUI riflePriceTMP;
     [SerializeField] private Button rifleBuyButton;
 
-    [Header("UI Shotgun")]
+    [Header("HUD Shotgun")]
     [SerializeField] private TextMeshProUGUI shotgunBuffDescriptionTMP;
     [SerializeField] private TextMeshProUGUI shotgunPriceTMP;
     [SerializeField] private Button shotgunBuyButton;
@@ -67,14 +64,14 @@ public class Weapons_Menu : MonoBehaviour
         }
 
         //Agregamos elementos a la lista listInUse
-        public void GroupIndexes0(List<Weapons_Cards> weaponList) 
+        public void GroupIndexes0(List<Weapons_Cards> weaponList)
         {
             foreach (Weapons_Cards newCard in weaponList)
             {
                 if (newCard.ID == 0)
                 {
                     newCard.currentState = Weapons_Cards.CurrentState.InUse;
-                    listInUse.Add(newCard);               
+                    listInUse.Add(newCard);
                 }
             }
 
@@ -185,10 +182,10 @@ public class Weapons_Menu : MonoBehaviour
 
     public void BuyCard(Weapon_List_Buff_UI wLB)
     {
-            Weapons_Cards selectedCard = wLB.selectedCard; //Usa la misma carta seleccionada en la clase
+        Weapons_Cards selectedCard = wLB.selectedCard; //Usa la misma carta seleccionada en la clase
 
         if (HUDManager.Instance.CurrentFragments >= selectedCard.price)
-        {          
+        {
             HUDManager.Instance.DiscountInfoFragment(selectedCard.price);
         }
 
@@ -197,10 +194,10 @@ public class Weapons_Menu : MonoBehaviour
         var cardUpgradeType = selectedCard.upgradeType;
         UnityEngine.Debug.Log(cardUpgradeType.ToString());
 
-        if (cardUpgradeType==Weapons_Cards.UpgradeType.WeaponDamage)
+        if (cardUpgradeType == Weapons_Cards.UpgradeType.WeaponDamage)
         {
             wLB.listDamageBuff.Remove(selectedCard);
-            
+
             int index = wLB.listInUse.IndexOf(selectedCard);
             if (index != -1 && wLB.listDamageBuff.Count > 0)
             {
@@ -210,7 +207,7 @@ public class Weapons_Menu : MonoBehaviour
         else if (selectedCard.upgradeType == Weapons_Cards.UpgradeType.FireRate)
         {
             wLB.listRatioFireBuff.Remove(selectedCard);
-           
+
             int index = wLB.listInUse.IndexOf(selectedCard);
             if (index != -1 && wLB.listRatioFireBuff.Count > 0)
             {
@@ -220,7 +217,7 @@ public class Weapons_Menu : MonoBehaviour
         else if (selectedCard.upgradeType == Weapons_Cards.UpgradeType.ReloadSpeed)
         {
             wLB.listReloadSpeedBuff.Remove(selectedCard);
-            
+
             int index = wLB.listInUse.IndexOf(selectedCard);
             if (index != -1 && wLB.listReloadSpeedBuff.Count > 0)
             {
@@ -230,7 +227,7 @@ public class Weapons_Menu : MonoBehaviour
         else if (selectedCard.upgradeType == Weapons_Cards.UpgradeType.AmmoBonus)
         {
             wLB.listAmmoBonusBuff.Remove(selectedCard);
-          
+
             int index = wLB.listInUse.IndexOf(selectedCard);
             if (index != -1 && wLB.listAmmoBonusBuff.Count > 0)
             {
@@ -242,12 +239,12 @@ public class Weapons_Menu : MonoBehaviour
         {
             gun.UpdateCard(gunBuffDescriptionTMP, gunPriceTMP);
         }
-          
+
         else if (wLB == rifle)
         {
             rifle.UpdateCard(rifleBuffDescriptionTMP, riflePriceTMP);
         }
-          
+
         else if (wLB == shotgun)
         {
             shotgun.UpdateCard(shotgunBuffDescriptionTMP, shotgunPriceTMP);

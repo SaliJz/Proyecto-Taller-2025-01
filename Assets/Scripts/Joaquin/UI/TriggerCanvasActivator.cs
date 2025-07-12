@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TriggerCanvasActivator : MonoBehaviour
@@ -18,7 +16,7 @@ public class TriggerCanvasActivator : MonoBehaviour
 
         if (canvasUI == null)
         {
-            Debug.LogError("Canvas UI no está asignado en TriggerCanvasActivator.");
+            Debug.LogError("Canvas HUD no está asignado en TriggerCanvasActivator.");
             return;
         }
 

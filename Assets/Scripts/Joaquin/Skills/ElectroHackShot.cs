@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ElectroHackShot : MonoBehaviour
@@ -17,7 +14,7 @@ public class ElectroHackShot : MonoBehaviour
 
     public void Initialize(float radius, float maxTargets, float damagePerSecond, float duration, float slowMultiplier, LayerMask targetLayer)
     {
-        this.radius = radius; 
+        this.radius = radius;
         this.maxTargets = maxTargets;
         this.damagePerSecond = damagePerSecond;
         this.duration = duration;

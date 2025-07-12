@@ -1,7 +1,7 @@
-using UnityEngine;
 using System.Collections;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
@@ -94,17 +94,17 @@ public class EnemySpawner : MonoBehaviour
     {
         if (enemyPrefabs == null || enemyPrefabs.Length == 0) return;
 
-            var availablePoints = spawnPoints.Where(sp => sp.IsAvailable).ToList();
-            if (availablePoints.Count == 0) return;
+        var availablePoints = spawnPoints.Where(sp => sp.IsAvailable).ToList();
+        if (availablePoints.Count == 0) return;
 
-            GameObject randomEnemyPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
-            SpawnPoint randomPoint = availablePoints[Random.Range(0, availablePoints.Count)];
+        GameObject randomEnemyPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+        SpawnPoint randomPoint = availablePoints[Random.Range(0, availablePoints.Count)];
 
-            Vector2 offset = Random.insideUnitCircle * spawnRadius;
-            Vector3 spawnPosition = randomPoint.transform.position + new Vector3(offset.x, 0, offset.y);
+        Vector2 offset = Random.insideUnitCircle * spawnRadius;
+        Vector3 spawnPosition = randomPoint.transform.position + new Vector3(offset.x, 0, offset.y);
 
-            GameObject enemy = Instantiate(randomEnemyPrefab, spawnPosition, randomPoint.transform.rotation);
-            activeEnemies.Add(enemy); 
+        GameObject enemy = Instantiate(randomEnemyPrefab, spawnPosition, randomPoint.transform.rotation);
+        activeEnemies.Add(enemy);
     }
 
     public void ResetSpawner()

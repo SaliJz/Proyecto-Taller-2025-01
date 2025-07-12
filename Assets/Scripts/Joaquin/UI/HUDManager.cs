@@ -8,13 +8,13 @@ public class HUDManager : MonoBehaviour
 {
     #region Datos
 
-    public static HUDManager Instance 
-    { 
-        get; 
-        private set; 
+    public static HUDManager Instance
+    {
+        get;
+        private set;
     }
 
-    [Header("UI Elements")]
+    [Header("HUD Elements")]
     [Header("Health")]
     [SerializeField] private Slider healthBar;
     [SerializeField] private TextMeshProUGUI healthBarText;
@@ -36,7 +36,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private Image abilityIcon;
     [SerializeField] private Image abilityIconBackground;
     [SerializeField] private Image abilityCooldownFill;
-    [SerializeField] private bool showAbilityUI = false; // Si se debe mostrar la UI de habilidades
+    [SerializeField] private bool showAbilityUI = false; // Si se debe mostrar la HUD de habilidades
 
     [Header("Info Fragments")]
     [SerializeField] private RectTransform floatingInfoFragmentsText;
@@ -183,7 +183,7 @@ public class HUDManager : MonoBehaviour
     {
         if (ammoTexts == null || weaponIndex < 0 || weaponIndex >= ammoTexts.Count) return;
 
-        // Desactiva todos los textos de munición
+        // Desactiva todos los textos de municiï¿½n
         foreach (var text in ammoTexts)
         {
             text.gameObject.SetActive(false);
@@ -218,7 +218,7 @@ public class HUDManager : MonoBehaviour
     #region Info Fragments
     private void Update()
     {
-        if (floatingInfoFragmentsText.gameObject.activeInHierarchy && !activecurrentInfoFragment )
+        if (floatingInfoFragmentsText.gameObject.activeInHierarchy && !activecurrentInfoFragment)
         {
             activecurrentInfoFragment = true;
             currentInfoFragments.transform.gameObject.SetActive(true);
@@ -234,10 +234,10 @@ public class HUDManager : MonoBehaviour
         }
 
         if (floatingInfoFragmentsText.gameObject.activeInHierarchy)
-        {  
+        {
             floatingTextCoroutine = StartCoroutine(ShowFloatingText($"|F. Cod.: + {amount}"));
             currentInfoFragments.text = $"|F. Cod. {infoFragments.ToString("N0")}"; // Formatear con separador de miles
-        }    
+        }
 
         //Debug.Log($"F. Cod.: + {amount} -> {infoFragments}");
     }
@@ -264,7 +264,7 @@ public class HUDManager : MonoBehaviour
         floatingInfoFragmentsText.gameObject.SetActive(true);
         text.text = message;
 
-        // Setear posición inicial editable
+        // Setear posiciï¿½n inicial editable
         floatingInfoFragmentsText.anchoredPosition = floatingStartPos;
 
         float elapsed = 0f;
@@ -285,7 +285,7 @@ public class HUDManager : MonoBehaviour
         infoFragments = Mathf.Max(0, infoFragments);
         if (floatingInfoFragmentsText.gameObject.activeInHierarchy)
         {
-            floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: + {amount} -> {infoFragments}"));        
+            floatingTextCoroutine = StartCoroutine(ShowFloatingText($"F. Cod.: + {amount} -> {infoFragments}"));
         }
     }
 
@@ -333,7 +333,7 @@ public class HUDManager : MonoBehaviour
     public void HideMission()
     {
         missionTextObject.gameObject?.SetActive(false);
-        timerText.gameObject?.SetActive(false); 
+        timerText.gameObject?.SetActive(false);
     }
 
     public void ShowMission(string message, bool isTimer = false)
@@ -372,7 +372,7 @@ public class HUDManager : MonoBehaviour
         missionTextObject.gameObject.SetActive(true);
         floatingInfoFragmentsTextContent.text = message;
 
-        // Setear posición inicial editable
+        // Setear posiciï¿½n inicial editable
         missionTextObject.anchoredPosition = missionStartPos;
 
         float elapsed = 0f;
@@ -419,7 +419,7 @@ public class HUDManager : MonoBehaviour
             //if (abilityNameText != null)
             //{
             //    if (!abilityStatusText.gameObject.activeSelf) abilityStatusText.gameObject.SetActive(true);
-            //    abilityStatusText.text = $"¡Listo!";
+            //    abilityStatusText.text = $"ï¿½Listo!";
             //}
 
             if (abilityCooldownFill != null)

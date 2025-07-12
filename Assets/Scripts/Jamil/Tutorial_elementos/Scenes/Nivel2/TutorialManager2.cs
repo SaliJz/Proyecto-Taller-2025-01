@@ -24,9 +24,9 @@
 //    //[SerializeField] private float textTypingSpeed = 0.04f;
 //    //[SerializeField] private GameObject FragmentOfTheTutorial;
 //    private GameObject player;
-   
 
- 
+
+
 
 //    private void Start()
 //    {
@@ -40,7 +40,7 @@
 //        }
 //    }
 
- 
+
 //    public void ScenarioActivationCheckerByTime()
 //    {
 //        if (GetCurrentSceneActivationType() == ActivationType.ForTime)
@@ -77,11 +77,11 @@
 //    {
 //        var runtimeScene = GetCurrentDialogueData();
 //        runtimeScene.onSceneStart?.Invoke();
-       
+
 //        foreach (var dialogue in runtimeScene.tutorialSceneData.dialogues)
 //        {
 //            SetTextUI(dialogue.dialogueText);
-           
+
 //                yield return new WaitForSecondsRealtime(5);
 //                SetTextUI("");
 
@@ -123,7 +123,7 @@
 //    {
 //        currentDialogue += 1;
 //    }
-   
+
 //    private bool HasNextScene()
 //    {
 //        return currentDialogue < tutorialScenes.Count;

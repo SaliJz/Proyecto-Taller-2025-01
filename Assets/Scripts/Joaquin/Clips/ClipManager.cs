@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -42,6 +41,6 @@ public class ClipManager : MonoBehaviour
         Time.timeScale = 1f; // Resume the game
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        gameObject.SetActive(false); // Hide the ClipManager UI
+        gameObject.SetActive(false); // Hide the ClipManager HUD
     }
 }

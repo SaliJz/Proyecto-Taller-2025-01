@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -76,7 +74,7 @@ public class Mover : MonoBehaviour
             rayDistance,
             groundLayer))
         {
-            return true; 
+            return true;
         }
         return false;
     }
@@ -88,7 +86,7 @@ public class Mover : MonoBehaviour
             Gizmos.color = Color.red;
             Gizmos.DrawRay(transform.position, Vector3.down * (col.height / 2 + groundCheckDistance));
 
-            
+
             Gizmos.DrawRay(transform.position, Vector3.right * (col.radius + skinWidth));
             Gizmos.DrawRay(transform.position, Vector3.left * (col.radius + skinWidth));
             Gizmos.DrawRay(transform.position, Vector3.forward * (col.radius + skinWidth));

@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using Cinemachine;
+using System.Collections;
 using UnityEngine;
-using Cinemachine;
 
 public class PlayerDash : MonoBehaviour
 {

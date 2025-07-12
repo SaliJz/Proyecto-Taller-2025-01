@@ -28,7 +28,7 @@ public class TriggerColliderCreator : MonoBehaviour
                 // Si no hay mesh, usar BoxCollider ajustado a los bounds del Renderer
                 BoxCollider bc = gameObject.AddComponent<BoxCollider>();
 
-                Renderer rend = GetComponent<Renderer>(); 
+                Renderer rend = GetComponent<Renderer>();
                 Bounds bounds = rend.bounds;
 
                 // Convertir tamaño y centro al espacio local

@@ -154,7 +154,8 @@ public class AbilityManager : MonoBehaviour
         {
             if (type == AbilityType.None) continue;
 
-            GameObject abilityGO = allAbilities.Find(go => {
+            GameObject abilityGO = allAbilities.Find(go =>
+            {
                 AbilityInfo info = go.GetComponent<AbilityInfo>();
                 return info != null && info.abilityName == type.ToString();
             });

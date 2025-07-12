@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,9 +11,9 @@ public class GlitchTime_Effect : MonoBehaviour
 
     [Header("Parámetros del efecto")]
     public int ghostCount = 3;
-    public Vector3 offsetPerGhost = new Vector3(0.01f, 0f, 0f); 
+    public Vector3 offsetPerGhost = new Vector3(0.01f, 0f, 0f);
     public float ghostLifetime;
-    public float spawnInterval; 
+    public float spawnInterval;
 
     private float timer = 0f;
     [SerializeField] float Scale_Multiplier;

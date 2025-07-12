@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BalaTorreta : MonoBehaviour
@@ -14,7 +12,7 @@ public class BalaTorreta : MonoBehaviour
         Destroy(gameObject, tiempoVida);
     }
 
-    
+
     void Update()
     {
         transform.Translate(Vector3.forward * velocidad * Time.deltaTime);

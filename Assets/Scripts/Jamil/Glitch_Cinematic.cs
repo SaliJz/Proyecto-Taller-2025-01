@@ -38,7 +38,7 @@ public class Glitch_Cinematic : MonoBehaviour
     {
         //transform.position = pointA.position;
         isMoving = true;
-        activateAnimator = false; 
+        activateAnimator = false;
     }
 
     private void MoveToB()

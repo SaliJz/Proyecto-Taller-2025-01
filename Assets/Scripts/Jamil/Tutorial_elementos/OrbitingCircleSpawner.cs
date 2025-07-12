@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class OrbitingCircleSpawner : MonoBehaviour
 {
@@ -46,7 +46,7 @@ public class OrbitingCircleSpawner : MonoBehaviour
         if (activateScripts)
         {
             ActivateAllScripts();
-            activateScripts = false; 
+            activateScripts = false;
         }
     }
 

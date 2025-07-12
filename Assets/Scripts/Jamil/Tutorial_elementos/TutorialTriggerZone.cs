@@ -1,5 +1,7 @@
-using System.Collections;
+Ôªøusing System;
 using UnityEngine;
+using System.Collections;
+using Unity.VisualScripting;
 
 public class TutorialTriggerZone : MonoBehaviour
 {
@@ -10,38 +12,17 @@ public class TutorialTriggerZone : MonoBehaviour
     private void Start()
     {
         manager = TutorialManager0.Instance;
-        manager.OnPlayerArrivedToCenter += LoadNextDialog;
     }
-    void OnDestroy()
+
+    IEnumerator StartDelayConfirmAdvance(Action action, float time)
     {
-        if (manager != null)
-            manager.OnPlayerArrivedToCenter -= LoadNextDialog;
+        Debug.Log("Esperando para confirmar avance...");
+        yield return new WaitForSeconds(time);
+        Debug.Log("Ejecutando acci√≥n...");
+        action?.Invoke();
     }
 
-    void LoadNextDialog()
-    {
-        manager.ConfirmAdvance();
-    }
-
-
-
-//IEnumerator DelayStartScenario()
-//{
-//    currentDialogueIndex = manager.currentDialogueIndex;
-//    if (currentDialogueIndex == 0)
-//    {
-//        yield return new WaitForSeconds(2);
-
-//    }
-//    else if (currentDialogueIndex == 1)
-//    {
-//        yield return new WaitForSeconds(0.4f);
-//        manager.tutorialSceneController.haloMoveController.gameObject.SetActive(false);        
-//    }
-//    manager.ScenarioActivationCheckerByZones();
-//    Destroy(gameObject);
-//}
-private void OnTriggerStay(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         Debug.Log("Entrando a OnTriggerStay");
 
@@ -80,25 +61,48 @@ private void OnTriggerStay(Collider other)
                         manager.ConfirmAdvance();
                     }
 
-                    else if (currentDialogue == 4)
+                    else if (currentDialogue == 5)
                     {
-                        //manager.StartCoroutine(manager.TemporarilyDisablePlayerScripts(20));
-                     
+                        manager.DisablePlayerScriptsForCameraTransition();
+                        manager.StartCoroutine(manager.ActivateTransitionBetweenTwoCameras(1, 3, 0, 0));
+                        //StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 0));
+                        StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 5.22f)); //Activamos la gun
+                        //StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 6f));
+                        activated = true;
+                        //Destroy(gameObject);
+                    }
+
+                    else if (currentDialogue == 6)
+                    {
+                        StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 2f));
                         activated = true;
                     }
-                    Destroy(gameObject);
+
+                    else if (currentDialogue == 7)
+                    {
+                        manager.ActiveGun();
+                        StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 2f));
+                        activated = true;
+                    }
+
+                    else if (currentDialogue == 8)
+                    {
+                        StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 2f));
+                        activated = true;
+                    }
+
                 }
 
 
             }
             else
             {
-                Debug.Log("El di·logo ya est· activo.");
+                Debug.Log("El di√°logo ya est√° activo.");
             }
         }
         else
         {
-            Debug.Log("La lista de di·logos es null");
+            Debug.Log("La lista de di√°logos es null");
         }
     }
 }

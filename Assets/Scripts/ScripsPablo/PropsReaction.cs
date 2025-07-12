@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class PropsReaction : MonoBehaviour
@@ -44,7 +43,7 @@ public class PropsReaction : MonoBehaviour
         {
             rb.isKinematic = false;
         }
-        
+
     }
 
     private void OnTriggerEnter(Collider other)

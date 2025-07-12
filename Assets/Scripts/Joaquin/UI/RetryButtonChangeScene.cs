@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class RetryButtonChangeScene : MonoBehaviour
@@ -32,7 +31,7 @@ public class RetryButtonChangeScene : MonoBehaviour
             GameManager.Instance?.ReloadLastLevel();
         }
     }
-    
+
     private void PlaySoundButton()
     {
         if (fxSource != null && clickSound != null)

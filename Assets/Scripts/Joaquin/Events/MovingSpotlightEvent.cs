@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
 public class MovingSpotlightEvent : MonoBehaviour
 {
@@ -93,7 +93,7 @@ public class MovingSpotlightEvent : MonoBehaviour
                 if (i < waypoints.Length - 1)
                     Gizmos.DrawLine(waypoints[i], waypoints[i + 1]);
             }
-            
+
             if (waypoints.Length > 1)
                 Gizmos.DrawLine(waypoints[waypoints.Length - 1], waypoints[0]);
         }

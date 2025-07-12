@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MovimientoJugador : MonoBehaviour
@@ -15,11 +13,11 @@ public class MovimientoJugador : MonoBehaviour
 
     void Update()
     {
-       
+
         float movimientoX = Input.GetAxisRaw("Horizontal");
         float movimientoZ = Input.GetAxisRaw("Vertical");
 
-       
+
         movimiento = new Vector3(movimientoX, 0f, movimientoZ).normalized;
     }
 

@@ -14,8 +14,8 @@ public class Loot_Absortion : MonoBehaviour
 
     bool attracting;
     Rigidbody rb;
-    
-    
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();

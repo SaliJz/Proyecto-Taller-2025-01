@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MindjackShot : MonoBehaviour
@@ -10,7 +8,7 @@ public class MindjackShot : MonoBehaviour
 
     [SerializeField] private ParticleSystem impactEffect;
 
-    public void Initialize(float radius,float dps, float duration)
+    public void Initialize(float radius, float dps, float duration)
     {
         this.radius = radius;
         this.damagePerSecond = dps;

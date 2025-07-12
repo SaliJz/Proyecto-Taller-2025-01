@@ -1,16 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class JugadorDisparo : MonoBehaviour
 {
     public GameObject rayoPrefab;
-    public Transform puntoDisparo; 
+    public Transform puntoDisparo;
     public float tiempoEntreDisparos = 0.2f;
-     
 
 
-  
+
+
 
     private float temporizadorDisparo = 0f;
 
@@ -18,7 +16,7 @@ public class JugadorDisparo : MonoBehaviour
     {
         temporizadorDisparo += Time.deltaTime;
 
-        if (Input.GetButton("Fire1") && temporizadorDisparo >= tiempoEntreDisparos) 
+        if (Input.GetButton("Fire1") && temporizadorDisparo >= tiempoEntreDisparos)
         {
             DispararRayo();
             temporizadorDisparo = 0f;

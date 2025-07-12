@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class FadeTransition : MonoBehaviour
 {
@@ -10,10 +10,13 @@ public class FadeTransition : MonoBehaviour
     public float fadeDuration = 1f;
     public float delayBeforeFade = 1f;
     public bool isFadeIn = true;
+    TutorialManager0 manager;
+    private int currentDialogue;
 
     void Start()
     {
-       StartCoroutine(FadeOut());
+        manager = TutorialManager0.Instance;
+        StartCoroutine(FadeOut());
     }
 
     public IEnumerator FadeOut()
@@ -63,9 +66,14 @@ public class FadeTransition : MonoBehaviour
     }
 
     public IEnumerator FadeInOut(float waitBetween)
-    {      
+    {
         yield return StartCoroutine(FadeIn());
         yield return new WaitForSecondsRealtime(waitBetween);
+        
+        if (manager.currentDialogueIndex==5)
+        {
+            manager.ConfirmAdvance();
+        }
         yield return StartCoroutine(FadeOut());
     }
 }

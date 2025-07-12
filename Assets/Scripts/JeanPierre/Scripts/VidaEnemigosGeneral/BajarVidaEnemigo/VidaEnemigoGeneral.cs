@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic; // ADICIÓN
+using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class VidaEnemigoGeneral : MonoBehaviour
 {
@@ -383,7 +383,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //using System.Linq;
 //using System.Collections;
 //using UnityEngine;
-//using UnityEngine.UI;
+//using UnityEngine.HUD;
 //using UnityEngine.AI;
 
 //public class VidaEnemigoGeneral : MonoBehaviour

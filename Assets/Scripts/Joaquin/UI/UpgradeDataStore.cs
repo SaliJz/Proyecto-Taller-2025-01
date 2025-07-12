@@ -70,9 +70,9 @@ public class UpgradeDataStore : MonoBehaviour
 
     public void ApplyWeaponUpgrade(Weapon_Card_Corregido upgradeWeaponCard)
     {
-        weaponDamageMultiplier += upgradeWeaponCard.damageBuff/100;
-        weaponFireRateMultiplier += upgradeWeaponCard.fireRatioBuff/100;
-        weaponReloadSpeedMultiplier += upgradeWeaponCard.ReloadSpeedBuff/100;
+        weaponDamageMultiplier += upgradeWeaponCard.damageBuff / 100;
+        weaponFireRateMultiplier += upgradeWeaponCard.fireRatioBuff / 100;
+        weaponReloadSpeedMultiplier += upgradeWeaponCard.ReloadSpeedBuff / 100;
         weaponAmmoBonus += upgradeWeaponCard.AmmoBonus;
 
         Weapon[] weapons = FindObjectsOfType<Weapon>();

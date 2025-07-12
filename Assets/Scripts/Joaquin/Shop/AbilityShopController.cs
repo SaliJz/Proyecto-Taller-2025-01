@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,7 +21,7 @@ public class AbilityShopController : MonoBehaviour
     [SerializeField] private Button confirmReturnButton;
     [SerializeField] private Button cancelReturnButton;
 
-    [Header("UI de Feedback")]
+    [Header("HUD de Feedback")]
     [SerializeField] private TextMeshProUGUI confirmationText;
     [SerializeField] private float confirmationDisplayTime = 1.5f;
 

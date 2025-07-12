@@ -1,6 +1,5 @@
-using Unity.VisualScripting;
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class Active_ShieldHUD : MonoBehaviour
 {
@@ -46,7 +45,7 @@ public class Active_ShieldHUD : MonoBehaviour
 
     public void ActivateIndicator(Vector3 attackDir)
     {
-        if(PlayerTransform != null)
+        if (PlayerTransform != null)
         {
             attackDir.Normalize();
 

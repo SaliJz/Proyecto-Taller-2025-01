@@ -105,7 +105,7 @@ public class SequentialSliderFill : MonoBehaviour
 
 //using System.Collections;
 //using UnityEngine;
-//using UnityEngine.UI;
+//using UnityEngine.HUD;
 
 //public class SequentialSliderFill : MonoBehaviour
 //{
