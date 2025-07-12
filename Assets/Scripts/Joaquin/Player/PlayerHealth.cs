@@ -16,9 +16,8 @@ public class PlayerHealth : MonoBehaviour
     [Header("Muerte y transición")]
     //[SerializeField] private string gameOverSceneName = "GameOver";
     [SerializeField] private GameObject deathPrefab;
-    [SerializeField] private SceneTransition sceneTransition;
 
-    [SerializeField] private bool isNivel1 = false;
+    [SerializeField] private bool isTutorial = false;
 
     [Header("Referencias del HUD")]
     [SerializeField] private Active_ShieldHUD directionalDamageHUD;
@@ -30,7 +29,10 @@ public class PlayerHealth : MonoBehaviour
     {
         if (directionalDamageHUD == null) directionalDamageHUD = FindObjectOfType<Active_ShieldHUD>();
 
-        if (isNivel1) GeneralUpgradeManager.ResetUpgrades();
+        if (isTutorial) GeneralUpgradeManager.IsTutorial = true;
+        else GeneralUpgradeManager.IsTutorial = false;
+
+        GeneralUpgradeManager.ResetUpgrades();
 
         if (TutorialManager0.Instance == null)
         {

@@ -49,9 +49,11 @@ public class GlitchAbility : MonoBehaviour
         }
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
         ApplyUpgrades();
+        yield return new WaitForEndOfFrame();
+
         HUDManager.Instance?.UpdateAbilityUI(gameObject);
         HUDManager.Instance?.UpdateAbilityStatus(abilityInfo.abilityName, 0f, true, currentCooldown);
     }
@@ -67,7 +69,7 @@ public class GlitchAbility : MonoBehaviour
         if (stats == null) return;
 
         const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f;
-        const float DURATION_INCREASE_PER_LEVEL = 0.5f;
+        const float DURATION_INCREASE_PER_LEVEL = 1.0f;
 
         currentCooldown = baseCooldown - (stats.CooldownLevel * COOLDOWN_REDUCTION_PER_LEVEL);
         currentDuration = baseDuration + (stats.DurationLevel * DURATION_INCREASE_PER_LEVEL);

@@ -1,4 +1,15 @@
-﻿// SnakeColumnWrapOnInput.cs
+﻿
+
+
+
+
+
+
+
+
+
+
+// SnakeColumnWrapOnInput.cs
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -251,38 +262,4 @@ public class SnakeColumnWrapOnInput : MonoBehaviour
         snake.enabled = false;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

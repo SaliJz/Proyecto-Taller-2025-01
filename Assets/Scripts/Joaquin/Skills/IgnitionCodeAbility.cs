@@ -54,9 +54,11 @@ public class IgnitionCodeAbility : MonoBehaviour
         }
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
         ApplyUpgrades();
+        yield return new WaitForEndOfFrame();
+
         HUDManager.Instance?.UpdateAbilityUI(gameObject);
         HUDManager.Instance?.UpdateAbilityStatus(abilityInfo.abilityName, 0f, true, currentCooldown);
     }
@@ -72,7 +74,7 @@ public class IgnitionCodeAbility : MonoBehaviour
         if (stats == null) return;
 
         const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f;
-        const float DURATION_INCREASE_PER_LEVEL = 0.5f;
+        const float DURATION_INCREASE_PER_LEVEL = 1.0f;
         const float RANGE_INCREASE_PER_LEVEL = 0.25f;
         const float DAMAGE_INCREASE_PER_LEVEL = 2.0f;
 

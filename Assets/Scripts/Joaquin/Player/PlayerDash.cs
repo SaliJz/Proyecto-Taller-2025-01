@@ -91,6 +91,8 @@ public class PlayerDash : MonoBehaviour
 
     private void Update()
     {
+        if (Time.timeScale == 0f) return; // Evita actualizaciones cuando el tiempo está pausado
+
         if (virtualCam != null)
         {
             float currentFov = virtualCam.m_Lens.FieldOfView;

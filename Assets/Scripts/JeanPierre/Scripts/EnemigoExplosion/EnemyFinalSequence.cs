@@ -207,6 +207,7 @@ public class EnemyFinalSequence : MonoBehaviour
         {
             // Instancia el prefab adicional al destruirse este objeto
             Instantiate(newPrefab, transform.position, Quaternion.identity);
+            MissionManager.Instance?.RegisterKill(gameObject.tag, name, null);
         }
     }
 

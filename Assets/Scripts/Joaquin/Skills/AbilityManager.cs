@@ -1,10 +1,14 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class AbilityManager : MonoBehaviour
 {
+    public static event Action<GameObject> OnAbilityStateChanged;
+
     [Tooltip("Marca esta casilla SOLO en la escena del Nivel 1 para reiniciar todo el progreso.")]
-    [SerializeField] private bool isLevel1 = false;
+    [SerializeField] private bool isLevelTutorial = false;
 
     [Header("Todas las habilidades posibles")]
     [SerializeField] private List<GameObject> allAbilities;
@@ -22,23 +26,29 @@ public class AbilityManager : MonoBehaviour
 
     private void Awake()
     {
-        if (isLevel1) AbilityShopDataManager.ResetData();
-        LoadFromDataStore();
-        UpdateAbilitiesActiveState();
-    }
-
-    private void Start()
-    {
         foreach (var ability in allAbilities)
         {
             ability.SetActive(false);
         }
 
+        if (isLevelTutorial) AbilityShopDataManager.ResetData();
+
+        LoadFromDataStore();
+
+        currentIndex = Mathf.Clamp(currentIndex, 0, activeAbilities.Count - 1);
+
+        UpdateAbilitiesActiveState();
+
+        if (activeAbilities.Count >= 1) HUDManager.Instance?.ShowAbilityUI(true);
+    }
+
+    private void Start()
+    {
         if (allowFirstAbility)
         {
             if (activeAbilities.Count >= 0)
             {
-                GameObject random = allAbilities[Random.Range(0, allAbilities.Count)];
+                GameObject random = allAbilities[UnityEngine.Random.Range(0, allAbilities.Count)];
                 activeAbilities.Add(random);
                 currentIndex = 0;
                 SaveToDataStore();
@@ -170,7 +180,11 @@ public class AbilityManager : MonoBehaviour
 
     private void UpdateAbilitiesActiveState()
     {
-        if (activeAbilities.Count <= 0) return;
+        if (activeAbilities.Count <= 0)
+        {
+            OnAbilityStateChanged?.Invoke(null);
+            return;
+        }
 
         foreach (var ability in allAbilities)
         {
@@ -179,10 +193,15 @@ public class AbilityManager : MonoBehaviour
 
         if (CurrentAbility != null)
         {
+            Debug.Log("Activando habilidad: " + CurrentAbility.name);
             CurrentAbility.SetActive(true);
         }
+        else
+        {
+            Debug.Log("No hay habilidad activa.");
+        }
 
-        HUDManager.Instance?.UpdateAbilityUI(CurrentAbility);
+        OnAbilityStateChanged?.Invoke(CurrentAbility);
     }
 
     public void ReplaceAbilityAt(int index, GameObject newAbility)

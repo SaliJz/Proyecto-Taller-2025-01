@@ -707,19 +707,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 0}
-  velocidadPersecucion: 10
-  velocidadAtaque: 22
-  velocidadRetirada: 5
-  distanciaAtaqueMin: 20
-  distanciaAtaqueMax: 30
-  minAtaques: 3
-  maxAtaques: 5
-  prefabColiderAtaque: {fileID: 5126359519349961444, guid: 7fa3d9e90703cfb40ac2a81552014c43,
-    type: 3}
-  duracionColider: 0.5
-  tiempoEntreColiders: 0.3
-  tiempoRetirada: 1
-  velocidadRotacion: 5
+  animator: {fileID: 5344498671121969871}
+  attackRange: 22
+  damageOnCollision: 10
+  attackCooldown: 1
+  attackAnimationDuration: 5
 --- !u!114 &-3286658116488342559
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -926,6 +918,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -1942602671619538829, guid: bc4fc5b8e38745d4398ee5e81acc7c60,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: bc4fc5b8e38745d4398ee5e81acc7c60,
         type: 3}
       propertyPath: m_Name
@@ -936,6 +933,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: d966b8f09ad10564880843dd0457aecc, type: 2}
+    - target: {fileID: 8852245679455914161, guid: bc4fc5b8e38745d4398ee5e81acc7c60,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: -840777845830954692, guid: bc4fc5b8e38745d4398ee5e81acc7c60, type: 3}
