@@ -56,9 +56,11 @@ public class IgnitionCodeAbility : MonoBehaviour
         }
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
         ApplyUpgrades();
+        yield return new WaitForEndOfFrame();
+
         HUDManager.Instance?.UpdateAbilityUI(gameObject);
         HUDManager.Instance?.UpdateAbilityStatus(abilityInfo.abilityName, 0f, true, currentCooldown);
     }

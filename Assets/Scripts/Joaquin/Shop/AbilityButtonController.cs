@@ -150,6 +150,6 @@ public class AbilityButtonController : MonoBehaviour, IPointerEnterHandler, IPoi
         button.interactable = interactable;
     }
 
-    public void OnPointerEnter(PointerEventData eventData) => shopController.ShowDescription(abilityInfo.description);
+    public void OnPointerEnter(PointerEventData eventData) => shopController.ShowDescription(descriptionFormat);
     public void OnPointerExit(PointerEventData eventData) => shopController.HideDescription();
 }

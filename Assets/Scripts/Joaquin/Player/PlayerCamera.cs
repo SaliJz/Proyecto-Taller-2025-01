@@ -25,6 +25,8 @@ public class PlayerCamera : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (Time.timeScale == 0f) return; // Evita actualizaciones cuando el tiempo está pausado
+
         float currentSensitivity = SettingsService.Sensitivity * 100f;
         sensitivity = currentSensitivity;
 

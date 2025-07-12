@@ -34,6 +34,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI abilityNameText;
     [SerializeField] private TextMeshProUGUI abilityStatusText;
     [SerializeField] private Image abilityIcon;
+    [SerializeField] private Image abilityIconBackground;
     [SerializeField] private Image abilityCooldownFill;
     [SerializeField] private bool showAbilityUI = false; // Si se debe mostrar la UI de habilidades
 
@@ -75,13 +76,15 @@ public class HUDManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
         {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
     }
 
@@ -113,10 +116,11 @@ public class HUDManager : MonoBehaviour
         if (!showAbilityUI)
         {
             if (abilityIcon != null) abilityIcon.gameObject.SetActive(false);
+            if (abilityIconBackground != null) abilityIconBackground.gameObject.SetActive(false);
+            if (abilityCooldownFill != null) abilityCooldownFill.gameObject.SetActive(false);
         }
-        if (abilityCooldownFill != null) abilityCooldownFill.gameObject.SetActive(false);
-        if (abilityNameText != null) abilityNameText.gameObject.SetActive(false);
-        if (abilityStatusText != null) abilityStatusText.gameObject.SetActive(false);
+        //if (abilityNameText != null) abilityNameText.gameObject.SetActive(false);
+        //if (abilityStatusText != null) abilityStatusText.gameObject.SetActive(false);
 
         if (weaponIcon != null) weaponIcon.gameObject.SetActive(false);
         if (weaponNameText != null) weaponNameText.gameObject.SetActive(false);
@@ -130,6 +134,21 @@ public class HUDManager : MonoBehaviour
         {
             missionTextObject.gameObject.SetActive(false);
         }
+    }
+
+    private void OnEnable()
+    {
+        AbilityManager.OnAbilityStateChanged += UpdateAbilityUI;
+    }
+
+    private void OnDisable()
+    {
+        AbilityManager.OnAbilityStateChanged -= UpdateAbilityUI;
+    }
+
+    public void ShowAbilityUI(bool show)
+    {
+        showAbilityUI = show;
     }
 
     #endregion
@@ -187,9 +206,9 @@ public class HUDManager : MonoBehaviour
 
     public void UpdateWeaponIcon(Sprite icon)
     {
-        if (weaponIcon != null || icon != null)
+        if (weaponIcon)
         {
-            //if (!weaponIcon.gameObject.activeSelf) weaponIcon.gameObject.SetActive(true);
+            if (!weaponIcon.gameObject.activeSelf) weaponIcon.gameObject.SetActive(true);
             weaponIcon.sprite = icon;
         }
     }
@@ -319,7 +338,7 @@ public class HUDManager : MonoBehaviour
 
     public void ShowMission(string message, bool isTimer = false)
     {
-        Debug.Log($"[HUDManager] Mostrando mensaje: {message}");
+        //Debug.Log($"[HUDManager] Mostrando mensaje: {message}");
 
         missionPanel?.SetActive(true);
         missionText.gameObject?.SetActive(true);
@@ -370,11 +389,11 @@ public class HUDManager : MonoBehaviour
 
     public void UpdateAbilityStatus(string abilityName, float cooldownRemaining, bool isReady, float cooldownTotal = 1f)
     {
-        if (abilityNameText != null || abilityName != null)
-        {
-            if (!abilityNameText.gameObject.activeSelf) abilityNameText.gameObject.SetActive(true);
-            abilityNameText.text = abilityName;
-        }
+        //if (abilityNameText != null || abilityName != null)
+        //{
+        //    if (!abilityNameText.gameObject.activeSelf) abilityNameText.gameObject.SetActive(true);
+        //    abilityNameText.text = abilityName;
+        //}
 
         switch (abilityName)
         {
@@ -397,11 +416,11 @@ public class HUDManager : MonoBehaviour
 
         if (isReady)
         {
-            if (abilityNameText != null)
-            {
-                if (!abilityStatusText.gameObject.activeSelf) abilityStatusText.gameObject.SetActive(true);
-                abilityStatusText.text = $"¡Listo!";
-            }
+            //if (abilityNameText != null)
+            //{
+            //    if (!abilityStatusText.gameObject.activeSelf) abilityStatusText.gameObject.SetActive(true);
+            //    abilityStatusText.text = $"¡Listo!";
+            //}
 
             if (abilityCooldownFill != null)
             {
@@ -411,11 +430,11 @@ public class HUDManager : MonoBehaviour
         }
         else
         {
-            if (abilityNameText != null)
-            {
-                if (!abilityStatusText.gameObject.activeSelf) abilityStatusText.gameObject.SetActive(true);
-                abilityStatusText.text = $"Cooldown - {Mathf.Ceil(cooldownRemaining)}s";
-            }
+            //if (abilityNameText != null)
+            //{
+            //    if (!abilityStatusText.gameObject.activeSelf) abilityStatusText.gameObject.SetActive(true);
+            //    abilityStatusText.text = $"Cooldown - {Mathf.Ceil(cooldownRemaining)}s";
+            //}
 
             if (abilityCooldownFill != null)
             {
@@ -427,19 +446,31 @@ public class HUDManager : MonoBehaviour
 
     public void UpdateAbilityUI(GameObject abilityObj)
     {
-        if (abilityIcon != null || abilityObj != null)
+        if (abilityObj == null)
         {
-            if (!abilityIcon.gameObject.activeSelf) abilityIcon.gameObject.SetActive(true);
+            if (abilityIcon) abilityIcon.gameObject.SetActive(false);
+            if (abilityIconBackground) abilityIconBackground.gameObject.SetActive(false);
+            //if (abilityNameText) abilityNameText.gameObject.SetActive(false);
+            //if (abilityStatusText) abilityStatusText.gameObject.SetActive(false);
+            Debug.LogWarning("Ability object is null, hiding ability UI.");
+            return;
         }
+
+        Debug.Log($"Updating ability UI for: {abilityObj.name}");
+
+        if (abilityIcon) abilityIcon.gameObject.SetActive(true);
+        if (abilityIconBackground) abilityIconBackground.gameObject.SetActive(true);
 
         AbilityInfo info = abilityObj.GetComponent<AbilityInfo>();
 
-        if (info != null)
+        if (info)
         {
-            if (!abilityIcon.gameObject.activeSelf) abilityIcon.gameObject.SetActive(true);
-            if (abilityIcon != null) abilityIcon.sprite = info.icon;
-            if (!abilityNameText.gameObject.activeSelf) abilityNameText.gameObject.SetActive(true);
-            if (abilityNameText != null) abilityNameText.text = info.abilityName;
+            if (abilityIcon) abilityIcon.sprite = info.icon;
+            //if (abilityNameText)
+            //{
+            //    abilityNameText.gameObject.SetActive(true);
+            //    abilityNameText.text = info.abilityName;
+            //}
         }
     }
 

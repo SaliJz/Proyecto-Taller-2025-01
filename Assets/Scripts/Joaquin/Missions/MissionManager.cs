@@ -22,7 +22,7 @@ public class MissionManager : MonoBehaviour
 
     private bool activeMission = false;
 
-    private int currentMissionIndex = 0;
+    //private int currentMissionIndex = 0;
     private int currentSafeZoneIndex = 0;
 
     private MissionMode currentMode;
