@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7220047792563096247}
   - component: {fileID: 1477856477335368320}
   - component: {fileID: 3084105754383291019}
-  - component: {fileID: 5144378786835528187}
   m_Layer: 0
   m_Name: CodeFragmentPickUpTest
   m_TagString: Fragment
@@ -79,19 +78,6 @@ MonoBehaviour:
   positionOffset: -0.8
   lifetime: 60
   playerInRange: 0
---- !u!114 &5144378786835528187
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4688980061749175599}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0728e2be3a4704044b52e385e67b7c1a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  delayBeforeActivation: 0
 --- !u!1 &6387777877836959050
 GameObject:
   m_ObjectHideFlags: 0
@@ -559,6 +545,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Loot-Fragmento
+      objectReference: {fileID: 0}
+    - target: {fileID: 2343282198016423860, guid: 6641e7d3d77695740a2a1ce9dc4d9438,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
