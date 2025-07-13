@@ -1,8 +1,4 @@
 ﻿
-
-
-
-
 // SnakeAttackAnticipation.cs
 //
 // Animación de anticipación en “U” vertical antes de cada ataque,
