@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 161248669706254944}
   - component: {fileID: 2265127508526200386}
-  - component: {fileID: 2343282198016423860}
   - component: {fileID: 577234302077817262}
   - component: {fileID: 2241861407229352722}
   - component: {fileID: 8138857497529922004}
+  - component: {fileID: 8660484144739374124}
   m_Layer: 17
   m_Name: Loot-Fragmento
   m_TagString: Untagged
@@ -64,23 +64,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &2343282198016423860
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1405216303727541115}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18cac78124192b5429be008a72b6e36d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Origin: {x: 0, y: 0, z: 0}
-  force: 5
-  delayToBeAttract: 1.3
-  attractSpeed: 0.15
-  PlayerTransform: {fileID: 0}
 --- !u!135 &577234302077817262
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -4957,6 +4940,26 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &8660484144739374124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405216303727541115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd34a768954373a40889356067124df9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickupType: 0
+  amountRange: {x: 0, y: 0}
+  pickUpRange: 10
+  flySpeed: 10
+  rotationSpeed: 10
+  positionOffset: 1
+  lifetime: 60
+  playerInRange: 0
 --- !u!1 &4297873162793703475
 GameObject:
   m_ObjectHideFlags: 0

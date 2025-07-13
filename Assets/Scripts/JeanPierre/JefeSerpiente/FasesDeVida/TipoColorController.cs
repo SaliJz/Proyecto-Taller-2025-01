@@ -199,7 +199,7 @@ public class TipoColorController : MonoBehaviour
 
 //public class TipoColorController : MonoBehaviour
 //{
-//    public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
+//    public enum TypeIvulnerability { Ametralladora, Pistola, Escopeta }
 
 //    [Header("Configuración")]
 //    public float intervaloCambio = 10f;
@@ -210,8 +210,8 @@ public class TipoColorController : MonoBehaviour
 //    [Tooltip("Intensidad para HDR.")]
 //    public float emissionIntensity = 2f;
 
-//    private TipoEnemigo currentTipo;
-//    public TipoEnemigo CurrentTipo => currentTipo;
+//    private TypeIvulnerability currentTipo;
+//    public TypeIvulnerability CurrentTipo => currentTipo;
 
 //    private List<Renderer> renderers = new List<Renderer>();
 //    private Coroutine colorRoutine;
@@ -250,10 +250,10 @@ public class TipoColorController : MonoBehaviour
 
 //    private void ActualizarTipoYColor()
 //    {
-//        currentTipo = (TipoEnemigo)Random.Range(0, System.Enum.GetValues(typeof(TipoEnemigo)).Length);
+//        currentTipo = (TypeIvulnerability)Random.Range(0, System.Enum.GetValues(typeof(TypeIvulnerability)).Length);
 
-//        Color baseCol = currentTipo == TipoEnemigo.Ametralladora ? Color.blue
-//                        : currentTipo == TipoEnemigo.Pistola ? Color.red
+//        Color baseCol = currentTipo == TypeIvulnerability.Ametralladora ? Color.blue
+//                        : currentTipo == TypeIvulnerability.Pistola ? Color.red
 //                                                                     : Color.green;
 //        Color hdrCol = baseCol * emissionIntensity;
 

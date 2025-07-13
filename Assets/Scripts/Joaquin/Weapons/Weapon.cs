@@ -223,7 +223,7 @@ public class Weapon : MonoBehaviour
         PlayerAnimatorController.Instance?.PlayFireWeaponAnim(weaponAnimationID);
 
         currentAmmo--;
-        HUDManager.Instance.UpdateAmmo(weaponAnimationID, currentAmmo, totalAmmo);
+        HUDManager.Instance?.UpdateAmmo(weaponAnimationID, currentAmmo, totalAmmo);
 
         if (CurrentMode == ShootingMode.SemiAuto)
         {

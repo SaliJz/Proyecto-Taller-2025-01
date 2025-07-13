@@ -13,9 +13,9 @@ public class PickupItem : MonoBehaviour
 
     [SerializeField] private PickupType pickupType;
     [SerializeField] private Vector2 amountRange;
-    [SerializeField] private GameObject pickupCanvas;
-    [SerializeField] private TextMeshProUGUI pickupAmountText;
-    [SerializeField] private float pickUpRange = 5;
+    //[SerializeField] private GameObject pickupCanvas;
+    //[SerializeField] private TextMeshProUGUI pickupAmountText;
+    [SerializeField] private float pickUpRange = 10;
     [SerializeField] private float flySpeed = 10f;
     [SerializeField] private float rotationSpeed = 10f;
     [SerializeField] private float positionOffset = 1f;
@@ -29,6 +29,10 @@ public class PickupItem : MonoBehaviour
     private Rigidbody rb;
     private WeaponManager weaponManager;
 
+    private void Awake()
+    {
+        
+    }
     private void Start()
     {
         weaponManager = FindObjectOfType<WeaponManager>();
@@ -45,7 +49,7 @@ public class PickupItem : MonoBehaviour
         };
 
         actualAmount = Random.Range((int)amountRange.x, (int)amountRange.y + 1);
-        UpdateVisual();
+        //UpdateVisual();
 
         // Buscar Rigidbody del hijo
         rb = GetComponentInChildren<Rigidbody>();
@@ -141,6 +145,7 @@ public class PickupItem : MonoBehaviour
 
         if (Vector3.Distance(transform.position, targetPosition) < 0.2f)
         {
+            Debug.Log("Fragmento de código recogido");
             HUDManager.Instance.AddInfoFragment(actualAmount);
             Destroy(gameObject);
         }
@@ -176,7 +181,7 @@ public class PickupItem : MonoBehaviour
         Debug.Log($"Recogido {added} balas de tipo {pickupType}");
 
         actualAmount -= added;
-        UpdateVisual();
+        //UpdateVisual();
 
         if (actualAmount <= 0)
         {
@@ -235,28 +240,28 @@ public class PickupItem : MonoBehaviour
         }
     }
 
-    private void UpdateVisual()
-    {
-        if (pickupCanvas != null && pickupAmountText != null)
-        {
-            if (pickupType == PickupType.CodeFragment)
-            {
-                pickupAmountText.text = $"F. Cod. x{actualAmount}";
-            }
-            else if (pickupType == PickupType.AmmoSingle)
-            {
-                pickupAmountText.text = $"Pistola x{actualAmount}";
-            }
-            else if (pickupType == PickupType.AmmoSemiAuto)
-            {
-                pickupAmountText.text = $"Escopeta x{actualAmount}";
-            }
-            else if (pickupType == PickupType.AmmoAuto)
-            {
-                pickupAmountText.text = $"Rifle x{actualAmount}";
-            }
-        }
-    }
+    //private void UpdateVisual()
+    //{
+    //    if (pickupCanvas != null && pickupAmountText != null)
+    //    {
+    //        if (pickupType == PickupType.CodeFragment)
+    //        {
+    //            pickupAmountText.text = $"F. Cod. x{actualAmount}";
+    //        }
+    //        else if (pickupType == PickupType.AmmoSingle)
+    //        {
+    //            pickupAmountText.text = $"Pistola x{actualAmount}";
+    //        }
+    //        else if (pickupType == PickupType.AmmoSemiAuto)
+    //        {
+    //            pickupAmountText.text = $"Escopeta x{actualAmount}";
+    //        }
+    //        else if (pickupType == PickupType.AmmoAuto)
+    //        {
+    //            pickupAmountText.text = $"Rifle x{actualAmount}";
+    //        }
+    //    }
+    //}
     private void DestroyPickup()
     {
         Destroy(gameObject);

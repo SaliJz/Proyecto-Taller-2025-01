@@ -200,7 +200,7 @@ public class TipoColorHDRController : MonoBehaviour
 
 //public class TipoColorHDRController : MonoBehaviour
 //{
-//    public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
+//    public enum TypeIvulnerability { Ametralladora, Pistola, Escopeta }
 
 //    [Header("Configuración")]
 //    public float intervaloCambio = 10f;
@@ -209,8 +209,8 @@ public class TipoColorHDRController : MonoBehaviour
 //    public float blinkInterval = 0.1f;
 //    public float delayInicial = 0.6f; // Espera antes de asignar SkinnedMeshRenderers
 
-//    private TipoEnemigo currentTipo;
-//    public TipoEnemigo CurrentTipo => currentTipo;
+//    private TypeIvulnerability currentTipo;
+//    public TypeIvulnerability CurrentTipo => currentTipo;
 
 //    private List<SkinnedMeshRenderer> skinnedRenderers = new List<SkinnedMeshRenderer>();
 //    private Coroutine colorRoutine;
@@ -233,12 +233,12 @@ public class TipoColorHDRController : MonoBehaviour
 
 //    private void ActualizarTipoYColor()
 //    {
-//        int rand = Random.Range(0, System.Enum.GetValues(typeof(TipoEnemigo)).Length);
-//        currentTipo = (TipoEnemigo)rand;
+//        int rand = Random.Range(0, System.Enum.GetValues(typeof(TypeIvulnerability)).Length);
+//        currentTipo = (TypeIvulnerability)rand;
 
 //        // Ametralladora = azul, Pistola = verde, Escopeta = rojo
-//        Color targetColor = currentTipo == TipoEnemigo.Ametralladora ? Color.blue
-//                          : currentTipo == TipoEnemigo.Pistola ? Color.green
+//        Color targetColor = currentTipo == TypeIvulnerability.Ametralladora ? Color.blue
+//                          : currentTipo == TypeIvulnerability.Pistola ? Color.green
 //                          : /* Escopeta */                            Color.red;
 
 //        if (colorRoutine != null)
@@ -404,7 +404,7 @@ public class TipoColorHDRController : MonoBehaviour
 
 //public class TipoColorHDRController : MonoBehaviour
 //{
-//    public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
+//    public enum TypeIvulnerability { Ametralladora, Pistola, Escopeta }
 
 //    [Header("Configuración")]
 //    public float intervaloCambio = 10f;
@@ -413,8 +413,8 @@ public class TipoColorHDRController : MonoBehaviour
 //    public float blinkInterval = 0.1f;
 //    public float delayInicial = 0.6f; // Espera antes de asignar SkinnedMeshRenderers
 
-//    private TipoEnemigo currentTipo;
-//    public TipoEnemigo CurrentTipo => currentTipo;
+//    private TypeIvulnerability currentTipo;
+//    public TypeIvulnerability CurrentTipo => currentTipo;
 
 //    private List<SkinnedMeshRenderer> skinnedRenderers = new List<SkinnedMeshRenderer>();
 //    private Coroutine colorRoutine;
@@ -438,12 +438,12 @@ public class TipoColorHDRController : MonoBehaviour
 
 //    private void ActualizarTipoYColor()
 //    {
-//        int rand = Random.Range(0, System.Enum.GetValues(typeof(TipoEnemigo)).Length);
-//        currentTipo = (TipoEnemigo)rand;
+//        int rand = Random.Range(0, System.Enum.GetValues(typeof(TypeIvulnerability)).Length);
+//        currentTipo = (TypeIvulnerability)rand;
 
 //        // Ametralladora = azul, Pistola = verde, Escopeta = rojo
-//        Color targetColor = currentTipo == TipoEnemigo.Ametralladora ? Color.blue
-//                          : currentTipo == TipoEnemigo.Pistola ? Color.green
+//        Color targetColor = currentTipo == TypeIvulnerability.Ametralladora ? Color.blue
+//                          : currentTipo == TypeIvulnerability.Pistola ? Color.green
 //                          : /* Escopeta */                         Color.red;
 
 //        if (colorRoutine != null)

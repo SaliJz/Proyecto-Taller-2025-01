@@ -15,7 +15,7 @@ public class WeaponManager : MonoBehaviour
     [SerializeField] private bool useAnimatorAnimations;
 
     [Header("Configuración de control de cambio")]
-    [SerializeField] private bool canChangeWeapon = true;
+    [SerializeField] public bool canChangeWeapon = true;
     [SerializeField] private bool canEquipFirstWeapon = true;
 
     private int currentIndex = 0;

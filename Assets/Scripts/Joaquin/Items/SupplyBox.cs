@@ -20,6 +20,7 @@ public class SupplyBox : MonoBehaviour
     [SerializeField] private float refillDelay = 5f;
     [SerializeField] private bool autoRefill;
 
+    private bool isBoxInitialized = false;
     private int actualAmount;
     private bool playerInRange = false;
     private WeaponManager weaponManager;
@@ -48,6 +49,15 @@ public class SupplyBox : MonoBehaviour
         if (playerInRange && Input.GetKeyDown(KeyCode.E))
         {
             TrySuplyBox();
+
+            if(TutorialManager0.Instance != null && !isBoxInitialized)
+            {
+                if (TutorialManager0.Instance.currentDialogueIndex == 8)
+                {
+                    TutorialManager0.Instance.ConfirmAdvance();
+                    isBoxInitialized = true; 
+                }              
+            }
         }
     }
 
