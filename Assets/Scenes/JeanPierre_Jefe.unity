@@ -1132,7 +1132,7 @@ Transform:
   m_GameObject: {fileID: 159783235}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -24.6, y: -4.789473, z: 11.4}
+  m_LocalPosition: {x: -8.95, y: -4.789473, z: 10.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2835,6 +2835,7 @@ GameObject:
   - component: {fileID: 561226461}
   - component: {fileID: 561226455}
   - component: {fileID: 561226464}
+  - component: {fileID: 561226472}
   - component: {fileID: 561226465}
   - component: {fileID: 561226460}
   - component: {fileID: 561226458}
@@ -3092,9 +3093,9 @@ MonoBehaviour:
   columna1: {fileID: 707204836}
   columna2: {fileID: 571849483}
   columna3: {fileID: 828388134}
-  vida1: 500
-  vida2: 500
-  vida3: 500
+  vida1: 1
+  vida2: 1
+  vida3: 1
   vidaSlider: {fileID: 12976067}
   blinkDuration: 0.2
   returnDuration: 0.1
@@ -3172,7 +3173,7 @@ MonoBehaviour:
   - {fileID: 561226466}
   objetoToActivateOnPhaseComplete: {fileID: 318444659}
   normalPhaseDelay: 0.6
-  vida: 600
+  vida: 1
   danioAmetralladora: 15
   danioPistola: 20
   danioEscopeta: 30
@@ -3399,8 +3400,21 @@ MonoBehaviour:
   - {fileID: 1897006101}
   - {fileID: 159783236}
   - {fileID: 1954822557}
-  spawnCount: 2
-  spawnInterval: 12
+  spawnCount: 1
+  spawnInterval: 15
+--- !u!114 &561226472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561226448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4465e4480ed1e1349b65344d02f6efd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetScript: {fileID: 561226459}
 --- !u!1 &571849479
 GameObject:
   m_ObjectHideFlags: 0
@@ -8520,7 +8534,7 @@ Transform:
   m_GameObject: {fileID: 1897006100}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 19.738205, y: -4.789473, z: 10.631317}
+  m_LocalPosition: {x: 18.36, y: -4.789473, z: 10.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8634,7 +8648,7 @@ Transform:
   m_GameObject: {fileID: 1954822556}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7, y: -4.789473, z: -22.9}
+  m_LocalPosition: {x: 3.89, y: -4.789473, z: -35.91}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
