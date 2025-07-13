@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ScriptRemovalWatcher : MonoBehaviour
+public class ScriptRemovalOrDisableWatcher : MonoBehaviour
 {
     [Tooltip("Arrastra aquí el componente (script) que quieres vigilar")]
     public MonoBehaviour targetScript;
@@ -11,11 +11,16 @@ public class ScriptRemovalWatcher : MonoBehaviour
 
     void Update()
     {
-        // Cuando targetScript se vuelve null (ha sido eliminado), y aún no hemos cargado la escena
-        if (!hasLoaded && targetScript == null)
+        if (hasLoaded)
+            return;
+
+        // Si el script ha sido eliminado (null) o está desactivado (enabled == false)
+        bool removedOrDisabled = targetScript == null || !targetScript.enabled;
+
+        if (removedOrDisabled)
         {
             hasLoaded = true;
-            // Asegúrate de que la escena "Creditos" esté en Build Settings
+            // Asegúrate de que la escena "Creditos" esté añadida en Build Settings
             SceneManager.LoadScene("Creditos");
         }
     }

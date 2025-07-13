@@ -3093,9 +3093,9 @@ MonoBehaviour:
   columna1: {fileID: 707204836}
   columna2: {fileID: 571849483}
   columna3: {fileID: 828388134}
-  vida1: 1
-  vida2: 1
-  vida3: 1
+  vida1: 400
+  vida2: 450
+  vida3: 450
   vidaSlider: {fileID: 12976067}
   blinkDuration: 0.2
   returnDuration: 0.1
@@ -3106,6 +3106,7 @@ MonoBehaviour:
   scriptsToActivate:
   - {fileID: 561226461}
   - {fileID: 561226455}
+  - {fileID: 561226472}
   scriptsToRemove:
   - {fileID: 561226469}
   - {fileID: 561226456}
@@ -3173,7 +3174,7 @@ MonoBehaviour:
   - {fileID: 561226466}
   objetoToActivateOnPhaseComplete: {fileID: 318444659}
   normalPhaseDelay: 0.6
-  vida: 1
+  vida: 550
   danioAmetralladora: 15
   danioPistola: 20
   danioEscopeta: 30
@@ -3409,12 +3410,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 561226448}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4465e4480ed1e1349b65344d02f6efd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetScript: {fileID: 561226459}
+  targetScript: {fileID: 561226470}
 --- !u!1 &571849479
 GameObject:
   m_ObjectHideFlags: 0
