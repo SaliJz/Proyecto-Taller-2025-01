@@ -82,7 +82,6 @@ public class ShopController : MonoBehaviour
 
     public void CloseShop()
     {
-        Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 

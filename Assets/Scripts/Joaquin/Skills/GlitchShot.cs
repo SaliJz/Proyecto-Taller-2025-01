@@ -29,7 +29,8 @@ public class GlitchShot : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-        else if (other.CompareTag("Ground"))
+        
+        if (other.CompareTag("Ground"))
         {
             ApplyGlitchArea(transform.position);
             Destroy(gameObject);

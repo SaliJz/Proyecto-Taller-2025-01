@@ -42,7 +42,6 @@ public class GameManager : MonoBehaviour
     private void LoadGameData()
     {
         CurrentLevelIndex = PlayerPrefs.GetInt("CurrentLevelIndex", 0);
-
     }
 
     public void SaveGameData()

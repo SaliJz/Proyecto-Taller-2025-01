@@ -98,7 +98,7 @@ public class Active_ShieldHUD : MonoBehaviour
 
         animGO.Play("ShieldFade", 0, 0f);
 
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.5f);
 
         obj.SetActive(false);
     }

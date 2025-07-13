@@ -9,6 +9,7 @@ public class IgnitionCodeShot : MonoBehaviour
     private LayerMask targetLayer;
 
     [SerializeField] private GameObject ignitionAreaEffectPrefab;
+    [SerializeField] private ParticleSystem impactEffect;
 
     public void Initialize(float radius, float damagePerSecond, float duration, LayerMask enemyLayer)
     {
@@ -25,13 +26,23 @@ public class IgnitionCodeShot : MonoBehaviour
         if (other.CompareTag("Enemy"))
         {
             hasExploded = true;
+            PlayEffect();
             ApplyIgnition(transform.position);
             Destroy(gameObject);
         }
-        else if (other.CompareTag("Ground"))
+        
+        if (other.CompareTag("Ground"))
         {
             hasExploded = true;
             ApplyIgnitionArea(transform.position);
+            Destroy(gameObject);
+        }
+
+
+        if (other.CompareTag("Wall") || other.CompareTag("Columns") || other.CompareTag("Roof"))
+        {
+            hasExploded = true;
+            PlayEffect();
             Destroy(gameObject);
         }
     }
@@ -66,6 +77,19 @@ public class IgnitionCodeShot : MonoBehaviour
         else
         {
             Debug.LogWarning("Ignition Area Effect Prefab no está asignado en IgnitionCodeShot.");
+        }
+    }
+
+    private void PlayEffect()
+    {
+        if (impactEffect != null)
+        {
+            GameObject impactInstance = Instantiate(impactEffect, transform.position, Quaternion.identity).gameObject;
+            Destroy(impactInstance, 3f);
+        }
+        else
+        {
+            Debug.LogWarning("Particle System no está asignado en MindjackShot.");
         }
     }
 

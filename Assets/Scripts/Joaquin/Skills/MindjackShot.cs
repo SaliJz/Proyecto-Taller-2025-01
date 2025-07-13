@@ -27,8 +27,28 @@ public class MindjackShot : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-        else if (other.CompareTag("Ground"))
+        
+        if (other.CompareTag("Ground"))
         {
+            PlayEffect();
+            Destroy(gameObject);
+        }
+
+        if (other.CompareTag("Wall"))
+        {
+            PlayEffect();
+            Destroy(gameObject);
+        }
+
+        if (other.CompareTag("Columns"))
+        {
+            PlayEffect();
+            Destroy(gameObject);
+        }
+
+        if (other.CompareTag("Roof"))
+        {
+            PlayEffect();
             Destroy(gameObject);
         }
     }
