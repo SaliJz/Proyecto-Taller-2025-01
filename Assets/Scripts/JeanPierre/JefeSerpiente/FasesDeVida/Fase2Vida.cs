@@ -167,10 +167,25 @@ public class Fase2Vida : MonoBehaviour
     private IEnumerator HandleScriptArraysAfterDelay()
     {
         yield return new WaitForSeconds(1f);
+
+        // En lugar de destruir los componentes, solo los desactivamos
         if (scriptsToRemove != null)
-            foreach (var s in scriptsToRemove) if (s != null) Destroy(s);
+        {
+            foreach (var s in scriptsToRemove)
+            {
+                if (s != null)
+                    s.enabled = false;
+            }
+        }
+
         if (scriptsToActivate != null)
-            foreach (var s in scriptsToActivate) if (s != null) s.enabled = true;
+        {
+            foreach (var s in scriptsToActivate)
+            {
+                if (s != null)
+                    s.enabled = true;
+            }
+        }
     }
 
     public void RecibirDanioPorBala(BalaPlayer.TipoBala tipoBala)
@@ -230,13 +245,6 @@ public class Fase2Vida : MonoBehaviour
         if (vidaSlider != null) Destroy(vidaSlider.gameObject);
     }
 }
-
-
-
-
-
-
-
 
 
 
