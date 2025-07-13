@@ -2828,6 +2828,7 @@ GameObject:
   - component: {fileID: 561226468}
   - component: {fileID: 561226452}
   - component: {fileID: 561226469}
+  - component: {fileID: 561226471}
   - component: {fileID: 561226459}
   - component: {fileID: 561226470}
   - component: {fileID: 561226456}
@@ -2835,6 +2836,7 @@ GameObject:
   - component: {fileID: 561226461}
   - component: {fileID: 561226455}
   - component: {fileID: 561226464}
+  - component: {fileID: 561226472}
   - component: {fileID: 561226465}
   - component: {fileID: 561226460}
   - component: {fileID: 561226458}
@@ -3399,8 +3401,34 @@ MonoBehaviour:
   - {fileID: 1897006101}
   - {fileID: 159783236}
   - {fileID: 1954822557}
-  spawnCount: 2
+  spawnCount: 1
   spawnInterval: 12
+--- !u!114 &561226471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561226448}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4465e4480ed1e1349b65344d02f6efd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetScript: {fileID: 561226459}
+--- !u!114 &561226472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561226448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4465e4480ed1e1349b65344d02f6efd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetScript: {fileID: 561226459}
 --- !u!1 &571849479
 GameObject:
   m_ObjectHideFlags: 0
