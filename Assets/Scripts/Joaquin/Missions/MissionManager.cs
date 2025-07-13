@@ -230,7 +230,8 @@ public class MissionManager : MonoBehaviour
         while (remaining > 0f)
         {
             remaining -= Time.deltaTime;
-            HUDManager.Instance.UpdateTimer(remaining);
+            HUDManager.Instance?.ShowMission($"Objetivo: Sobrevive\nTiempo restante: <b><color=\"red\">{Mathf.Ceil(remaining)} s </b></color=\"red\">", true);
+            //HUDManager.Instance.UpdateTimer(remaining);
             yield return null;
         }
 

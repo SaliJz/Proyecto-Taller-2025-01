@@ -40,7 +40,19 @@ public class GameManager : MonoBehaviour
 
     private void LoadGameData()
     {
-        CurrentLevelIndex = PlayerPrefs.GetInt("CurrentLevelIndex", 0);
+        int savedIndex = PlayerPrefs.GetInt("CurrentLevelIndex", 0);
+
+        if (savedIndex < 0 || savedIndex >= levelProgression.Count)
+        {
+            Debug.LogWarning($"Índice guardado fuera de rango ({savedIndex}). Reiniciando a 0.");
+            savedIndex = 0;
+        }
+        else
+        {
+            CurrentLevelIndex = savedIndex;
+        }
+
+        Debug.Log($"[GameManager] Cargado CurrentLevelIndex = {savedIndex}");
     }
 
     public void SaveGameData()
@@ -97,6 +109,7 @@ public class GameManager : MonoBehaviour
 
     public void PlayerDied()
     {
+        SaveGameData();
         SceneManager.LoadScene(defeatSceneName);
     }
 

@@ -1,4 +1,5 @@
-﻿
+﻿// ColumnWrapOnInput.cs
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,6 +36,9 @@ public class ColumnWrapOnInput : MonoBehaviour
 
     private ActivadorEfectos efectosActivator;
     private List<Collider> segmentColliders = new List<Collider>();
+
+    // Evento que se dispara cuando termina el enrollado completo
+    public event Action OnWrapComplete;
 
     void Awake()
     {
@@ -108,19 +112,20 @@ public class ColumnWrapOnInput : MonoBehaviour
         if (efectosActivator != null)
             efectosActivator.activar = false;
         isWrapping = false;
+
+        // Disparar evento para notificar que el wrap se completó
+        OnWrapComplete?.Invoke();
     }
 
     private void CacheAndDisableColliders()
     {
         segmentColliders.Clear();
         foreach (Transform seg in snake.Segmentos)
-        {
             foreach (Collider col in seg.GetComponentsInChildren<Collider>())
             {
                 segmentColliders.Add(col);
                 col.enabled = false;
             }
-        }
     }
 
     private void EnableColliders()
@@ -138,7 +143,6 @@ public class ColumnWrapOnInput : MonoBehaviour
             Debug.LogError("Player no encontrado para orientar la cabeza.");
 
         int segCount = snake.Segmentos.Count;
-
         float alturaCalc = snake.distanciaCabezaCuerpo
                          + snake.separacionSegmentos * (segCount - 2)
                          + snake.separacionCola;
@@ -159,9 +163,7 @@ public class ColumnWrapOnInput : MonoBehaviour
             Vector3 dir = columna.rotation * dirLocal;
             float extra = (i == 0) ? headOffset : 0f;
             float extraY = (i == 0) ? headElevationOffset : 0f;
-            Vector3 forwardExtra = (i == 0)
-                ? columna.forward * headForwardOffset
-                : Vector3.zero;
+            Vector3 forwardExtra = (i == 0) ? columna.forward * headForwardOffset : Vector3.zero;
 
             Vector3 p = columna.position
                         + dir * (radio + offsetRadio + extra)
@@ -221,8 +223,6 @@ public class ColumnWrapOnInput : MonoBehaviour
                 seg.LookAt(next);
             }
         }
-
-        yield break;
     }
 
     public float GetColumnRadius()
@@ -235,4 +235,13 @@ public class ColumnWrapOnInput : MonoBehaviour
         return Mathf.Max(col.bounds.extents.x, col.bounds.extents.z);
     }
 }
+
+
+
+
+
+
+
+
+
 

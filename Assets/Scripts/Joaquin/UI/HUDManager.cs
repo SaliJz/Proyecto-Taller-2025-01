@@ -357,7 +357,7 @@ public class HUDManager : MonoBehaviour
 
         missionPanel?.SetActive(true);
         missionText.gameObject?.SetActive(true);
-        timerText.gameObject?.SetActive(isTimer);
+        //timerText.gameObject?.SetActive(isTimer);
 
         if (missionTextObject == null)
         {

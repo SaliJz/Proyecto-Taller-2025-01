@@ -1,4 +1,11 @@
-﻿// Fase1Vida.cs
+﻿
+
+
+
+
+
+
+// Fase1Vida.cs
 using System;
 using System.Collections;
 using UnityEngine;
