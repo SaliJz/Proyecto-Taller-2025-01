@@ -19,7 +19,9 @@ public class SettingsController : MonoBehaviour
 
     [Header("Sliders")]
     [SerializeField] private Slider masterVolumeSlider;
+    [SerializeField] private Slider musicVolumeSlider;
     [SerializeField] private Slider sfxVolumeSlider;
+    [SerializeField] private Slider voiceVolumenSlider;
     [SerializeField] private Slider sensitivitySlider;
 
     [Header("Toggles")]
@@ -35,7 +37,9 @@ public class SettingsController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI confirmationText;
     [SerializeField] private TextMeshProUGUI fpsText;
     [SerializeField] private TextMeshProUGUI masterVolumeText;
+    [SerializeField] private TextMeshProUGUI musicVolumeText;
     [SerializeField] private TextMeshProUGUI sfxVolumeText;
+    [SerializeField] private TextMeshProUGUI voiceVolumeText;
     [SerializeField] private TextMeshProUGUI sensitivityValueText;
 
     [Header("Audio")]
@@ -85,7 +89,9 @@ public class SettingsController : MonoBehaviour
     private void RegisterListeners()
     {
         masterVolumeSlider.onValueChanged.AddListener(val => UpdateVolumeText(masterVolumeText, val));
+        //musicVolumeSlider.onValueChanged.AddListener(val => UpdateVolumeText(musicVolumeText, val));
         sfxVolumeSlider.onValueChanged.AddListener(val => UpdateVolumeText(sfxVolumeText, val));
+        //voiceVolumenSlider.onValueChanged.AddListener(val => UpdateVolumeText(voiceVolumeText, val));
         sensitivitySlider.onValueChanged.AddListener(val => UpdateSensitivityText(val));
 
         muteToggle.onValueChanged.AddListener(value => tempSettings.Mute = value);
@@ -134,7 +140,9 @@ public class SettingsController : MonoBehaviour
         fpsText.gameObject.SetActive(tempSettings.ShowFps);
 
         UpdateVolumeText(masterVolumeText, tempSettings.MasterVolume);
+        //UpdateVolumeText(musicVolumeText, tempSettings.MusicVolume);
         UpdateVolumeText(sfxVolumeText, tempSettings.SfxVolume);
+        //UpdateVolumeText(voiceVolumeText, tempSettings.VoiceVolume);
         UpdateSensitivityText(tempSettings.Sensitivity);
     }
 

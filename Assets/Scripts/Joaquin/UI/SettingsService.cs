@@ -5,7 +5,9 @@ using UnityEngine.Audio;
 public static class SettingsService
 {
     private const string MasterVolumeKey = "MasterVolume";
+    private const string MusicVolumeKey = "MusicVolume";
     private const string SFXVolumeKey = "SFXVolume";
+    private const string VoiceVolumeKey = "VoiceVolume";
     private const string MuteKey = "Mute";
     private const string ResolutionKey = "Resolution";
     private const string VSyncKey = "VSync";
@@ -59,8 +61,8 @@ public static class SettingsService
 
     public static void Apply(AudioMixer audioMixer)
     {
-        float masterDb = MasterVolume <= 0.001f ? -80f : Mathf.Lerp(-80f, 0f, MasterVolume);
-        float sfxDb = SfxVolume <= 0.001f ? -80f : Mathf.Lerp(-80f, 0f, SfxVolume);
+        float masterDb = ConvertToDecibels(MasterVolume);
+        float sfxDb = ConvertToDecibels(SfxVolume);
 
         audioMixer.SetFloat("VolMaster", Mute ? -80f : masterDb);
         audioMixer.SetFloat("VolSFX", Mute ? -80f : sfxDb);
@@ -88,6 +90,11 @@ public static class SettingsService
                vsync != VSync ||
                fullscreen != IsFullscreen ||
                !Mathf.Approximately(sensitivity, Sensitivity);
+    }
+
+    private static float ConvertToDecibels(float linearValue)
+    {
+        return Mathf.Log10(Mathf.Max(linearValue, 0.0001f)) * 20f;
     }
 
     public static SettingsData Clone()
