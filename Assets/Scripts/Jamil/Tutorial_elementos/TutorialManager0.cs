@@ -33,6 +33,10 @@ public class TutorialManager0 : MonoBehaviour
     [SerializeField] private GameObject weaponIcon;
     [SerializeField] private GameObject abilityIcon;
     [SerializeField] private GameObject HUD;
+    [SerializeField] private GameObject wallHologram;
+    [SerializeField] private List<GameObject> supplyBox;
+    [SerializeField] private List<GameObject> rifleAndShotgun;
+    [SerializeField] private GameObject secondWaveGlitch;
 
 
 
@@ -43,7 +47,6 @@ public class TutorialManager0 : MonoBehaviour
     private bool isDetectingWASD = false;
     private bool isInTransition;
     public event Action onConfirmAdvance;
-
     private bool isPlayerDisabled;
 
     public bool IsDialoguePlaying => GetCurrentDialogueData().isActive;
@@ -51,6 +54,9 @@ public class TutorialManager0 : MonoBehaviour
     [SerializeField] public Vector3 targetPosition1;
     [SerializeField] public Vector3 targetPosition2;
     [SerializeField] private float arriveSpeed;
+
+    private bool hasActivatedSupplyBoxes = false;
+    private bool hasActivatedRifleAndShotgun = false;
 
     private Weapon gunWeapon;
 
@@ -82,8 +88,43 @@ public class TutorialManager0 : MonoBehaviour
         {
             IsWASDPressed();
         }
-    }
 
+        if (currentDialogueIndex == 9)
+        {
+            CheckPress123OurScroll();
+            if (!hasActivatedRifleAndShotgun)
+            {
+                ActiveRifleAndShotgun();
+                hasActivatedRifleAndShotgun = true;
+            }
+        }
+
+        if (currentDialogueIndex == 10 && !hasActivatedSupplyBoxes)
+        {
+            foreach (GameObject box in supplyBox)
+            {
+                if (box != null && !box.activeSelf)
+                {
+                    box.SetActive(true);
+                }
+            }
+            hasActivatedSupplyBoxes = true;
+        }
+
+    }
+    void CheckPress123OurScroll()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha2) ||
+            Input.GetKeyDown(KeyCode.Alpha3) ||
+            Input.GetAxis("Mouse ScrollWheel") > 0f || 
+            Input.GetAxis("Mouse ScrollWheel") < 0f)   
+        {
+            Debug.Log($"Se ha presionado 1, 2, 3 o Scroll en el indice {currentDialogueIndex}" );
+            ActivateSecondWaveGlitch();
+            ConfirmAdvance();      
+            //StartCoroutine(WaitNextDialogue(5));
+        }
+    }
     public void ScenarioActivationCheckerByZones()
     {
         if (GetCurrentDialogueData().activationType == ActivationType.ByZona)
@@ -148,10 +189,7 @@ public class TutorialManager0 : MonoBehaviour
         {
             EnabledPlayerDash();
         }
-        else if (currentDialogueIndex == 7)
-        {
-            ActiveGun();
-        }
+        
 
         yield return new WaitUntil(() => hasConfirmedDialogueAdvance);
         onConfirmAdvance -= Confirmed;
@@ -239,13 +277,24 @@ public class TutorialManager0 : MonoBehaviour
         SelectCameraToRender(camera2);
         yield return new WaitForSecondsRealtime(time2);
         cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseOut, 2f);
-       
+
         ReturnCamerasToDefault();
         yield return new WaitForSecondsRealtime(2);
-        if (currentDialogueIndex == 6)
+        Debug.Log("Valor de currentDialogueIndex en ActivateTransitionBetweenTwoCameras: " + currentDialogueIndex);
+
+        if (currentDialogueIndex == 6 || currentDialogueIndex == 7)
         {
             ActiveHUD();
             ActiveGun();
+            if (wallHologram != null)
+            {
+                wallHologram.SetActive(true);
+                Debug.Log("wallHologram activado");
+            }
+            else
+            {
+                Debug.LogWarning("wallHologram NO está asignado en el inspector");
+            }
         }
         EnablePlayerScriptsAfterCameraTransition();
         isInTransition = false;
@@ -340,16 +389,23 @@ public class TutorialManager0 : MonoBehaviour
         }
     }
 
+    public IEnumerator WaitNextDialogue(float time)
+    {
+        yield return new WaitForSeconds(time);
+        ConfirmAdvance();
+    }
+
+    public void ActivateSecondWaveGlitch()
+    {
+        if(secondWaveGlitch.activeSelf) return;
+        secondWaveGlitch.SetActive(true);
+    }
+
     public void ActiveRifleAndShotgun()
     {
-        if (weaponManager != null)
-        {
-            weaponManager.CanChangeWeapon = true;
-        }
-
-        //if (AbilityHolder != null) AbilityHolder.SetActive(true);
-        if (abilityIcon != null) abilityIcon.SetActive(true);
+        weaponManager.canChangeWeapon=true;
     }
+  
 
     //public IEnumerator MovePlayerToPlatformCenter(Vector3 target)
     //{

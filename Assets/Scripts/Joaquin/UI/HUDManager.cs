@@ -67,6 +67,7 @@ public class HUDManager : MonoBehaviour
     private Coroutine floatingTextCoroutine;
     private Coroutine missionCoroutine;
 
+    private int tutorialCount=0;
     private static int infoFragments = 2000;
     public int CurrentFragments => infoFragments;
 
@@ -237,13 +238,22 @@ public class HUDManager : MonoBehaviour
             StopCoroutine(floatingTextCoroutine);
         }
 
-        if (floatingInfoFragmentsText.gameObject.activeInHierarchy)
+        //if (floatingInfoFragmentsText.gameObject.activeInHierarchy)
+        //{
+        //    floatingTextCoroutine = StartCoroutine(ShowFloatingText($"|F. Cod.: + {amount}"));
+        //    currentInfoFragments.text = $"|F. Cod. {infoFragments.ToString("N0")}"; // Formatear con separador de miles
+        //}
+        floatingTextCoroutine = StartCoroutine(ShowFloatingText($"|F. Cod.: + {amount}"));
+        if (TutorialManager0.Instance != null)
         {
-            floatingTextCoroutine = StartCoroutine(ShowFloatingText($"|F. Cod.: + {amount}"));
-            currentInfoFragments.text = $"|F. Cod. {infoFragments.ToString("N0")}"; // Formatear con separador de miles
-        }
+            tutorialCount++;
 
-        //Debug.Log($"F. Cod.: + {amount} -> {infoFragments}");
+            if (tutorialCount == 4)
+            {
+                TutorialManager0.Instance.ConfirmAdvance();
+            }
+        }
+        Debug.Log($"F. Cod.: + {amount} -> {infoFragments}");
     }
 
     public void DiscountInfoFragment(int amount)
@@ -258,6 +268,7 @@ public class HUDManager : MonoBehaviour
         floatingTextCoroutine = StartCoroutine(ShowFloatingText($"|F. Cod.: - {amount}"));
         currentInfoFragments.text = $"|F. Cod. {infoFragments.ToString("N0")}"; // Formatear con separador de miles
         Debug.Log($"F. Cod.: - {amount} -> {infoFragments}");
+        
     }
 
     private IEnumerator ShowFloatingText(string message)

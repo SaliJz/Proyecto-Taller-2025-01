@@ -388,8 +388,8 @@ public class Fase2Vida : MonoBehaviour
 
 //    public void RecibirDanioPorBala(BalaPlayer.TipoBala tipoBala)
 //    {
-//        var enemigo = (TipoColorController.TipoEnemigo)System.Enum.Parse(
-//            typeof(TipoColorController.TipoEnemigo), tipoBala.ToString());
+//        var enemigo = (TipoColorController.TypeIvulnerability)System.Enum.Parse(
+//            typeof(TipoColorController.TypeIvulnerability), tipoBala.ToString());
 //        if (tipoColorController.CurrentTipo == enemigo) return;
 
 //        int danio = tipoBala switch
@@ -612,8 +612,8 @@ public class Fase2Vida : MonoBehaviour
 
 //    public void RecibirDanioPorBala(BalaPlayer.TipoBala tipoBala)
 //    {
-//        var enemigo = (TipoColorController.TipoEnemigo)System.Enum.Parse(
-//            typeof(TipoColorController.TipoEnemigo), tipoBala.ToString());
+//        var enemigo = (TipoColorController.TypeIvulnerability)System.Enum.Parse(
+//            typeof(TipoColorController.TypeIvulnerability), tipoBala.ToString());
 //        if (tipoColorController.CurrentTipo == enemigo) return;
 
 //        int danio = tipoBala switch
@@ -827,8 +827,8 @@ public class Fase2Vida : MonoBehaviour
 
 //    public void RecibirDanioPorBala(BalaPlayer.TipoBala tipoBala)
 //    {
-//        var enemigo = (TipoColorController.TipoEnemigo)System.Enum.Parse(
-//            typeof(TipoColorController.TipoEnemigo), tipoBala.ToString());
+//        var enemigo = (TipoColorController.TypeIvulnerability)System.Enum.Parse(
+//            typeof(TipoColorController.TypeIvulnerability), tipoBala.ToString());
 //        if (tipoColorController.CurrentTipo == enemigo) return;
 
 //        int danio = tipoBala switch
@@ -1098,8 +1098,8 @@ public class Fase2Vida : MonoBehaviour
 
 //    public void RecibirDanioPorBala(BalaPlayer.TipoBala tipoBala)
 //    {
-//        var balaComoEnemigo = (TipoColorController.TipoEnemigo)System.Enum.Parse(
-//            typeof(TipoColorController.TipoEnemigo), tipoBala.ToString());
+//        var balaComoEnemigo = (TipoColorController.TypeIvulnerability)System.Enum.Parse(
+//            typeof(TipoColorController.TypeIvulnerability), tipoBala.ToString());
 //        if (tipoColorController.CurrentTipo == balaComoEnemigo)
 //            return;
 

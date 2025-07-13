@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -63,8 +64,8 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = Mathf.RoundToInt(maxHealth * healthPercent);
         currentShield = Mathf.RoundToInt(maxShield * shieldPercent);
 
-        HUDManager.Instance.UpdateHealth(currentHealth, maxHealth);
-        HUDManager.Instance.UpdateShield(currentShield, maxShield);
+        HUDManager.Instance?.UpdateHealth(currentHealth, maxHealth);
+        HUDManager.Instance?.UpdateShield(currentShield, maxShield);
 
         Debug.Log($"Stats actualizadas: Vida Máx: {maxHealth}, Escudo Máx: {maxShield}");
     }

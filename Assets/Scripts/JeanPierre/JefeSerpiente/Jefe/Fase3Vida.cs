@@ -229,9 +229,9 @@ public class Fase3Vida : MonoBehaviour
 //    {
 //        if (isDead) return;
 
-//        // Convertir TipoBala a TipoEnemigo para comparar con el tipo actual
-//        TipoColorController.TipoEnemigo balaComoEnemigo = (TipoColorController.TipoEnemigo)System.Enum.Parse(
-//            typeof(TipoColorController.TipoEnemigo),
+//        // Convertir TipoBala a TypeIvulnerability para comparar con el tipo actual
+//        TipoColorController.TypeIvulnerability balaComoEnemigo = (TipoColorController.TypeIvulnerability)System.Enum.Parse(
+//            typeof(TipoColorController.TypeIvulnerability),
 //            tipoBala.ToString()
 //        );
 

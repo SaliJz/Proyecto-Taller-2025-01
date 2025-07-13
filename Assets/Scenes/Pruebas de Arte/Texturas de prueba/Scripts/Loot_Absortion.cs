@@ -15,7 +15,10 @@ public class Loot_Absortion : MonoBehaviour
     bool attracting;
     Rigidbody rb;
 
-
+    private void Awake()
+    {
+        PlayerTransform= GameObject.Find("Player").transform;   
+    }
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -30,6 +33,7 @@ public class Loot_Absortion : MonoBehaviour
             transform.position = Vector3.Lerp(transform.position, PlayerTransform.position, attractSpeed);
         }
     }
+
 
     void LaunchShoot(Vector3 explosionOrigin, float force)
     {

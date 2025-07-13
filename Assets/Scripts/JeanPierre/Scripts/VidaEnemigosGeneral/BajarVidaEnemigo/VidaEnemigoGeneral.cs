@@ -91,27 +91,43 @@ public class VidaEnemigoGeneral : MonoBehaviour
         dissolveMaterials = new List<Material>(); // ADICIÓN
     }
 
+//    void Start()
+//    {
+//        animator = GetComponentInChildren<Animator>();
+
+//        tipo = (TypeIvulnerability)UnityEngine.Random.Range(0, 3);
+//#if UNITY_EDITOR
+//        Debug.Log($"[VidaEnemigo] Tipo: {tipo}");
+//#endif
+//        finalColor = ObtenerColorPorTipo(tipo);
+
+//        // Asignar color y emisión a todos los materiales
+//        AsignarColorYEmissionAMateriales(finalColor);
+
+//        if (sliderVida != null)
+//        {
+//            sliderVida.maxValue = vida;
+//            sliderVida.value = vida;
+//        }
+
+//        // Detectar nuevos materiales durante 0.5 seg
+//        StartCoroutine(DetectarYAsignarNuevosMateriales(finalColor, 0.5f));
+//    }
+
     void Start()
     {
         animator = GetComponentInChildren<Animator>();
-
         tipo = (TipoEnemigo)UnityEngine.Random.Range(0, 3);
-#if UNITY_EDITOR
-        Debug.Log($"[VidaEnemigo] Tipo: {tipo}");
-#endif
         finalColor = ObtenerColorPorTipo(tipo);
-
-        // Asignar color y emisión a todos los materiales
         AsignarColorYEmissionAMateriales(finalColor);
-
         if (sliderVida != null)
         {
             sliderVida.maxValue = vida;
             sliderVida.value = vida;
         }
-
-        // Detectar nuevos materiales durante 0.5 seg
         StartCoroutine(DetectarYAsignarNuevosMateriales(finalColor, 0.5f));
+
+            StartCoroutine(AppearEffect());
     }
 
     void Update()
@@ -301,7 +317,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
             StartCoroutine(DissolveEffect()); // ADICIÓN
         }
-
+        Destroy(sliderVida.gameObject);
         StartCoroutine(TimeToDead());
     }
 
@@ -338,6 +354,54 @@ public class VidaEnemigoGeneral : MonoBehaviour
         if (animator != null) animator.SetBool("isDead", true);
         yield return new WaitForSeconds(2f);
         Destroy(gameObject);
+    }
+
+    private IEnumerator AppearEffect()
+    {
+        // Inicializa los materiales con DissolveAmount = 1 (totalmente disuelto)
+        foreach (var mr in meshRenderers)
+            foreach (var mat in mr.materials)
+                if (mat.HasProperty("_DissolveAmount"))
+                    mat.SetFloat("_DissolveAmount", 1f);
+
+        foreach (var mr in staticMeshRenderers)
+            foreach (var mat in mr.materials)
+                if (mat.HasProperty("_DissolveAmount"))
+                    mat.SetFloat("_DissolveAmount", 1f);
+
+        float timer = 0f;
+        while (timer < dissolveDuration)
+        {
+            float value = Mathf.Lerp(1f, 0f, timer / dissolveDuration);
+            foreach (var mr in meshRenderers)
+                foreach (var mat in mr.materials)
+                    if (mat.HasProperty("_DissolveAmount"))
+                        mat.SetFloat("_DissolveAmount", value);
+
+            foreach (var mr in staticMeshRenderers)
+                foreach (var mat in mr.materials)
+                    if (mat.HasProperty("_DissolveAmount"))
+                        mat.SetFloat("_DissolveAmount", value);
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        // Asegura el valor final
+        foreach (var mr in meshRenderers)
+            foreach (var mat in mr.materials)
+                if (mat.HasProperty("_DissolveAmount"))
+                    mat.SetFloat("_DissolveAmount", 0f);
+
+        foreach (var mr in staticMeshRenderers)
+            foreach (var mat in mr.materials)
+                if (mat.HasProperty("_DissolveAmount"))
+                    mat.SetFloat("_DissolveAmount", 0f);
+    }
+
+    private void OnEnable()
+    {
+
+        StartCoroutine(AppearEffect());
     }
 }
 
@@ -388,7 +452,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
 //public class VidaEnemigoGeneral : MonoBehaviour
 //{
-//    public enum TipoEnemigo { Ametralladora, Pistola, Escopeta }
+//    public enum TypeIvulnerability { Ametralladora, Pistola, Escopeta }
 
 //    [Header("Configuración de vida")]
 //    public float vida = 100f;
@@ -431,14 +495,14 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //    [Tooltip("Prefab a instanciar cuando muere un enemigo tipo Ametralladora")]
 //    public GameObject prefabMuerteAmetralladora;
 //    [Tooltip("Prefab a instanciar cuando muere un enemigo tipo Pistola")]
-//    public GameObject prefabMuertePistola;
+//    public GameObject fragmentDeath;
 //    [Tooltip("Prefab a instanciar cuando muere un enemigo tipo Escopeta")]
 //    public GameObject prefabMuerteEscopeta;
 
 //    [Header("Fragmentos y HUD")]
 //    public int fragments = 50;
 
-//    private TipoEnemigo tipo;
+//    private TypeIvulnerability tipo;
 //    private bool isDead = false;
 
 //    // Color final que se determinó al inicio y que no debe cambiar
@@ -462,7 +526,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //    {
 //        animator = GetComponentInChildren<Animator>();
 
-//        tipo = (TipoEnemigo)UnityEngine.Random.Range(0, 3);
+//        tipo = (TypeIvulnerability)UnityEngine.Random.Range(0, 3);
 //#if UNITY_EDITOR
 //        Debug.Log($"[VidaEnemigo] Tipo: {tipo}");
 //#endif
@@ -487,15 +551,15 @@ public class VidaEnemigoGeneral : MonoBehaviour
 //        ReaplicarColorYEmissionAMateriales(finalColor);
 //    }
 
-//    private Color ObtenerColorPorTipo(TipoEnemigo t)
+//    private Color ObtenerColorPorTipo(TypeIvulnerability t)
 //    {
 //        switch (t)
 //        {
-//            case TipoEnemigo.Ametralladora:
+//            case TypeIvulnerability.Ametralladora:
 //                return hdrColorAmetralladora;
-//            case TipoEnemigo.Pistola:
+//            case TypeIvulnerability.Pistola:
 //                return hdrColorPistola;
-//            case TipoEnemigo.Escopeta:
+//            case TypeIvulnerability.Escopeta:
 //                return hdrColorEscopeta;
 //            default:
 //                return Color.white;
@@ -598,9 +662,9 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
 //    public void RecibirDanioPorBala(BalaPlayer.TipoBala tb, Collider hitCollider)
 //    {
-//        if ((tb == BalaPlayer.TipoBala.Ametralladora && tipo == TipoEnemigo.Ametralladora) ||
-//            (tb == BalaPlayer.TipoBala.Pistola && tipo == TipoEnemigo.Pistola) ||
-//            (tb == BalaPlayer.TipoBala.Escopeta && tipo == TipoEnemigo.Escopeta))
+//        if ((tb == BalaPlayer.TipoBala.Ametralladora && tipo == TypeIvulnerability.Ametralladora) ||
+//            (tb == BalaPlayer.TipoBala.Pistola && tipo == TypeIvulnerability.Pistola) ||
+//            (tb == BalaPlayer.TipoBala.Escopeta && tipo == TypeIvulnerability.Escopeta))
 //            return;
 
 //        float d = tb switch
@@ -633,9 +697,9 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
 //        GameObject prefabAMorir = tipo switch
 //        {
-//            TipoEnemigo.Ametralladora => prefabMuerteAmetralladora,
-//            TipoEnemigo.Pistola => prefabMuertePistola,
-//            TipoEnemigo.Escopeta => prefabMuerteEscopeta,
+//            TypeIvulnerability.Ametralladora => prefabMuerteAmetralladora,
+//            TypeIvulnerability.Pistola => fragmentDeath,
+//            TypeIvulnerability.Escopeta => prefabMuerteEscopeta,
 //            _ => null
 //        };
 

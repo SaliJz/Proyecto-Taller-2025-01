@@ -67,7 +67,7 @@ public class TutorialTriggerZone : MonoBehaviour
                         manager.StartCoroutine(manager.ActivateTransitionBetweenTwoCameras(1, 3, 0, 0));
                         //StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 0));
                         StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 5.22f)); //Activamos la gun
-                        //StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 6f));
+                     
                         activated = true;
                         //Destroy(gameObject);
                     }
@@ -80,7 +80,6 @@ public class TutorialTriggerZone : MonoBehaviour
 
                     else if (currentDialogue == 7)
                     {
-                        manager.ActiveGun();
                         StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 2f));
                         activated = true;
                     }
