@@ -38,7 +38,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
     private void LoadGameData()
     {
         CurrentLevelIndex = PlayerPrefs.GetInt("CurrentLevelIndex", 0);
@@ -53,12 +52,14 @@ public class GameManager : MonoBehaviour
     public void StartTutorial()
     {
         CurrentLevelIndex = 0; // El tutorial es el índice 0 en la lista 'levelProgression'
+        SaveGameData();
         LoadLevelByIndex(CurrentLevelIndex);
     }
 
     public void StartFromLevel1()
     {
         CurrentLevelIndex = 1; // El Nivel 1 es el índice 1 en la lista 'levelProgression'
+        SaveGameData();
         LoadLevelByIndex(CurrentLevelIndex);
     }
 
