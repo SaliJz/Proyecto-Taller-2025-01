@@ -37,9 +37,7 @@ public class TutorialManager0 : MonoBehaviour
     [SerializeField] private List<GameObject> supplyBox;
     [SerializeField] private List<GameObject> rifleAndShotgun;
     [SerializeField] private GameObject secondWaveGlitch;
-
-
-
+    
     private GameObject player;
 
     public bool hasConfirmedDialogueAdvance = false;
@@ -80,6 +78,7 @@ public class TutorialManager0 : MonoBehaviour
     private void Start()
     {
         player = GameObject.FindWithTag("Player");
+       
     }
 
     private void Update()
