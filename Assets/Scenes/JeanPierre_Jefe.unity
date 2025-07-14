@@ -3275,6 +3275,8 @@ MonoBehaviour:
   - {fileID: 561226456}
   scriptsToActivate:
   - {fileID: 561226455}
+  scriptsToDestroyAfterFinal: []
+  scriptsToActivateAfterFinal: []
   blinkDuration: 0.2
   returnDuration: 0.1
   blinkFrequency: 10
@@ -3397,7 +3399,7 @@ MonoBehaviour:
   snakeController: {fileID: 561226449}
   frequency: 1
   phaseOffset: 0.5
-  globalAmplitude: 0.1
+  globalAmplitude: 0.3
   amplitudeCurve:
     serializedVersion: 2
     m_Curve:
@@ -7683,7 +7685,7 @@ PrefabInstance:
     - target: {fileID: 5618671166998505321, guid: c6bad594ba909a64e8e0ce6a78d37953,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -15.340454
+      value: -15.340332
       objectReference: {fileID: 0}
     - target: {fileID: 7059551863336392569, guid: c6bad594ba909a64e8e0ce6a78d37953,
         type: 3}
