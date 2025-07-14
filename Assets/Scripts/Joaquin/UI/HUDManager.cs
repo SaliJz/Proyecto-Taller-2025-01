@@ -67,6 +67,8 @@ public class HUDManager : MonoBehaviour
     private Coroutine floatingTextCoroutine;
     private Coroutine missionCoroutine;
 
+    private ShopController shopController;
+
     private int tutorialCount=0;
     private static int infoFragments = 2000;
     public int CurrentFragments => infoFragments;
@@ -135,6 +137,8 @@ public class HUDManager : MonoBehaviour
         {
             missionTextObject.gameObject.SetActive(false);
         }
+
+        shopController = FindObjectOfType<ShopController>();
     }
 
     private void OnEnable()
@@ -223,11 +227,12 @@ public class HUDManager : MonoBehaviour
     #region Info Fragments
     private void Update()
     {
-        if (floatingInfoFragmentsText.gameObject.activeInHierarchy && !activecurrentInfoFragment)
-        {
-            activecurrentInfoFragment = true;
-            currentInfoFragments.transform.gameObject.SetActive(true);
-        }
+        //if (floatingInfoFragmentsText.gameObject.activeInHierarchy && !activecurrentInfoFragment)
+        //{
+        //    activecurrentInfoFragment = true;
+           
+        //}
+
     }
     public void AddInfoFragment(int amount)
     {
@@ -241,16 +246,19 @@ public class HUDManager : MonoBehaviour
         //if (floatingInfoFragmentsText.gameObject.activeInHierarchy)
         //{
         //    floatingTextCoroutine = StartCoroutine(ShowFloatingText($"|F. Cod.: + {amount}"));
-        //    currentInfoFragments.text = $"|F. Cod. {infoFragments.ToString("N0")}"; // Formatear con separador de miles
+        //    
         //}
+     
         floatingTextCoroutine = StartCoroutine(ShowFloatingText($"|F. Cod.: + {amount}"));
+        currentInfoFragments.text = $"|F. Cod. {infoFragments.ToString("N0")}"; // Formatear con separador de miles
         if (TutorialManager0.Instance != null)
         {
             tutorialCount++;
 
-            if (tutorialCount == 4)
+            if (tutorialCount>= 7)
             {
                 TutorialManager0.Instance.ConfirmAdvance();
+                shopController.OpenShop();
             }
         }
         Debug.Log($"F. Cod.: + {amount} -> {infoFragments}");
@@ -277,6 +285,7 @@ public class HUDManager : MonoBehaviour
 
         TextMeshProUGUI text = floatingInfoFragmentsText.GetComponentInChildren<TextMeshProUGUI>();
         floatingInfoFragmentsText.gameObject.SetActive(true);
+        currentInfoFragments.transform.gameObject.SetActive(true);
         text.text = message;
 
         // Setear posici�n inicial editable
@@ -291,6 +300,7 @@ public class HUDManager : MonoBehaviour
         }
 
         floatingInfoFragmentsText.gameObject.SetActive(false);
+        currentInfoFragments.transform.gameObject.SetActive(false);
         floatingInfoFragmentsText.anchoredPosition = floatingStartPos;
     }
 
