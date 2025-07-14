@@ -13,7 +13,7 @@ public class MissionManager : MonoBehaviour
 
     [SerializeField] private GameObject[] teleporters;
 
-    [SerializeField] private float missionStartDelay = 10f;
+    [SerializeField] private float missionStartDelay = 5f;
 
     [SerializeField] private GameObject[] safeZones;
     [SerializeField] private MissionMode baseMissionMode;
@@ -220,7 +220,7 @@ public class MissionManager : MonoBehaviour
         PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
         if (playerHealth != null)
         {
-            playerHealth.TakeDamage(1000, transform.position); // O el daño que desees
+            playerHealth.TakeDamage(1000, transform.position);
         }
     }
 
