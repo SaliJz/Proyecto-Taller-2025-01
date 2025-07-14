@@ -14,7 +14,6 @@ public class PlataformaVertical : MonoBehaviour
     private float duracion;
     private float t = 0f;
 
-    public bool isActive = false;
     private bool subiendo = true;
     private bool enMovimiento = false;
 
@@ -33,26 +32,38 @@ public class PlataformaVertical : MonoBehaviour
 
             if (t >= 1f)
             {
+                StopAllCoroutines();
                 transform.position = destino;
                 subiendo = !subiendo;
                 enMovimiento = false;
-                isActive = false;
+                StartCoroutine(EsperaParaActivarPlataforma());
+
             }
         }
+    }
+
+    IEnumerator EsperaParaActivarPlataforma()
+    {
+        yield return new WaitForSeconds(5f);
+        ActivarPlataforma();
     }
 
     void ActivarPlataforma()
     {
         if (!enMovimiento)
         {
-            isActive = true;
             enMovimiento = true;
             t = 0f;
 
             origen = transform.position;
-            destino = subiendo
-                ? posicionInicial + Vector3.up * altura
-                : posicionInicial - Vector3.up * altura;
+            if (subiendo)
+            {
+                destino = posicionInicial + Vector3.up * altura;
+            }
+            else
+            {
+                destino = posicionInicial; // Siempre regresa al punto de origen
+            }
 
             duracion = subiendo ? tiempoSubida : tiempoBajada;
         }
@@ -62,7 +73,6 @@ public class PlataformaVertical : MonoBehaviour
     {
         if (other.CompareTag("Player") && manager.currentDialogueIndex == 4)
         {
-            ActivarPlataforma();
             manager.ConfirmAdvance();
             foreach (var collider in GetComponents<Collider>())
             {
@@ -71,6 +81,22 @@ public class PlataformaVertical : MonoBehaviour
                     Destroy(collider);
                 }
             }
+        }
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Player") && subiendo /*&& manager.currentDialogueIndex > 4*/)
+        {
+            ActivarPlataforma();
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+                enMovimiento = false;
+                subiendo = false; // Cambia a modo bajada
+                ActivarPlataforma(); // Inicia el movimiento de regreso
         }
     }
 }
