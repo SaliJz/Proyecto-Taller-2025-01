@@ -22,8 +22,6 @@ public class TutorialManager0 : MonoBehaviour
     public int currentDialogueIndex = 0;
 
     [SerializeField] private TextMeshProUGUI dialogueTextUI;
-
-    [SerializeField] private TextMeshProUGUI dialogueTextUI2;
     [SerializeField] private AudioSource voiceAudioSource;
     [SerializeField] public List<DialogueData> listDialogueData = new List<DialogueData>();
     [SerializeField] private List<MonoBehaviour> playerScriptsToDisable;
@@ -39,7 +37,8 @@ public class TutorialManager0 : MonoBehaviour
     [SerializeField] private List<GameObject> supplyBox;
     [SerializeField] private List<GameObject> rifleAndShotgun;
     [SerializeField] private GameObject secondWaveGlitch;
-    
+    [SerializeField] private List<GameObject> blackListShopUI;
+
     private GameObject player;
 
     public bool hasConfirmedDialogueAdvance = false;
@@ -179,7 +178,7 @@ public class TutorialManager0 : MonoBehaviour
             IncreaseDialogueIndex();
         }
 
-        HandleScenarioCompletion();
+        //HandleScenarioCompletion();
     }
 
     private IEnumerator WaitForConfirmation()
@@ -190,6 +189,11 @@ public class TutorialManager0 : MonoBehaviour
         if (currentDialogueIndex == 3)
         {
             EnabledPlayerDash();
+        }
+
+        if (currentDialogueIndex == 11)
+        {
+            dialogueTextUI.transform.parent.gameObject.SetActive(false);
         }
         
 
@@ -404,8 +408,14 @@ public class TutorialManager0 : MonoBehaviour
     {
         weaponManager.canChangeWeapon=true;
     }
-  
 
+    public void ActiveBlackList(int index)
+    {
+        for (int i = 0; i < blackListShopUI.Count; i++)
+        {
+            blackListShopUI[i].SetActive(i == index);
+        }
+    }
     //public IEnumerator MovePlayerToPlatformCenter(Vector3 target)
     //{
     //    Vector3 targetXZ = new Vector3(target.x, player.transform.position.y, target.z);
