@@ -71,16 +71,17 @@ public class TutorialManager0 : MonoBehaviour
 
         listDialogueData = tutorialSceneRuntime.tutorialSceneData.dialogues;
 
-        foreach (var dialogue in listDialogueData)
-        {
-            dialogue.isActive = false;
-        }
+       
     }
 
     private void Start()
     {
         player = GameObject.FindWithTag("Player");
-       
+        foreach (var dialogue in listDialogueData)
+        {
+            dialogue.isActive = false;
+        }
+
     }
 
     private void Update()
@@ -324,9 +325,6 @@ public class TutorialManager0 : MonoBehaviour
 
         foreach (MonoBehaviour script in playerScriptsToDisable)
         {
-            if (currentDialogueIndex == 4 && script is PlayerCamera)
-                continue;
-
             script.enabled = false;
         }
     }

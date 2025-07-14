@@ -48,8 +48,15 @@ public class PickupItem : MonoBehaviour
             _ => new Vector2(0, 0)
         };
 
-        actualAmount = Random.Range((int)amountRange.x, (int)amountRange.y + 1);
-        //UpdateVisual();
+        // Cambia aquí: si el TutorialManager0 existe y el tipo es CodeFragment, pon 100
+        if (pickupType == PickupType.CodeFragment && TutorialManager0.Instance != null)
+        {
+            actualAmount = 100;
+        }
+        else
+        {
+            actualAmount = Random.Range((int)amountRange.x, (int)amountRange.y + 1);
+        }
 
         // Buscar Rigidbody del hijo
         rb = GetComponentInChildren<Rigidbody>();
