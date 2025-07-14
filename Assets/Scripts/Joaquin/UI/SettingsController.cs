@@ -89,7 +89,7 @@ public class SettingsController : MonoBehaviour
     private void RegisterListeners()
     {
         masterVolumeSlider.onValueChanged.AddListener(val => UpdateVolumeText(masterVolumeText, val));
-        //musicVolumeSlider.onValueChanged.AddListener(val => UpdateVolumeText(musicVolumeText, val));
+        musicVolumeSlider.onValueChanged.AddListener(val => UpdateVolumeText(musicVolumeText, val));
         sfxVolumeSlider.onValueChanged.AddListener(val => UpdateVolumeText(sfxVolumeText, val));
         //voiceVolumenSlider.onValueChanged.AddListener(val => UpdateVolumeText(voiceVolumeText, val));
         sensitivitySlider.onValueChanged.AddListener(val => UpdateSensitivityText(val));
@@ -111,6 +111,7 @@ public class SettingsController : MonoBehaviour
     {
         return SettingsService.HasChanges(
             masterVolumeSlider.value,
+            musicVolumeSlider.value,
             sfxVolumeSlider.value,
             muteToggle.isOn,
             resolutionDropdown.value,
@@ -126,6 +127,7 @@ public class SettingsController : MonoBehaviour
         tempSettings = SettingsService.Clone();
 
         masterVolumeSlider.value = tempSettings.MasterVolume;
+        musicVolumeSlider.value = tempSettings.MusicVolume;
         sfxVolumeSlider.value = tempSettings.SfxVolume;
         sensitivitySlider.value = tempSettings.Sensitivity;
 
@@ -140,7 +142,7 @@ public class SettingsController : MonoBehaviour
         fpsText.gameObject.SetActive(tempSettings.ShowFps);
 
         UpdateVolumeText(masterVolumeText, tempSettings.MasterVolume);
-        //UpdateVolumeText(musicVolumeText, tempSettings.MusicVolume);
+        UpdateVolumeText(musicVolumeText, tempSettings.MusicVolume);
         UpdateVolumeText(sfxVolumeText, tempSettings.SfxVolume);
         //UpdateVolumeText(voiceVolumeText, tempSettings.VoiceVolume);
         UpdateSensitivityText(tempSettings.Sensitivity);
@@ -151,6 +153,7 @@ public class SettingsController : MonoBehaviour
         PlayButtonAudio();
 
         SettingsService.MasterVolume = masterVolumeSlider.value;
+        SettingsService.MusicVolume = musicVolumeSlider.value;
         SettingsService.SfxVolume = sfxVolumeSlider.value;
         SettingsService.Sensitivity = sensitivitySlider.value;
         SettingsService.IsFullscreen = fullscreenToggle.isOn;

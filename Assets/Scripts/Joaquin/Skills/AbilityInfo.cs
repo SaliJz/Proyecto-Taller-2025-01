@@ -3,6 +3,6 @@ using UnityEngine;
 public class AbilityInfo : MonoBehaviour
 {
     public string abilityName;
-    public Sprite icon;
+    public Material icon;
     [TextArea] public string description;
 }
