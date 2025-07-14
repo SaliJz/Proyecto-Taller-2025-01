@@ -22,6 +22,8 @@ public class TutorialManager0 : MonoBehaviour
     public int currentDialogueIndex = 0;
 
     [SerializeField] private TextMeshProUGUI dialogueTextUI;
+
+    [SerializeField] private TextMeshProUGUI dialogueTextUI2;
     [SerializeField] private AudioSource voiceAudioSource;
     [SerializeField] public List<DialogueData> listDialogueData = new List<DialogueData>();
     [SerializeField] private List<MonoBehaviour> playerScriptsToDisable;
