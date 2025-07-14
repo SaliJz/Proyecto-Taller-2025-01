@@ -6,7 +6,6 @@ using UnityEngine;
 public class LevelIntroUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI levelText;
-    [SerializeField] private TextMeshProUGUI missionText;
     [SerializeField] private Animator animatorController;
     [SerializeField] private string missionIntroduction;
     [SerializeField] private float displayDuration = 3f;
@@ -17,7 +16,7 @@ public class LevelIntroUI : MonoBehaviour
 
     private void Awake()
     {
-        if (levelText == null || missionText == null || animatorController == null)
+        if (levelText == null)
         {
             Debug.LogError("LevelIntroUI: Alguna referencia no está asignada en el inspector.");
             enabled = false;
@@ -82,37 +81,4 @@ public class LevelIntroUI : MonoBehaviour
 
         gameObject.SetActive(false);
     }
-    /*
-    private IEnumerator MissionIntroductionRoutine()
-    {
-        if (missionText == null) yield break;
-
-        Debug.Log("Iniciando introducción de misión: " + missionIntroduction);
-
-        missionText.text = missionIntroduction;
-
-        // Forzar color base con alpha 0
-        Color targetColor = missionText.color;
-        targetColor.a = 0f;
-        missionText.color = targetColor;
-
-        // Asegurar que el objeto esté activo
-        missionText.gameObject.SetActive(true);
-
-        float elapsed = 0f;
-        while (elapsed < displayDuration)
-        {
-            float alpha = Mathf.Lerp(0f, 1f, elapsed / displayDuration);
-            missionText.color = new Color(targetColor.r, targetColor.g, targetColor.b, alpha);
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        missionText.color = new Color(targetColor.r, targetColor.g, targetColor.b, 1f);
-        currentRoutine = null;
-        if (animatorController != null) animatorController.SetTrigger("StartIntroduction");
-
-        Debug.Log("MissionIntroductionRoutine: Fade in completado y trigger enviado.");
-    }
-    */
 }

@@ -131,7 +131,7 @@ public class AbilityManager : MonoBehaviour
             return;
         }
 
-        if (activeAbilities.Count < 2)
+        if (activeAbilities.Count < 4)
         {
             activeAbilities.Add(newAbility);
         }
