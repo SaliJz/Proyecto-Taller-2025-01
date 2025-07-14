@@ -178,10 +178,16 @@ public class EnemigoRosa : MonoBehaviour
             {
                 rb.constraints &= ~RigidbodyConstraints.FreezePositionY;
             }
+
+            if (TutorialManager0.Instance.currentDialogueIndex == 10)
+            {
+                TutorialManager0.Instance.ConfirmAdvance();
+            }
         }
 
         if (sliderVida != null)
             Destroy(sliderVida.gameObject);
+        
 
         StartCoroutine(TimeToDead());
     }
@@ -269,9 +275,10 @@ public class EnemigoRosa : MonoBehaviour
         if (TutorialManager0.Instance != null && TutorialManager0.Instance.currentDialogueIndex == 7)
         {
             Debug.Log("ConfirmAdvance llamado por enemigo muerto");
-            TutorialManager0.Instance.StartCoroutine(TutorialManager0.Instance.ActivateTransitionBetweenTwoCameras(2, 3, 3, 2));
+            TutorialManager0.Instance.StartCoroutine(TutorialManager0.Instance.ActivateTransitionBetweenTwoCameras(2, 3.5f, 3, 2.5f));
             TutorialManager0.Instance.ConfirmAdvance();
-          
         }
+
+       
     }
 }

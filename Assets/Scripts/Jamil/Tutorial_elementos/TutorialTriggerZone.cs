@@ -39,7 +39,7 @@ public class TutorialTriggerZone : MonoBehaviour
             {
                 if (other.CompareTag("Player"))
                 {
-                    if (currentDialogue == 0)
+                    if (currentDialogue == 0 || currentDialogue == 1)
                     {
                         Debug.Log("Activando escenario por zona");
                         activated = true;
