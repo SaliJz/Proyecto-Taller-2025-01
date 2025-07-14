@@ -21,7 +21,6 @@ public class MissionManager : MonoBehaviour
 
     private bool activeMission = false;
 
-    //private int currentMissionIndex = 0;
     private int currentSafeZoneIndex = 0;
 
     private MissionMode currentMode;
@@ -29,7 +28,6 @@ public class MissionManager : MonoBehaviour
     public static MissionManager Instance { get; private set; }
     public bool ActiveMission => activeMission;
 
-    // Variables para la misión "El Único"
     private float currentCaptureTime;
     private bool isPlayerInZone;
     private bool isEnemyInZone;
@@ -52,7 +50,6 @@ public class MissionManager : MonoBehaviour
 
     private void Update()
     {
-        // Solo ejecutar el Update si la misión activa es "El Único"
         if (activeMission && currentMode == MissionMode.ElUnico)
         {
             HandleElUnicoMission();
@@ -66,18 +63,15 @@ public class MissionManager : MonoBehaviour
 
     private void BeginMission()
     {
-        currentMode = SelectModeByLevel(); // Decide qué misión toca
+        currentMode = SelectModeByLevel();
         StartCoroutine(BeginMissionCoroutine());
     }
 
     private IEnumerator BeginMissionCoroutine()
     {
-        // --- 1. Lógica de Dificultad Procedural ---
-        // Se calcula la dificultad basada en el índice del GameManager
         int difficultyStep = 0;
         if (GameManager.Instance != null)
         {
-            // El índice 0 y 1 son tutoriales, así que el aumento empieza en el índice 2
             difficultyStep = Mathf.Max(0, GameManager.Instance.CurrentLevelIndex - 1);
         }
 
@@ -87,23 +81,18 @@ public class MissionManager : MonoBehaviour
             yield break;
         }
 
-        // --- 2. Cálculo de Parámetros de Misión ---
-        var currentMissionSO = baseMissions[0]; // Coge el SO correspondiente al modo
+        var currentMissionSO = baseMissions[0];
 
-        // Purgador
         int purgadorKills = 5 + (difficultyStep * 5);
         currentMissionSO.killConditions[0].requiredAmount = purgadorKills;
         currentMissionSO.ResetProgress();
 
-        // El Único
         float elUnicoSurvivalTime = 120f + (difficultyStep * 30f);
         float elUnicoInitialTime = 30f;
 
-        // JSS
         int jssSimultaneousEnemies = 5 + (difficultyStep * 5);
         float jssDuration = 30f + (difficultyStep * 20f);
 
-        // --- 3. Inicio de Misión ---
         float delay = missionStartDelay;
         while (delay > 0f)
         {
@@ -118,25 +107,23 @@ public class MissionManager : MonoBehaviour
         {
             case MissionMode.Purgador:
                 HUDManager.Instance?.ShowMission($"Objetivo: Elimina enemigos\nProgreso: {currentMissionSO.killConditions[0].currentAmount}/{purgadorKills}");
-                spawner?.StartPurgeSpawning(purgadorKills, 15, 2f); // Spawnea los enemigos necesarios
+                spawner?.StartPurgeSpawning(purgadorKills, 15, 2f);
                 break;
 
             case MissionMode.JSS:
                 HUDManager.Instance?.ShowMission($"Objetivo: Sobrevive\nTiempo restante: {Mathf.Ceil(jssDuration)}s", true);
                 spawner?.StartContinuousSpawning(jssSimultaneousEnemies, 1f, jssDuration);
-                StartCoroutine(TimerCoroutine(jssDuration)); // Inicia el temporizador de supervivencia
+                StartCoroutine(TimerCoroutine(jssDuration));
                 break;
 
             case MissionMode.ElUnico:
                 HUDManager.Instance?.ShowMission("Objetivo: Captura la zona segura\nPermanece solo para aumentar el tiempo");
-                currentCaptureTime = elUnicoInitialTime; // El "colchón" de tiempo que tiene el jugador
+                currentCaptureTime = elUnicoInitialTime;
                 SelectSafeZone();
-                spawner?.StartContinuousSpawning(10, 3f); // Spawn infinito de enemigos a un ritmo moderado
+                spawner?.StartContinuousSpawning(10, 3f);
                 break;
         }
     }
-
-    // --- Lógica de Misiones Específicas ---
 
     public void RegisterKill(string tag, string name, string tipo)
     {
@@ -160,13 +147,12 @@ public class MissionManager : MonoBehaviour
     {
         if (isPlayerInZone && !isEnemyInZone)
         {
-            currentCaptureTime += Time.deltaTime; // El tiempo sube si el jugador está solo en la zona
+            currentCaptureTime += Time.deltaTime;
         }
         else if (!isPlayerInZone)
         {
-            currentCaptureTime -= Time.deltaTime; // El tiempo baja si el jugador está fuera
+            currentCaptureTime -= Time.deltaTime;
         }
-        // Si el jugador y el enemigo están en la zona, el tiempo se congela.
 
         float totalTime = 120f + (Mathf.Max(0, GameManager.Instance.CurrentLevelIndex - 1) * 30f);
         HUDManager.Instance?.UpdateMissionProgress(currentCaptureTime, totalTime, false);
@@ -176,8 +162,6 @@ public class MissionManager : MonoBehaviour
         if (currentCaptureTime <= 0) FailedMission();
     }
 
-    // --- Flujo de Final de Misión ---
-
     public void CompleteMission()
     {
         if (!activeMission) return;
@@ -185,7 +169,6 @@ public class MissionManager : MonoBehaviour
 
         spawner?.StopAndClearSpawner();
 
-        // Desactivar zonas, etc. si es necesario
         if (currentMode == MissionMode.ElUnico)
         {
             safeZones[currentSafeZoneIndex].GetComponent<CaptureZone>()?.Deactivate();
@@ -196,11 +179,9 @@ public class MissionManager : MonoBehaviour
 
     private IEnumerator MissionCompleteSequence()
     {
-        // 1. Mostrar mensaje de Misión Completa
         HUDManager.Instance?.ShowMission("¡Misión Completa!");
-        yield return new WaitForSeconds(2f); // Pausa breve
+        yield return new WaitForSeconds(2f);
 
-        // 2. Iniciar cuenta atrás para la tienda
         float countdown = 5f;
         while (countdown > 0)
         {
@@ -209,7 +190,6 @@ public class MissionManager : MonoBehaviour
             yield return null;
         }
 
-        // 3. Llamar al GameManager para que maneje la transición a la tienda
         GameManager.Instance?.OnLevelCompleted();
     }
 
@@ -238,14 +218,13 @@ public class MissionManager : MonoBehaviour
         CompleteMission();
     }
 
-    // --- Métodos de Ayuda ---
     private MissionMode SelectModeByLevel()
     {
         if (useBaseMissionMode)
         {
             if (baseMissionMode == MissionMode.Purgador || baseMissionMode == MissionMode.ElUnico || baseMissionMode == MissionMode.JSS)
             {
-                return baseMissionMode; // Si se ha configurado un modo base, usarlo
+                return baseMissionMode;
             }
         }
         else
@@ -253,8 +232,6 @@ public class MissionManager : MonoBehaviour
             string sceneName = SceneManager.GetActiveScene().name;
             int lvl;
 
-            // Extrae un número al final del nombre
-            // Busca dígitos consecutivos al final
             Match match = Regex.Match(sceneName, @"(\d+)$");
             if (match.Success && int.TryParse(match.Groups[1].Value, out lvl))
             {
@@ -263,11 +240,10 @@ public class MissionManager : MonoBehaviour
                 else if (lvl == 3) return MissionMode.JSS;
             }
 
-            // Si no se detecta número, o es 4 o más, selecciona aleatoriamente
-            return (MissionMode)UnityEngine.Random.Range(0, 3);/* (MissionMode)UnityEngine.Random.Range(0, 3);*/
+            return (MissionMode)UnityEngine.Random.Range(0, 3);
         }
 
-        return MissionMode.Purgador; // Por defecto, si no se ha configurado nada
+        return MissionMode.Purgador;
     }
 
     public void SetActiveCapture(bool isActive) { isPlayerInZone = isActive; }
@@ -276,7 +252,6 @@ public class MissionManager : MonoBehaviour
     {
         if (safeZones == null || safeZones.Length == 0) return;
 
-        // Desactiva todas las zonas primero
         foreach (var zone in safeZones)
         {
             if (zone != null) zone.SetActive(false);

@@ -487,13 +487,13 @@ public class HUDManager : MonoBehaviour
         Debug.Log($"Updating ability UI for: {abilityObj.name}");
 
         if (abilityIcon) abilityIcon.gameObject.SetActive(true);
-        if (abilityIconBackground) abilityIconBackground.gameObject.SetActive(true);
+        //if (abilityIconBackground) abilityIconBackground.gameObject.SetActive(true);
 
         AbilityInfo info = abilityObj.GetComponent<AbilityInfo>();
 
         if (info)
         {
-            if (abilityIcon) abilityIcon.sprite = info.icon;
+            if (abilityIcon) abilityIcon.material = info.icon;
             //if (abilityNameText)
             //{
             //    abilityNameText.gameObject.SetActive(true);

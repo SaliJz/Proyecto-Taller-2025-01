@@ -8121,7 +8121,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &9156985890684521218
 RectTransform:
   m_ObjectHideFlags: 0
@@ -18430,7 +18430,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abilityName: IgnitionCode
-  icon: {fileID: -107528273, guid: d2c51b25bf25d9c43814a3ef47217d89, type: 3}
+  icon: {fileID: 2100000, guid: 28cf24eb08ae9cb4e8e13444fa7e61fe, type: 2}
   description: "Disparo que quema a los enemigos en un \xE1rea por un periodo de
     tiempo.\r\n"
 --- !u!1 &2223612070052492867
@@ -23655,7 +23655,7 @@ GameObject:
   - component: {fileID: 7059551863336392569}
   m_Layer: 0
   m_Name: PlayerWithCamera
-  m_TagString: Untagged
+  m_TagString: EditorOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -25389,7 +25389,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -41943,18 +41943,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3069378700902791465}
-  m_LocalRotation: {x: 0.8109256, y: 0.07041967, z: -0.5595375, w: 0.1560722}
+  m_LocalRotation: {x: 0.070419736, y: -0.8109256, z: 0.15607215, w: 0.55953753}
   m_LocalPosition: {x: 0, y: 0, z: 0.06498771}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 5126291580544185498}
   - {fileID: 6666425585849567152}
   - {fileID: 9156985890684521218}
   - {fileID: 2545776191317266129}
+  - {fileID: 5126291580544185498}
   - {fileID: 8660475498222680433}
   m_Father: {fileID: 1290465487245763825}
-  m_LocalEulerAnglesHint: {x: 160.614, y: 69.839, z: 3.673996}
+  m_LocalEulerAnglesHint: {x: 160.614, y: 69.839, z: 183.674}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0.1040059, y: 0.01199964}
@@ -42937,7 +42937,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abilityName: Mindjack
-  icon: {fileID: -53119497, guid: d2c51b25bf25d9c43814a3ef47217d89, type: 3}
+  icon: {fileID: 2100000, guid: dcc8debe777482e46b27ef3fa5e9ef64, type: 2}
   description: 'Disparo que convierte a un enemigo en aliado temporal, reduciendo
     su vida progresivamente.
 
@@ -43315,7 +43315,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abilityName: GlitchTime
-  icon: {fileID: -87169099, guid: d2c51b25bf25d9c43814a3ef47217d89, type: 3}
+  icon: {fileID: 2100000, guid: 61fad7c32d2535348b235dd5b8f5e72d, type: 2}
   description: 'Disparo que ralentiza a los enemigos al impactarlos.
 
 '
@@ -43758,7 +43758,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3617332274704185783}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.0002}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -43766,7 +43766,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -0.0001}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7581417646172718718
@@ -56683,7 +56683,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8d30f7cecb154d442b9882ac78501247, type: 2}
+  - {fileID: 2100000, guid: 549b38a1f1657af40a953df29ad3f114, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -62397,55 +62397,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!1 &6264580990820017227
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1519064459915055704}
-  - component: {fileID: 2311796205936820627}
-  m_Layer: 0
-  m_Name: GlobalVolume
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1519064459915055704
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6264580990820017227}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7418725869719192367}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2311796205936820627
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6264580990820017227}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IsGlobal: 1
-  priority: 1
-  blendDistance: 0
-  weight: 1
-  sharedProfile: {fileID: 11400000, guid: bf3d2da2c3302aa4b9b735f4afde3ad9, type: 2}
 --- !u!1 &6301471460178189220
 GameObject:
   m_ObjectHideFlags: 0
@@ -87839,7 +87790,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abilityName: ElectroHack
-  icon: {fileID: 1135544967, guid: d2c51b25bf25d9c43814a3ef47217d89, type: 3}
+  icon: {fileID: 2100000, guid: b68399cbd5ed97949b35d7e8af0f14d0, type: 2}
   description: "Disparo que electrocuta a los enemigos cercanos dentro de un \xE1rea
     de efecto.\r\n"
 --- !u!1 &7940954768359139569
@@ -93297,7 +93248,6 @@ Transform:
   - {fileID: 376851164664182736}
   - {fileID: 839474026893933726}
   - {fileID: 7059551863336392569}
-  - {fileID: 1519064459915055704}
   - {fileID: 5733035003585805627}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
