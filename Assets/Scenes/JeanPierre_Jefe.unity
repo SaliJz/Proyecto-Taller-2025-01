@@ -3052,15 +3052,11 @@ GameObject:
   - component: {fileID: 561226470}
   - component: {fileID: 561226456}
   - component: {fileID: 561226457}
-  - component: {fileID: 561226461}
   - component: {fileID: 561226455}
   - component: {fileID: 561226464}
-  - component: {fileID: 561226472}
   - component: {fileID: 561226465}
   - component: {fileID: 561226460}
   - component: {fileID: 561226458}
-  - component: {fileID: 561226454}
-  - component: {fileID: 561226453}
   m_Layer: 0
   m_Name: SERPIENTE
   m_TagString: Untagged
@@ -3162,60 +3158,6 @@ MonoBehaviour:
     type: 3}
   tiltX: 40
   tiltSmoothSpeed: 8
---- !u!114 &561226453
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 561226448}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3fad1a1674fb7c4ba844139665612ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  columna: {fileID: 828388134}
-  umbralLlegada: 0.2
-  vueltasCompletas: 3
-  offsetRadio: 0.2
-  velocidadEnrollado: 1
-  segmentosCuello: 1
---- !u!114 &561226454
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 561226448}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf49b0c3a9cc5cb4b9702973afd77f33, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  vida: 3000
-  sliderVida: {fileID: 1759281960}
-  umbralPorcentaje80: 80
-  umbralPorcentaje60: 60
-  umbralPorcentaje40: 40
-  danioAlto: 20
-  danioBajo: 0
-  blinkCount: 4
-  blinkInterval: 0.1
-  intervaloCambio: 10
-  duracionTransicionColor: 1
-  columna1: {fileID: 707204836}
-  columna2: {fileID: 571849483}
-  columna3: {fileID: 828388134}
-  tiempoEnColumna: 7
-  totalEnemigos: 3
-  enemyPrefabs:
-  - {fileID: 3775705321392681890, guid: 949378dbd6b7b9f46bdb905d67e7579e, type: 3}
-  - {fileID: 4394272956414374065, guid: f3ca6ab5d5dde4c448a6f18caf6d353c, type: 3}
-  - {fileID: 5120538479886475079, guid: 60a69db7658caea4097d98b236849d7b, type: 3}
-  - {fileID: 1603735669551673134, guid: 1c4aa42d1bcc19c4aad679c27195ae2f, type: 3}
-  fragments: 200
-  cobraPose: {fileID: 0}
-  columnWrap: {fileID: 0}
 --- !u!114 &561226455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3234,7 +3176,7 @@ MonoBehaviour:
   numSegmentosCuello: 10
   velocidadSuavizado: 10
   duracionColetazo: 2
-  distanciaColetazo: 3
+  distanciaColetazo: 1.8
   distanciaActivacionPose: 15
   tiempoEsperaColetazo: 2
 --- !u!114 &561226456
@@ -3313,26 +3255,32 @@ MonoBehaviour:
   columna1: {fileID: 707204836}
   columna2: {fileID: 571849483}
   columna3: {fileID: 828388134}
-  vida1: 500
-  vida2: 500
-  vida3: 500
+  vida1: 111
+  vida2: 111
+  vida3: 111
   vidaSlider: {fileID: 12976067}
+  scriptsToRemoveAfterColumns:
+  - {fileID: 561226456}
+  - {fileID: 561226457}
+  scriptsToActivateAfterColumns:
+  - {fileID: 561226455}
+  - {fileID: 561226449}
+  vidaFinal: 300
+  finalLifeSlider: {fileID: 388082710}
+  scriptsToRemove:
+  - {fileID: 561226469}
+  - {fileID: 561226456}
+  - {fileID: 561226457}
+  - {fileID: 561226470}
+  - {fileID: 561226456}
+  scriptsToActivate:
+  - {fileID: 561226455}
   blinkDuration: 0.2
   returnDuration: 0.1
   blinkFrequency: 10
   danioAmetralladora: 15
   danioPistola: 20
   danioEscopeta: 30
-  scriptsToActivate:
-  - {fileID: 561226461}
-  - {fileID: 561226455}
-  - {fileID: 561226472}
-  scriptsToRemove:
-  - {fileID: 561226469}
-  - {fileID: 561226456}
-  - {fileID: 561226457}
-  - {fileID: 561226470}
-  - {fileID: 561226459}
   attackStartDelay: 7
   attackInterval: 3.5
 --- !u!114 &561226460
@@ -3353,28 +3301,6 @@ MonoBehaviour:
   blinkInterval: 0.1
   delayInicial: 0.6
   emissionIntensity: 2
---- !u!114 &561226461
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 561226448}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f98fa3c542b71840908368d713bf669, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  vida: 1111
-  vidaSlider: {fileID: 388082710}
-  blinkDuration: 0.2
-  returnDuration: 0.1
-  blinkFrequency: 10
-  danioAmetralladora: 15
-  danioPistola: 20
-  danioEscopeta: 30
-  scriptsToActivate: []
-  scriptsToRemove: []
 --- !u!114 &561226462
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3394,7 +3320,7 @@ MonoBehaviour:
   - {fileID: 561226466}
   objetoToActivateOnPhaseComplete: {fileID: 318444659}
   normalPhaseDelay: 0.6
-  vida: 1000
+  vida: 333
   danioAmetralladora: 15
   danioPistola: 20
   danioEscopeta: 30
@@ -3623,19 +3549,6 @@ MonoBehaviour:
   - {fileID: 1954822557}
   spawnCount: 1
   spawnInterval: 18.6
---- !u!114 &561226472
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 561226448}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4465e4480ed1e1349b65344d02f6efd3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetScript: {fileID: 561226470}
 --- !u!1 &571849479
 GameObject:
   m_ObjectHideFlags: 0
