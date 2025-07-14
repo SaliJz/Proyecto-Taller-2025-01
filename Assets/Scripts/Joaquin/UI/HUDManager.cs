@@ -251,6 +251,7 @@ public class HUDManager : MonoBehaviour
      
         floatingTextCoroutine = StartCoroutine(ShowFloatingText($"|F. Cod.: + {amount}"));
         currentInfoFragments.text = $"|F. Cod. {infoFragments.ToString("N0")}"; // Formatear con separador de miles
+        
         if (TutorialManager0.Instance != null)
         {
             tutorialCount++;
@@ -258,9 +259,10 @@ public class HUDManager : MonoBehaviour
             if (tutorialCount>= 7)
             {
                 TutorialManager0.Instance.ConfirmAdvance();
-                shopController.OpenShop();
+                GameManager.Instance?.OnLevelCompleted();
             }
         }
+
         Debug.Log($"F. Cod.: + {amount} -> {infoFragments}");
     }
 
