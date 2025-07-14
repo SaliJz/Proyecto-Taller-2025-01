@@ -259,6 +259,7 @@ public class HUDManager : MonoBehaviour
             if (tutorialCount>= 7)
             {
                 TutorialManager0.Instance.ConfirmAdvance();
+                Debug.Log("Activamndo tienda");
                 GameManager.Instance?.OnLevelCompleted();
             }
         }
