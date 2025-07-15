@@ -241,6 +241,27 @@ public class SnakeController : MonoBehaviour
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ////                                     No BORRAR                                        No BORRAR                                       No BORRAR
 
 //// SnakeController.cs

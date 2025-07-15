@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class NewBehaviourScript : MonoBehaviour
+public class AnimacionMuerte : MonoBehaviour
 {
     // En el Inspector de Unity podrás asignar el nombre de la escena que quieres cargar
     [SerializeField] private string escenaParaTecla8;
