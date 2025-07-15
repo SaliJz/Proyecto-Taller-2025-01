@@ -565,11 +565,11 @@ MonoBehaviour:
   playerTransform: {fileID: 0}
   triggerDistance: 2
   reopenDistance: 4
-  enemyRenderer: {fileID: 5738866789442600206}
-  warningMaterial: {fileID: 2100000, guid: 3729fa611ec999e48a8528ca96f00ba5, type: 2}
+  enemyRenderer: {fileID: 8576875397069809817}
+  warningMaterial: {fileID: 2100000, guid: 7d64daee313527742b3bf148f10aa448, type: 2}
   blinkInterval: 0.2
   warningDuration: 0.9
-  hdrRenderer: {fileID: 5738866789442600206}
+  hdrRenderer: {fileID: 8576875397069809817}
   warningHDRMaterial: {fileID: 2100000, guid: 7d64daee313527742b3bf148f10aa448, type: 2}
   bulletPrefab: {fileID: 7127249950028823837, guid: d24c60bb608165342afd67e0715ce466,
     type: 3}
@@ -1145,12 +1145,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6656ff0d42f90b549a7fef146380d28b, type: 3}
---- !u!23 &5738866789442600206 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 6656ff0d42f90b549a7fef146380d28b,
-    type: 3}
-  m_PrefabInstance: {fileID: 6369525086833189258}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6912920067132671585 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6656ff0d42f90b549a7fef146380d28b,
