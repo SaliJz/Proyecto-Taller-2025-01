@@ -61,7 +61,7 @@ public class TutorialTriggerZone : MonoBehaviour
                         manager.ConfirmAdvance();
                     }
 
-                    else if (currentDialogue == 5)
+                    else if (currentDialogue == 5 || currentDialogue == 6)
                     {
                         manager.DisablePlayerScriptsForCameraTransition();
                         manager.StartCoroutine(manager.ActivateTransitionBetweenTwoCameras(1, 3, 0, 0));
@@ -72,19 +72,19 @@ public class TutorialTriggerZone : MonoBehaviour
                         //Destroy(gameObject);
                     }
 
-                    else if (currentDialogue == 6)
+                    else if (currentDialogue == 6 || currentDialogue==7)
                     {
                         StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 2f));
                         activated = true;
                     }
 
-                    else if (currentDialogue == 7)
+                    else if (currentDialogue == 7 || currentDialogue ==8)
                     {
                         StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 2f));
                         activated = true;
                     }
 
-                    else if (currentDialogue == 8)
+                    else if (currentDialogue == 8 || currentDialogue == 9)
                     {
                         StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 2f));
                         activated = true;

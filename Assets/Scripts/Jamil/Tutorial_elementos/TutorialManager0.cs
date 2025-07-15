@@ -433,7 +433,12 @@ public class TutorialManager0 : MonoBehaviour
             blackListShopUI[i].SetActive(i == index);
         }
 
-        buyButton.SetActive(index != 4 && index != 6);
+        buyButton.SetActive(index != 4);
+        
+        if (index == 6)
+        {
+            buyButton.SetActive(true);
+        }
     }
 
 
