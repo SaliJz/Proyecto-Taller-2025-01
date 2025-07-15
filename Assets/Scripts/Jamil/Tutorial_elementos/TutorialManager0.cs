@@ -40,6 +40,7 @@ public class TutorialManager0 : MonoBehaviour
     [SerializeField] private List<GameObject> blackListShopUI;
     [SerializeField] private GameObject buyButton;
 
+    private int lastIndex = -1;
 
     private GameObject player;
 
@@ -58,6 +59,7 @@ public class TutorialManager0 : MonoBehaviour
 
     private bool hasActivatedSupplyBoxes = false;
     private bool hasActivatedRifleAndShotgun = false;
+    private bool hasBlackListBeenClosed = false;
 
     private Weapon gunWeapon;
 
@@ -413,37 +415,49 @@ public class TutorialManager0 : MonoBehaviour
 
     public void ActiveBlackList(int index)
     {
-        if (index == 6)
+
+        if (hasBlackListBeenClosed)
         {
-            buyButton.SetActive(true);
-            foreach (GameObject ui in blackListShopUI)
-            {
-                ui.SetActive(false);
-            }
             return;
         }
 
-       
-        if (index < 0 || index >= blackListShopUI.Count)
+        if (index == lastIndex)
+        {
             return;
+        }
 
-    
         for (int i = 0; i < blackListShopUI.Count; i++)
         {
-            blackListShopUI[i].SetActive(i == index);
+            if (blackListShopUI[i] != null)
+                blackListShopUI[i].SetActive(false);
         }
-        if(index == 4)
-        {
-            buyButton.SetActive(false);
-        }
-
-        buyButton.SetActive(index != 4);
-        
         if (index == 6)
         {
+            hasBlackListBeenClosed = true;
             buyButton.SetActive(true);
+            lastIndex = index;
+            return;
         }
+
+        if (index == 4 || index == 5)
+        {
+            if (index < blackListShopUI.Count)
+                blackListShopUI[index].SetActive(true);
+
+            if (6 < blackListShopUI.Count)
+                blackListShopUI[6].SetActive(true); 
+        }
+        else
+        {
+            if (index < blackListShopUI.Count)
+                blackListShopUI[index].SetActive(true);
+        }
+
+        buyButton.SetActive(index != 4 && index != 5);
+        lastIndex = index;
     }
+
+
 
 
     //public IEnumerator MovePlayerToPlatformCenter(Vector3 target)
