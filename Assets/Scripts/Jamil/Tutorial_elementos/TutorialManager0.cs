@@ -38,6 +38,8 @@ public class TutorialManager0 : MonoBehaviour
     [SerializeField] private List<GameObject> rifleAndShotgun;
     [SerializeField] private GameObject secondWaveGlitch;
     [SerializeField] private List<GameObject> blackListShopUI;
+    [SerializeField] private GameObject buyButton;
+
 
     private GameObject player;
 
@@ -411,11 +413,30 @@ public class TutorialManager0 : MonoBehaviour
 
     public void ActiveBlackList(int index)
     {
+        if (index == 6)
+        {
+            buyButton.SetActive(true);
+            foreach (GameObject ui in blackListShopUI)
+            {
+                ui.SetActive(false);
+            }
+            return;
+        }
+
+       
+        if (index < 0 || index >= blackListShopUI.Count)
+            return;
+
+    
         for (int i = 0; i < blackListShopUI.Count; i++)
         {
             blackListShopUI[i].SetActive(i == index);
         }
+
+        buyButton.SetActive(index != 4 && index != 5);
     }
+
+
     //public IEnumerator MovePlayerToPlatformCenter(Vector3 target)
     //{
     //    Vector3 targetXZ = new Vector3(target.x, player.transform.position.y, target.z);
