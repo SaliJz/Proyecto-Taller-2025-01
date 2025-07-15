@@ -130,8 +130,16 @@ public class HUDManager : MonoBehaviour
 
         if (!animateMission)
         {
-            missionTextObject.anchoredPosition = missionEndPos;
-            missionTextObject.gameObject.SetActive(true);
+            if (missionTextObject != null)
+            {
+                missionTextObject.anchoredPosition = missionEndPos;
+                missionTextObject.gameObject.SetActive(true);
+                return;
+            }
+            else
+            {
+                Debug.LogError("HUDManager: missionTextObject no está asignado en el inspector.");
+            }
         }
         else
         {

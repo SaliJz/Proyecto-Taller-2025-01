@@ -11,10 +11,10 @@ public class Active_ShieldHUD : MonoBehaviour
 
     private void Start()
     {
-        if (UpAnim != false) UpAnim.gameObject.SetActive(false);
-        if (DownAnim != false) DownAnim.gameObject.SetActive(false);
-        if (RightAnim != false) RightAnim.gameObject.SetActive(false);
-        if (LeftAnim != false) LeftAnim.gameObject.SetActive(false);
+        if (UpAnim != null) UpAnim.gameObject.SetActive(false);
+        if (DownAnim != null) DownAnim.gameObject.SetActive(false);
+        if (RightAnim != null) RightAnim.gameObject.SetActive(false);
+        if (LeftAnim != null) LeftAnim.gameObject.SetActive(false);
 
         if (PlayerTransform == null)
         {
@@ -34,6 +34,8 @@ public class Active_ShieldHUD : MonoBehaviour
 
     private void SetAlpha(Animator anim, float alpha)
     {
+        if (anim == null) return;
+
         var image = anim.GetComponent<UnityEngine.UI.Image>();
         if (image != null)
         {
