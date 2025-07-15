@@ -23,6 +23,7 @@ public class ShopDataController : MonoBehaviour
 
     private void Awake()
     {
+        abilityManager = FindObjectOfType<AbilityManager>();
         returnButton.onClick.AddListener(CloseShop);
         allShopItems = GetComponentsInChildren<ShopItemController>();
     }
