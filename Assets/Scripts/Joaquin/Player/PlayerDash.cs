@@ -46,7 +46,7 @@ public class PlayerDash : MonoBehaviour
     private Vector3 dashStartPos;
     private Vector3 dashEndPos;
 
-    private void OnEnable()
+    private void Start()
     {
         Initialize();
         isDashing = false;
@@ -58,18 +58,14 @@ public class PlayerDash : MonoBehaviour
         canDash = true;
         rb.useGravity = true;
         if (dashEffect != null) dashEffect.Stop();
-        if (!playerMovement.MovementEnabled)
-            playerMovement.MovementEnabled = true;
+        if (!playerMovement.MovementEnabled) playerMovement.MovementEnabled = true;
     }
-
 
     private void Initialize()
     {
-        if (rb == null)
-            rb = GetComponent<Rigidbody>();
+        if (rb == null) rb = GetComponent<Rigidbody>();
 
-        if (playerMovement == null)
-            playerMovement = GetComponent<PlayerMovement>();
+        if (playerMovement == null) playerMovement = GetComponent<PlayerMovement>();
 
         if (virtualCam != null)
         {
@@ -80,8 +76,7 @@ public class PlayerDash : MonoBehaviour
         if (sfxSource == null)
         {
             sfxSource = GameObject.Find("SFXSource")?.GetComponent<AudioSource>();
-            if (sfxSource == null)
-                Debug.LogError("No se encontró el AudioSource para efectos de sonido.");
+            if (sfxSource == null) Debug.LogError("No se encontró el AudioSource para efectos de sonido.");
         }
 
         rb.useGravity = true;
@@ -101,7 +96,6 @@ public class PlayerDash : MonoBehaviour
 
         if (Input.GetKeyDown(dashKey) && canDash && !isDashing)
         {
-            Debug.Log("Intentando dashear");
             Vector3 dashDirection = GetDashDirection();
             if (IsPathClear(dashDirection, dashCollisionCheckDistance))
             {
@@ -125,16 +119,16 @@ public class PlayerDash : MonoBehaviour
 
         if (Physics.Raycast(rb.position, delta.normalized, out var hit, step))
         {
-            if (!hit.collider.CompareTag("Fragment"))
+            if (hit.collider.CompareTag("Wall") || hit.collider.CompareTag("Ground") || hit.collider.CompareTag("Roof") || hit.collider.CompareTag("Columns") || hit.collider.CompareTag("Enemy"))
             {
                 targetPos = hit.point - delta.normalized * 0.1f;
-                isDashing = false;
+                t = 1f;
             }
         }
 
         rb.MovePosition(targetPos);
 
-        if (!isDashing || t >= 1f)
+        if (t >= 1f)
         {
             ResetDashState();
         }
@@ -149,9 +143,10 @@ public class PlayerDash : MonoBehaviour
 
     private void StartDashState(Vector3 dashDirection)
     {
+        if (dashDirection == Vector3.zero) return;
+
         dashEffect?.Play();
-        if (sfxSource != null && dashSound != null)
-            sfxSource.PlayOneShot(dashSound);
+        if (sfxSource != null && dashSound != null) sfxSource.PlayOneShot(dashSound);
 
         PlayerAnimatorController.Instance?.PlayDashAnim();
 
@@ -167,8 +162,7 @@ public class PlayerDash : MonoBehaviour
         rb.velocity = Vector3.zero;
         rb.useGravity = false;
 
-        if (playerMovement.IsGrounded)
-            playerMovement.MovementEnabled = false;
+        if (playerMovement.IsGrounded) playerMovement.MovementEnabled = false;
 
         Debug.Log("DASH START POS: " + dashStartPos);
         Debug.Log("DASH END POS: " + dashEndPos);
@@ -183,8 +177,7 @@ public class PlayerDash : MonoBehaviour
 
         ApplyPostDashImpulse();
 
-        if (!playerMovement.MovementEnabled)
-            playerMovement.MovementEnabled = true;
+        if (!playerMovement.MovementEnabled) playerMovement.MovementEnabled = true;
 
         Invoke(nameof(ResetDashCooldown), dashCooldown);
     }
@@ -209,12 +202,18 @@ public class PlayerDash : MonoBehaviour
     private Vector3 GetDashDirection()
     {
         Transform forwardSource = useCameraForward ? playerCam : orientation;
-        if (forwardSource == null)
-            return transform.forward;
+        if (forwardSource == null) return transform.forward;
 
         Vector3 direction = forwardSource.forward;
         if (flattenDashDirection)
+        {
             direction = Vector3.ProjectOnPlane(direction, Vector3.up).normalized;
+
+            if (direction.sqrMagnitude < 0.01f)
+            {
+                return Vector3.ProjectOnPlane(orientation.forward, Vector3.up).normalized;
+            }
+        }
 
         return direction.normalized;
     }
@@ -223,17 +222,9 @@ public class PlayerDash : MonoBehaviour
     {
         RaycastHit hit;
         if (Physics.Raycast(transform.position, direction, out hit, distance))
-            return hit.collider.CompareTag("Fragment");
-
-        return true;
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (isDashing)
         {
-            ResetDashState();
-            ApplyBounce();
+            if (hit.collider.CompareTag("Wall") || hit.collider.CompareTag("Ground") || hit.collider.CompareTag("Roof") || hit.collider.CompareTag("Columns")) return false;
         }
+        return true;
     }
 }
