@@ -47,14 +47,14 @@ public class TutorialTriggerZone : MonoBehaviour
                         manager.StartCoroutine(manager.TemporarilyDisablePlayerScripts(6.5f));
                     }
 
-                    else if (currentDialogue == 2)
+                    else if (currentDialogue == 2 || currentDialogue == 3)
                     {
                         Debug.Log("Activando escenario por zona");
                         activated = true;
                         manager.ConfirmAdvance();
                     }
 
-                    else if (currentDialogue == 3)
+                    else if (currentDialogue == 3 || currentDialogue == 4)
                     {
                         Debug.Log("Activando escenario por zona");
                         activated = true;
