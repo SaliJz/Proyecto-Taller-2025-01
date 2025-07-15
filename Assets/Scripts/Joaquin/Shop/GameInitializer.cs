@@ -8,4 +8,12 @@ public class GameInitializer : MonoBehaviour
     {
         SaveLoadManager.LoadGame();
     }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            DataManager.ResetData();
+        }
+    }
 }
