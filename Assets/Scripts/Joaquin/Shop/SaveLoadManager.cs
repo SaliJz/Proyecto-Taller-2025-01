@@ -10,20 +10,24 @@ public static class SaveLoadManager
 
     public static void SaveGame()
     {
-        PlayerData data = new PlayerData();
+        if (File.Exists(saveFilePath))
+            File.Copy(saveFilePath, saveFilePath + ".bak", true);
 
-        // 1. Recopilar datos de los Managers
-        data.healthLevel = GeneralUpgradeManager.HealthLevel;
-        data.shieldLevel = GeneralUpgradeManager.ShieldLevel;
+        // 1. Crear un objeto PlayerData con los datos actuales del jugador
+        var data = new PlayerData
+        {
+            healthLevel = DataManager.HealthUpgradeLevel,
+            shieldLevel = DataManager.ShieldUpgradeLevel,
+            purchasedAbilities = DataManager.GetPurchasedAbilities().ToList(),
+            equippedAbilityNames = DataManager.GetSavedEquippedAbilityNames(),
+            lastEquippedIndex = DataManager.GetSavedEquippedAbilityIndex(),
 
-        data.purchasedAbilities = AbilityShopDataManager.GetPurchasedAbilities().ToList();
-        data.equippedAbilityNames = AbilityShopDataManager.GetSavedEquippedAbilities();
-        data.lastEquippedIndex = AbilityShopDataManager.GetSavedEquippedIndex();
+            upgradeAbilityNames = DataManager.GetAllAbilityStats().Keys.ToList(),
+            upgradeAbilityStats = DataManager.GetAllAbilityStats().Values.ToList(),
 
-        // Convertir el diccionario de mejoras a listas
-        var upgrades = AbilityShopDataManager.GetUpgradeLevels();
-        data.upgradeAbilityNames = upgrades.Keys.ToList();
-        data.upgradeAbilityStats = upgrades.Values.ToList();
+            weaponUpgradeTypes = DataManager.GetAllWeaponStats().Keys.ToList(),
+            weaponUpgradeStats = DataManager.GetAllWeaponStats().Values.ToList(),
+        };
 
         // 2. Convertir a JSON y guardar en archivo
         string json = JsonUtility.ToJson(data, true); // "true" para formato legible
@@ -40,40 +44,17 @@ public static class SaveLoadManager
 
     public static void LoadGame()
     {
-        if (File.Exists(saveFilePath))
+        if (!File.Exists(saveFilePath)) return;
+
+        try
         {
-            try
-            {
-                string json = File.ReadAllText(saveFilePath);
-                PlayerData data = JsonUtility.FromJson<PlayerData>(json);
-
-                // 1. Aplicar los datos cargados a los Managers
-                GeneralUpgradeManager.HealthLevel = data.healthLevel;
-                GeneralUpgradeManager.ShieldLevel = data.shieldLevel;
-
-                // Reconstruir los datos de habilidades
-                AbilityShopDataManager.LoadDataFromSave(
-                    data.purchasedAbilities,
-                    data.equippedAbilityNames,
-                    data.lastEquippedIndex,
-                    data.upgradeAbilityNames,
-                    data.upgradeAbilityStats
-                );
-
-                // Notificar a la UI y otros sistemas que los datos cambiaron
-                GeneralUpgradeManager.NotifyStatsChanged();
-                AbilityShopDataManager.NotifyDataChanged();
-
-                Debug.Log("Partida cargada exitosamente.");
-            }
-            catch (IOException ex)
-            {
-                Debug.LogError($"Error al leer el archivo de guardado: {ex.Message}");
-            }
+            string json = File.ReadAllText(saveFilePath);
+            PlayerData data = JsonUtility.FromJson<PlayerData>(json);
+            DataManager.LoadData(data);
         }
-        else
+        catch (IOException ex)
         {
-            Debug.Log("No se encontró archivo de guardado. Se iniciará una nueva partida.");
+            Debug.LogError($"Error al leer el archivo de guardado: {ex.Message}");
         }
     }
 

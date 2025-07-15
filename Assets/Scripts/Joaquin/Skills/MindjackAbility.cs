@@ -65,14 +65,14 @@ public class MindjackAbility : MonoBehaviour
 
     private void ApplyUpgrades()
     {
-        AbilityStats stats = AbilityShopDataManager.GetStats(abilityInfo.abilityName);
-        if (stats == null) return;
+        AbilityStatsData abilityStatsData = DataManager.GetAbilityStats(abilityInfo.abilityName);
+        if (abilityStatsData == null) return;
 
-        const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f;
-        const float DAMAGE_INCREASE_PER_LEVEL = 2.0f;
+        const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f; // Cooldown reduction per level
+        const float DAMAGE_INCREASE_PER_LEVEL = 2.0f; // Damage per second increase per level
 
-        currentCooldown = baseCooldown - (stats.CooldownLevel * COOLDOWN_REDUCTION_PER_LEVEL);
-        currentDamagePerSecond = baseDamagePerSecond + (stats.DamageLevel * DAMAGE_INCREASE_PER_LEVEL);
+        currentCooldown = baseCooldown - (abilityStatsData.Level * COOLDOWN_REDUCTION_PER_LEVEL);
+        currentDamagePerSecond = baseDamagePerSecond + (abilityStatsData.Level * DAMAGE_INCREASE_PER_LEVEL);
 
         Debug.Log($"Mindjack Ability Upgrades Applied: Cooldown={currentCooldown}, DamagePerSecond={currentDamagePerSecond}");
     }

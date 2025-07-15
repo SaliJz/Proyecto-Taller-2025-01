@@ -18,10 +18,12 @@ public class HUDManager : MonoBehaviour
     [Header("Health")]
     [SerializeField] private Slider healthBar;
     [SerializeField] private TextMeshProUGUI healthBarText;
+    private int originalMaxHealth;
 
     [Header("Shield")]
     [SerializeField] private Slider shieldBar;
     [SerializeField] private TextMeshProUGUI shieldText;
+    private int originalMaxShield;
 
     [Header("Ammo")]
     [SerializeField] private List<TextMeshProUGUI> ammoTexts;
@@ -79,16 +81,15 @@ public class HUDManager : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            Destroy(gameObject);
+            return;
         }
+        Instance = this;
+
+        originalMaxHealth = 100;
+        originalMaxShield = 20;
     }
 
     private void Start()
@@ -170,26 +171,25 @@ public class HUDManager : MonoBehaviour
 
     public void UpdateHealth(int current, int max)
     {
-        if (healthBar != null && healthBarText != null)
-        {
-            Debug.Log($"Updating health: {current}/{max}");
+        if (healthBar == null || healthBarText == null) return;
 
-            float healthPercentage = (float)current / max;
-            healthBar.value = healthPercentage;
-            healthBarText.text = $"{healthPercentage * 100} %";
-        }
+        float healthPercentage = (float)current / max;
+        healthBar.value = healthPercentage;
+
+        float pctRelativeToBase = (float)current / originalMaxHealth * 100f;
+        healthBarText.text = $"{pctRelativeToBase:F0}%";
+
     }
 
     public void UpdateShield(int current, int max)
     {
-        if (shieldBar != null && shieldText != null)
-        {
-            Debug.Log($"Updating shield: {current}/{max}");
+        if (shieldBar == null || shieldText == null) return;
 
-            float shieldPercentage = (float)current / max;
-            shieldBar.value = shieldPercentage;
-            shieldText.text = $"{shieldPercentage * 100} %";
-        }
+        float shieldPercentage = (float)current / max;
+        shieldBar.value = shieldPercentage;
+
+        float pctRelativeToBase = (float)current / originalMaxShield * 100f;
+        shieldText.text = $"{pctRelativeToBase:F0}%";
     }
 
     #endregion

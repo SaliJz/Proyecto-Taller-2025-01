@@ -73,18 +73,18 @@ public class ElectroHackAbility : MonoBehaviour
 
     private void ApplyUpgrades()
     {
-        AbilityStats stats = AbilityShopDataManager.GetStats(abilityInfo.abilityName);
-        if (stats == null) return;
+        AbilityStatsData abilityStatsData = DataManager.GetAbilityStats(abilityInfo.abilityName);
+        if (abilityStatsData == null) return;
 
-        const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f;
-        const float DURATION_INCREASE_PER_LEVEL = 1.0f;
-        const float ENEMIES_AFFECTED_INCREASE_PER_LEVEL = 1.0f;
-        const float DAMAGE_INCREASE_PER_LEVEL = 2.0f;
+        const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f; // Reduce cooldown by 1 second per level
+        const float DURATION_INCREASE_PER_LEVEL = 1.0f; // Increase duration by 1 second per level
+        const float ENEMIES_AFFECTED_INCREASE_PER_LEVEL = 1.0f; // Increase enemies affected by 1 per level
+        const float DAMAGE_INCREASE_PER_LEVEL = 2.0f; // Increase damage per second by 2 per level
 
-        currentCooldown = baseCooldown - (stats.CooldownLevel * COOLDOWN_REDUCTION_PER_LEVEL);
-        currentDuration = baseDuration + (stats.DurationLevel * DURATION_INCREASE_PER_LEVEL);
-        currentDamagePerSecond = baseDamagePerSecond + (stats.DamageLevel * DAMAGE_INCREASE_PER_LEVEL);
-        currentEnemiesAffected = baseEnemiesAffected + (stats.EnemiesAffectedLevel * ENEMIES_AFFECTED_INCREASE_PER_LEVEL);
+        currentCooldown = baseCooldown - (abilityStatsData.Level * COOLDOWN_REDUCTION_PER_LEVEL);
+        currentDuration = baseDuration + (abilityStatsData.Level * DURATION_INCREASE_PER_LEVEL);
+        currentDamagePerSecond = baseDamagePerSecond + (abilityStatsData.Level * DAMAGE_INCREASE_PER_LEVEL);
+        currentEnemiesAffected = baseEnemiesAffected + (abilityStatsData.Level * ENEMIES_AFFECTED_INCREASE_PER_LEVEL);
 
         Debug.Log($"ElectroHack Ability Upgraded: Cooldown={currentCooldown}, Duration={currentDuration}, DamagePerSecond={currentDamagePerSecond}, EnemiesAffected={currentEnemiesAffected}");
     }

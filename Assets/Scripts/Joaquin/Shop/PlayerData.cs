@@ -5,20 +5,18 @@ using UnityEngine;
 [System.Serializable]
 public class PlayerData
 {
-    // Datos de GeneralUpgradeManager
     public int healthLevel;
     public int shieldLevel;
 
-    // Datos de AbilityShopDataManager
     public List<string> purchasedAbilities;
     public List<string> equippedAbilityNames;
     public int lastEquippedIndex;
 
-    // JsonUtility no puede serializar diccionarios directamente.
-    // El truco es usar dos listas paralelas: una para las claves (nombres de habilidad)
-    // y otra para los valores (sus estadísticas).
     public List<string> upgradeAbilityNames;
-    public List<AbilityStats> upgradeAbilityStats;
+    public List<AbilityStatsData> upgradeAbilityStats;
+
+    public List<string> weaponUpgradeTypes;
+    public List<WeaponStatsData> weaponUpgradeStats;
 
     public PlayerData()
     {
@@ -26,8 +24,39 @@ public class PlayerData
         shieldLevel = 0;
         purchasedAbilities = new List<string>();
         equippedAbilityNames = new List<string>();
+
         lastEquippedIndex = 0;
+
         upgradeAbilityNames = new List<string>();
-        upgradeAbilityStats = new List<AbilityStats>();
+        upgradeAbilityStats = new List<AbilityStatsData>();
+
+        weaponUpgradeTypes = new List<string>();
+        weaponUpgradeStats = new List<WeaponStatsData>();
+    }
+
+    public Dictionary<string, AbilityStatsData> GetAbilityUpgradesDict()
+    {
+        var dict = new Dictionary<string, AbilityStatsData>();
+        int count = Mathf.Min(upgradeAbilityNames.Count, upgradeAbilityStats.Count);
+        for (int i = 0; i < count; i++)
+        {
+            var name = upgradeAbilityNames[i];
+            if (!dict.ContainsKey(name))
+                dict[name] = new AbilityStatsData { Level = upgradeAbilityStats[i].Level };
+        }
+        return dict;
+    }
+
+    public Dictionary<string, WeaponStatsData> GetWeaponUpgradesDict()
+    {
+        var dict = new Dictionary<string, WeaponStatsData>();
+        int count = Mathf.Min(weaponUpgradeTypes.Count, weaponUpgradeStats.Count);
+        for (int i = 0; i < count; i++)
+        {
+            var name = weaponUpgradeTypes[i];
+            if (!dict.ContainsKey(name))
+                dict[name] = new WeaponStatsData { Level = weaponUpgradeStats[i].Level };
+        }
+        return dict;
     }
 }
