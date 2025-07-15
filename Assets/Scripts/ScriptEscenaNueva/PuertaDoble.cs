@@ -1,73 +1,117 @@
+using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 
 public class PuertaDoble : MonoBehaviour
 {
-    public Transform puertaIzquierda;
-    public Transform puertaDerecha;
-    public float velocidad = 2f;
-    public float distanciaApertura = 3f;
-    public string nombreEscena;
+    [Header("Puerta 1")]
+    [SerializeField] Transform Puerta1;
+    [SerializeField] Transform Destination1;
 
-    private Vector3 posInicialIzquierda;
-    private Vector3 posInicialDerecha;
-    private Vector3 posFinalIzquierda;
-    private Vector3 posFinalDerecha;
-    private bool abrir = false;
-    private bool cambiarEscena = false;
 
-    void Start()
+    [Header("Puerta 2")]
+    [SerializeField] Transform Puerta2;
+    [SerializeField] Transform Destination2;
+
+
+    [Header("Cambio de emission")]
+    [SerializeField] Renderer[] targetRenderers;
+    [ColorUsage(true, true)]
+    public Color newEmissionColor = Color.white;
+    [SerializeField] Material[] targetMaterial;
+
+
+    [Header("Variables")]
+    [SerializeField] Transform Player;
+    [SerializeField] Collider PassCollider;
+    [SerializeField] Collider Barrier;
+    [SerializeField] float openVel;
+
+    Vector3 InitialPos1;
+    Vector3 InitialPos2;
+
+    public bool IsPassed = false;
+
+    public void IsPassedTrue()
     {
-        posInicialIzquierda = puertaIzquierda.localPosition;
-        posInicialDerecha = puertaDerecha.localPosition;
-
-
-        posFinalIzquierda = posInicialIzquierda + puertaIzquierda.right * -distanciaApertura;
-        posFinalDerecha = posInicialDerecha + puertaDerecha.right * distanciaApertura;
+        IsPassed = true;
     }
 
-
-    void Update()
+    private void Start()
     {
-        if (abrir && !cambiarEscena)
+        InitialPos1 = Puerta1.position;
+        InitialPos2 = Puerta2.position;
+
+        Barrier.enabled = false;
+
+        targetMaterial = new Material[targetRenderers.Length];
+
+        for(int i = 0; i < targetRenderers.Length; i++)
         {
-            Debug.Log("Las puertas se están abriendo...");
-            Debug.Log($"Posición izquierda actual: {puertaIzquierda.localPosition} / objetivo: {posFinalIzquierda}");
-            Debug.Log($"Posición derecha actual: {puertaDerecha.localPosition} / objetivo: {posFinalDerecha}");
-
-            puertaIzquierda.localPosition = Vector3.MoveTowards(
-               puertaIzquierda.localPosition,
-               posFinalIzquierda,
-               velocidad * Time.deltaTime);
-
-            puertaDerecha.localPosition = Vector3.MoveTowards(
-                puertaDerecha.localPosition,
-                posFinalDerecha,
-                velocidad * Time.deltaTime);
-
-            if (Vector3.Distance(puertaIzquierda.localPosition, posFinalIzquierda) < 0.01f &&
-               Vector3.Distance(puertaDerecha.localPosition, posFinalDerecha) < 0.01f)
+            if (targetRenderers[i] != null)
             {
-                Debug.Log("Puertas completamente abiertas - Cambiando escena");
-                cambiarEscena = true;
-                Invoke("CambiarEscena", 1f);
+                targetMaterial[i] = targetRenderers[i].material;
+                targetMaterial[i].EnableKeyword("_EMISSION");
+
             }
-
         }
     }
-
-    public void ActivarPuerta()
+    private void Update()
     {
-        if (!abrir)
+
+        if (!IsPassed)
         {
-            Debug.Log("Activando apertura de puertas");
-            abrir = true;
+            if (Vector3.Distance(Player.position, transform.position) < 8)
+            {
+                OpenDoors();
+            }
+            else
+            {
+                CloseDoors();
+            }
+        }
+        else
+        {
+            Barrier.enabled = true;
+            CloseDoors();
+        }
+
+    }
+
+    void OpenDoors()
+    {
+        Vector3 NewDestination1 = new Vector3(Destination1.position.x, Puerta1.position.y, Destination1.position.z);
+        Vector3 NewDestination2 = new Vector3(Destination2.position.x, Puerta2.position.y, Destination2.position.z);
+
+
+        Puerta1.position = Vector3.Lerp(Puerta1.position, NewDestination1, openVel);
+        Puerta2.position = Vector3.Lerp(Puerta2.position, NewDestination2, openVel);
+    }
+
+    void CloseDoors()
+    {
+        Puerta1.position = Vector3.Lerp(Puerta1.position, InitialPos1, openVel);
+        Puerta2.position = Vector3.Lerp(Puerta2.position, InitialPos2, openVel);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Paso la puerta");
+            IsPassed = true;
+            Barrier.enabled = true;
+            PassCollider.enabled = true;
+
+            foreach (Material mat in targetMaterial)
+            {
+                if(mat != null)
+                {
+                    mat.SetColor("_EmissionColor", newEmissionColor);
+                }
+            }
         }
     }
 
-    private void CambiarEscena()
-    {
-        Debug.Log($"Cargando escena: {nombreEscena}");
-        SceneManager.LoadScene(nombreEscena);
-    }
+
 }
