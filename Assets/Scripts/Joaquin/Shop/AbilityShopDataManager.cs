@@ -120,7 +120,6 @@ public static class AbilityShopDataManager
 
     private static void UpdatePurchasedAbilities(List<string> purchased)
     {
-        // Asignar valores al campo de solo lectura estático dentro de un método auxiliar
         PurchasedAbilities.Clear();
         foreach (var ability in purchased)
         {

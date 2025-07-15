@@ -78,8 +78,6 @@ public class Weapon : MonoBehaviour
         {
             originalModelPosition = weaponModelTransform.localPosition;
         }
-
-        SetupStats();
     }
 
     private void Start()
@@ -93,6 +91,9 @@ public class Weapon : MonoBehaviour
     private void OnEnable()
     {
         if (isReloading) CancelReload();
+
+        DataManager.OnDataChanged += ApplyUpgrades;
+        SetupStats();
     }
 
     private void OnDisable()
@@ -102,6 +103,8 @@ public class Weapon : MonoBehaviour
             StopCoroutine(autoFireCoroutine);
             autoFireCoroutine = null;
         }
+
+        DataManager.OnDataChanged -= ApplyUpgrades;
     }
 
     private void Update()
@@ -127,19 +130,32 @@ public class Weapon : MonoBehaviour
         CurrentMode = stats.shootingMode;
         timeBetweenShots = 1f / fireRate;
 
-        ApplyPassiveUpgrades();
+        ApplyUpgrades();
     }
 
-    public void ApplyPassiveUpgrades()
+    private void ApplyUpgrades()
     {
-        var upgrades = UpgradeDataStore.Instance;
+        // Constantes de mejora
+        const float DAMAGE_INCREASE = 0.1f;  // +10% por nivel
+        const float FIRERATE_INCREASE = 0.05f; // +5% por nivel
+        const float RELOAD_SPEED_REDUCTION = 0.05f; // -5% por nivel
+        const int AMMO_BONUS = 5;     // +5 balas por nivel
 
-        bulletDamage *= upgrades.weaponDamageMultiplier;
-        fireRate *= upgrades.weaponFireRateMultiplier;
-        reloadTime *= upgrades.weaponReloadSpeedMultiplier;
-        totalAmmo += upgrades.weaponAmmoBonus;
+        // Clave según el enum
+        string key = CurrentMode.ToString();
 
-        Debug.Log("mejoras");
+        // Obtén solo los stats de esta arma
+        WeaponStatsData upgradeData = DataManager.GetWeaponStats(key);
+        int lvl = upgradeData?.Level ?? 0;
+
+        bulletDamage = stats.bulletDamage * (1 + (upgradeData.Level * DAMAGE_INCREASE));
+        fireRate = stats.fireRate * (1 + (upgradeData.Level * FIRERATE_INCREASE));
+        reloadTime = stats.reloadTime * (1 - (upgradeData.Level * RELOAD_SPEED_REDUCTION));
+        totalAmmo = stats.totalAmmo + (upgradeData.Level * AMMO_BONUS);
+
+        timeBetweenShots = 1f / fireRate;
+
+        Debug.Log($"Weapon {stats.weaponName} upgraded: Damage={bulletDamage}, FireRate={fireRate}, ReloadTime={reloadTime}, TotalAmmo={totalAmmo}");
     }
 
     #endregion

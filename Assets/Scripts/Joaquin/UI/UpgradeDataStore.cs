@@ -78,7 +78,7 @@ public class UpgradeDataStore : MonoBehaviour
         Weapon[] weapons = FindObjectsOfType<Weapon>();
         foreach (var weapon in weapons)
         {
-            weapon.ApplyPassiveUpgrades();
+            //weapon.ApplyPassiveUpgrades();
         }
     }
 
@@ -100,7 +100,7 @@ public class UpgradeDataStore : MonoBehaviour
         Weapon[] weapons = FindObjectsOfType<Weapon>();
         foreach (var weapon in weapons)
         {
-            weapon.ApplyPassiveUpgrades();
+            //weapon.ApplyPassiveUpgrades();
         }
     }
 }

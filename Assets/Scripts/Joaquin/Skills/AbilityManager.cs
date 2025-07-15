@@ -1,13 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class AbilityManager : MonoBehaviour
 {
     public static event Action<GameObject> OnAbilityStateChanged;
 
-    [Tooltip("Marca esta casilla SOLO en la escena del Nivel 1 para reiniciar todo el progreso.")]
+    [Tooltip("Marca esta casilla solo en la escena del Nivel 1 para reiniciar todo el progreso.")]
     [SerializeField] private bool isLevelTutorial = false;
 
     [Header("Todas las habilidades posibles")]
@@ -26,34 +27,7 @@ public class AbilityManager : MonoBehaviour
 
     private void Awake()
     {
-        foreach (var ability in allAbilities)
-        {
-            ability.SetActive(false);
-        }
-
-        if (isLevelTutorial) AbilityShopDataManager.ResetData();
-
-        LoadFromDataStore();
-
-        currentIndex = Mathf.Clamp(currentIndex, 0, activeAbilities.Count - 1);
-
-        UpdateAbilitiesActiveState();
-
-        if (activeAbilities.Count >= 1) HUDManager.Instance?.ShowAbilityUI(true);
-    }
-
-    private void Start()
-    {
-        if (allowFirstAbility)
-        {
-            if (activeAbilities.Count >= 0)
-            {
-                GameObject random = allAbilities[UnityEngine.Random.Range(0, allAbilities.Count)];
-                activeAbilities.Add(random);
-                currentIndex = 0;
-                SaveToDataStore();
-            }
-        }
+        DeactivateAll();
 
         foreach (var abilityGO in allAbilities)
         {
@@ -62,17 +36,46 @@ public class AbilityManager : MonoBehaviour
             {
                 abilityMap.Add(info.abilityName, abilityGO);
             }
+            else if (info == null)
+            {
+                Debug.LogWarning($"Ability prefab '{abilityGO.name}' no tiene un componente AbilityInfo.");
+            }
+            else if (abilityMap.ContainsKey(info.abilityName))
+            {
+                Debug.LogWarning($"Habilidad duplicada '{info.abilityName}' en allAbilitiesPrefabs.");
+            }
         }
+    }
+
+    private void Start()
+    {
+        if (allowFirstAbility && activeAbilities.Count >= 0)
+        {
+            GameObject random = allAbilities[UnityEngine.Random.Range(0, allAbilities.Count)];
+            AddOrReplaceAbility(random);
+            currentIndex = 0;
+        }
+        else
+        {
+            LoadFromDataStore();
+        }
+
+        currentIndex = Mathf.Clamp(currentIndex, 0, activeAbilities.Count - 1);
+        UpdateAbilitiesActiveState();
+
+        if (activeAbilities.Count >= 1) HUDManager.Instance?.ShowAbilityUI(true);
     }
 
     private void OnEnable()
     {
-        AbilityShopDataManager.OnAbilityShopDataChanged += ApplyUpgradesToAllAbilities;
+        DataManager.OnDataChanged += ApplyUpgradesToAllAbilities;
+        DataManager.OnPlayerDataLoaded += LoadFromDataStore;
     }
 
     private void OnDisable()
     {
-        AbilityShopDataManager.OnAbilityShopDataChanged -= ApplyUpgradesToAllAbilities;
+        DataManager.OnDataChanged -= ApplyUpgradesToAllAbilities;
+        DataManager.OnPlayerDataLoaded -= LoadFromDataStore;
     }
 
     private void ApplyUpgradesToAllAbilities()
@@ -103,23 +106,22 @@ public class AbilityManager : MonoBehaviour
 
     public void RemoveAbility(GameObject abilityToRemove)
     {
-        if (activeAbilities.Contains(abilityToRemove))
+        if (!activeAbilities.Contains(abilityToRemove)) return;
+
+        if (CurrentAbility == abilityToRemove && activeAbilities.Count > 1)
         {
-            if (CurrentAbility == abilityToRemove && activeAbilities.Count > 1)
-            {
-                CycleAbility();
-            }
-
-            activeAbilities.Remove(abilityToRemove);
-
-            if (currentIndex >= activeAbilities.Count && activeAbilities.Count > 0)
-            {
-                currentIndex = 0;
-            }
-
-            SaveToDataStore();
-            UpdateAbilitiesActiveState();
+            CycleAbility();
         }
+
+        activeAbilities.Remove(abilityToRemove);
+
+        if (currentIndex >= activeAbilities.Count && activeAbilities.Count > 0)
+        {
+            currentIndex = 0;
+        }
+
+        SaveToDataStore();
+        UpdateAbilitiesActiveState();
     }
 
     public void AddOrReplaceAbility(GameObject newAbility)
@@ -146,34 +148,50 @@ public class AbilityManager : MonoBehaviour
         UpdateAbilitiesActiveState();
     }
 
-    public void SetEquippedAbilities(List<AbilityType> equippedTypes)
+    public GameObject FindAbilityPrefabByName(string name)
     {
+        foreach (var abilityGO in allAbilities)
+        {
+            var info = abilityGO.GetComponent<AbilityInfo>();
+            if (info != null && info.abilityName == name)
+            {
+                return abilityGO;
+            }
+        }
+        return null;
+    }
+
+    public void SetEquippedAbilities(List<string> equippedNames)
+    {
+        DeactivateAll();
         activeAbilities.Clear();
 
-        foreach (AbilityType type in equippedTypes)
+        foreach (string abilityName in equippedNames)
         {
-            if (type == AbilityType.None) continue;
-
-            GameObject abilityGO = allAbilities.Find(go =>
+            GameObject go = null;
+            foreach (var abilityGO in allAbilities)
             {
-                AbilityInfo info = go.GetComponent<AbilityInfo>();
-                return info != null && info.abilityName == type.ToString();
-            });
+                var info = abilityGO.GetComponent<AbilityInfo>();
+                if (info != null && info.abilityName == abilityName)
+                {
+                    go = abilityGO;
+                    break;
+                }
+            }
 
-            if (abilityGO != null)
+            if (go != null)
             {
-                activeAbilities.Add(abilityGO);
+                activeAbilities.Add(go);
+                go.SendMessage("ApplyUpgrades", SendMessageOptions.DontRequireReceiver);
             }
             else
             {
-                Debug.LogWarning($"No se pudo encontrar un GameObject de habilidad correspondiente al tipo: {type.ToString()}");
+                Debug.LogWarning($"No se encontró el GameObject para '{abilityName}'.");
             }
         }
 
         if (currentIndex >= activeAbilities.Count)
-        {
             currentIndex = activeAbilities.Count > 0 ? activeAbilities.Count - 1 : 0;
-        }
 
         UpdateAbilitiesActiveState();
     }
@@ -182,14 +200,12 @@ public class AbilityManager : MonoBehaviour
     {
         if (activeAbilities.Count <= 0)
         {
+            DeactivateAll();
             OnAbilityStateChanged?.Invoke(null);
             return;
         }
 
-        foreach (var ability in allAbilities)
-        {
-            if (ability != null) ability.SetActive(false);
-        }
+        DeactivateAll();
 
         if (CurrentAbility != null)
         {
@@ -206,40 +222,41 @@ public class AbilityManager : MonoBehaviour
 
     public void ReplaceAbilityAt(int index, GameObject newAbility)
     {
-        if (index >= 0 && index < activeAbilities.Count)
-        {
-            activeAbilities[index] = newAbility;
-            currentIndex = index;
-            SaveToDataStore();
-            UpdateAbilitiesActiveState();
-        }
+        if (index < 0 || index >= activeAbilities.Count) return;
+
+        activeAbilities[index] = newAbility;
+        currentIndex = index;
+        SaveToDataStore();
+        UpdateAbilitiesActiveState();
+
     }
 
     private void SaveToDataStore()
     {
-        List<string> equippedNames = new List<string>();
-        foreach (var abilityGO in activeAbilities)
-        {
-            equippedNames.Add(abilityGO.GetComponent<AbilityInfo>().abilityName);
-        }
-        AbilityShopDataManager.SavePlayerEquippedState(equippedNames, currentIndex);
+        var equippedNames = activeAbilities
+            .Select(go => go.GetComponent<AbilityInfo>())
+            .Where(info => info != null && !string.IsNullOrEmpty(info.abilityName))
+            .Select(info => info.abilityName)
+            .ToList();
+
+        DataManager.SavePlayerEquippedState(equippedNames, currentIndex);
+        Debug.Log($"Estado guardado: {equippedNames.Count} habilidades, índice {currentIndex}");
     }
 
     private void LoadFromDataStore()
     {
-        activeAbilities.Clear();
-        List<string> savedNames = AbilityShopDataManager.GetSavedEquippedAbilities();
+        Debug.Log("Cargando habilidades desde DataManager...");
+        var saved = DataManager.GetSavedEquippedAbilityNames();
+        int savedIndex = DataManager.GetSavedEquippedAbilityIndex();
 
-        foreach (string abilityName in savedNames)
-        {
-            GameObject ability = allAbilities.Find(a => a.GetComponent<AbilityInfo>().abilityName == abilityName);
-            if (ability != null)
-            {
-                activeAbilities.Add(ability);
-            }
-        }
+        SetEquippedAbilities(saved);
+        currentIndex = Mathf.Clamp(savedIndex, 0, activeAbilities.Count - 1);
+        Debug.Log($"Habilidades cargadas: {activeAbilities.Count}, índice {currentIndex}");
+    }
 
-        currentIndex = AbilityShopDataManager.GetSavedEquippedIndex();
-        currentIndex = Mathf.Clamp(currentIndex, 0, activeAbilities.Count > 0 ? activeAbilities.Count - 1 : 0);
+    private void DeactivateAll()
+    {
+        foreach (var go in allAbilities)
+            go?.SetActive(false);
     }
 }

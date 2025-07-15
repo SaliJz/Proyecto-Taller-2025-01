@@ -66,14 +66,14 @@ public class GlitchAbility : MonoBehaviour
 
     private void ApplyUpgrades()
     {
-        AbilityStats stats = AbilityShopDataManager.GetStats(abilityInfo.abilityName);
-        if (stats == null) return;
+        AbilityStatsData abilityStatsData = DataManager.GetAbilityStats(abilityInfo.abilityName);
+        if (abilityStatsData == null) return;
 
-        const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f;
-        const float DURATION_INCREASE_PER_LEVEL = 1.0f;
+        const float COOLDOWN_REDUCTION_PER_LEVEL = 1.0f; // Reducción de cooldown por nivel
+        const float DURATION_INCREASE_PER_LEVEL = 1.0f; // Aumento de duración por nivel
 
-        currentCooldown = baseCooldown - (stats.CooldownLevel * COOLDOWN_REDUCTION_PER_LEVEL);
-        currentDuration = baseDuration + (stats.DurationLevel * DURATION_INCREASE_PER_LEVEL);
+        currentCooldown = baseCooldown - (abilityStatsData.Level * COOLDOWN_REDUCTION_PER_LEVEL);
+        currentDuration = baseDuration + (abilityStatsData.Level * DURATION_INCREASE_PER_LEVEL);
 
         Debug.Log($"GlitchTime Ability Upgraded: Cooldown={currentCooldown}, Duration={currentDuration}");
     }

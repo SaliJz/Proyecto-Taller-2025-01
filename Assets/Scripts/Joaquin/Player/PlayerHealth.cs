@@ -5,11 +5,11 @@ using UnityEngine;
 public class PlayerHealth : MonoBehaviour
 {
     [Header("Salud")]
-    [SerializeField] private int maxHealth = 100;
+    [SerializeField] private int baseMaxHealth = 100;
     private int currentHealth;
 
     [Header("Escudo")]
-    [SerializeField] private int maxShield = 20;
+    [SerializeField] private int baseMaxShield = 20;
     private int currentShield;
     [SerializeField] private float shieldRegenRate = 4f;
     private bool isRegenShield;
@@ -26,53 +26,78 @@ public class PlayerHealth : MonoBehaviour
     private bool isIgnited = false;
     private Coroutine ignitionCoroutine;
 
+    private void Awake()
+    {
+        if (isTutorial)
+        {
+            GeneralUpgradeManager.IsTutorial = true;
+            DataManager.ResetData();
+        }
+        else GeneralUpgradeManager.IsTutorial = false;
+    }
+
     private void Start()
     {
         if (directionalDamageHUD == null) directionalDamageHUD = FindObjectOfType<Active_ShieldHUD>();
 
-        if (isTutorial) GeneralUpgradeManager.IsTutorial = true;
-        else GeneralUpgradeManager.IsTutorial = false;
-
-        GeneralUpgradeManager.ResetUpgrades();
-        
-        currentHealth = maxHealth;
-        currentShield = maxShield;
-
-        UpdateMaxStats();
-        HUDManager.Instance?.UpdateHealth(currentHealth, maxHealth);
-        HUDManager.Instance?.UpdateShield(currentShield, maxShield);
+        ResetToBaseStats();
+        ApplyUpgrades();
+        HUDManager.Instance?.UpdateHealth(currentHealth, GetMaxHealth());
+        HUDManager.Instance?.UpdateShield(currentShield, GetMaxShield());
     }
 
     private void OnEnable()
     {
-        GeneralUpgradeManager.OnPlayerStatsChanged += UpdateMaxStats;
+        DataManager.OnDataChanged += ApplyUpgrades;
     }
 
     private void OnDisable()
     {
-        GeneralUpgradeManager.OnPlayerStatsChanged -= UpdateMaxStats;
+        DataManager.OnDataChanged -= ApplyUpgrades;
     }
 
-    private void UpdateMaxStats()
+    private void ApplyUpgrades()
     {
-        float healthPercent = (float)currentHealth / maxHealth;
-        float shieldPercent = (float)currentShield / maxShield;
+        // Obtiene niveles de upgrade de DataManager
+        int healthLevel = DataManager.HealthUpgradeLevel;
+        int shieldLevel = DataManager.ShieldUpgradeLevel;
 
-        maxHealth = GeneralUpgradeManager.CurrentMaxHealth;
-        maxShield = GeneralUpgradeManager.CurrentMaxShield;
+        // Constantes de mejoras
+        const float HEALTH_INC = 0.1f; // +10% por nivel
+        const float SHIELD_INC = 0.05f; // +5% por nivel
 
-        currentHealth = Mathf.RoundToInt(maxHealth * healthPercent);
-        currentShield = Mathf.RoundToInt(maxShield * shieldPercent);
+        // Calcula máximos con upgrades
+        int upgradedMaxHealth = Mathf.RoundToInt(baseMaxHealth * (1 + healthLevel * HEALTH_INC));
+        int upgradedMaxShield = Mathf.RoundToInt(baseMaxShield * (1 + shieldLevel * SHIELD_INC));
 
-        HUDManager.Instance?.UpdateHealth(currentHealth, maxHealth);
-        HUDManager.Instance?.UpdateShield(currentShield, maxShield);
+        // Mantiene porcentajes actuales
+        float healthPct = (float)currentHealth / GetMaxHealth();
+        float shieldPct = (float)currentShield / GetMaxShield();
 
-        Debug.Log($"Stats actualizadas: Vida Máx: {maxHealth}, Escudo Máx: {maxShield}");
+        // Actualiza base para futuras referencias
+        baseMaxHealth = upgradedMaxHealth;
+        baseMaxShield = upgradedMaxShield;
+
+        // Ajusta valores actuales según nuevo máximo
+        currentHealth = Mathf.RoundToInt(upgradedMaxHealth * healthPct);
+        currentShield = Mathf.RoundToInt(upgradedMaxShield * shieldPct);
+
+        HUDManager.Instance?.UpdateHealth(currentHealth, upgradedMaxHealth);
+        HUDManager.Instance?.UpdateShield(currentShield, upgradedMaxShield);
+    }
+
+    private int GetMaxHealth() => baseMaxHealth;
+    private int GetMaxShield() => baseMaxShield;
+
+    private void ResetToBaseStats()
+    {
+        currentHealth = baseMaxHealth;
+        currentShield = baseMaxShield;
     }
 
     private void Update()
     {
-        if (currentShield < maxShield && !isRegenShield)
+        if (currentShield < baseMaxShield && !isRegenShield)
         {
             StartCoroutine(RegenShield());
         }
@@ -103,17 +128,18 @@ public class PlayerHealth : MonoBehaviour
                 currentShield = 0;
             }
 
-            HUDManager.Instance.UpdateShield(currentShield, maxShield);
+            HUDManager.Instance.UpdateShield(currentShield, GetMaxShield());
         }
 
         if (damageLeft > 0)
         {
             currentHealth -= damageLeft;
-            HUDManager.Instance.UpdateHealth(currentHealth, maxHealth);
+            HUDManager.Instance.UpdateHealth(currentHealth, GetMaxHealth());
 
             if (currentHealth <= 0)
             {
                 currentHealth = 0;
+                HUDManager.Instance.UpdateHealth(currentHealth, GetMaxHealth());
                 Die();
             }
         }
@@ -121,20 +147,20 @@ public class PlayerHealth : MonoBehaviour
 
     public void Heal(int amount)
     {
-        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
-        HUDManager.Instance.UpdateHealth(currentHealth, maxHealth);
+        currentHealth = Mathf.Min(currentHealth + amount, GetMaxHealth());
+        HUDManager.Instance.UpdateHealth(currentHealth, GetMaxHealth());
     }
 
     private IEnumerator RegenShield()
     {
         isRegenShield = true;
 
-        while (currentShield < maxShield)
+        while (currentShield < baseMaxShield)
         {
             yield return new WaitForSeconds(1f);
             currentShield += Mathf.RoundToInt(shieldRegenRate);
-            currentShield = Mathf.Clamp(currentShield, 0, maxShield);
-            HUDManager.Instance.UpdateShield(currentShield, maxShield);
+            currentShield = Mathf.Clamp(currentShield, 0, GetMaxShield());
+            HUDManager.Instance.UpdateShield(currentShield, GetMaxShield());
         }
 
         isRegenShield = false;
@@ -178,12 +204,5 @@ public class PlayerHealth : MonoBehaviour
         }
 
         GameManager.Instance?.PlayerDied();
-    }
-    public class DetectarObjetosEnContacto : MonoBehaviour
-    {
-        private void OnCollisionStay(Collision collision)
-        {
-            Debug.Log($"Tocando: {collision.gameObject.name}");
-        }
     }
 }
