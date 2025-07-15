@@ -229,9 +229,6 @@ MonoBehaviour:
   velocidadInicial: 5
   velocidadMaxima: 8.8
   aceleracion: 0.5
-  amplitud: 7
-  escalaRuido: 1
-  semillaRuido: 0
   distanciaMinima: 1
 --- !u!136 &4474525330063352204
 CapsuleCollider:
@@ -332,9 +329,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60b3e15c74cf41e4b9fa53c6573e81bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  contactDamage: 15
-  attackCooldown: 1.5
-  attackRange: 20
   baseSpeed: 5
 --- !u!114 &8078850162837562030
 MonoBehaviour:
@@ -405,19 +399,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 0}
-  velocidadPersecucion: 10
-  velocidadAtaque: 22
-  velocidadRetirada: 5
-  distanciaAtaqueMin: 20
-  distanciaAtaqueMax: 30
-  minAtaques: 3
-  maxAtaques: 5
-  prefabColiderAtaque: {fileID: 5126359519349961444, guid: 7fa3d9e90703cfb40ac2a81552014c43,
-    type: 3}
-  duracionColider: 0.5
-  tiempoEntreColiders: 0.3
-  tiempoRetirada: 1
-  velocidadRotacion: 5
+  speed: 5
+  rotationSpeed: 5
+  attackRange: 2
 --- !u!114 &9125930810330233677
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -465,19 +449,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vida: 100
   sliderVida: {fileID: 3905491031144004348}
-  danioBajoPistola: 20
   danioAltoAmetralladora: 20
+  danioAltoPistola: 20
   danioAltoEscopeta: 20
   headshotMultiplier: 2
+  flashIntensity: 40
+  flashDuration: 0.2
+  flashCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   headCollider: {fileID: 3125961083804489156}
   bodyColliders:
   - {fileID: 3703288869107495435}
   hdrColorPistola: {r: 1, g: 0, b: 0.79818773, a: 1}
   meshRenderers:
   - {fileID: 3134601914816984523}
+  staticMeshRenderers: []
+  fragmentDeath: {fileID: 0}
   prefabsAlMorir:
   - {fileID: 4801807564617485238, guid: 12fb4266885dd134eae5c27fd7949446, type: 3}
   fragments: 50
+  enableDissolve: 1
+  dissolveDuration: 1
+  tipo: 0
+  isTracker: 0
 --- !u!114 &7799932918025001399
 MonoBehaviour:
   m_ObjectHideFlags: 0
