@@ -45,6 +45,97 @@ public class IgnitionCodeShot : MonoBehaviour
             PlayEffect();
             Destroy(gameObject);
         }
+
+        Fase1Vida fase1 = BuscarComponenteEnPadres<Fase1Vida>(other.transform);
+        if (fase1 != null)
+        {
+            hasExploded = true;
+            PlayEffect();
+            EnemyAbilityReceiver enemy = other.GetComponent<EnemyAbilityReceiver>();
+            if (enemy != null)
+            {
+                enemy.ApplyIgnition(damagePerSecond, duration);
+            }
+            Destroy(gameObject);
+        }
+
+        Fase2Vida fase2 = BuscarComponenteEnPadres<Fase2Vida>(other.transform);
+        if (fase2 != null)
+        {
+            hasExploded = true;
+            PlayEffect();
+            EnemyAbilityReceiver enemy = other.GetComponent<EnemyAbilityReceiver>();
+            if (enemy != null)
+            {
+                enemy.ApplyIgnition(damagePerSecond, duration);
+            }
+            Destroy(gameObject);
+        }
+
+        Fase3Vida fase3 = BuscarComponenteEnPadres<Fase3Vida>(other.transform);
+        if (fase3 != null)
+        {
+            hasExploded = true;
+            PlayEffect();
+            EnemyAbilityReceiver enemy = other.GetComponent<EnemyAbilityReceiver>();
+            if (enemy != null)
+            {
+                enemy.ApplyIgnition(damagePerSecond, duration);
+            }
+            Destroy(gameObject);
+        }
+
+        EnemigoPistolaTutorial enemigoPistola = other.GetComponent<EnemigoPistolaTutorial>();
+        if (enemigoPistola != null)
+        {
+            hasExploded = true;
+            PlayEffect();
+            EnemyAbilityReceiver enemy = other.GetComponent<EnemyAbilityReceiver>();
+            if (enemy != null)
+            {
+                enemy.ApplyIgnition(damagePerSecond, duration);
+            }
+            Destroy(gameObject);
+        }
+
+        VidaEnemigoGeneral enemigoGeneral = other.GetComponent<VidaEnemigoGeneral>();
+        if (enemigoGeneral != null)
+        {
+            hasExploded = true;
+            PlayEffect();
+            EnemyAbilityReceiver enemy = other.GetComponent<EnemyAbilityReceiver>();
+            if (enemy != null)
+            {
+                enemy.ApplyIgnition(damagePerSecond, duration);
+            }
+            Destroy(gameObject);
+        }
+
+        EnemigoRosa enemigoRosa = other.GetComponent<EnemigoRosa>();
+        if (enemigoRosa != null)
+        {
+            hasExploded = true;
+            PlayEffect();
+            EnemyAbilityReceiver enemy = other.GetComponent<EnemyAbilityReceiver>();
+            if (enemy != null)
+            {
+                enemy.ApplyIgnition(damagePerSecond, duration);
+            }
+            Destroy(gameObject);
+        }
+    }
+
+    private T BuscarComponenteEnPadres<T>(Transform hijo) where T : Component
+    {
+        Transform actual = hijo;
+        while (actual != null)
+        {
+            T componente = actual.GetComponent<T>();
+            if (componente != null)
+                return componente;
+            actual = actual.parent;
+        }
+        return null;
     }
 
     private void ApplyIgnition(Vector3 center)

@@ -100,6 +100,19 @@ public class Fase1Vida : MonoBehaviour
         }
     }
 
+    public void ApplyAbilityDamage(float damage)
+    {
+        blinkTimer = 0f;
+        if (!blinkInProgress && fillImage != null) StartCoroutine(BlinkRoutine());
+
+        tipoColorController?.RecibirDanio(0f);
+
+        vida -= (int)damage;
+        if (vidaSlider != null) vidaSlider.value = vida;
+        if (vida <= 0) Morir();
+
+    }
+
     public void RecibirDanioPorBala(BalaPlayer.TipoBala tipoBala)
     {
         if (isDead) return;

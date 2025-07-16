@@ -192,6 +192,35 @@ public class Fase2Vida : MonoBehaviour
         }
     }
 
+    public void ApplyAbilityDamage(float damage)
+    {
+        switch (currentPhase)
+        {
+            case 0:
+                vida1 = Mathf.Max(0, vida1 - (int)damage);
+                vidaSlider.value = vida1 + vida2 + vida3;
+                if (!blinkInProgress) StartCoroutine(BlinkRoutine());
+                break;
+            case 1:
+                vida2 = Mathf.Max(0, vida2 - (int)damage);
+                vidaSlider.value = vida1 + vida2 + vida3;
+                if (!blinkInProgress) StartCoroutine(BlinkRoutine());
+                break;
+            case 2:
+                vida3 = Mathf.Max(0, vida3 - (int)damage);
+                vidaSlider.value = vida1 + vida2 + vida3;
+                if (!blinkInProgress) StartCoroutine(BlinkRoutine());
+                break;
+            case 3:
+                vidaFinal = Mathf.Max(0, vidaFinal - (int)damage);
+                finalLifeSlider.value = vidaFinal;
+                if (!blinkFinalInProgress) StartCoroutine(BlinkFinalRoutine());
+                break;
+        }
+
+        tipoColorController.RecibirDanio(0f);
+    }
+
     public void RecibirDanioPorBala(BalaPlayer.TipoBala tipoBala)
     {
         var enemigo = (TipoColorController.TipoEnemigo)

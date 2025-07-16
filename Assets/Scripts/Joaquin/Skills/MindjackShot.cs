@@ -1,4 +1,5 @@
 using UnityEngine;
+using static BalaPlayer;
 
 public class MindjackShot : MonoBehaviour
 {
@@ -17,9 +18,10 @@ public class MindjackShot : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        EnemyAbilityReceiver enemy = other.GetComponent<EnemyAbilityReceiver>();
+
         if (other.CompareTag("Enemy"))
         {
-            EnemyAbilityReceiver enemy = other.GetComponent<EnemyAbilityReceiver>();
             if (enemy != null)
             {
                 enemy.ApplyMindjack(damagePerSecond, duration);
@@ -51,6 +53,85 @@ public class MindjackShot : MonoBehaviour
             PlayEffect();
             Destroy(gameObject);
         }
+
+        Fase1Vida fase1 = BuscarComponenteEnPadres<Fase1Vida>(other.transform);
+        if (fase1 != null)
+        {
+            if (enemy != null)
+            {
+                enemy.ApplyMindjack(damagePerSecond, duration);
+                PlayEffect();
+                Destroy(gameObject);
+            }
+        }
+
+        Fase2Vida fase2 = BuscarComponenteEnPadres<Fase2Vida>(other.transform);
+        if (fase2 != null)
+        {
+            if (enemy != null)
+            {
+                enemy.ApplyMindjack(damagePerSecond, duration);
+                PlayEffect();
+                Destroy(gameObject);
+            }
+        }
+
+        Fase3Vida fase3 = BuscarComponenteEnPadres<Fase3Vida>(other.transform);
+        if (fase3 != null)
+        {
+            if (enemy != null)
+            {
+                enemy.ApplyMindjack(damagePerSecond, duration);
+                PlayEffect();
+                Destroy(gameObject);
+            }
+        }
+
+        EnemigoPistolaTutorial enemigoPistola = other.GetComponent<EnemigoPistolaTutorial>();
+        if (enemigoPistola != null)
+        {
+            if (enemy != null)
+            {
+                enemy.ApplyMindjack(damagePerSecond, duration);
+                PlayEffect();
+                Destroy(gameObject);
+            }
+        }
+
+        VidaEnemigoGeneral enemigoGeneral = other.GetComponent<VidaEnemigoGeneral>();
+        if (enemigoGeneral != null)
+        {
+            if (enemy != null)
+            {
+                enemy.ApplyMindjack(damagePerSecond, duration);
+                PlayEffect();
+                Destroy(gameObject);
+            }
+        }
+        
+        EnemigoRosa enemigoRosa = other.GetComponent<EnemigoRosa>();
+        if (enemigoRosa != null)
+        {
+            if (enemy != null)
+            {
+                enemy.ApplyMindjack(damagePerSecond, duration);
+                PlayEffect();
+                Destroy(gameObject);
+            }
+        }
+    }
+
+    private T BuscarComponenteEnPadres<T>(Transform hijo) where T : Component
+    {
+        Transform actual = hijo;
+        while (actual != null)
+        {
+            T componente = actual.GetComponent<T>();
+            if (componente != null)
+                return componente;
+            actual = actual.parent;
+        }
+        return null;
     }
 
     private void PlayEffect()

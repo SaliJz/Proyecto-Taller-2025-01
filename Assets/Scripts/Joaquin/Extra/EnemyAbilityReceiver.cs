@@ -1,17 +1,18 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyAbilityReceiver : MonoBehaviour
 {
-    private VidaEnemigoGeneral enemyHealth;
-    private EnemigoRosa pinkEnemyHealth;
-    /*
-    [Header("Attack")]
-    [SerializeField] private float contactDamage = 10f;
-    [SerializeField] private float attackCooldown = 1f;
-    [SerializeField] private float attackRange = 20f;
-    */
-    [Header("Slow")]
+    public enum EnemyState { Normal, Mindjacked }
+    private EnemyState currentState = EnemyState.Normal;
+    public Transform CurrentTarget { get; private set; }
+
+    private Transform playerTransform;
+
+    [SerializeField] private bool isImmuneToMindControl = false;
+
+    [SerializeField] private float mindjackFindTargetRadius = 10f;
     [SerializeField] private float baseSpeed = 3f;
     private float currentSpeed;
     public float CurrentSpeed => currentSpeed;
@@ -28,25 +29,30 @@ public class EnemyAbilityReceiver : MonoBehaviour
 
     private void Awake()
     {
-        enemyHealth = GetComponent<VidaEnemigoGeneral>();
-        pinkEnemyHealth = GetComponent<EnemigoRosa>();
-
-        if (enemyHealth == null)
-        {
-            Debug.LogWarning("VidaEnemigoGeneral no encontrada en el enemigo.");
-        }
-        if (pinkEnemyHealth == null)
-        {
-            Debug.LogWarning("EnemigoRosa no encontrado en el enemigo.");
-        }
+        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        CurrentTarget = playerTransform;
 
         currentSpeed = baseSpeed;
     }
 
+    private void Update()
+    {
+        //if (currentState == EnemyState.Mindjacked)
+        //{
+        //    if (CurrentTarget == null || !CurrentTarget.gameObject.activeInHierarchy || CurrentTarget == playerTransform)
+        //    {
+        //        CurrentTarget = FindNearestEnemy();
+        //    }
+        //}
+        //else
+        //{
+        //    CurrentTarget = playerTransform;
+        //}
+    }
+
     public void TakeDamage(float dmg)
     {
-        enemyHealth?.RecibirDanio(dmg);
-        pinkEnemyHealth?.RecibirDanio(dmg);
+        SendMessage("ApplyAbilityDamage", dmg);
     }
 
     public void ApplySlow(float multiplier, float duration, GameObject effectToDestroy)
@@ -76,6 +82,8 @@ public class EnemyAbilityReceiver : MonoBehaviour
 
     public void ApplyGlitchTime(float slowMultiplier, float duration, GameObject particlePrefab)
     {
+        Debug.Log(gameObject + " applying glitch time with multiplier: " + slowMultiplier + " and duration: " + duration);
+
         GameObject particleInstance = null;
         if (particlePrefab != null)
         {
@@ -87,6 +95,8 @@ public class EnemyAbilityReceiver : MonoBehaviour
 
     public void ApplyElectroHack(float damagePerSecond, float duration, float slowMultiplier)
     {
+        Debug.Log(gameObject + " applying electro hack with damage: " + damagePerSecond + ", duration: " + duration + ", slow multiplier: " + slowMultiplier);
+
         if (isElectroHacked) return;
 
         if (electroHackCoroutine != null) StopCoroutine(electroHackCoroutine);
@@ -102,7 +112,7 @@ public class EnemyAbilityReceiver : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < duration)
         {
-            TakeDamage(damagePerSecond);
+            SendMessage("ApplyAbilityDamage", damagePerSecond);
             yield return new WaitForSeconds(1f);
             elapsed += 1f;
         }
@@ -113,6 +123,8 @@ public class EnemyAbilityReceiver : MonoBehaviour
 
     public void ApplyIgnition(float damagePerSecond, float duration)
     {
+        Debug.Log(gameObject + " applying ignition with damage: " + damagePerSecond + ", duration: " + duration);
+
         if (isIgnited) return;
 
         if (ignitionCoroutine != null) StopCoroutine(ignitionCoroutine);
@@ -126,7 +138,7 @@ public class EnemyAbilityReceiver : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < duration)
         {
-            TakeDamage(damagePerSecond);
+            SendMessage("ApplyAbilityDamage", damagePerSecond);
             yield return new WaitForSeconds(1f);
             elapsed += 1f;
         }
@@ -137,10 +149,9 @@ public class EnemyAbilityReceiver : MonoBehaviour
 
     public void ApplyMindjack(float damagePerSecond, float duration)
     {
+        Debug.Log(gameObject + " applying mindjack with damage: " + damagePerSecond + ", duration: " + duration);
+
         if (isMindjacked) return;
-
-        Debug.Log("[En proceso] Aplicando Mindjack a " + gameObject.name);
-
         if (mindjackCoroutine != null) StopCoroutine(mindjackCoroutine);
         mindjackCoroutine = StartCoroutine(MindjackRoutine(damagePerSecond, duration));
     }
@@ -148,46 +159,45 @@ public class EnemyAbilityReceiver : MonoBehaviour
     private IEnumerator MindjackRoutine(float damagePerSecond, float duration)
     {
         isMindjacked = true;
+        //if (!isImmuneToMindControl)
+        //{
+        //    currentState = EnemyState.Mindjacked;
+        //}
 
-        float elapsed = 0f;
-        float damageInterval = 1f;
-
-        while (elapsed < duration && enemyHealth.vida > 0)
+        float elapsedTime = 0f;
+        while (elapsedTime < duration)
         {
-            yield return new WaitForSeconds(damageInterval);
-            elapsed += damageInterval;
+            SendMessage("ApplyAbilityDamage", damagePerSecond);
+            yield return new WaitForSeconds(1.0f);
+            elapsedTime += 1.0f;
         }
 
         isMindjacked = false;
+        //if (!isImmuneToMindControl)
+        //{
+        //    currentState = EnemyState.Normal;
+        //    CurrentTarget = playerTransform;
+        //}
         mindjackCoroutine = null;
     }
-    /*
-    private GameObject FindNearestEnemy()
+
+    private Transform FindNearestEnemy()
     {
-        GameObject nearest = null;
-        float shortestDistance = Mathf.Infinity;
+        Collider[] hits = Physics.OverlapSphere(transform.position, mindjackFindTargetRadius, LayerMask.GetMask("Enemy"));
+        Transform nearestEnemy = null;
+        float minDistance = float.MaxValue;
 
-        int enemyLayer = LayerMask.GetMask("Enemy");
-        Collider[] hits = Physics.OverlapSphere(transform.position, attackRange, enemyLayer);
-
-        foreach (var col in hits)
+        foreach (var hit in hits)
         {
-            if (col.gameObject != gameObject)
+            if (hit.transform == this.transform) continue;
+
+            float distance = Vector3.Distance(transform.position, hit.transform.position);
+            if (distance < minDistance)
             {
-                EnemyAbilityReceiver other = col.GetComponent<EnemyAbilityReceiver>();
-                if (other != null && !other.isMindjacked)
-                {
-                    float distance = Vector3.Distance(transform.position, col.transform.position);
-                    if (distance < shortestDistance)
-                    {
-                        shortestDistance = distance;
-                        nearest = col.gameObject;
-                    }
-                }
+                minDistance = distance;
+                nearestEnemy = hit.transform;
             }
         }
-
-        return nearest;
+        return nearestEnemy;
     }
-    */
 }

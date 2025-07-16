@@ -401,6 +401,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60b3e15c74cf41e4b9fa53c6573e81bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isImmuneToMindControl: 0
+  enemyRenderer: {fileID: 0}
+  mindjackMaterial: {fileID: 2100000, guid: dab846e30402f9248b19a7f6d174e391, type: 2}
+  ignitionEffectPrefab: {fileID: 5214082911524151784, guid: fddad74c7e3fd1045b008ecd37cc5728,
+    type: 3}
+  mindjackFindTargetRadius: 10
   baseSpeed: 3
 --- !u!114 &7723565866553249891
 MonoBehaviour:

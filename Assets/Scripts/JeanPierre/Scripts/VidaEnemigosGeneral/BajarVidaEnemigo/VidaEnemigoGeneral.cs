@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using static EnemigoRosa;
 
 public class VidaEnemigoGeneral : MonoBehaviour
 {
@@ -191,6 +192,23 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
             timer += Time.deltaTime;
             yield return null;
+        }
+    }
+
+    public void ApplyAbilityDamage(float damage)
+    {
+        if (isDead) return;
+        colorController?.RecibirDanio(damage);
+
+        StopCoroutine(nameof(FlashEmission));
+        StartCoroutine(FlashEmission());
+
+        vida -= damage;
+        if (sliderVida != null) sliderVida.value = vida;
+        if (vida <= 0f)
+        {
+            vida = 0f;
+            Morir();
         }
     }
 

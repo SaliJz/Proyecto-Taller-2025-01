@@ -25,12 +25,31 @@ public class GlitchShot : MonoBehaviour
             EnemyAbilityReceiver enemy = other.GetComponent<EnemyAbilityReceiver>();
             if (enemy != null)
             {
-                enemy.ApplySlow(slowMultiplier, duration, null);
+                enemy.ApplyGlitchTime(slowMultiplier, duration, glitchParticlePrefab);
+                ApplyGlitchArea(transform.position);
                 Destroy(gameObject);
             }
         }
         
         if (other.CompareTag("Ground"))
+        {
+            ApplyGlitchArea(transform.position);
+            Destroy(gameObject);
+        }
+
+        if (other.CompareTag("Wall"))
+        {
+            ApplyGlitchArea(transform.position);
+            Destroy(gameObject);
+        }
+
+        if (other.CompareTag("Columns"))
+        {
+            ApplyGlitchArea(transform.position);
+            Destroy(gameObject);
+        }
+
+        if (other.CompareTag("Roof"))
         {
             ApplyGlitchArea(transform.position);
             Destroy(gameObject);

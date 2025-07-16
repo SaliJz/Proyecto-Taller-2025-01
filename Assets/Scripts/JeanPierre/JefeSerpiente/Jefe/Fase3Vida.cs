@@ -77,6 +77,16 @@ public class Fase3Vida : MonoBehaviour
         }
     }
 
+    public void ApplyAbilityDamage(float damage)
+    {
+        blinkTimer = 0f;
+        if (!blinkInProgress && fillImage != null) StartCoroutine(BlinkRoutine());
+
+        vida -= (int)damage;
+        if (vidaSlider != null) vidaSlider.value = vida;
+        if (vida <= 0) Die();
+    }
+
     public void RecibirDanioPorBala(BalaPlayer.TipoBala tipoBala)
     {
 
