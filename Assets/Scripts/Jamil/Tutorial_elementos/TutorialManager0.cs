@@ -1,4 +1,4 @@
-using Cinemachine;
+﻿using Cinemachine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -74,6 +74,14 @@ public class TutorialManager0 : MonoBehaviour
 
     private void Start()
     {
+        player = GameObject.FindWithTag("Player");
+        if (Instance == null) Instance = this;
+
+        if (tutorialSceneRuntime.tutorialSceneData == null)
+        {
+            Debug.LogError("tutorialSceneRuntime.tutorialSceneData' no está asignado en el Inspector.");
+            return;
+        }
 
         foreach (var script in playerScriptsToDisable)
         {
@@ -87,7 +95,7 @@ public class TutorialManager0 : MonoBehaviour
             dialogue.isActive = false;
         }
     }
-  
+
     private void Update()
     {
         if (currentDialogueIndex == 1)
@@ -174,18 +182,11 @@ public class TutorialManager0 : MonoBehaviour
                 SetTextUI(dialogue.dialogueText);
             }
 
-            if (dialogue.dialogueVoice != null)
-            {
-                yield return new WaitForSecondsRealtime(dialogue.dialogueVoice.length);
-            }
-
             yield return StartCoroutine(WaitForConfirmation());
 
             GetCurrentDialogueData().isActive = false;
             IncreaseDialogueIndex();
         }
-
-        //HandleScenarioCompletion();
     }
 
     private IEnumerator WaitForConfirmation()
@@ -371,7 +372,7 @@ public class TutorialManager0 : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[tutorialSceneController] El componente Weapon no est� asignado al objeto gun.");
+            Debug.LogWarning("[tutorialSceneController] El componente Weapon no está asignado al objeto gun.");
         }
     }
 
