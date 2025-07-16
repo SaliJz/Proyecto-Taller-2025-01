@@ -25,7 +25,7 @@ public class ReadPositions : MonoBehaviour
 
         if (www.result != UnityWebRequest.Result.Success)
         {
-            Debug.Log("Error al leer datos: " + www.error);2
+            Debug.Log("Error al leer datos: " + www.error);
         }
         else
         {
