@@ -46,7 +46,7 @@ public class ShopItemController : MonoBehaviour, IPointerEnterHandler, IPointerE
     {
         if (itemData == null) return;
 
-        iconImage.sprite = itemData.itemIcon;
+        if (iconImage != null) iconImage.sprite = itemData.itemIcon;
         string itemName = itemData.itemName;
         ItemType itemType = itemData.itemType;
 
