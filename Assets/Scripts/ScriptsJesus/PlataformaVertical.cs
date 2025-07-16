@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public class PlataformaVertical : MonoBehaviour
@@ -52,22 +52,34 @@ public class PlataformaVertical : MonoBehaviour
     {
         if (!enMovimiento)
         {
+            // Si la plataforma va a bajar, revisa si hay un jugador debajo
+            if (!subiendo)
+            {
+                Vector3 boxSize = new Vector3(transform.localScale.x * 0.5f, 0.1f, transform.localScale.z * 0.5f);
+                Vector3 boxOrigin = transform.position;
+                Vector3 direction = Vector3.down;
+                float distanciaDeteccion = altura; // Altura total de bajada
+
+                if (Physics.BoxCast(boxOrigin, boxSize, direction, out RaycastHit hit, Quaternion.identity, distanciaDeteccion))
+                {
+                    if (hit.collider.CompareTag("Player"))
+                    {
+                        Debug.Log("Jugador detectado debajo. Plataforma no bajará.");
+                        return;
+                    }
+                }
+            }
+
+            // Proceder con el movimiento
             enMovimiento = true;
             t = 0f;
 
             origen = transform.position;
-            if (subiendo)
-            {
-                destino = posicionInicial + Vector3.up * altura;
-            }
-            else
-            {
-                destino = posicionInicial; // Siempre regresa al punto de origen
-            }
-
+            destino = subiendo ? posicionInicial + Vector3.up * altura : posicionInicial;
             duracion = subiendo ? tiempoSubida : tiempoBajada;
         }
     }
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -98,5 +110,18 @@ public class PlataformaVertical : MonoBehaviour
                 subiendo = false; // Cambia a modo bajada
                 ActivarPlataforma(); // Inicia el movimiento de regreso
         }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (!Application.isPlaying) return;
+
+        Vector3 boxSize = new Vector3(transform.localScale.x * 0.5f, 0.1f, transform.localScale.z * 0.5f);
+        Vector3 direction = Vector3.down;
+        float distancia = altura;
+
+        Gizmos.color = Color.red;
+        Gizmos.matrix = Matrix4x4.TRS(transform.position, Quaternion.identity, Vector3.one);
+        Gizmos.DrawWireCube(direction * distancia, boxSize * 2);
     }
 }
