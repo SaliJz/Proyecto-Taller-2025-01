@@ -64,7 +64,7 @@ public class TutorialManager0 : MonoBehaviour
 
     private Weapon gunWeapon;
 
-    private void Awake()
+    private void Start()
     {
         player = GameObject.FindWithTag("Player");
         if (Instance == null) Instance = this;
@@ -75,13 +75,13 @@ public class TutorialManager0 : MonoBehaviour
         }
 
         listDialogueData = tutorialSceneRuntime.tutorialSceneData.dialogues;
-        
+
         foreach (var dialogue in listDialogueData)
         {
             dialogue.isActive = false;
         }
-
     }
+  
     private void Update()
     {
         if (currentDialogueIndex == 1)
