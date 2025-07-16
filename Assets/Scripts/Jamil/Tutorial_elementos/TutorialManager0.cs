@@ -64,10 +64,16 @@ public class TutorialManager0 : MonoBehaviour
 
     private Weapon gunWeapon;
 
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject); 
+
+        player = GameObject.FindWithTag("Player");
+    }
+
     private void Start()
     {
-        player = GameObject.FindWithTag("Player");
-        if (Instance == null) Instance = this;
 
         foreach (var script in playerScriptsToDisable)
         {
