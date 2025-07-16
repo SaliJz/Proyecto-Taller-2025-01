@@ -29,5 +29,25 @@ public class BulletDestroyOnGround : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        if (other.CompareTag("Ground"))
+        {
+            Destroy(gameObject);
+        }
+
+        if (other.CompareTag("Wall"))
+        {
+            Destroy(gameObject);
+        }
+
+        if (other.CompareTag("Columns"))
+        {
+            Destroy(gameObject);
+        }
+
+        if (other.CompareTag("Roof"))
+        {
+            Destroy(gameObject);
+        }
     }
 }
