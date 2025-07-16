@@ -22,7 +22,7 @@ public class TipoColorController : MonoBehaviour
     private Coroutine colorRoutine;
     private bool isBlinking = false;
 
-    // Nuevos campos para almacenar el color objetivo final
+    // Para mantener el color final después del parpadeo
     private Color lastTargetBase;
     private Color lastTargetHDR;
 
@@ -45,9 +45,13 @@ public class TipoColorController : MonoBehaviour
                 renderers.AddRange(t.GetComponentsInChildren<Renderer>());
         }
 
+        // Elimina referencias nulas por si algún Renderer ya fue destruido
+        renderers.RemoveAll(r => r == null);
+
         // Habilita emisión en todos los materiales que tengan la propiedad
         foreach (var rend in renderers)
         {
+            if (rend == null) continue;
             var mat = rend.material;
             if (mat.HasProperty("_EmissionColor"))
                 mat.EnableKeyword("_EMISSION");
@@ -59,14 +63,16 @@ public class TipoColorController : MonoBehaviour
 
     private void ActualizarTipoYColor()
     {
+        // Limpia referencias nulas antes de iniciar la transición
+        renderers.RemoveAll(r => r == null);
+
         currentTipo = (TipoEnemigo)Random.Range(0, System.Enum.GetValues(typeof(TipoEnemigo)).Length);
 
         Color baseCol = currentTipo == TipoEnemigo.Ametralladora ? Color.blue
                         : currentTipo == TipoEnemigo.Pistola ? Color.red
-                                                                    : Color.green;
+                                                                   : Color.green;
         Color hdrCol = baseCol * emissionIntensity;
 
-        // Guardamos para el parpadeo
         lastTargetBase = baseCol;
         lastTargetHDR = hdrCol;
 
@@ -82,45 +88,53 @@ public class TipoColorController : MonoBehaviour
         var startBaseColors = new List<Color>(renderers.Count);
         var startHDRColors = new List<Color>(renderers.Count);
 
+        // Capturar colores iniciales, saltando renderers destruidos
         foreach (var rend in renderers)
         {
+            if (rend == null) continue;
             var mat = rend.material;
             Color sb = mat.HasProperty("_BaseColor") ? mat.GetColor("_BaseColor")
                    : mat.HasProperty("_Color") ? mat.GetColor("_Color")
-                   : Color.white;
+                                                   : Color.white;
             startBaseColors.Add(sb);
 
             Color sh = mat.HasProperty("_EmissionColor") ? mat.GetColor("_EmissionColor")
                    : mat.HasProperty("_FresnelColor") ? mat.GetColor("_FresnelColor")
-                   : sb * emissionIntensity;
+                                                        : sb * emissionIntensity;
             startHDRColors.Add(sh);
         }
 
+        // Transición suave
         while (elapsed < duracionTransicionColor)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duracionTransicionColor);
 
-            for (int i = 0; i < renderers.Count; i++)
+            int idx = 0;
+            foreach (var rend in renderers)
             {
-                var rend = renderers[i];
+                if (rend == null) continue;
                 var mat = rend.material;
 
-                Color lerpBase = Color.Lerp(startBaseColors[i], targetBase, t);
-                Color lerpHDR = Color.Lerp(startHDRColors[i], targetHDR, t);
+                Color lerpBase = Color.Lerp(startBaseColors[idx], targetBase, t);
+                Color lerpHDR = Color.Lerp(startHDRColors[idx], targetHDR, t);
 
                 if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", lerpBase);
                 else if (mat.HasProperty("_Color")) mat.SetColor("_Color", lerpBase);
 
                 if (mat.HasProperty("_EmissionColor")) mat.SetColor("_EmissionColor", lerpHDR);
                 if (mat.HasProperty("_FresnelColor")) mat.SetColor("_FresnelColor", lerpHDR);
+
+                idx++;
             }
+
             yield return null;
         }
 
-        // Valores finales
+        // Asegurar valores finales
         foreach (var rend in renderers)
         {
+            if (rend == null) continue;
             var mat = rend.material;
             if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", targetBase);
             else if (mat.HasProperty("_Color")) mat.SetColor("_Color", targetBase);
@@ -134,6 +148,8 @@ public class TipoColorController : MonoBehaviour
 
     public void RecibirDanio(float d)
     {
+        // Purga nulos antes de parpadear
+        renderers.RemoveAll(r => r == null);
         if (isBlinking || renderers.Count == 0)
             return;
         StartCoroutine(Parpadeo());
@@ -146,9 +162,10 @@ public class TipoColorController : MonoBehaviour
 
         for (int i = 0; i < blinkCount; i++)
         {
-            // 1) Flash blanco
+            // Flash blanco
             foreach (var rend in renderers)
             {
+                if (rend == null) continue;
                 var mat = rend.material;
                 if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", Color.white);
                 else if (mat.HasProperty("_Color")) mat.SetColor("_Color", Color.white);
@@ -158,9 +175,10 @@ public class TipoColorController : MonoBehaviour
             }
             yield return new WaitForSeconds(half);
 
-            // 2) Restaurar al color objetivo final
+            // Restaurar color objetivo
             foreach (var rend in renderers)
             {
+                if (rend == null) continue;
                 var mat = rend.material;
                 if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", lastTargetBase);
                 else if (mat.HasProperty("_Color")) mat.SetColor("_Color", lastTargetBase);
@@ -174,14 +192,6 @@ public class TipoColorController : MonoBehaviour
         isBlinking = false;
     }
 }
-
-
-
-
-
-
-
-
 
 
 
@@ -210,6 +220,10 @@ public class TipoColorController : MonoBehaviour
 //    private List<Renderer> renderers = new List<Renderer>();
 //    private Coroutine colorRoutine;
 //    private bool isBlinking = false;
+
+//    // Nuevos campos para almacenar el color objetivo final
+//    private Color lastTargetBase;
+//    private Color lastTargetHDR;
 
 //    void Start()
 //    {
@@ -248,8 +262,12 @@ public class TipoColorController : MonoBehaviour
 
 //        Color baseCol = currentTipo == TipoEnemigo.Ametralladora ? Color.blue
 //                        : currentTipo == TipoEnemigo.Pistola ? Color.red
-//                                                              : Color.green;
+//                                                                    : Color.green;
 //        Color hdrCol = baseCol * emissionIntensity;
+
+//        // Guardamos para el parpadeo
+//        lastTargetBase = baseCol;
+//        lastTargetHDR = hdrCol;
 
 //        if (colorRoutine != null)
 //            StopCoroutine(colorRoutine);
@@ -323,29 +341,11 @@ public class TipoColorController : MonoBehaviour
 //    private IEnumerator Parpadeo()
 //    {
 //        isBlinking = true;
-
-//        // Guarda colores actuales de cada renderer
-//        var currBaseColors = new List<Color>(renderers.Count);
-//        var currHDRColors = new List<Color>(renderers.Count);
-
-//        foreach (var rend in renderers)
-//        {
-//            var mat = rend.material;
-//            Color cb = mat.HasProperty("_BaseColor") ? mat.GetColor("_BaseColor")
-//                     : mat.HasProperty("_Color") ? mat.GetColor("_Color")
-//                     : Color.white;
-//            currBaseColors.Add(cb);
-
-//            Color ch = mat.HasProperty("_EmissionColor") ? mat.GetColor("_EmissionColor")
-//                     : mat.HasProperty("_FresnelColor") ? mat.GetColor("_FresnelColor")
-//                     : cb * emissionIntensity;
-//            currHDRColors.Add(ch);
-//        }
-
 //        float half = blinkInterval * 0.5f;
+
 //        for (int i = 0; i < blinkCount; i++)
 //        {
-//            // Blanco intenso
+//            // 1) Flash blanco
 //            foreach (var rend in renderers)
 //            {
 //                var mat = rend.material;
@@ -357,15 +357,15 @@ public class TipoColorController : MonoBehaviour
 //            }
 //            yield return new WaitForSeconds(half);
 
-//            // Restaurar colores originales
-//            for (int j = 0; j < renderers.Count; j++)
+//            // 2) Restaurar al color objetivo final
+//            foreach (var rend in renderers)
 //            {
-//                var mat = renderers[j].material;
-//                if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", currBaseColors[j]);
-//                else if (mat.HasProperty("_Color")) mat.SetColor("_Color", currBaseColors[j]);
+//                var mat = rend.material;
+//                if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", lastTargetBase);
+//                else if (mat.HasProperty("_Color")) mat.SetColor("_Color", lastTargetBase);
 
-//                if (mat.HasProperty("_EmissionColor")) mat.SetColor("_EmissionColor", currHDRColors[j]);
-//                if (mat.HasProperty("_FresnelColor")) mat.SetColor("_FresnelColor", currHDRColors[j]);
+//                if (mat.HasProperty("_EmissionColor")) mat.SetColor("_EmissionColor", lastTargetHDR);
+//                if (mat.HasProperty("_FresnelColor")) mat.SetColor("_FresnelColor", lastTargetHDR);
 //            }
 //            yield return new WaitForSeconds(half);
 //        }
@@ -373,6 +373,13 @@ public class TipoColorController : MonoBehaviour
 //        isBlinking = false;
 //    }
 //}
+
+
+
+
+
+
+
 
 
 
