@@ -50,14 +50,6 @@ public class PlayerDash : MonoBehaviour
         isDashing = false;
         dashTimer = 0f;
     }
-    private void OnDisable()
-    {
-        isDashing = false;
-        canDash = true;
-        rb.useGravity = true;
-        if (dashEffect != null) dashEffect.Stop();
-        if (!playerMovement.MovementEnabled) playerMovement.MovementEnabled = true;
-    }
 
     private void Initialize()
     {
