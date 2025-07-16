@@ -16,6 +16,13 @@ public class PlataformaVertical : MonoBehaviour
 
     private bool subiendo = true;
     private bool enMovimiento = false;
+    private bool playerEnZonaSegura = false;
+
+    public bool EnMovimiento
+    {
+        get { return enMovimiento; }
+        set { enMovimiento = value; }
+    }
 
     void Start()
     {
@@ -52,6 +59,12 @@ public class PlataformaVertical : MonoBehaviour
     {
         if (!enMovimiento)
         {
+            if (!subiendo && playerEnZonaSegura)
+            {
+                Debug.Log("Plataforma no bajará: jugador en zona segura");
+                return;
+            }
+
             // Si la plataforma va a bajar, revisa si hay un jugador debajo
             if (!subiendo)
             {
