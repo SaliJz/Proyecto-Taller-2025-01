@@ -2562,6 +2562,7 @@ GameObject:
   - component: {fileID: 561226472}
   - component: {fileID: 561226473}
   - component: {fileID: 561226474}
+  - component: {fileID: 561226475}
   m_Layer: 0
   m_Name: SERPIENTE
   m_TagString: Untagged
@@ -3167,6 +3168,21 @@ MonoBehaviour:
   fadeController: {fileID: 561226473}
   delayAfterEpic: 2
   delayAfterDissolve: 1.5
+--- !u!114 &561226475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561226448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60b3e15c74cf41e4b9fa53c6573e81bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isImmuneToMindControl: 1
+  mindjackFindTargetRadius: 10
+  baseSpeed: 3
 --- !u!1 &571849479
 GameObject:
   m_ObjectHideFlags: 0

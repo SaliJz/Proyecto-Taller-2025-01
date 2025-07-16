@@ -43,22 +43,12 @@ public class PlayerDash : MonoBehaviour
     private float dashTimer = 0f;
 
     private Vector3 currentDashDirection;
-    private Vector3 dashStartPos;
-    private Vector3 dashEndPos;
 
     private void Start()
     {
         Initialize();
         isDashing = false;
         dashTimer = 0f;
-    }
-    private void OnDisable()
-    {
-        isDashing = false;
-        canDash = true;
-        rb.useGravity = true;
-        if (dashEffect != null) dashEffect.Stop();
-        if (!playerMovement.MovementEnabled) playerMovement.MovementEnabled = true;
     }
 
     private void Initialize()
@@ -109,29 +99,57 @@ public class PlayerDash : MonoBehaviour
     {
         if (!isDashing) return;
 
-        dashTimer += Time.fixedDeltaTime;
-        float t = dashTimer / dashDuration;
-        t = Mathf.Clamp01(t);
-
-        Vector3 targetPos = Vector3.Lerp(dashStartPos, dashEndPos, t);
-        Vector3 delta = targetPos - rb.position;
-        float step = delta.magnitude;
-
-        if (Physics.Raycast(rb.position, delta.normalized, out var hit, step))
+        if (DetectDashCollision())
         {
-            if (hit.collider.CompareTag("Wall") || hit.collider.CompareTag("Ground") || hit.collider.CompareTag("Roof") || hit.collider.CompareTag("Columns") || hit.collider.CompareTag("Enemy"))
-            {
-                targetPos = hit.point - delta.normalized * 0.1f;
-                t = 1f;
-            }
+            StopDashAtCollision();
+            return;
         }
 
-        rb.MovePosition(targetPos);
+        rb.velocity = currentDashDirection * (dashDistance / dashDuration);
 
-        if (t >= 1f)
+        dashTimer += Time.fixedDeltaTime;
+        if (dashTimer >= dashDuration)
         {
             ResetDashState();
         }
+    }
+
+    private bool DetectDashCollision()
+    {
+        if (!TryGetCapsuleCastPoints(out Vector3 p1, out Vector3 p2, out float radius)) return false;
+
+        float castDistance = currentDashDirection.magnitude * Time.fixedDeltaTime;
+        return Physics.CapsuleCast(p1, p2, radius, currentDashDirection, out RaycastHit hit, castDistance, ~0,
+            QueryTriggerInteraction.Ignore) && IsBlockingTag(hit.collider.tag);
+    }
+
+    private void StopDashAtCollision()
+    {
+        rb.velocity = Vector3.zero;
+        ResetDashState();
+    }
+
+    private bool TryGetCapsuleCastPoints(out Vector3 p1, out Vector3 p2, out float radius)
+    {
+        p1 = p2 = Vector3.zero;
+        radius = 0f;
+
+        CapsuleCollider capsule = GetComponent<CapsuleCollider>();
+        if (capsule == null) return false;
+
+        float height = Mathf.Max(capsule.height / 2f - capsule.radius, 0f);
+        Vector3 center = transform.TransformPoint(capsule.center);
+
+        Vector3 up = transform.up * height;
+        p1 = center + up;
+        p2 = center - up;
+        radius = capsule.radius * Mathf.Max(transform.localScale.x, transform.localScale.z);
+        return true;
+    }
+
+    private bool IsBlockingTag(string tag)
+    {
+        return tag == "Wall" || tag == "Ground" || tag == "Roof" || tag == "Columns" || tag == "Enemy";
     }
 
     private IEnumerator DashFovEffect()
@@ -156,16 +174,12 @@ public class PlayerDash : MonoBehaviour
 
         currentDashDirection = dashDirection;
 
-        dashStartPos = rb.position;
-        dashEndPos = dashStartPos + dashDirection * dashDistance;
+        rb.velocity = currentDashDirection * (dashDistance / dashDuration);
 
         rb.velocity = Vector3.zero;
         rb.useGravity = false;
 
         if (playerMovement.IsGrounded) playerMovement.MovementEnabled = false;
-
-        Debug.Log("DASH START POS: " + dashStartPos);
-        Debug.Log("DASH END POS: " + dashEndPos);
     }
 
     private void ResetDashState()
@@ -191,12 +205,6 @@ public class PlayerDash : MonoBehaviour
     {
         rb.velocity = Vector3.zero;
         rb.AddForce(currentDashDirection * postDashImpulse, ForceMode.Impulse);
-    }
-
-    private void ApplyBounce()
-    {
-        rb.velocity = Vector3.zero;
-        rb.AddForce(-currentDashDirection * bounceImpulse, ForceMode.Impulse);
     }
 
     private Vector3 GetDashDirection()
