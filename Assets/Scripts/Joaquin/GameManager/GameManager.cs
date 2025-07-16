@@ -36,6 +36,13 @@ public class GameManager : MonoBehaviour
         {
             OnLevelCompleted();
         }
+
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.J))
+        {
+            CurrentLevelIndex = 5;
+            SaveGameData();
+            StartCoroutine(TransitionToShop());
+        }
     }
 
     private void LoadGameData()
