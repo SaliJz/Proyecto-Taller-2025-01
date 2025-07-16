@@ -275,13 +275,14 @@ public class TutorialManager0 : MonoBehaviour
         yield return new WaitUntil(() => fadeTransition.isFadeIn == false);
         SelectCameraToRender(camera1);
         yield return new WaitForSecondsRealtime(time1);
-       
+        ActivateFadeOutOnCameraSwitch();
+        yield return new WaitUntil(() => fadeTransition.isFadeIn == false);
         SelectCameraToRender(camera2);
         yield return new WaitForSecondsRealtime(time2);
-        cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseOut, 2f);
-
         ReturnCamerasToDefault();
-        yield return new WaitForSecondsRealtime(2);
+
+       
+
         Debug.Log("Valor de currentDialogueIndex en ActivateTransitionBetweenTwoCameras: " + currentDialogueIndex);
 
         EnablePlayerScriptsAfterCameraTransition();
