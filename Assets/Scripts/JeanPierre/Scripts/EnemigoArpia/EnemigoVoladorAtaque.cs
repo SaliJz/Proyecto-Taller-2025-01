@@ -98,10 +98,10 @@ public class EnemigoVolador : MonoBehaviour
     {
         float distXZ = Vector2.Distance(
             new Vector2(transform.position.x, transform.position.z),
-            new Vector2(player.position.x, player.position.z)
+            new Vector2(abilityReceiver.CurrentTarget.position.x, abilityReceiver.CurrentTarget.position.z)
         );
 
-        Vector3 planarDest = new Vector3(player.position.x, transform.position.y, player.position.z);
+        Vector3 planarDest = new Vector3(abilityReceiver.CurrentTarget.position.x, transform.position.y, abilityReceiver.CurrentTarget.position.z);
         Vector3 dirPlanar = (planarDest - transform.position).normalized;
         RotarHacia(dirPlanar);
 
@@ -111,7 +111,7 @@ public class EnemigoVolador : MonoBehaviour
         AjustarAlturaFluida();
         if (distXZ <= distanciaPicada)
         {
-            objetivoPicada = player.position;
+            objetivoPicada = abilityReceiver.CurrentTarget.position;
             if (prefabAviso)
             {
                 avisoInstancia = Instantiate(prefabAviso, objetivoPicada, Quaternion.identity);
@@ -172,7 +172,7 @@ public class EnemigoVolador : MonoBehaviour
 
     void MoverSubida()
     {
-        float yObjetivo = player.position.y + alturaSobreJugador;
+        float yObjetivo = abilityReceiver.CurrentTarget.position.y + alturaSobreJugador;
         if (Physics.Raycast(transform.position, Vector3.up, out var hit, maxDistanciaRaycast, layerTechoVolador))
         {
             yObjetivo = Mathf.Min(yObjetivo, hit.point.y - distanciaBajoTecho);
@@ -197,13 +197,13 @@ public class EnemigoVolador : MonoBehaviour
 
     void MirarAlPlayer()
     {
-        Vector3 dir = (player.position - transform.position).normalized;
+        Vector3 dir = (abilityReceiver.CurrentTarget.position - transform.position).normalized;
         RotarHacia(dir);
     }
 
     void AjustarAlturaFluida()
     {
-        float yObjetivo = player.position.y + alturaSobreJugador;
+        float yObjetivo = abilityReceiver.CurrentTarget.position.y + alturaSobreJugador;
         if (Physics.Raycast(transform.position, Vector3.up, out var hit, maxDistanciaRaycast, layerTechoVolador))
             yObjetivo = Mathf.Min(yObjetivo, hit.point.y - distanciaBajoTecho);
 

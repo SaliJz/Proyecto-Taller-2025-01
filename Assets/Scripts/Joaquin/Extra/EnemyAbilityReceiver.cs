@@ -8,10 +8,7 @@ public class EnemyAbilityReceiver : MonoBehaviour
     private EnemyState currentState = EnemyState.Normal;
     public Transform CurrentTarget { get; private set; }
 
-    private Transform playerTransform;
-
     [SerializeField] private bool isImmuneToMindControl = false;
-
     [SerializeField] private float mindjackFindTargetRadius = 10f;
     [SerializeField] private float baseSpeed = 3f;
     private float currentSpeed;
@@ -27,27 +24,26 @@ public class EnemyAbilityReceiver : MonoBehaviour
     private Coroutine ignitionCoroutine;
     private Coroutine mindjackCoroutine;
 
+    private Transform playerTransform;
+
     private void Awake()
     {
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         CurrentTarget = playerTransform;
-
         currentSpeed = baseSpeed;
     }
 
     private void Update()
     {
-        //if (currentState == EnemyState.Mindjacked)
-        //{
-        //    if (CurrentTarget == null || !CurrentTarget.gameObject.activeInHierarchy || CurrentTarget == playerTransform)
-        //    {
-        //        CurrentTarget = FindNearestEnemy();
-        //    }
-        //}
-        //else
-        //{
-        //    CurrentTarget = playerTransform;
-        //}
+        if (currentState == EnemyState.Mindjacked)
+        {
+            if (CurrentTarget == null || CurrentTarget == transform || CurrentTarget == playerTransform)
+                CurrentTarget = FindNearestEnemy();
+        }
+        else
+        {
+            CurrentTarget = playerTransform;
+        }
     }
 
     public void TakeDamage(float dmg)
@@ -159,10 +155,10 @@ public class EnemyAbilityReceiver : MonoBehaviour
     private IEnumerator MindjackRoutine(float damagePerSecond, float duration)
     {
         isMindjacked = true;
-        //if (!isImmuneToMindControl)
-        //{
-        //    currentState = EnemyState.Mindjacked;
-        //}
+        if (!isImmuneToMindControl)
+        {
+            currentState = EnemyState.Mindjacked;
+        }
 
         float elapsedTime = 0f;
         while (elapsedTime < duration)
@@ -173,11 +169,11 @@ public class EnemyAbilityReceiver : MonoBehaviour
         }
 
         isMindjacked = false;
-        //if (!isImmuneToMindControl)
-        //{
-        //    currentState = EnemyState.Normal;
-        //    CurrentTarget = playerTransform;
-        //}
+        if (!isImmuneToMindControl)
+        {
+            currentState = EnemyState.Normal;
+            CurrentTarget = playerTransform;
+        }
         mindjackCoroutine = null;
     }
 
@@ -189,6 +185,9 @@ public class EnemyAbilityReceiver : MonoBehaviour
 
         foreach (var hit in hits)
         {
+            var rec = hit.GetComponent<EnemyAbilityReceiver>();
+            if (rec == null || rec.currentState == EnemyState.Mindjacked || rec.isImmuneToMindControl) continue;
+
             if (hit.transform == this.transform) continue;
 
             float distance = Vector3.Distance(transform.position, hit.transform.position);

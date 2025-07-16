@@ -40,18 +40,17 @@ public class EnemigoExplosion : MonoBehaviour
 
     void Update()
     {
-        if (playerTransform == null || !canMoveContinuously)
-            return;
+        if (abilityReceiver == null || abilityReceiver.CurrentTarget == null || !canMoveContinuously) return;
 
         // Rotación manual hacia el jugador
-        Vector3 dir = (playerTransform.position - transform.position).normalized;
+        Vector3 dir = (abilityReceiver.CurrentTarget.position - transform.position).normalized;
         Quaternion targetRot = Quaternion.LookRotation(dir);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
 
         // Solo llamar SetDestination si el agente está en la NavMesh
         if (agent.isOnNavMesh)
         {
-            agent.SetDestination(playerTransform.position);
+            agent.SetDestination(abilityReceiver.CurrentTarget.position);
             // Sin zigzag: posicionarse directamente en agent.nextPosition
             transform.position = agent.nextPosition;
         }

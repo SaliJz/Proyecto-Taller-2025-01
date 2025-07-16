@@ -25,9 +25,12 @@ public class EnemigoDisparador : MonoBehaviour
     private float temporizadorDisparo = 0f;
 
     private Animator animator;
+    private EnemyAbilityReceiver abilityReceiver;
 
     private void Awake()
     {
+        abilityReceiver = GetComponent<EnemyAbilityReceiver>();
+
         // Busca el jugador por tag si no está asignado
         if (jugador == null)
         {
@@ -43,13 +46,13 @@ public class EnemigoDisparador : MonoBehaviour
 
     private void Update()
     {
-        if (jugador == null) return;
+        if (abilityReceiver == null || abilityReceiver.CurrentTarget == null) return;
 
         temporizadorDisparo += Time.deltaTime;
 
         // Comprueba intervalo y distancia
         if (temporizadorDisparo >= intervaloDisparo &&
-            Vector3.Distance(transform.position, jugador.position) <= distanciaDisparo)
+            Vector3.Distance(transform.position, abilityReceiver.CurrentTarget.position) <= distanciaDisparo)
         {
             StartCoroutine(SpawnChargeAndShoot());
             temporizadorDisparo = 0f;

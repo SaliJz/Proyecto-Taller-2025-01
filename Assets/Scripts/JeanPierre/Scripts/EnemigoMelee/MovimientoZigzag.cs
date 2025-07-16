@@ -5,7 +5,7 @@ using UnityEngine.AI;
 public class MovimientoDirectoNavMesh : MonoBehaviour
 {
     [Header("Referencia al Jugador (tag 'Player')")]
-    public Transform playerTransform;
+    public Transform playerTransform;   
 
     [Header("Parámetros de Movimiento")]
     public float velocidadInicial = 5f;
@@ -51,10 +51,10 @@ public class MovimientoDirectoNavMesh : MonoBehaviour
     {
         velocidadActual = abilityReceiver.CurrentSpeed;
 
-        if (playerTransform == null) return;
+        if (abilityReceiver == null || abilityReceiver.CurrentTarget == null) return;
         if (!agent.enabled || !agent.isOnNavMesh) return;
 
-        float distancia = Vector3.Distance(transform.position, playerTransform.position);
+        float distancia = Vector3.Distance(transform.position, abilityReceiver.CurrentTarget.position);
 
         if (distancia > distanciaMinima)
         {
@@ -63,7 +63,7 @@ public class MovimientoDirectoNavMesh : MonoBehaviour
             agent.speed = velocidadActual;
 
             // Indicamos la posición objetivo. El NavMeshAgent usará NavMeshLink si es necesario.
-            agent.SetDestination(playerTransform.position);
+            agent.SetDestination(abilityReceiver.CurrentTarget.position);
         }
         else
         {
