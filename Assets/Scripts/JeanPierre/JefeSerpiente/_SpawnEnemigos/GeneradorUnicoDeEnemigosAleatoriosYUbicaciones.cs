@@ -1,11 +1,11 @@
-using System.Collections;
+Ôªøusing System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
 public class GeneradorUnicoDeEnemigosAleatoriosYUbicaciones : MonoBehaviour
 {
-    [Header("ConfiguraciÛn de Enemigos")]
+    [Header("Configuraci√≥n de Enemigos")]
     [Tooltip("Array con los 4 prefabs de enemigos")]
     public GameObject[] enemyPrefabs = new GameObject[4];
 
@@ -14,39 +14,38 @@ public class GeneradorUnicoDeEnemigosAleatoriosYUbicaciones : MonoBehaviour
     public Transform[] spawnPoints;
 
     [Header("Cantidad de Enemigos por Oleada")]
-    [Tooltip("Cu·ntos enemigos generar cada oleada (p. ej. 2 o 3)")]
+    [Tooltip("Cu√°ntos enemigos generar cada oleada (p. ej. 2 o 3)")]
     public int spawnCount = 2;
 
     [Header("Intervalo de Spawn")]
-    [Tooltip("Tiempo en segundos entre cada generaciÛn")]
+    [Tooltip("Tiempo en segundos entre cada generaci√≥n")]
     public float spawnInterval = 5f;
 
-    [Header("M·ximo de Enemigos Simult·neos")]
-    [Tooltip("N˙mero m·ximo de enemigos activos antes de frenar el spawn")]
+    [Header("M√°ximo de Enemigos Simult√°neos")]
+    [Tooltip("N√∫mero m√°ximo de enemigos activos antes de frenar el spawn")]
     public int maxActiveEnemies = 3;
 
-    [Header("Control de Stop")]
-    [Tooltip("Si es true, destruye todos los enemigos y detiene el spawn")]
+    [Header("Control de Stop (deprecated)")]
+    [Tooltip("S√≥lo para debugging en Inspector; use StopAndDestroyAllEnemies()")]
     public bool stopSpawning = false;
 
     // Lista para seguir las instancias activas
     private List<GameObject> activeEnemies = new List<GameObject>();
     private bool hasStopped = false;
+    private Coroutine spawnRoutine;
 
     void Start()
     {
-        StartCoroutine(GenerarEnemigosPeriodicamente());
-        // Generamos la primera oleada inmediatamente
+        spawnRoutine = StartCoroutine(GenerarEnemigosPeriodicamente());
         GenerarEnemigosUnicos();
     }
 
     void Update()
     {
-        // Si el usuario activa stopSpawning y a˙n no hemos procesado el stop
+        // S√≥lo para debug manual en Inspector
         if (stopSpawning && !hasStopped)
         {
-            hasStopped = true;
-            DetenerYDestruirTodo();
+            StopAndDestroyAllEnemies();
         }
     }
 
@@ -61,32 +60,12 @@ public class GeneradorUnicoDeEnemigosAleatoriosYUbicaciones : MonoBehaviour
 
     void GenerarEnemigosUnicos()
     {
-        // Si ya se pidiÛ detener, no generamos nada
         if (hasStopped) return;
 
-        // Limpiar referencias a enemigos destruidos
         activeEnemies.RemoveAll(e => e == null);
+        if (activeEnemies.Count >= maxActiveEnemies) return;
+        if (spawnCount < 1 || spawnCount > enemyPrefabs.Length || spawnCount > spawnPoints.Length) return;
 
-        // Si ya hay maxActiveEnemies o m·s, no generar nada
-        if (activeEnemies.Count >= maxActiveEnemies)
-        {
-            Debug.Log($"Hay {activeEnemies.Count} enemigos activos. Esperando a que queden menos de {maxActiveEnemies} para generar m·s.");
-            return;
-        }
-
-        // Verificaciones b·sicas
-        if (spawnCount < 1)
-        {
-            Debug.LogWarning("spawnCount debe ser al menos 1.");
-            return;
-        }
-        if (spawnCount > enemyPrefabs.Length || spawnCount > spawnPoints.Length)
-        {
-            Debug.LogWarning($"spawnCount no puede exceder prefabs ({enemyPrefabs.Length}) ni puntos ({spawnPoints.Length}).");
-            return;
-        }
-
-        // Calculamos cu·ntos podemos spawnear realmente
         int slotsDisponibles = maxActiveEnemies - activeEnemies.Count;
         int cantidadAProceder = Mathf.Min(spawnCount, slotsDisponibles);
 
@@ -107,30 +86,37 @@ public class GeneradorUnicoDeEnemigosAleatoriosYUbicaciones : MonoBehaviour
 
             Vector3 pos = spawnPoints[idxSpawn].position;
             GameObject nuevo = Instantiate(enemyPrefabs[idxPrefab], pos, Quaternion.identity);
-
-            // Registramos la instancia en la lista
             activeEnemies.Add(nuevo);
         }
 
         Debug.Log($"Generados {cantidadAProceder} enemigos. Activos ahora: {activeEnemies.Count}/{maxActiveEnemies}.");
     }
 
-    void DetenerYDestruirTodo()
+    /// <summary>
+    /// Detiene inmediatamente el spawn y destruye todos los enemigos activos.
+    /// </summary>
+    public void StopAndDestroyAllEnemies()
     {
-        // Cancelar futuras coroutines de spawn
-        StopCoroutine(GenerarEnemigosPeriodicamente());
-
-        // Destruir todos los enemigos activos
+        if (hasStopped) return;
+        hasStopped = true;
+        StopAllCoroutines();
         foreach (var enemy in activeEnemies)
         {
             if (enemy != null)
                 Destroy(enemy);
         }
         activeEnemies.Clear();
-
-        Debug.Log("Se ha detenido el spawn y destruido todos los enemigos.");
+        Debug.Log("Spawn detenido y todos los enemigos destruidos (m√©todo directo).");
     }
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -146,38 +132,41 @@ public class GeneradorUnicoDeEnemigosAleatoriosYUbicaciones : MonoBehaviour
 //[DisallowMultipleComponent]
 //public class GeneradorUnicoDeEnemigosAleatoriosYUbicaciones : MonoBehaviour
 //{
-//    [Header("ConfiguraciÛn de Enemigos")]
-//    [Tooltip("Array con los 4 prefabs de enemigos")]
+//    [Header("Configuraci√≥n de Enemigos")]
 //    public GameObject[] enemyPrefabs = new GameObject[4];
-
 //    [Header("Puntos de Spawn")]
-//    [Tooltip("Array con las posiciones donde spawnear")]
 //    public Transform[] spawnPoints;
-
 //    [Header("Cantidad de Enemigos por Oleada")]
-//    [Tooltip("Cu·ntos enemigos generar cada oleada (p. ej. 2 o 3)")]
 //    public int spawnCount = 2;
-
 //    [Header("Intervalo de Spawn")]
-//    [Tooltip("Tiempo en segundos entre cada generaciÛn")]
 //    public float spawnInterval = 5f;
-
-//    [Header("M·ximo de Enemigos Simult·neos")]
-//    [Tooltip("N˙mero m·ximo de enemigos activos antes de frenar el spawn")]
+//    [Header("M√°ximo de Enemigos Simult√°neos")]
 //    public int maxActiveEnemies = 3;
+//    [Header("Control de Stop")]
+//    public bool stopSpawning = false;
 
-//    // Lista para seguir las instancias activas
 //    private List<GameObject> activeEnemies = new List<GameObject>();
+//    private bool hasStopped = false;
+//    private Coroutine spawnRoutine;  // ‚Üê nueva referencia
 
 //    void Start()
 //    {
+//        // guardamos la coroutine en spawnRoutine
+//        spawnRoutine = StartCoroutine(GenerarEnemigosPeriodicamente());
 //        GenerarEnemigosUnicos();
-//        StartCoroutine(GenerarEnemigosPeriodicamente());
+//    }
+
+//    void Update()
+//    {
+//        if (stopSpawning && !hasStopped)
+//        {
+//            DetenerYDestruirTodo();
+//        }
 //    }
 
 //    IEnumerator GenerarEnemigosPeriodicamente()
 //    {
-//        while (true)
+//        while (!hasStopped)
 //        {
 //            yield return new WaitForSeconds(spawnInterval);
 //            GenerarEnemigosUnicos();
@@ -186,29 +175,11 @@ public class GeneradorUnicoDeEnemigosAleatoriosYUbicaciones : MonoBehaviour
 
 //    void GenerarEnemigosUnicos()
 //    {
-//        // Limpiar referencias a enemigos destruidos
+//        if (hasStopped) return;
 //        activeEnemies.RemoveAll(e => e == null);
+//        if (activeEnemies.Count >= maxActiveEnemies) return;
+//        if (spawnCount < 1 || spawnCount > enemyPrefabs.Length || spawnCount > spawnPoints.Length) return;
 
-//        // Si ya hay maxActiveEnemies o m·s, no generar nada
-//        if (activeEnemies.Count >= maxActiveEnemies)
-//        {
-//            Debug.Log($"Hay {activeEnemies.Count} enemigos activos. Esperando a que queden menos de {maxActiveEnemies} para generar m·s.");
-//            return;
-//        }
-
-//        // Verificaciones b·sicas
-//        if (spawnCount < 1)
-//        {
-//            Debug.LogWarning("spawnCount debe ser al menos 1.");
-//            return;
-//        }
-//        if (spawnCount > enemyPrefabs.Length || spawnCount > spawnPoints.Length)
-//        {
-//            Debug.LogWarning($"spawnCount no puede exceder prefabs ({enemyPrefabs.Length}) ni puntos ({spawnPoints.Length}).");
-//            return;
-//        }
-
-//        // Calculamos cu·ntos podemos spawnear realmente
 //        int slotsDisponibles = maxActiveEnemies - activeEnemies.Count;
 //        int cantidadAProceder = Mathf.Min(spawnCount, slotsDisponibles);
 
@@ -229,14 +200,24 @@ public class GeneradorUnicoDeEnemigosAleatoriosYUbicaciones : MonoBehaviour
 
 //            Vector3 pos = spawnPoints[idxSpawn].position;
 //            GameObject nuevo = Instantiate(enemyPrefabs[idxPrefab], pos, Quaternion.identity);
-
-//            // Registramos la instancia en la lista
 //            activeEnemies.Add(nuevo);
 //        }
 
 //        Debug.Log($"Generados {cantidadAProceder} enemigos. Activos ahora: {activeEnemies.Count}/{maxActiveEnemies}.");
 //    }
+
+//    void DetenerYDestruirTodo()
+//    {
+//        hasStopped = true;                       // ‚Üê movido aqu√≠
+//        StopAllCoroutines();                     // ‚Üê detiene TODO, incluyendo GenerarEnemigosPeriodicamente
+//        foreach (var enemy in activeEnemies)     // ‚Üê destruye instancias vivas
+//            if (enemy != null)
+//                Destroy(enemy);
+//        activeEnemies.Clear();
+//        Debug.Log("Se ha detenido el spawn y destruido todos los enemigos.");
+//    }
 //}
+
 
 
 

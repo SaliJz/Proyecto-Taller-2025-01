@@ -1,11 +1,4 @@
-﻿// Fase2Vida.cs
-//
-// Gestiona múltiples fases de vida de un enemigo: tres fases de “columnas” con wrap,
-// anticipación y ataque, y una fase final de vida independiente.
-// Al agotarse cada fase, desactiva/activa scripts previstos y, tras la última vida,
-// activa la animación épica y detiene el controlador elevado.
-
-using System.Collections;
+﻿using System.Collections;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,8 +7,14 @@ using UnityEngine.UI;
 [RequireComponent(typeof(SnakeColumnWrapOnInput))]
 [RequireComponent(typeof(AnimacionMuerteCobraEpic))]
 [RequireComponent(typeof(CobraElevadaController))]
+[RequireComponent(typeof(SnakeDissolveController))]
 public class Fase2Vida : MonoBehaviour
 {
+    // === NUEVA REFERENCIA AL GENERADOR DE ENEMIGOS ===
+    [Header("Referencia a Generador de Enemigos")]
+    [Tooltip("Arrastra aquí el objeto que tiene el GeneradorUnicoDeEnemigosAleatoriosYUbicaciones")]
+    public GeneradorUnicoDeEnemigosAleatoriosYUbicaciones enemyGenerator;
+
     // === REFERENCIAS A OTROS COMPONENTES ===
     [Header("Referencias")]
     public ColumnWrapOnInput columnWrapper;
@@ -119,9 +118,12 @@ public class Fase2Vida : MonoBehaviour
 
         if (nextPhase == 3)
         {
+            // Al terminar la última columna:
+            var snakeCtrl = GetComponent<SnakeController>();
+            snakeCtrl.jugador = GameObject.FindWithTag("Player")?.transform;
+
             foreach (var s in scriptsToRemoveAfterColumns) if (s) s.enabled = false;
             foreach (var s in scriptsToActivateAfterColumns) if (s) s.enabled = true;
-            GetComponent<SnakeController>().jugador = GameObject.FindWithTag("Player")?.transform;
             vidaSlider.gameObject.SetActive(false);
             finalLifeSlider.gameObject.SetActive(true);
             return;
@@ -129,6 +131,12 @@ public class Fase2Vida : MonoBehaviour
 
         if (nextPhase == 4)
         {
+            // Detener spawn y eliminar enemigos
+            if (enemyGenerator != null)
+                enemyGenerator.stopSpawning = true;
+            else
+                Debug.LogWarning("Fase2Vida: no está asignado enemyGenerator en el Inspector.");
+
             foreach (var s in scriptsToRemove) if (s) s.enabled = false;
             foreach (var s in scriptsToActivate) if (s) s.enabled = true;
             foreach (var s in scriptsToDestroyAfterFinal) if (s) Destroy(s);
@@ -136,14 +144,10 @@ public class Fase2Vida : MonoBehaviour
 
             var cobraElevada = GetComponent<CobraElevadaController>();
             if (cobraElevada) cobraElevada.enabled = false;
-
             var epic = GetComponent<AnimacionMuerteCobraEpic>();
-            if (epic)
-            {
-                epic.enabled = true;
-                epic.activarEpic = true;
-            }
-
+            if (epic) { epic.enabled = true; epic.activarEpic = true; }
+            var dissolveCtrl = GetComponent<SnakeDissolveController>();
+            if (dissolveCtrl) { dissolveCtrl.enabled = true; dissolveCtrl.dissolveActive = true; }
             return;
         }
 
@@ -217,7 +221,6 @@ public class Fase2Vida : MonoBehaviour
                 if (!blinkFinalInProgress) StartCoroutine(BlinkFinalRoutine());
                 break;
         }
-
         tipoColorController.RecibirDanio(0f);
     }
 
@@ -235,31 +238,7 @@ public class Fase2Vida : MonoBehaviour
             _ => 0
         };
 
-        switch (currentPhase)
-        {
-            case 0:
-                vida1 = Mathf.Max(0, vida1 - danio);
-                vidaSlider.value = vida1 + vida2 + vida3;
-                if (!blinkInProgress) StartCoroutine(BlinkRoutine());
-                break;
-            case 1:
-                vida2 = Mathf.Max(0, vida2 - danio);
-                vidaSlider.value = vida1 + vida2 + vida3;
-                if (!blinkInProgress) StartCoroutine(BlinkRoutine());
-                break;
-            case 2:
-                vida3 = Mathf.Max(0, vida3 - danio);
-                vidaSlider.value = vida1 + vida2 + vida3;
-                if (!blinkInProgress) StartCoroutine(BlinkRoutine());
-                break;
-            case 3:
-                vidaFinal = Mathf.Max(0, vidaFinal - danio);
-                finalLifeSlider.value = vidaFinal;
-                if (!blinkFinalInProgress) StartCoroutine(BlinkFinalRoutine());
-                break;
-        }
-
-        tipoColorController.RecibirDanio(0f);
+        ApplyAbilityDamage(danio);
     }
 
     private IEnumerator BlinkRoutine()
@@ -320,25 +299,23 @@ public class Fase2Vida : MonoBehaviour
 
 
 
-
-
-//// Fase2Vida.cs
-////
-//// Gestiona múltiples fases de vida de un enemigo: tres fases de “columnas” con wrap,
-//// anticipación y ataque, y una fase final de vida independiente.
-//// Al agotarse cada fase, desactiva/activa scripts previstos y, tras la última vida,
-//// destruye componentes, ejecuta acciones finales, carga la escena de Créditos y elimina este GameObject.
-
 //using System.Collections;
 //using System.Reflection;
 //using UnityEngine;
 //using UnityEngine.UI;
-//using UnityEngine.SceneManagement;  // <-- Añadido para cargar escenas
 
 //[RequireComponent(typeof(ColumnWrapOnInput))]
 //[RequireComponent(typeof(SnakeColumnWrapOnInput))]
+//[RequireComponent(typeof(AnimacionMuerteCobraEpic))]
+//[RequireComponent(typeof(CobraElevadaController))]
+//[RequireComponent(typeof(SnakeDissolveController))]
 //public class Fase2Vida : MonoBehaviour
 //{
+//    // === NUEVA REFERENCIA AL GENERADOR DE ENEMIGOS ===
+//    [Header("Referencia a Generador de Enemigos")]
+//    [Tooltip("Arrastra aquí el objeto que tiene el GeneradorUnicoDeEnemigosAleatoriosYUbicaciones")]
+//    public GeneradorUnicoDeEnemigosAleatoriosYUbicaciones enemyGenerator;
+
 //    // === REFERENCIAS A OTROS COMPONENTES ===
 //    [Header("Referencias")]
 //    public ColumnWrapOnInput columnWrapper;
@@ -349,13 +326,10 @@ public class Fase2Vida : MonoBehaviour
 //    // === CONFIGURACIÓN DE LAS COLUMNAS ===
 //    [Header("Columnas por Vida")]
 //    public Transform columna1, columna2, columna3;
-
 //    [Header("Vidas de Columnas")]
 //    public int vida1 = 1, vida2 = 1, vida3 = 1;
-
 //    [Header("Slider de Vida de Columnas")]
 //    public Slider vidaSlider;
-
 //    [Header("Scripts tras Columnas")]
 //    public MonoBehaviour[] scriptsToRemoveAfterColumns;
 //    public MonoBehaviour[] scriptsToActivateAfterColumns;
@@ -363,17 +337,13 @@ public class Fase2Vida : MonoBehaviour
 //    // === CONFIGURACIÓN DE LA VIDA FINAL ===
 //    [Header("Vida Final (sin columna)")]
 //    public int vidaFinal = 5;
-
 //    [Header("Slider de Vida Final")]
 //    public Slider finalLifeSlider;
-
 //    [Header("Scripts tras Vida Final")]
 //    public MonoBehaviour[] scriptsToRemove;
 //    public MonoBehaviour[] scriptsToActivate;
-
 //    [Header("Scripts a DESTRUIR tras Última Vida")]
 //    public MonoBehaviour[] scriptsToDestroyAfterFinal;
-
 //    [Header("Scripts a ACTIVAR tras Última Vida")]
 //    public MonoBehaviour[] scriptsToActivateAfterFinal;
 
@@ -382,7 +352,6 @@ public class Fase2Vida : MonoBehaviour
 //    public float blinkDuration = 0.2f;
 //    public float returnDuration = 0.1f;
 //    public float blinkFrequency = 10f;
-
 //    [Header("Daño por Bala")]
 //    public int danioAmetralladora = 15;
 //    public int danioPistola = 20;
@@ -390,24 +359,15 @@ public class Fase2Vida : MonoBehaviour
 
 //    // === CONFIGURACIÓN DE ATAQUE ===
 //    [Header("Configuración de Ataque")]
-//    [Tooltip("Segundos tras completar el wrap antes de iniciar anticipación y ataque")]
 //    public float attackStartDelay = 3f;
 //    public float attackInterval = 2f;
 
 //    // === ESTADO INTERNO ===
 //    private int currentPhase;
-//    private Coroutine phaseCoroutine;
-//    private Coroutine anticipationCoroutine;
-
-//    private Image fillImage;
-//    private Color originalColor;
-//    private bool blinkInProgress;
-//    private float blinkTimer;
-
-//    private Image finalFillImage;
-//    private Color finalOriginalColor;
-//    private bool blinkFinalInProgress;
-//    private float blinkFinalTimer;
+//    private Coroutine phaseCoroutine, anticipationCoroutine;
+//    private Image fillImage, finalFillImage;
+//    private Color originalColor, finalOriginalColor;
+//    private bool blinkInProgress, blinkFinalInProgress;
 
 //    void Start()
 //    {
@@ -419,9 +379,9 @@ public class Fase2Vida : MonoBehaviour
 //            return;
 //        }
 
-//        int totalColumnas = vida1 + vida2 + vida3;
-//        vidaSlider.maxValue = totalColumnas;
-//        vidaSlider.value = totalColumnas;
+//        int totalCols = vida1 + vida2 + vida3;
+//        vidaSlider.maxValue = totalCols;
+//        vidaSlider.value = totalCols;
 //        fillImage = vidaSlider.fillRect.GetComponent<Image>();
 //        originalColor = fillImage.color;
 
@@ -449,6 +409,7 @@ public class Fase2Vida : MonoBehaviour
 //    {
 //        currentPhase = nextPhase;
 
+//        // Detener corutinas y desactivar envoltorios
 //        if (phaseCoroutine != null) StopCoroutine(phaseCoroutine);
 //        if (anticipationCoroutine != null) StopCoroutine(anticipationCoroutine);
 //        StopAllCoroutines();
@@ -459,39 +420,40 @@ public class Fase2Vida : MonoBehaviour
 
 //        if (nextPhase == 3)
 //        {
-//            foreach (var s in scriptsToRemoveAfterColumns) if (s != null) s.enabled = false;
-//            foreach (var s in scriptsToActivateAfterColumns) if (s != null) s.enabled = true;
-
+//            // Al terminar la última columna:
+//            // 1) Asigna el jugador al SnakeController
 //            var snakeCtrl = GetComponent<SnakeController>();
-//            var jugadorObj = GameObject.FindWithTag("Player");
-//            if (snakeCtrl != null && jugadorObj != null)
-//                snakeCtrl.jugador = jugadorObj.transform;
+//            snakeCtrl.jugador = GameObject.FindWithTag("Player")?.transform;
 
+//            // 2) Ajusta UI para vida final
+//            foreach (var s in scriptsToRemoveAfterColumns) if (s) s.enabled = false;
+//            foreach (var s in scriptsToActivateAfterColumns) if (s) s.enabled = true;
 //            vidaSlider.gameObject.SetActive(false);
 //            finalLifeSlider.gameObject.SetActive(true);
+
 //            return;
 //        }
 
 //        if (nextPhase == 4)
 //        {
-//            foreach (var s in scriptsToRemove) if (s != null) s.enabled = false;
-//            foreach (var s in scriptsToActivate) if (s != null) s.enabled = true;
+//            // Detener spawn antes de animación
+//            if (enemyGenerator != null)
+//                enemyGenerator.stopSpawning = true;
 
-//            foreach (var s in scriptsToDestroyAfterFinal) if (s != null) Destroy(s);
-//            foreach (var s in scriptsToActivateAfterFinal) if (s != null) s.enabled = true;
+//            // Desactivar/activar scripts generales
+//            foreach (var s in scriptsToRemove) if (s) s.enabled = false;
+//            foreach (var s in scriptsToActivate) if (s) s.enabled = true;
+//            foreach (var s in scriptsToDestroyAfterFinal) if (s) Destroy(s);
+//            foreach (var s in scriptsToActivateAfterFinal) if (s) s.enabled = true;
 
-//            var snakeCtrl2 = GetComponent<SnakeController>();
-//            var p = GameObject.FindWithTag("Player");
-//            if (snakeCtrl2 != null && p != null)
-//                snakeCtrl2.jugador = p.transform;
-//            if (snakeCtrl2 != null)
-//                snakeCtrl2.enabled = true;
+//            // Animación épica y dissolve
+//            var cobraElevada = GetComponent<CobraElevadaController>();
+//            if (cobraElevada) cobraElevada.enabled = false;
+//            var epic = GetComponent<AnimacionMuerteCobraEpic>();
+//            if (epic) { epic.enabled = true; epic.activarEpic = true; }
+//            var dissolveCtrl = GetComponent<SnakeDissolveController>();
+//            if (dissolveCtrl) { dissolveCtrl.enabled = true; dissolveCtrl.dissolveActive = true; }
 
-//            // Cargar la escena de Créditos cuando se agota la vida final
-//            SceneManager.LoadScene("Creditos");
-
-//            // Finalmente, destruir este GameObject (el enemigo principal)
-//            Destroy(this.gameObject);
 //            return;
 //        }
 
@@ -514,15 +476,14 @@ public class Fase2Vida : MonoBehaviour
 
 //        var snakeCtrl = snakeAttack.GetComponent<SnakeController>();
 //        var segmentsField = typeof(SnakeColumnWrapOnInput)
-//                                .GetField("segments", BindingFlags.NonPublic | BindingFlags.Instance);
+//                            .GetField("segments", BindingFlags.NonPublic | BindingFlags.Instance);
 //        var preShake = typeof(SnakeColumnWrapOnInput)
-//                                .GetMethod("PreAttackShake", BindingFlags.NonPublic | BindingFlags.Instance);
+//                            .GetMethod("PreAttackShake", BindingFlags.NonPublic | BindingFlags.Instance);
 
 //        bool firstLoop = true;
 //        while (true)
 //        {
-//            if (!firstLoop)
-//                yield return new WaitForSeconds(attackInterval);
+//            if (!firstLoop) yield return new WaitForSeconds(attackInterval);
 //            firstLoop = false;
 
 //            anticipation.Initialize(snakeCtrl, columnWrapper);
@@ -541,6 +502,34 @@ public class Fase2Vida : MonoBehaviour
 //        }
 //    }
 
+//    public void ApplyAbilityDamage(float damage)
+//    {
+//        switch (currentPhase)
+//        {
+//            case 0:
+//                vida1 = Mathf.Max(0, vida1 - (int)damage);
+//                vidaSlider.value = vida1 + vida2 + vida3;
+//                if (!blinkInProgress) StartCoroutine(BlinkRoutine());
+//                break;
+//            case 1:
+//                vida2 = Mathf.Max(0, vida2 - (int)damage);
+//                vidaSlider.value = vida1 + vida2 + vida3;
+//                if (!blinkInProgress) StartCoroutine(BlinkRoutine());
+//                break;
+//            case 2:
+//                vida3 = Mathf.Max(0, vida3 - (int)damage);
+//                vidaSlider.value = vida1 + vida2 + vida3;
+//                if (!blinkInProgress) StartCoroutine(BlinkRoutine());
+//                break;
+//            case 3:
+//                vidaFinal = Mathf.Max(0, vidaFinal - (int)damage);
+//                finalLifeSlider.value = vidaFinal;
+//                if (!blinkFinalInProgress) StartCoroutine(BlinkFinalRoutine());
+//                break;
+//        }
+//        tipoColorController.RecibirDanio(0f);
+//    }
+
 //    public void RecibirDanioPorBala(BalaPlayer.TipoBala tipoBala)
 //    {
 //        var enemigo = (TipoColorController.TipoEnemigo)
@@ -555,31 +544,7 @@ public class Fase2Vida : MonoBehaviour
 //            _ => 0
 //        };
 
-//        switch (currentPhase)
-//        {
-//            case 0:
-//                vida1 = Mathf.Max(0, vida1 - danio);
-//                vidaSlider.value = vida1 + vida2 + vida3;
-//                if (!blinkInProgress) StartCoroutine(BlinkRoutine());
-//                break;
-//            case 1:
-//                vida2 = Mathf.Max(0, vida2 - danio);
-//                vidaSlider.value = vida1 + vida2 + vida3;
-//                if (!blinkInProgress) StartCoroutine(BlinkRoutine());
-//                break;
-//            case 2:
-//                vida3 = Mathf.Max(0, vida3 - danio);
-//                vidaSlider.value = vida1 + vida2 + vida3;
-//                if (!blinkInProgress) StartCoroutine(BlinkRoutine());
-//                break;
-//            case 3:
-//                vidaFinal = Mathf.Max(0, vidaFinal - danio);
-//                finalLifeSlider.value = vidaFinal;
-//                if (!blinkFinalInProgress) StartCoroutine(BlinkFinalRoutine());
-//                break;
-//        }
-
-//        tipoColorController.RecibirDanio(0f);
+//        ApplyAbilityDamage(danio);
 //    }
 
 //    private IEnumerator BlinkRoutine()
@@ -636,12 +601,5 @@ public class Fase2Vida : MonoBehaviour
 //        if (finalLifeSlider != null) Destroy(finalLifeSlider.gameObject);
 //    }
 //}
-
-
-
-
-
-
-
 
 
