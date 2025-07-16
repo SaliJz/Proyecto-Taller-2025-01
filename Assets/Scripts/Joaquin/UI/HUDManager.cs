@@ -71,7 +71,7 @@ public class HUDManager : MonoBehaviour
 
     private ShopController shopController;
 
-    private int tutorialCount=0;
+    public int tutorialCount=0;
     private static int infoFragments = 2000;
     public int CurrentFragments => infoFragments;
 

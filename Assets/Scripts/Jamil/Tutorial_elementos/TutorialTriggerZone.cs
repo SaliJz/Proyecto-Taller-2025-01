@@ -19,7 +19,24 @@ public class TutorialTriggerZone : MonoBehaviour
         Debug.Log("Esperando para confirmar avance...");
         yield return new WaitForSeconds(time);
         Debug.Log("Ejecutando acción...");
+        if (manager.currentDialogueIndex == 6)
+        {
+            TutorialManager0.Instance.spriteJumpToUIs[3].gameObject.SetActive(true);
+            manager.ActiveHUD();
+            manager.ActiveGun();
+            if (manager.wallHologram != null)
+            {
+                manager.wallHologram.SetActive(true);
+                Debug.Log("wallHologram activado");
+            }
+            else
+            {
+                Debug.LogWarning("wallHologram NO está asignado en el inspector");
+            }
+        }
         action?.Invoke();
+
+        
     }
 
     private void OnTriggerStay(Collider other)
@@ -35,64 +52,60 @@ public class TutorialTriggerZone : MonoBehaviour
                 return;
             }
 
-            if (!TutorialManager0.Instance.IsDialoguePlaying)
+            if (!TutorialManager0.Instance.IsDialoguePlaying && TutorialManager0.Instance!=null)
             {
                 if (other.CompareTag("Player"))
                 {
-                    if (currentDialogue == 0 || currentDialogue == 1)
+                    if (currentDialogue == 0) //Bienvenido
                     {
-                        Debug.Log("Activando escenario por zona");
                         activated = true;
-                        manager.ScenarioActivationCheckerByZones();
-                        manager.StartCoroutine(manager.TemporarilyDisablePlayerScripts(6.5f));
+                        manager.ScenarioActivationCheckerByZones(); //Activa tras un retraso el dialogo 0
+                        manager.StartCoroutine(manager.TemporarilyDisablePlayerScripts(6.5f)); // Tiene un if que al finalizar en indice 0 activa el dialogo 1
                     }
 
-                    else if (currentDialogue == 2 || currentDialogue == 3)
+                    //El WASD se detecta en el manager y pasa al dialogo 2, tmb se va el elemento 0
+               
+                    else if (currentDialogue == 2) //Presiona spacio
                     {
-                        Debug.Log("Activando escenario por zona");
                         activated = true;
-                        manager.ConfirmAdvance();
+                        TutorialManager0.Instance.spriteJumpToUIs[2].gameObject.SetActive(true);
+                        TutorialManager0.Instance.spriteJumpToUIs[1].ejecutarAnimacion = true;
+                        TutorialManager0.Instance.spriteJumpToUIs[1].GetComponent<SpriteRenderer>().enabled = false;
+                        manager.ConfirmAdvance(); //Pasamos al dialogo 3
                     }
 
-                    else if (currentDialogue == 3 || currentDialogue == 4)
+                    else if (currentDialogue == 3) //Presion shift
                     {
-                        Debug.Log("Activando escenario por zona");
+                        TutorialManager0.Instance.spriteJumpToUIs[2].ejecutarAnimacion = true;
+                        TutorialManager0.Instance.spriteJumpToUIs[2].GetComponent<SpriteRenderer>().enabled = false;
+                        manager.ConfirmAdvance(); //Pasamos al dialogo 4
                         activated = true;
-                        manager.ConfirmAdvance();
                     }
 
-                    else if (currentDialogue == 5 || currentDialogue == 6)
+                    else if (currentDialogue == 4)// Ve al elevador
+                    {
+                        manager.ConfirmAdvance(); //Pasamos al dialogo 5
+                        activated = true;
+                    }
+                    //Se queda en dialogo 5  hasta que toque el suelo de arriba 
+
+                    else if (currentDialogue == 5)//Pronto entenderas
                     {
                         manager.DisablePlayerScriptsForCameraTransition();
-                        manager.StartCoroutine(manager.ActivateTransitionBetweenTwoCameras(1, 3, 0, 0));
-                        //StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 0));
-                        StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 5.22f)); //Activamos la gun
-                     
-                        activated = true;
-                        //Destroy(gameObject);
-                    }
-
-                    else if (currentDialogue == 6 || currentDialogue==7)
-                    {
-                        StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 2f));
+                        manager.StartCoroutine(manager.ActivateTransitionBetweenTwoCameras(1, 3, 0, 0)); //Ejecutamos cinematica del glitch
+                        StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 5.22f)); // Espéramos que termine y activamos la gun
                         activated = true;
                     }
-
-                    else if (currentDialogue == 7 || currentDialogue ==8)
-                    {
-                        StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 2f));
-                        activated = true;
-                    }
-
-                    else if (currentDialogue == 8 || currentDialogue == 9)
-                    {
-                        StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 2f));
-                        activated = true;
-                    }
-
+                    // Se queda en dialogo 5 hasta el fade in termine y avanza por este al dialogo 6 (Esta es una de las amaenazas)
+                    // Se queda en dialogo 6 hasta que termine la cineamtica del glitch y avanza por el if anterior al dialogo 7 (Dispara al glitch)
+                    //Se queda en dialogo 7 esperando a que mate al glitch
+                    // Si mata al glitch se inicia la cinematica y avanza al dialogo 8 (acercate a la caja) a la vez
+                    //Si toca la caja se activa el dialogo 9 (Bien ahora cambia de arma)
+                    //Si cambia de arma se activa el dialogo 10 (Si el enemigo tiene el mismo color que tu arma)
+                    //Cuando mate al primer enemigo se activa el dialogo 11 (Cuando mueren dejan fragmentos)
+                    //Cuando recoja 7 fragmentos abre la tienda
+                  
                 }
-
-
             }
             else
             {

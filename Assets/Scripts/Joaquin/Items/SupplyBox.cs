@@ -54,6 +54,7 @@ public class SupplyBox : MonoBehaviour
             {
                 if (TutorialManager0.Instance.currentDialogueIndex == 8)
                 {
+                    TutorialManager0.Instance.spriteJumpToUIs[4].gameObject.SetActive(true);
                     TutorialManager0.Instance.ConfirmAdvance();
                     isBoxInitialized = true; 
                 }              

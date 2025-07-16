@@ -33,12 +33,13 @@ public class TutorialManager0 : MonoBehaviour
     [SerializeField] private GameObject weaponIcon;
     [SerializeField] private GameObject abilityIcon;
     [SerializeField] private GameObject HUD;
-    [SerializeField] private GameObject wallHologram;
+    public GameObject wallHologram;
     [SerializeField] private List<GameObject> supplyBox;
     [SerializeField] private List<GameObject> rifleAndShotgun;
     [SerializeField] private GameObject secondWaveGlitch;
     [SerializeField] private List<GameObject> blackListShopUI;
     [SerializeField] private GameObject buyButton;
+    public List<SpriteJumpToUI> spriteJumpToUIs;
 
     private int lastIndex = -1;
 
@@ -91,7 +92,7 @@ public class TutorialManager0 : MonoBehaviour
     {
         if (currentDialogueIndex == 1)
         {
-            IsWASDPressed();
+            IsWASDPressed(); 
         }
 
         if (currentDialogueIndex == 9)
@@ -124,7 +125,9 @@ public class TutorialManager0 : MonoBehaviour
             Input.GetAxis("Mouse ScrollWheel") > 0f || 
             Input.GetAxis("Mouse ScrollWheel") < 0f)   
         {
-            Debug.Log($"Se ha presionado 1, 2, 3 o Scroll en el indice {currentDialogueIndex}" );
+            spriteJumpToUIs[4].gameObject.GetComponent<SpriteRenderer>().enabled = false;
+            spriteJumpToUIs[4].ejecutarAnimacion = true;
+            Destroy(spriteJumpToUIs[4].gameObject, 5f);
             ActivateSecondWaveGlitch();
             ConfirmAdvance();      
             //StartCoroutine(WaitNextDialogue(5));
@@ -210,16 +213,6 @@ public class TutorialManager0 : MonoBehaviour
         hasConfirmedDialogueAdvance = true;
     }
 
-    private void HandleScenarioCompletion()
-    {
-        GetCurrentDialogueData().isActive = false;
-
-        if (HasNextDialogue())
-        {
-            // Validar existencia de la siguiente escena
-        }
-    }
-
     private void SetTextUI(string text)
     {
         dialogueTextUI.text = text;
@@ -228,11 +221,6 @@ public class TutorialManager0 : MonoBehaviour
     void IncreaseDialogueIndex()
     {
         currentDialogueIndex += 1;
-    }
-
-    private bool HasNextDialogue()
-    {
-        return currentDialogueIndex < listDialogueData.Count;
     }
 
     public DialogueData GetCurrentDialogueData()
@@ -259,7 +247,8 @@ public class TutorialManager0 : MonoBehaviour
 
         if (listDialogueData[0].isActive)
         {
-            onConfirmAdvance?.Invoke();
+            spriteJumpToUIs[0].gameObject.SetActive(true);
+            onConfirmAdvance?.Invoke();                 
         }
     }
 
@@ -268,7 +257,10 @@ public class TutorialManager0 : MonoBehaviour
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) ||
             Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
         {
+            spriteJumpToUIs[1].gameObject.SetActive(true);
             onConfirmAdvance?.Invoke();
+            spriteJumpToUIs[0].ejecutarAnimacion = true;
+            spriteJumpToUIs[0].GetComponent<SpriteRenderer>().enabled = false;            
         }
     }
     public IEnumerator ActivateTransitionBetweenTwoCameras(int camera1, float time1, int camera2, float time2)
@@ -292,20 +284,6 @@ public class TutorialManager0 : MonoBehaviour
         yield return new WaitForSecondsRealtime(2);
         Debug.Log("Valor de currentDialogueIndex en ActivateTransitionBetweenTwoCameras: " + currentDialogueIndex);
 
-        if (currentDialogueIndex == 6 || currentDialogueIndex == 7)
-        {
-            ActiveHUD();
-            ActiveGun();
-            if (wallHologram != null)
-            {
-                wallHologram.SetActive(true);
-                Debug.Log("wallHologram activado");
-            }
-            else
-            {
-                Debug.LogWarning("wallHologram NO está asignado en el inspector");
-            }
-        }
         EnablePlayerScriptsAfterCameraTransition();
         isInTransition = false;
     }

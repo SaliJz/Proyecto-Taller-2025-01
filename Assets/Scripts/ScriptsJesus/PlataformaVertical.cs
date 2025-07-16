@@ -44,7 +44,7 @@ public class PlataformaVertical : MonoBehaviour
 
     IEnumerator EsperaParaActivarPlataforma()
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(3f);
         ActivarPlataforma();
     }
 

@@ -236,6 +236,12 @@ public class EnemigoRosa : MonoBehaviour
 
             if (TutorialManager0.Instance.currentDialogueIndex == 10)
                 TutorialManager0.Instance.ConfirmAdvance();
+
+            if (TutorialManager0.Instance.currentDialogueIndex == 7)
+            {
+                TutorialManager0.Instance.spriteJumpToUIs[3].gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                TutorialManager0.Instance.spriteJumpToUIs[3].ejecutarAnimacion = true;
+            }   
         }
 
         if (sliderVida != null)
