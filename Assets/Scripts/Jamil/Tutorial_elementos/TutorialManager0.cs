@@ -17,7 +17,7 @@ public class TutorialManager0 : MonoBehaviour
         public UnityEvent onSceneStart;
     }
 
-    [SerializeField] private TutorialSceneRuntime tutorialSceneRuntime;
+    [SerializeField] private TutorialSceneRuntime tutorialSceneRuntime=new TutorialSceneRuntime();
 
     public int currentDialogueIndex = 0;
 
@@ -66,6 +66,7 @@ public class TutorialManager0 : MonoBehaviour
 
     private void Awake()
     {
+        player = GameObject.FindWithTag("Player");
         if (Instance == null) Instance = this;
 
         foreach (var script in playerScriptsToDisable)
@@ -74,20 +75,13 @@ public class TutorialManager0 : MonoBehaviour
         }
 
         listDialogueData = tutorialSceneRuntime.tutorialSceneData.dialogues;
-
-       
-    }
-
-    private void Start()
-    {
-        player = GameObject.FindWithTag("Player");
+        
         foreach (var dialogue in listDialogueData)
         {
             dialogue.isActive = false;
         }
 
     }
-
     private void Update()
     {
         if (currentDialogueIndex == 1)
