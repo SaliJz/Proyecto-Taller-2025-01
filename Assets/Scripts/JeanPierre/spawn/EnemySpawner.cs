@@ -1,20 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+using static LevelManager_SQL;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [Header("Configuración de Spawn")]
-    [SerializeField] private GameObject[] enemyPrefabs;
+    [Header("Configuraciï¿½n de Spawn")]
+    [SerializeField] public GameObject[] enemyPrefabs;
     [SerializeField] private SpawnPoint[] spawnPoints;
     [SerializeField] private float spawnRadius = 2f;
-    private int maxEnemiesInScene = 20; // Este valor ahora será controlado por la misión
+    private int maxEnemiesInScene = 20; // Este valor ahora serï¿½ controlado por la misiï¿½n
 
     private HashSet<GameObject> activeEnemies = new HashSet<GameObject>();
     private Coroutine currentSpawnRoutine;
 
+    private GameObject dataBaseManager;
+
     // Detiene cualquier rutina de spawn anterior y limpia los enemigos
+
+    private void Start()
+    {
+        dataBaseManager = GameObject.Find("DataBaseManager");
+    }
     public void StopAndClearSpawner()
     {
         if (currentSpawnRoutine != null)
@@ -29,7 +35,7 @@ public class EnemySpawner : MonoBehaviour
         activeEnemies.Clear();
     }
 
-    // Inicia una rutina para generar enemigos hasta un límite total (Purgador)
+    // Inicia una rutina para generar enemigos hasta un lï¿½mite total (Purgador)
     public void StartPurgeSpawning(int totalToSpawn, int maxOnScreen, float interval)
     {
         StopAndClearSpawner();
@@ -37,7 +43,7 @@ public class EnemySpawner : MonoBehaviour
         currentSpawnRoutine = StartCoroutine(SpawnUntilCountRoutine(totalToSpawn, interval));
     }
 
-    // Inicia una rutina de spawn continuo por un tiempo determinado (JSS y El Único)
+    // Inicia una rutina de spawn continuo por un tiempo determinado (JSS y El ï¿½nico)
     public void StartContinuousSpawning(int maxOnScreen, float interval, float duration = -1f)
     {
         StopAndClearSpawner();
@@ -65,7 +71,7 @@ public class EnemySpawner : MonoBehaviour
     private IEnumerator SpawnContinuouslyRoutine(float interval, float duration)
     {
         float timer = 0f;
-        // Si la duración es negativa, el bucle es infinito (para "El Único")
+        // Si la duraciï¿½n es negativa, el bucle es infinito (para "El ï¿½nico")
         while (duration < 0 || timer < duration)
         {
             yield return new WaitForSeconds(interval);
@@ -86,7 +92,7 @@ public class EnemySpawner : MonoBehaviour
 
     private bool CanSpawn()
     {
-        activeEnemies.RemoveWhere(e => e == null); // Limpieza de enemigos muertos
+        activeEnemies.RemoveWhere(e => e == null); 
         return activeEnemies.Count < maxEnemiesInScene;
     }
 
@@ -97,14 +103,37 @@ public class EnemySpawner : MonoBehaviour
         var availablePoints = spawnPoints.Where(sp => sp.IsAvailable).ToList();
         if (availablePoints.Count == 0) return;
 
-        GameObject randomEnemyPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
-        SpawnPoint randomPoint = availablePoints[Random.Range(0, availablePoints.Count)];
+            GameObject randomEnemyPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)]; 
+
+           GetEnemyTypeToInsertData(randomEnemyPrefab);
+
+            SpawnPoint randomPoint = availablePoints[Random.Range(0, availablePoints.Count)];
 
         Vector2 offset = Random.insideUnitCircle * spawnRadius;
         Vector3 spawnPosition = randomPoint.transform.position + new Vector3(offset.x, 0, offset.y);
 
-        GameObject enemy = Instantiate(randomEnemyPrefab, spawnPosition, randomPoint.transform.rotation);
-        activeEnemies.Add(enemy);
+            GameObject enemy = Instantiate(randomEnemyPrefab, spawnPosition, randomPoint.transform.rotation);
+            activeEnemies.Add(enemy);
+
+        EnemyType.CurrentEnemyType tipo = enemy.GetComponent<EnemyType>().currentEnemyType;
+
+     
+        Color color = LevelManager_SQL.Instance.GetColorByEnemyType(tipo);
+
+        VidaEnemigoGeneral vida = enemy.GetComponent<VidaEnemigoGeneral>();
+        vida.AsignarColorYEmissionAMateriales(color);
+        vida.SetTipoDesdeColor(color);
+    }
+
+    void GetEnemyTypeToInsertData(GameObject randomEnemyPrefab)
+    {
+        EnemyType enemyType = randomEnemyPrefab.GetComponent<EnemyType>();
+        if(dataBaseManager != null)
+        {
+          InsertEnemyController insertEnemyController= dataBaseManager.GetComponent<InsertEnemyController>();
+          insertEnemyController.Execute(enemyType);
+        }
+       
     }
 
     public void ResetSpawner()
@@ -133,16 +162,16 @@ public class EnemySpawner : MonoBehaviour
 
 //public class EnemySpawner : MonoBehaviour
 //{
-//    [Header("Configuración de Spawn")]
+//    [Header("Configuraciï¿½n de Spawn")]
 //    public GameObject[] enemyPrefabs;       // Prefabs de enemigos
 //    public float spawnInterval = 3f;        // Tiempo entre oleadas
-//    public float spawnRadius = 2f;          // Radio de dispersión alrededor del punto
+//    public float spawnRadius = 2f;          // Radio de dispersiï¿½n alrededor del punto
 
-//    [Header("Progresión de dificultad")]
+//    [Header("Progresiï¿½n de dificultad")]
 //    public float levelDuration = 60f;       // Tiempo (segundos) para aumentar nivel
 //    private float levelTimer = 0f;
-//    private int currentLevel = 1;           // Nivel 1 => 2 enemigos únicos
-//    private int maxLevel = 3;               // Nivel 3 => 4 enemigos únicos
+//    private int currentLevel = 1;           // Nivel 1 => 2 enemigos ï¿½nicos
+//    private int maxLevel = 3;               // Nivel 3 => 4 enemigos ï¿½nicos
 
 //    [SerializeField] private int maxEnemiesInScene = 20;
 //    [SerializeField] private int maxEnemiesInTotal = 50;
@@ -155,7 +184,7 @@ public class EnemySpawner : MonoBehaviour
 //    {
 //        if (enemyPrefabs.Length < 4 || spawnPoints.Length == 0)
 //        {
-//            Debug.Log("¡Se requieren al menos 4 prefabs de enemigos y puntos de spawn!");
+//            Debug.Log("ï¿½Se requieren al menos 4 prefabs de enemigos y puntos de spawn!");
 //            return;
 //        }
 //        Debug.Log("Iniciando Spawn");
@@ -196,22 +225,22 @@ public class EnemySpawner : MonoBehaviour
 //    {
 //        if (activeEnemies.Count >= maxEnemiesInScene)
 //        {
-//            Debug.Log("Límite de enemigos en escena alcanzado.");
+//            Debug.Log("Lï¿½mite de enemigos en escena alcanzado.");
 //            return true;
 //        }
 //        if (maxEnemiesInTotal >= 0 && totalEnemiesSpawned >= maxEnemiesInTotal)
 //        {
-//            Debug.Log("Límite global de enemigos alcanzado.");
+//            Debug.Log("Lï¿½mite global de enemigos alcanzado.");
 //            return true;
 //        }
 //        return false;
 //    }
 
-//    // Nuevo método: elige N índices únicos basados en currentLevel
+//    // Nuevo mï¿½todo: elige N ï¿½ndices ï¿½nicos basados en currentLevel
 //    private void SpawnWaveUnique()
 //    {
 //        int uniqueCount = Mathf.Clamp(currentLevel + 1, 2, 4);
-//        // Preparar índices únicos de prefab
+//        // Preparar ï¿½ndices ï¿½nicos de prefab
 //        var indices = Enumerable.Range(0, enemyPrefabs.Length)
 //                                .OrderBy(x => Random.value)
 //                                .Take(uniqueCount)
@@ -253,7 +282,7 @@ public class EnemySpawner : MonoBehaviour
 
 //    public void SpawnWave(int totalEnemies)
 //    {
-//        // Mantener vieja funcionalidad si se llama explícitamente
+//        // Mantener vieja funcionalidad si se llama explï¿½citamente
 //        StartCoroutine(CustomWave(totalEnemies));
 //    }
 
@@ -318,14 +347,14 @@ public class EnemySpawner : MonoBehaviour
 
 //public class EnemySpawner : MonoBehaviour
 //{
-//    [Header("Configuración de Spawn")]
+//    [Header("Configuraciï¿½n de Spawn")]
 //    public GameObject[] enemyPrefabs;       // Prefabs de enemigos
 //    public float spawnInterval = 3f;        // Tiempo entre oleadas
 //    public int enemiesPerSpawn = 5;         // Enemigos a crear por intervalo
-//    public float spawnRadius = 2f;          // Radio de dispersión alrededor del punto
+//    public float spawnRadius = 2f;          // Radio de dispersiï¿½n alrededor del punto
 
-//    [SerializeField] private int maxEnemiesInScene = 20; // Máximo de enemigos en la escena
-//    [SerializeField] private int maxEnemiesInTotal = 50; // Máximo de enemigos totales 
+//    [SerializeField] private int maxEnemiesInScene = 20; // Mï¿½ximo de enemigos en la escena
+//    [SerializeField] private int maxEnemiesInTotal = 50; // Mï¿½ximo de enemigos totales 
 //    [SerializeField] private SpawnPoint[] spawnPoints; // Lista de puntos con disponibilidad
 
 //    private HashSet<GameObject> activeEnemies = new HashSet<GameObject>();
@@ -335,7 +364,7 @@ public class EnemySpawner : MonoBehaviour
 //    {
 //        if (enemyPrefabs.Length == 0 || spawnPoints.Length == 0)
 //        {
-//            Debug.Log("¡Faltan prefabs de enemigos o puntos de spawn!");
+//            Debug.Log("ï¿½Faltan prefabs de enemigos o puntos de spawn!");
 //            return;
 //        }
 
@@ -356,7 +385,7 @@ public class EnemySpawner : MonoBehaviour
 //    public void EnemiesKilledCount(int count)
 //    {
 //        totalEnemiesSpawned -= count;
-//        if (totalEnemiesSpawned < 0) totalEnemiesSpawned = 0; // Evitar números negativos
+//        if (totalEnemiesSpawned < 0) totalEnemiesSpawned = 0; // Evitar nï¿½meros negativos
 //    }
 
 //    private IEnumerator SpawnRoutine()
@@ -382,13 +411,13 @@ public class EnemySpawner : MonoBehaviour
 //    {
 //        if (activeEnemies.Count >= maxEnemiesInScene)
 //        {
-//            Debug.Log("Límite de enemigos alcanzado. Esperando espacio libre...");
+//            Debug.Log("Lï¿½mite de enemigos alcanzado. Esperando espacio libre...");
 //            return true; // Detener el spawn temporalmente
 //        }
 
 //        if (maxEnemiesInTotal >= 0 && totalEnemiesSpawned >= maxEnemiesInTotal)
 //        {
-//            Debug.Log("Límite global de enemigos alcanzado.");
+//            Debug.Log("Lï¿½mite global de enemigos alcanzado.");
 //            return true; // Detener el spawn
 //        }
 
@@ -406,8 +435,8 @@ public class EnemySpawner : MonoBehaviour
 
 //        if (availableSpawnSlots <= 0)
 //        {
-//            Debug.Log("No hay espacio para más enemigos.");
-//            return; // No hay espacio para más enemigos
+//            Debug.Log("No hay espacio para mï¿½s enemigos.");
+//            return; // No hay espacio para mï¿½s enemigos
 //        }
 
 //        for (int i = 0; i < availableSpawnSlots; i++)

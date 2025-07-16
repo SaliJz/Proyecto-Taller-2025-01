@@ -4,35 +4,24 @@ using UnityEngine;
 public class LevelManager_SQL : MonoBehaviour
 {
     public static LevelManager_SQL Instance { get; private set; }
-    [SerializeField] string currentLevel;
-    public enum EnemyType { Glitch, Shard, Tracker, Spill }
-    public class EnemyKillDataGeneral
+
+    public enum EnemyEnumType { Glitch, Shard, Tracker, Spill }
+
+    public class EnemyKillData
     {
-        public EnemyType enemyType;
-        public int countGun;
-        public int countRifle;
-        public int countShotgun;
-    }
-    public EnemyKillDataGeneral enemyKillDataGlitch;
-    public EnemyKillDataGeneral enemyKillDataShard;
-    public EnemyKillDataGeneral enemyKillDataTracker;
-    public EnemyKillDataGeneral enemyKillDataSpill;
-    public class EnemyKillDataForLevel
-    {
-        Level_SQL level_SQL;
-        public EnemyType enemyType;
+        public EnemyEnumType enemyType;
         public int countGun;
         public int countRifle;
         public int countShotgun;
     }
 
+    public EnemyKillData enemyKillDataGlitch;
+    public EnemyKillData enemyKillDataShard;
+    public EnemyKillData enemyKillDataTracker;
+    public EnemyKillData enemyKillDataSpill;
+
     private EnemySpawner enemySpawner;
-    public class Level_SQL //Para asignar los enemigos a un level SQL
-    {
-        public string level_name;
-        List<int> enemy_weapon_id = new List<int>();
-        //EnemyKillDataGeneral enemyKillData;
-    }
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -42,28 +31,21 @@ public class LevelManager_SQL : MonoBehaviour
         }
 
         Instance = this;
+        DontDestroyOnLoad(this.gameObject); 
 
-        Level_SQL level1 = new Level_SQL();
-        Level_SQL level2 = new Level_SQL();
-        Level_SQL level3 = new Level_SQL();
-        Level_SQL level4 = new Level_SQL();
-        Level_SQL level5 = new Level_SQL();
-
-
-        enemyKillDataGlitch = new EnemyKillDataGeneral { enemyType = EnemyType.Glitch };
-        enemyKillDataShard = new EnemyKillDataGeneral { enemyType = EnemyType.Shard };
-        enemyKillDataTracker = new EnemyKillDataGeneral { enemyType = EnemyType.Tracker };
-        enemyKillDataSpill = new EnemyKillDataGeneral { enemyType = EnemyType.Spill };
+        enemyKillDataGlitch = new EnemyKillData { enemyType = EnemyEnumType.Glitch };
+        enemyKillDataShard = new EnemyKillData { enemyType = EnemyEnumType.Shard };
+        enemyKillDataTracker = new EnemyKillData { enemyType = EnemyEnumType.Tracker };
+        enemyKillDataSpill = new EnemyKillData { enemyType = EnemyEnumType.Spill };
 
         enemySpawner = GameObject.FindAnyObjectByType<EnemySpawner>();
     }
-
 
     public void AssignValuesToEnemyKillData(SelectEnemyWeaponStatModel model)
     {
         foreach (EnemyWeaponStatModel enemyWeaponStat in model.dataStats)
         {
-            EnemyKillDataGeneral targetData = null;
+            EnemyKillData targetData = null;
 
             switch (enemyWeaponStat.enemy_type)
             {
@@ -97,12 +79,138 @@ public class LevelManager_SQL : MonoBehaviour
                 }
             }
         }
+
+        UpdateInvulnerableEnemiesInCurrentEnemySpawner();
     }
 
     void UpdateInvulnerableEnemiesInCurrentEnemySpawner()
     {
+        string weaponGlitch = GetWeaponHighestNumberKills(enemyKillDataGlitch);
+        string weaponShard = GetWeaponHighestNumberKills(enemyKillDataShard);
+        string weaponTracker = GetWeaponHighestNumberKills(enemyKillDataTracker);
+        string weaponSpill = GetWeaponHighestNumberKills(enemyKillDataSpill);
 
+        Debug.Log($"weaponGlitch es: {weaponGlitch}");
+        Debug.Log($"weaponShard es: {weaponShard}");
+        Debug.Log($"weaponTracker es: {weaponTracker}");
+        Debug.Log($"weaponSpill es: {weaponSpill}");
+
+        Color GetColorEnemy(string weaponHighestEnemy)
+        {
+            switch (weaponHighestEnemy)
+            {
+                case "Gun": return  Color.green;
+                case "Rifle": return Color.blue;
+                case "Shotgun": return Color.red;
+
+                default: return Color.white;
+            }
+        }
+
+        GameObject[] enemiesSpawn = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (GameObject enemy in enemiesSpawn)
+        {
+            VidaEnemigoGeneral vidaEnemigoGeneral=enemy.GetComponent<VidaEnemigoGeneral>();
+
+            if (enemy.GetComponent<EnemyType>().currentEnemyType == EnemyType.CurrentEnemyType.Glitch)
+            {
+                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(GetColorEnemy(weaponGlitch));
+                Color c = GetColorEnemy(weaponGlitch);
+                Debug.Log($"Color usado para Glitch: {c}");
+                vidaEnemigoGeneral.SetTipoDesdeColor(c);
+                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(c);
+
+
+            }
+            else if (enemy.GetComponent<EnemyType>().currentEnemyType == EnemyType.CurrentEnemyType.Shard)
+            {
+                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(GetColorEnemy(weaponShard));
+                Color c = GetColorEnemy(weaponShard);
+                vidaEnemigoGeneral.SetTipoDesdeColor(c);
+                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(c);
+            }
+            else if (enemy.GetComponent<EnemyType>().currentEnemyType == EnemyType.CurrentEnemyType.Spill)
+            {
+                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(GetColorEnemy(weaponSpill));
+                Color c = GetColorEnemy(weaponSpill);
+                vidaEnemigoGeneral.SetTipoDesdeColor(c);
+                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(c);
+            }
+            else if (enemy.GetComponent<EnemyType>().currentEnemyType == EnemyType.CurrentEnemyType.Tracker)
+            {
+                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(GetColorEnemy(weaponTracker));
+                Color c = GetColorEnemy(weaponTracker);
+                vidaEnemigoGeneral.SetTipoDesdeColor(c);
+                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(c);
+            }
+
+          
+        }
+      
     }
 
+    string GetWeaponHighestNumberKills(EnemyKillData enemyKillData)
+    {
+        int valueMax = Mathf.Max(enemyKillData.countGun, enemyKillData.countRifle, enemyKillData.countShotgun);
 
+        if (valueMax == enemyKillData.countGun)
+        {
+            return "Gun";
+        }
+        else if (valueMax == enemyKillData.countRifle)
+        {
+            return "Rifle";
+        }
+        else if (valueMax == enemyKillData.countShotgun)
+        {
+            return "Shotgun";
+        }
+        else
+        {
+            if (enemyKillData.countGun == enemyKillData.countRifle)
+            {
+                List<string> list = new List<string> { "Gun", "Rifle" };
+                int random = Random.Range(0, list.Count);
+                return list[random];
+            }
+            else if (enemyKillData.countGun == enemyKillData.countShotgun)
+            {
+                List<string> list = new List<string> { "Gun", "Shotgun" };
+                int random = Random.Range(0, list.Count);
+                return list[random];
+            }
+            else if (enemyKillData.countRifle == enemyKillData.countShotgun)
+            {
+                List<string> list = new List<string> { "Rifle", "Shotgun" };
+                int random = Random.Range(0, list.Count);
+                return list[random];
+            }
+            else
+            {
+                List<string> list = new List<string> { "Gun", "Rifle", "Shotgun" };
+                int random = Random.Range(0, list.Count);
+                return list[random];
+            }
+        }
+    }
+
+    public Color GetColorByEnemyType(EnemyType.CurrentEnemyType tipo)
+    {
+        string arma = tipo switch
+        {
+            EnemyType.CurrentEnemyType.Glitch => GetWeaponHighestNumberKills(enemyKillDataGlitch),
+            EnemyType.CurrentEnemyType.Shard => GetWeaponHighestNumberKills(enemyKillDataShard),
+            EnemyType.CurrentEnemyType.Tracker => GetWeaponHighestNumberKills(enemyKillDataTracker),
+            EnemyType.CurrentEnemyType.Spill => GetWeaponHighestNumberKills(enemyKillDataSpill),
+            _ => ""
+        };
+
+        return arma switch
+        {
+            "Gun" => Color.green,
+            "Rifle" => Color.blue,
+            "Shotgun" => Color.red,
+            _ => Color.white
+        };
+    }
 }

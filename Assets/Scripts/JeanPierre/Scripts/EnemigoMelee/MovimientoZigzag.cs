@@ -41,7 +41,7 @@ public class MovimientoDirectoNavMesh : MonoBehaviour
 
         if (playerTransform == null)
         {
-            var p = GameObject.FindGameObjectWithTag("Player");
+            var p = GameObject.Find("Player");
             if (p != null) playerTransform = p.transform;
             else Debug.LogError("No se encontró objeto con tag 'Player'.");
         }

@@ -186,7 +186,7 @@ public class AbilityManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"No se encontró el GameObject para '{abilityName}'.");
+                Debug.LogWarning($"No se encontrï¿½ el GameObject para '{abilityName}'.");
             }
         }
 
@@ -240,7 +240,7 @@ public class AbilityManager : MonoBehaviour
             .ToList();
 
         DataManager.SavePlayerEquippedState(equippedNames, currentIndex);
-        Debug.Log($"Estado guardado: {equippedNames.Count} habilidades, índice {currentIndex}");
+        Debug.Log($"Estado guardado: {equippedNames.Count} habilidades, ï¿½ndice {currentIndex}");
     }
 
     private void LoadFromDataStore()
@@ -251,7 +251,7 @@ public class AbilityManager : MonoBehaviour
 
         SetEquippedAbilities(saved);
         currentIndex = Mathf.Clamp(savedIndex, 0, activeAbilities.Count - 1);
-        Debug.Log($"Habilidades cargadas: {activeAbilities.Count}, índice {currentIndex}");
+        Debug.Log($"Habilidades cargadas: {activeAbilities.Count}, ï¿½ndice {currentIndex}");
     }
 
     private void DeactivateAll()

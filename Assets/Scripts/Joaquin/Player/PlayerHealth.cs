@@ -14,7 +14,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float shieldRegenRate = 4f;
     private bool isRegenShield;
 
-    [Header("Muerte y transición")]
+    [Header("Muerte y transiciï¿½n")]
     //[SerializeField] private string gameOverSceneName = "GameOver";
     [SerializeField] private GameObject deathPrefab;
 
@@ -66,7 +66,7 @@ public class PlayerHealth : MonoBehaviour
         const float HEALTH_INC = 0.1f; // +10% por nivel
         const float SHIELD_INC = 0.05f; // +5% por nivel
 
-        // Calcula máximos con upgrades
+        // Calcula mï¿½ximos con upgrades
         int upgradedMaxHealth = Mathf.RoundToInt(baseMaxHealth * (1 + healthLevel * HEALTH_INC));
         int upgradedMaxShield = Mathf.RoundToInt(baseMaxShield * (1 + shieldLevel * SHIELD_INC));
 
@@ -78,7 +78,7 @@ public class PlayerHealth : MonoBehaviour
         baseMaxHealth = upgradedMaxHealth;
         baseMaxShield = upgradedMaxShield;
 
-        // Ajusta valores actuales según nuevo máximo
+        // Ajusta valores actuales segï¿½n nuevo mï¿½ximo
         currentHealth = Mathf.RoundToInt(upgradedMaxHealth * healthPct);
         currentShield = Mathf.RoundToInt(upgradedMaxShield * shieldPct);
 
@@ -111,7 +111,7 @@ public class PlayerHealth : MonoBehaviour
 
         if (directionalDamageHUD != null)
         {
-            Debug.LogWarning($"Dirección del daño: {damageDirection}");
+            Debug.LogWarning($"Direcciï¿½n del daï¿½o: {damageDirection}");
             directionalDamageHUD.ActivateIndicator(damageDirection);
         }
 
@@ -171,7 +171,7 @@ public class PlayerHealth : MonoBehaviour
         if (isIgnited) return;
         isIgnited = true;
 
-        // Detener la coroutine anterior si está activa
+        // Detener la coroutine anterior si estï¿½ activa
         if (ignitionCoroutine != null)
         {
             StopCoroutine(ignitionCoroutine);
@@ -192,6 +192,16 @@ public class PlayerHealth : MonoBehaviour
 
     public void Die()
     {
+        insertKillsCount = fatherWithCode.GetComponent<InsertKillsCount>();
+        insertKillsCount.SendDataToServer();
+
+        SendPosition enviar = GetComponent<SendPosition>();
+        if (enviar != null)
+        {
+            enviar.EnviarPosicionActual();
+        }
+
+
         EnemySpawner enemySpawner = FindObjectOfType<EnemySpawner>();
         if (enemySpawner != null)
         {
