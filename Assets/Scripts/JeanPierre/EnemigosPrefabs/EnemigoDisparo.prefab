@@ -226,6 +226,7 @@ GameObject:
   - component: {fileID: 5845595052393315804}
   - component: {fileID: 1875104927599053000}
   - component: {fileID: 1277577831231849217}
+  - component: {fileID: 4185338918646176270}
   m_Layer: 6
   m_Name: EnemigoDisparo
   m_TagString: Enemy
@@ -402,10 +403,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isImmuneToMindControl: 0
-  enemyRenderer: {fileID: 0}
-  mindjackMaterial: {fileID: 2100000, guid: dab846e30402f9248b19a7f6d174e391, type: 2}
-  ignitionEffectPrefab: {fileID: 5214082911524151784, guid: fddad74c7e3fd1045b008ecd37cc5728,
-    type: 3}
   mindjackFindTargetRadius: 10
   baseSpeed: 3
 --- !u!114 &7723565866553249891
@@ -606,6 +603,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   portalPrefab: {fileID: 2274352089868180286}
   spawnDelay: 1
+--- !u!114 &4185338918646176270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3775705321392681890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf38579475d26af4eb28af5f7e33957f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentEnemyType: 1
+  enemy_id: 0
 --- !u!1 &6177287622287384025
 GameObject:
   m_ObjectHideFlags: 0

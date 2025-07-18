@@ -447,6 +447,7 @@ GameObject:
   - component: {fileID: 4966090092420306200}
   - component: {fileID: 7746980232694710388}
   - component: {fileID: 2680411798747242149}
+  - component: {fileID: -1316964026151825119}
   m_Layer: 6
   m_Name: EnemigoMelee
   m_TagString: Enemy
@@ -548,7 +549,6 @@ MonoBehaviour:
   fragments: 50
   enableDissolve: 1
   dissolveDuration: 4
-  tipo: 1
   isTracker: 0
 --- !u!114 &4643872267189118312
 MonoBehaviour:
@@ -667,10 +667,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isImmuneToMindControl: 0
-  enemyRenderer: {fileID: 786921279410816824}
-  mindjackMaterial: {fileID: 2100000, guid: dab846e30402f9248b19a7f6d174e391, type: 2}
-  ignitionEffectPrefab: {fileID: 5214082911524151784, guid: fddad74c7e3fd1045b008ecd37cc5728,
-    type: 3}
   mindjackFindTargetRadius: 10
   baseSpeed: 5
 --- !u!114 &-3876290804030161075
@@ -830,6 +826,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   portalPrefab: {fileID: 1520731693708677931}
   spawnDelay: 2.5
+--- !u!114 &-1316964026151825119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5120538479886475079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf38579475d26af4eb28af5f7e33957f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentEnemyType: 0
+  enemy_id: 0
 --- !u!1 &6642947135343746201
 GameObject:
   m_ObjectHideFlags: 0
