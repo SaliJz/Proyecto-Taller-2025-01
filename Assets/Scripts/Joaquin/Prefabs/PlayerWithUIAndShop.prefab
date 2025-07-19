@@ -20679,10 +20679,10 @@ MonoBehaviour:
   - {fileID: 532303132377064543}
   - {fileID: 1915262979108011126}
   glitchMaterial: {fileID: 2100000, guid: 4b4f143ad5bb57249b89f37e812e25ec, type: 2}
-  ghostCount: 4
-  offsetPerGhost: {x: 0.1, y: 0.05, z: 0.1}
-  ghostLifetime: 0.2
-  spawnInterval: 0.01
+  ghostCount: 2
+  offsetPerGhost: {x: 0.02, y: 0, z: 0.02}
+  ghostLifetime: 0.3
+  spawnInterval: 0.2
   Scale_Multiplier: 1
 --- !u!1 &2508847476442441799
 GameObject:
@@ -39100,6 +39100,7 @@ GameObject:
   - component: {fileID: 7588991864290381649}
   - component: {fileID: 492461578205122959}
   - component: {fileID: 6906898427139130923}
+  - component: {fileID: 4513848170076473034}
   m_Layer: 0
   m_Name: InitialTransporter
   m_TagString: Untagged
@@ -39203,6 +39204,19 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &4513848170076473034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3979044898980045357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5a4de0d011e57b4e82e392069dfe5ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Destroy_Delay: 22
 --- !u!1 &3980548283724792807
 GameObject:
   m_ObjectHideFlags: 0
