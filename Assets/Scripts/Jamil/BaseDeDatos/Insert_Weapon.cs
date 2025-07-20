@@ -6,7 +6,7 @@ using static LevelManager_SQL;
 
 public class Insert_Weapon : MonoBehaviour
 {
-    private string url = "https://progra251ch.samidareno.com/insert_weapon.php";
+    private string url = "http://localhost/proyecto_taller/insert_weapon.php";
  
     public void Execute(WeaponType weaponType)
     {
@@ -17,7 +17,7 @@ public class Insert_Weapon : MonoBehaviour
     {
         WWWForm form = new WWWForm();
         form.AddField("weapon_name",weaponType.currentWeaponType.ToString());
-        form.AddField("player_id", LOGIN.currentPlayer_id);/*LOGIN.currentPlayer_id*/
+        form.AddField("player_id", 1);/*LOGIN.currentPlayer_id*/
         form.AddField("bullet_spent",0); 
 
         using (UnityWebRequest www = UnityWebRequest.Post(url, form))

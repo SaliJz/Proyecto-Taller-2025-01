@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement; 
+
 
 public class LevelManager_SQL : MonoBehaviour
 {
@@ -19,9 +21,6 @@ public class LevelManager_SQL : MonoBehaviour
     public EnemyKillData enemyKillDataShard;
     public EnemyKillData enemyKillDataTracker;
     public EnemyKillData enemyKillDataSpill;
-
-    private EnemySpawner enemySpawner;
-
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -29,16 +28,48 @@ public class LevelManager_SQL : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+        Instance = this; 
 
-        Instance = this;
-        DontDestroyOnLoad(this.gameObject); 
+        SceneManager.sceneLoaded += OnSceneLoaded; 
+
+        DontDestroyOnLoad(this.gameObject);
 
         enemyKillDataGlitch = new EnemyKillData { enemyType = EnemyEnumType.Glitch };
         enemyKillDataShard = new EnemyKillData { enemyType = EnemyEnumType.Shard };
-        enemyKillDataTracker = new EnemyKillData { enemyType = EnemyEnumType.Tracker };
+        enemyKillDataTracker = new EnemyKillData { enemyType = EnemyEnumType.Tracker};
         enemyKillDataSpill = new EnemyKillData { enemyType = EnemyEnumType.Spill };
+    }
 
-        enemySpawner = GameObject.FindAnyObjectByType<EnemySpawner>();
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Get_Top_Weapon_Per_Enemy fetcher = FindObjectOfType<Get_Top_Weapon_Per_Enemy>();
+        if (fetcher != null)
+        {
+            fetcher.Execute();
+        }
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.L)) // Solo para prueba
+        {
+            DebugEnemyKillData();
+        }
+    }
+    public void DebugEnemyKillData()
+    {
+        Debug.Log("--- Enemy Kill Data Debug ---");
+
+        void PrintData(EnemyKillData data)
+        {
+            Debug.Log($"Enemy: {data.enemyType}, Gun: {data.countGun}, Rifle: {data.countRifle}, Shotgun: {data.countShotgun}");
+        }
+
+        PrintData(enemyKillDataGlitch);
+        PrintData(enemyKillDataShard);
+        PrintData(enemyKillDataTracker);
+        PrintData(enemyKillDataSpill);
+
+        Debug.Log("-----------------------------");
     }
 
     public void AssignValuesToEnemyKillData(SelectEnemyWeaponStatModel model)
@@ -68,131 +99,36 @@ public class LevelManager_SQL : MonoBehaviour
                 switch (enemyWeaponStat.weapon_name)
                 {
                     case "Gun":
-                        targetData.countGun += 1;
+                        targetData.countGun = enemyWeaponStat.kill_count;
                         break;
                     case "Rifle":
-                        targetData.countRifle += 1;
+                        targetData.countRifle = enemyWeaponStat.kill_count;
                         break;
                     case "Shotgun":
-                        targetData.countShotgun += 1;
+                        targetData.countShotgun = enemyWeaponStat.kill_count;
                         break;
                 }
             }
         }
-
-        UpdateInvulnerableEnemiesInCurrentEnemySpawner();
     }
 
-    void UpdateInvulnerableEnemiesInCurrentEnemySpawner()
+    string GetWeaponHighestNumberKills(EnemyKillData enemyKillData) 
     {
-        string weaponGlitch = GetWeaponHighestNumberKills(enemyKillDataGlitch);
-        string weaponShard = GetWeaponHighestNumberKills(enemyKillDataShard);
-        string weaponTracker = GetWeaponHighestNumberKills(enemyKillDataTracker);
-        string weaponSpill = GetWeaponHighestNumberKills(enemyKillDataSpill);
+        int maxValue = Mathf.Max(enemyKillData.countGun, enemyKillData.countRifle, enemyKillData.countShotgun);
 
-        Debug.Log($"weaponGlitch es: {weaponGlitch}");
-        Debug.Log($"weaponShard es: {weaponShard}");
-        Debug.Log($"weaponTracker es: {weaponTracker}");
-        Debug.Log($"weaponSpill es: {weaponSpill}");
+        List<string> candidates = new List<string>();
 
-        Color GetColorEnemy(string weaponHighestEnemy)
-        {
-            switch (weaponHighestEnemy)
-            {
-                case "Gun": return  Color.green;
-                case "Rifle": return Color.blue;
-                case "Shotgun": return Color.red;
+        if (enemyKillData.countGun == maxValue)
+            candidates.Add("Gun");
+        if (enemyKillData.countRifle == maxValue)
+            candidates.Add("Rifle");
+        if (enemyKillData.countShotgun == maxValue)
+            candidates.Add("Shotgun");
 
-                default: return Color.white;
-            }
-        }
-
-        GameObject[] enemiesSpawn = GameObject.FindGameObjectsWithTag("Enemy");
-        foreach (GameObject enemy in enemiesSpawn)
-        {
-            VidaEnemigoGeneral vidaEnemigoGeneral=enemy.GetComponent<VidaEnemigoGeneral>();
-
-            if (enemy.GetComponent<EnemyType>().currentEnemyType == EnemyType.CurrentEnemyType.Glitch)
-            {
-                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(GetColorEnemy(weaponGlitch));
-                Color c = GetColorEnemy(weaponGlitch);
-                Debug.Log($"Color usado para Glitch: {c}");
-                vidaEnemigoGeneral.SetTipoDesdeColor(c);
-                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(c);
-
-
-            }
-            else if (enemy.GetComponent<EnemyType>().currentEnemyType == EnemyType.CurrentEnemyType.Shard)
-            {
-                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(GetColorEnemy(weaponShard));
-                Color c = GetColorEnemy(weaponShard);
-                vidaEnemigoGeneral.SetTipoDesdeColor(c);
-                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(c);
-            }
-            else if (enemy.GetComponent<EnemyType>().currentEnemyType == EnemyType.CurrentEnemyType.Spill)
-            {
-                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(GetColorEnemy(weaponSpill));
-                Color c = GetColorEnemy(weaponSpill);
-                vidaEnemigoGeneral.SetTipoDesdeColor(c);
-                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(c);
-            }
-            else if (enemy.GetComponent<EnemyType>().currentEnemyType == EnemyType.CurrentEnemyType.Tracker)
-            {
-                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(GetColorEnemy(weaponTracker));
-                Color c = GetColorEnemy(weaponTracker);
-                vidaEnemigoGeneral.SetTipoDesdeColor(c);
-                vidaEnemigoGeneral.AsignarColorYEmissionAMateriales(c);
-            }
-
-          
-        }
-      
+        int randomIndex = Random.Range(0, candidates.Count);
+        return candidates[randomIndex];
     }
 
-    string GetWeaponHighestNumberKills(EnemyKillData enemyKillData)
-    {
-        int valueMax = Mathf.Max(enemyKillData.countGun, enemyKillData.countRifle, enemyKillData.countShotgun);
-
-        if (valueMax == enemyKillData.countGun)
-        {
-            return "Gun";
-        }
-        else if (valueMax == enemyKillData.countRifle)
-        {
-            return "Rifle";
-        }
-        else if (valueMax == enemyKillData.countShotgun)
-        {
-            return "Shotgun";
-        }
-        else
-        {
-            if (enemyKillData.countGun == enemyKillData.countRifle)
-            {
-                List<string> list = new List<string> { "Gun", "Rifle" };
-                int random = Random.Range(0, list.Count);
-                return list[random];
-            }
-            else if (enemyKillData.countGun == enemyKillData.countShotgun)
-            {
-                List<string> list = new List<string> { "Gun", "Shotgun" };
-                int random = Random.Range(0, list.Count);
-                return list[random];
-            }
-            else if (enemyKillData.countRifle == enemyKillData.countShotgun)
-            {
-                List<string> list = new List<string> { "Rifle", "Shotgun" };
-                int random = Random.Range(0, list.Count);
-                return list[random];
-            }
-            else
-            {
-                List<string> list = new List<string> { "Gun", "Rifle", "Shotgun" };
-                int random = Random.Range(0, list.Count);
-                return list[random];
-            }
-        }
-    }
 
     public Color GetColorByEnemyType(EnemyType.CurrentEnemyType tipo)
     {
@@ -212,5 +148,10 @@ public class LevelManager_SQL : MonoBehaviour
             "Shotgun" => Color.red,
             _ => Color.white
         };
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }

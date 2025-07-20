@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 public class InsertEnemyController : MonoBehaviour
 {
-    private string url = "https://progra251ch.samidareno.com/insert_enemies.php";
+    private string url = "http://localhost/proyecto_taller/insert_enemies.php";
 
     public void Execute(EnemyType enemy_type)
     {

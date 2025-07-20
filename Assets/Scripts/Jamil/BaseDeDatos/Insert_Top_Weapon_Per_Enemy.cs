@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 public class Insert_Top_Weapon_Per_Enemy : MonoBehaviour
 {
-    private string url = "https://progra251ch.samidareno.com/insert_enemies_weapons.php";
+    private string url = "http://localhost/proyecto_taller/insert_enemies_weapons.php";
 
     public void Execute(int enemy_id,int weapon_id)
     {
