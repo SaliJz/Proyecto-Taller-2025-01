@@ -397,7 +397,6 @@ GameObject:
   - component: {fileID: 7170101365556741992}
   - component: {fileID: 3574586187406627060}
   - component: {fileID: 411004352547346062}
-  - component: {fileID: 6996044265018477792}
   m_Layer: 6
   m_Name: EnemigoExplosion
   m_TagString: Enemy
@@ -608,10 +607,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isImmuneToMindControl: 0
-  enemyRenderer: {fileID: 0}
-  mindjackMaterial: {fileID: 2100000, guid: dab846e30402f9248b19a7f6d174e391, type: 2}
-  ignitionEffectPrefab: {fileID: 5214082911524151784, guid: fddad74c7e3fd1045b008ecd37cc5728,
-    type: 3}
   mindjackFindTargetRadius: 10
   baseSpeed: 2
 --- !u!114 &-2804150367015730761
@@ -688,20 +683,6 @@ NavMeshAgent:
   m_BaseOffset: 1.03
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &6996044265018477792
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4394272956414374065}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49e9d0e9c1aafbc489fd13071e7fcb3a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  portalPrefab: {fileID: 5009141811327568917}
-  spawnDelay: 1
 --- !u!1 &6482934429859103929
 GameObject:
   m_ObjectHideFlags: 0
@@ -945,12 +926,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80ba090f34fc76749a077ac7d20de3e2, type: 3}
---- !u!1 &5009141811327568917 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6120994737592180792, guid: 80ba090f34fc76749a077ac7d20de3e2,
-    type: 3}
-  m_PrefabInstance: {fileID: 1258245615826709549}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6505807037309665608 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5422169846687165797, guid: 80ba090f34fc76749a077ac7d20de3e2,

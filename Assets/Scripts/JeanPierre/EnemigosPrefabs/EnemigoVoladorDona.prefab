@@ -40,7 +40,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1442836555084614997}
-  - component: {fileID: 7609659294649641090}
   m_Layer: 6
   m_Name: EnemigoVoladorDona
   m_TagString: Untagged
@@ -66,20 +65,6 @@ Transform:
   - {fileID: 3738284610906298608}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7609659294649641090
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1603735669551673134}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49e9d0e9c1aafbc489fd13071e7fcb3a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  portalPrefab: {fileID: 7512391822617627904}
-  spawnDelay: 1
 --- !u!1 &1855478603768885837
 GameObject:
   m_ObjectHideFlags: 0
@@ -403,8 +388,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isImmuneToMindControl: 0
-  ignitionEffectPrefab: {fileID: 5214082911524151784, guid: fddad74c7e3fd1045b008ecd37cc5728,
-    type: 3}
   mindjackFindTargetRadius: 10
   baseSpeed: 5
 --- !u!114 &8922103313531675003
@@ -1184,12 +1167,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80ba090f34fc76749a077ac7d20de3e2, type: 3}
---- !u!1 &7512391822617627904 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6120994737592180792, guid: 80ba090f34fc76749a077ac7d20de3e2,
-    type: 3}
-  m_PrefabInstance: {fileID: 4373915288867695928}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8614311282751078493 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5422169846687165797, guid: 80ba090f34fc76749a077ac7d20de3e2,

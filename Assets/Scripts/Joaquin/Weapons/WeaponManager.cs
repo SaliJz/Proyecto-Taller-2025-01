@@ -20,7 +20,6 @@ public class WeaponManager : MonoBehaviour
 
     private int currentIndex = 0;
     private Vector3[] originalModelPositions;
-    private VFXController vfxController;
 
     public bool CanChangeWeapon
     {
@@ -36,8 +35,6 @@ public class WeaponManager : MonoBehaviour
 
     private void Start()
     {
-        vfxController = FindObjectOfType<VFXController>();
-
         originalModelPositions = new Vector3[weaponModels.Length];
         for (int i = 0; i < weaponModels.Length; i++)
         {
@@ -77,12 +74,6 @@ public class WeaponManager : MonoBehaviour
     private void ChangeWeapon(int index)
     {
         if (!canChangeWeapon || index == currentIndex || index < 0 || index >= weapons.Length) return;
-
-        if (vfxController != null)
-        {
-            vfxController.DeactivateAll();
-            vfxController.ActivateVFX(index.ToString());
-        }
 
         PlayerPrefs.SetInt("LastWeaponIndex", index);
 

@@ -30,10 +30,10 @@ public class PlayerHealth : MonoBehaviour
     {
         if (isTutorial)
         {
-            GeneralUpgradeManager.IsTutorial = true;
+            DataManager.IsTutorial = true;
             DataManager.ResetData();
         }
-        else GeneralUpgradeManager.IsTutorial = false;
+        else DataManager.IsTutorial = false;
     }
 
     private void Start()

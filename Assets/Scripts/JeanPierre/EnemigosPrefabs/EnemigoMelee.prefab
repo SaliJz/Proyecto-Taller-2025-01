@@ -446,7 +446,6 @@ GameObject:
   - component: {fileID: 3247441937836668493}
   - component: {fileID: 4966090092420306200}
   - component: {fileID: 7746980232694710388}
-  - component: {fileID: 2680411798747242149}
   m_Layer: 6
   m_Name: EnemigoMelee
   m_TagString: Enemy
@@ -666,10 +665,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isImmuneToMindControl: 0
-  enemyRenderer: {fileID: 786921279410816824}
-  mindjackMaterial: {fileID: 2100000, guid: dab846e30402f9248b19a7f6d174e391, type: 2}
-  ignitionEffectPrefab: {fileID: 5214082911524151784, guid: fddad74c7e3fd1045b008ecd37cc5728,
-    type: 3}
   mindjackFindTargetRadius: 10
   baseSpeed: 5
 --- !u!114 &-3876290804030161075
@@ -817,20 +812,6 @@ MonoBehaviour:
     type: 2}
   materialPistola: {fileID: 2100000, guid: d56d5a37307e9fc4fa261b3239124b38, type: 2}
   materialEscopeta: {fileID: 2100000, guid: b9726c6f76e03234989e4ab2a98fb100, type: 2}
---- !u!114 &2680411798747242149
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5120538479886475079}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49e9d0e9c1aafbc489fd13071e7fcb3a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  portalPrefab: {fileID: 1520731693708677931}
-  spawnDelay: 2.5
 --- !u!1 &6642947135343746201
 GameObject:
   m_ObjectHideFlags: 0
@@ -1144,12 +1125,6 @@ PrefabInstance:
 --- !u!4 &781365313979014774 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5422169846687165797, guid: 80ba090f34fc76749a077ac7d20de3e2,
-    type: 3}
-  m_PrefabInstance: {fileID: 4749218583330468627}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1520731693708677931 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6120994737592180792, guid: 80ba090f34fc76749a077ac7d20de3e2,
     type: 3}
   m_PrefabInstance: {fileID: 4749218583330468627}
   m_PrefabAsset: {fileID: 0}
