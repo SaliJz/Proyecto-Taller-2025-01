@@ -142,7 +142,7 @@ public class EnemigoPistolaTutorial : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        TutorialEnemies tutorial = GetComponent<TutorialEnemies>();
+        //TutorialEnemies tutorial = GetComponent<TutorialEnemies>();
         //if (tutorial != null)
         //{
         //    foreach (int index in tutorial.IndexScenes)
