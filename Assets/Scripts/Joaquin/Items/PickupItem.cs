@@ -187,8 +187,6 @@ public class PickupItem : MonoBehaviour
 
         Debug.Log($"Recogido {added} balas de tipo {pickupType}");
 
-        // CORRECCIÓN: Siempre destruir el objeto después de intentar recogerlo
-        // independientemente de si se añadió munición o no
         Destroy(gameObject);
     }
 
