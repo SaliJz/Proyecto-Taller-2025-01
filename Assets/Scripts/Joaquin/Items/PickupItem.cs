@@ -31,7 +31,7 @@ public class PickupItem : MonoBehaviour
 
     private void Awake()
     {
-        
+
     }
     private void Start()
     {
@@ -187,13 +187,9 @@ public class PickupItem : MonoBehaviour
 
         Debug.Log($"Recogido {added} balas de tipo {pickupType}");
 
-        actualAmount -= added;
-        //UpdateVisual();
-
-        if (actualAmount <= 0)
-        {
-            Destroy(gameObject);
-        }
+        // CORRECCIÓN: Siempre destruir el objeto después de intentar recogerlo
+        // independientemente de si se añadió munición o no
+        Destroy(gameObject);
     }
 
     private bool NeedsThisAmmoType()
@@ -218,8 +214,15 @@ public class PickupItem : MonoBehaviour
 
         if (Vector3.Distance(transform.position, targetPosition) < 0.2f)
         {
+            if (!NeedsThisAmmoType())
+            {
+                Debug.Log($"Ya no necesita munición de tipo {pickupType}, destruyendo objeto");
+                Destroy(gameObject);
+                return;
+            }
+
             TryPickup();
-            // El objeto se destruirá dentro de TryPickup si se recoge toda la munición
+            // El objeto se destruirá dentro de TryPickup
         }
     }
 
@@ -230,6 +233,7 @@ public class PickupItem : MonoBehaviour
             if (pickupType != PickupType.CodeFragment)
             {
                 playerInRange = true;
+                playerTarget = other.transform;
                 Debug.Log("Jugador dentro del rango de recogida.");
             }
         }
@@ -242,6 +246,9 @@ public class PickupItem : MonoBehaviour
             if (pickupType != PickupType.CodeFragment)
             {
                 playerInRange = false;
+                playerTarget = null;
+                isFlyingToPlayer = false;
+                if (rb != null) rb.isKinematic = false;
                 Debug.Log("Jugador fuera del rango de recogida.");
             }
         }

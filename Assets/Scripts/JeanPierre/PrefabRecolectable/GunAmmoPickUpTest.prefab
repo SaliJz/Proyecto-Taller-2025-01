@@ -146,6 +146,7 @@ GameObject:
   - component: {fileID: 4114488560353093981}
   - component: {fileID: 697845627139987166}
   - component: {fileID: 8979354825620706988}
+  - component: {fileID: 304588153518096248}
   m_Layer: 0
   m_Name: GunAmmoPickUpTest
   m_TagString: Untagged
@@ -210,6 +211,27 @@ MonoBehaviour:
   positionOffset: 1
   lifetime: 60
   playerInRange: 0
+--- !u!65 &304588153518096248
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4801807564617485238}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 128
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6154051164474008441
 GameObject:
   m_ObjectHideFlags: 0
@@ -221,8 +243,6 @@ GameObject:
   - component: {fileID: 2349047566936061529}
   - component: {fileID: 1337873928078011071}
   - component: {fileID: 2799029749201557190}
-  - component: {fileID: 453175303302238125}
-  - component: {fileID: 7585545186336436256}
   m_Layer: 16
   m_Name: Cube
   m_TagString: Untagged
@@ -297,54 +317,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &453175303302238125
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6154051164474008441}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 192
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &7585545186336436256
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6154051164474008441}
-  serializedVersion: 4
-  m_Mass: 0.3
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 192
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 122
-  m_CollisionDetection: 0
 --- !u!1 &7339161539265427896
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,7 +336,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5922394822232811552
 RectTransform:
   m_ObjectHideFlags: 0
@@ -558,7 +530,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Loot-GreenAmmo
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4258973558113188276, guid: 47689ad7b3d3f5d48b2d27a390600643, type: 3}
+    - {fileID: 8523344769238933558, guid: 47689ad7b3d3f5d48b2d27a390600643, type: 3}
+    - {fileID: 1203553606231687066, guid: 47689ad7b3d3f5d48b2d27a390600643, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

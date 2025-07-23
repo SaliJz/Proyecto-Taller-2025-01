@@ -55,12 +55,14 @@ public class VidaEnemigoGeneral : MonoBehaviour
     public MeshRenderer[] staticMeshRenderers;
 
     [Header("Prefabs al morir por tipo")]
+    public GameObject[] prefabsDropsAmmont;
     public GameObject prefabMuerteAmetralladora;
     public GameObject prefabMuertePistola;
     public GameObject prefabMuerteEscopeta;
 
     [Header("Fragmentos y HUD")]
     public int fragments = 50;
+    public GameObject prefabFragments;
 
     [Header("Dissolve Settings")]
     public bool enableDissolve = true;
@@ -290,6 +292,23 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
         if (prefabAMorir != null)
             Instantiate(prefabAMorir, transform.position, transform.rotation);
+
+        if (prefabFragments != null)
+            Instantiate(prefabFragments, transform.position, transform.rotation);
+
+        GameObject selectedPrefab = prefabsDropsAmmont.Length == 0
+            ? null
+            : prefabsDropsAmmont[UnityEngine.Random.Range(0, prefabsDropsAmmont.Length)];
+
+        if (selectedPrefab != null)
+        {
+            Debug.Log("Instanciando: " + selectedPrefab.name);
+            GameObject droppedItem = Instantiate(selectedPrefab, transform.position, transform.rotation);
+        }
+        else
+        {
+            Debug.Log("No hay prefabs para instanciar");
+        }
 
         HUDManager.Instance?.AddInfoFragment(fragments);
         MissionManager.Instance?.RegisterKill(gameObject.tag, name, tipo.ToString());
