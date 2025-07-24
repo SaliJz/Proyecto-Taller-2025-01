@@ -282,6 +282,14 @@ public class VidaEnemigoGeneral : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null) 
+            gameObject.layer = LayerMask.NameToLayer("DeadEnemies"); 
+
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        if (agent != null)
+            agent.enabled = false;
+
         GameObject prefabAMorir = tipo switch
         {
             TipoEnemigo.Ametralladora => prefabMuerteAmetralladora,

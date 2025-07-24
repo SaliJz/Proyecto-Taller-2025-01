@@ -12,6 +12,7 @@ public class PortalVFXController : MonoBehaviour
 
     public void DeactivePortalAnimation()
     {
-        portalAnimator.SetTrigger("isClose");
+        if (portalAnimator != null)
+            portalAnimator.SetTrigger("isClose");
     }
 }

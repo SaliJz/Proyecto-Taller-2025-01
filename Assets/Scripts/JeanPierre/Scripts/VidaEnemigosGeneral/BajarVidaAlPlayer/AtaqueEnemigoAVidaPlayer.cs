@@ -5,6 +5,7 @@ public class AtaqueEnemigoAVidaPlayer : MonoBehaviour
 {
     [SerializeField] private int damageAmount = 15;        // Cantidad de daño que se aplicará al jugador.
     [SerializeField] private float damageInterval = 1.5f; // Intervalo en segundos entre cada daño.
+    [SerializeField] private Animator animator;
 
     private Coroutine damageCoroutine;
     private float lastStayTime;
@@ -17,7 +18,7 @@ public class AtaqueEnemigoAVidaPlayer : MonoBehaviour
             if (playerHealth != null && damageCoroutine == null)
             {
                 // Inicializamos el timestamp y arrancamos la corrutina
-                lastStayTime = Time.time;
+                lastStayTime = Time.time;           
                 damageCoroutine = StartCoroutine(DamagePlayerRoutine(playerHealth));
             }
         }
@@ -50,15 +51,23 @@ public class AtaqueEnemigoAVidaPlayer : MonoBehaviour
 
         while (true)
         {
-            yield return new WaitForSeconds(damageInterval);
+            if (animator != null)
+                animator.SetBool("Ataque", true);
 
-            // Si hace más de damageInterval que no llegó ningún OnTriggerStay,
-            // asumimos que el player ha salido y salimos de la corrutina.
-            if (Time.time - lastStayTime > damageInterval)
+            yield return new WaitForSeconds(0.3f);
+
+            if (Time.time - lastStayTime > 0.3f)
                 break;
 
-            // Si sigue dentro, aplicamos siguiente golpe
             playerHealth.TakeDamage(damageAmount, transform.position);
+
+            if (animator != null)
+                animator.SetBool("Ataque", false);
+
+            yield return new WaitForSeconds(damageInterval - 0.3f);
+
+            if (Time.time - lastStayTime > damageInterval)
+                break;
         }
 
         damageCoroutine = null;
