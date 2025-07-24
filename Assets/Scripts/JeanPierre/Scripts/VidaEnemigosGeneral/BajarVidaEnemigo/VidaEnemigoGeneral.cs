@@ -283,12 +283,10 @@ public class VidaEnemigoGeneral : MonoBehaviour
         isDead = true;
 
         Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb != null) 
-            gameObject.layer = LayerMask.NameToLayer("DeadEnemies"); 
+        if (rb != null)
+            gameObject.layer = LayerMask.NameToLayer("DeadEnemies");
 
-        NavMeshAgent agent = GetComponent<NavMeshAgent>();
-        if (agent != null)
-            agent.enabled = false;
+        DesactiveScripts();
 
         GameObject prefabAMorir = tipo switch
         {
@@ -334,6 +332,25 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
         Destroy(sliderVida.gameObject);
         StartCoroutine(TimeToDead());
+    }
+
+    private void DesactiveScripts()
+    {
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        if (agent != null)
+            agent.enabled = false;
+
+        AtaqueEnemigoAVidaPlayer ataque = GetComponent<AtaqueEnemigoAVidaPlayer>();
+        if (ataque != null)
+            ataque.enabled = false;
+
+        EnemigoDisparador dispardor = GetComponent<EnemigoDisparador>();
+        if (dispardor != null)
+            dispardor.enabled = false;
+
+        LookAtPlayerY lookAtPlayerY = GetComponent<LookAtPlayerY>();
+        if (lookAtPlayerY != null)
+            lookAtPlayerY.enabled = false;
     }
 
     private IEnumerator DissolveEffect()

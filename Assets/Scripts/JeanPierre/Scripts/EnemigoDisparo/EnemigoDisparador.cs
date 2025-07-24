@@ -113,6 +113,11 @@ public class EnemigoDisparador : MonoBehaviour
 
         // (Opcional) Si no se destruye solo: Destroy(efecto, 2f);
     }
+
+    private void OnDisable()
+    {
+        StopCoroutine(SpawnChargeAndShoot());
+    }
 }
 
 
