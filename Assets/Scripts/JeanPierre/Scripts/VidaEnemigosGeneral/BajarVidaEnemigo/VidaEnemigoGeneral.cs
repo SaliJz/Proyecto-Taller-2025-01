@@ -56,9 +56,6 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
     [Header("Prefabs al morir por tipo")]
     public GameObject[] prefabsDropsAmmont;
-    public GameObject prefabMuerteAmetralladora;
-    public GameObject prefabMuertePistola;
-    public GameObject prefabMuerteEscopeta;
 
     [Header("Fragmentos y HUD")]
     public int fragments = 50;
@@ -287,17 +284,6 @@ public class VidaEnemigoGeneral : MonoBehaviour
             gameObject.layer = LayerMask.NameToLayer("DeadEnemies");
 
         DesactiveScripts();
-
-        GameObject prefabAMorir = tipo switch
-        {
-            TipoEnemigo.Ametralladora => prefabMuerteAmetralladora,
-            TipoEnemigo.Pistola => prefabMuertePistola,
-            TipoEnemigo.Escopeta => prefabMuerteEscopeta,
-            _ => null
-        };
-
-        if (prefabAMorir != null)
-            Instantiate(prefabAMorir, transform.position, transform.rotation);
 
         if (prefabFragments != null)
             Instantiate(prefabFragments, transform.position, transform.rotation);

@@ -542,12 +542,7 @@ MonoBehaviour:
   - {fileID: 4801807564617485238, guid: 12fb4266885dd134eae5c27fd7949446, type: 3}
   - {fileID: 3206890931059546896, guid: 7fc3418ba54185644942d523878dbe0d, type: 3}
   - {fileID: 7583714264058374518, guid: 8b926fcb8a2af1445bb60147a2693b48, type: 3}
-  prefabMuerteAmetralladora: {fileID: 7597145721601309270, guid: 5c64e1320daef804f813dfca3682d4ae,
-    type: 3}
-  prefabMuertePistola: {fileID: 7597145721601309270, guid: 33004dd31ce07794d8c3fde64d803892,
-    type: 3}
-  prefabMuerteEscopeta: {fileID: 7597145721601309270, guid: 1799a004841c0c84487e26a08eadb035,
-    type: 3}
+  particleReferencia: {fileID: 0}
   fragments: 50
   prefabFragments: {fileID: 4688980061749175599, guid: 71fa26f444887dd47908328e632687b4,
     type: 3}
@@ -1631,6 +1626,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: HumoDelglitch
+      objectReference: {fileID: 0}
+    - target: {fileID: 4718756096125163388, guid: d03a73f6ed4c3aa4196a9b0abe85f2d1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
