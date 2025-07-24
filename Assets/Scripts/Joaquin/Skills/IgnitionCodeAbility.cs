@@ -7,6 +7,7 @@ public class IgnitionCodeAbility : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform projectileSpawnPoint;
+    [SerializeField] private GameObject ignitionCodeVFX;
 
     [Header("Projectile Settings")]
     [SerializeField] private float projectileLifeTime = 2f;
@@ -66,7 +67,20 @@ public class IgnitionCodeAbility : MonoBehaviour
 
     private void OnEnable()
     {
+        if (ignitionCodeVFX != null)
+        {
+            ignitionCodeVFX.SetActive(true);
+        }
+
         HUDManager.Instance?.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
+    }
+
+    private void OnDisable()
+    {
+        if (ignitionCodeVFX != null)
+        {
+            ignitionCodeVFX.SetActive(false);
+        }
     }
 
     private void ApplyUpgrades()

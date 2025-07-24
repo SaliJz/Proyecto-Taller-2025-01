@@ -7,6 +7,7 @@ public class MindjackAbility : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform projectileSpawnPoint;
+    [SerializeField] private GameObject mindjackVFX;
 
     [Header("Settings")]
     [SerializeField] private float projectileLifeTime = 2f;
@@ -60,7 +61,20 @@ public class MindjackAbility : MonoBehaviour
 
     private void OnEnable()
     {
+        if (mindjackVFX != null)
+        {
+            mindjackVFX.SetActive(true);
+        }
+
         HUDManager.Instance?.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
+    }
+
+    private void OnDisable()
+    {
+        if (mindjackVFX != null)
+        {
+            mindjackVFX.SetActive(false);
+        }
     }
 
     private void ApplyUpgrades()
