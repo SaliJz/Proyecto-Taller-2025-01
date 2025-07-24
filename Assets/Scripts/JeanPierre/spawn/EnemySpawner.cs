@@ -8,7 +8,7 @@ public class EnemySpawner : MonoBehaviour
     [Header("Configuración de Spawn")]
     [SerializeField] private GameObject[] enemyPrefabs;
     [SerializeField] private SpawnPoint[] spawnPoints;
-    [SerializeField] private float spawnRadius = 2f;
+    [SerializeField] private float spawnRadius =0;
     private int maxEnemiesInScene = 20; // Este valor ahora será controlado por la misión
 
     private HashSet<GameObject> activeEnemies = new HashSet<GameObject>();

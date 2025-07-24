@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6374092828130106857
 Transform:
   m_ObjectHideFlags: 0
@@ -4843,13 +4843,14 @@ GameObject:
   - component: {fileID: 2401964170019719333}
   - component: {fileID: 5327333662691281340}
   - component: {fileID: 3351628652674088213}
+  - component: {fileID: -5665506338393395214}
   m_Layer: 0
   m_Name: SpawnPortal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5422169846687165797
 Transform:
   m_ObjectHideFlags: 0
@@ -4959,3 +4960,15 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-5665506338393395214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6120994737592180792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22626f5796c841448a8456bfcaea8be3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

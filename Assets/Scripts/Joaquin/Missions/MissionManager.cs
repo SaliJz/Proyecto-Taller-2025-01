@@ -102,7 +102,18 @@ public class MissionManager : MonoBehaviour
         }
 
         activeMission = true;
+       
+        if(PortalVFXManager.Instance != null)
+        {
+            PortalVFXManager.Instance.ActiveAllPortals();
+        }
 
+        else
+        {
+            Debug.LogError("PortalVFXManager.Instance es null");
+        }
+
+        Debug.Log("VerificandoPortal");
         switch (currentMode)
         {
             case MissionMode.Purgador:
@@ -164,6 +175,10 @@ public class MissionManager : MonoBehaviour
 
     public void CompleteMission()
     {
+        if (PortalVFXManager.Instance != null)
+        {
+            PortalVFXManager.Instance.CloseAllPortals();
+        }
         if (!activeMission) return;
         activeMission = false;
 
