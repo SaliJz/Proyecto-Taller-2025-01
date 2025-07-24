@@ -57,7 +57,11 @@ public class AtaqueEnemigoAVidaPlayer : MonoBehaviour
             yield return new WaitForSeconds(0.3f);
 
             if (Time.time - lastStayTime > 0.3f)
+            {
+                if (animator != null)
+                    animator.SetBool("Ataque", false);
                 break;
+            }
 
             playerHealth.TakeDamage(damageAmount, transform.position);
 
@@ -67,7 +71,9 @@ public class AtaqueEnemigoAVidaPlayer : MonoBehaviour
             yield return new WaitForSeconds(damageInterval - 0.3f);
 
             if (Time.time - lastStayTime > damageInterval)
+            {
                 break;
+            }
         }
 
         damageCoroutine = null;
