@@ -82,6 +82,8 @@ public class Weapon : MonoBehaviour
 
     private void Start()
     {
+        SetupStats();
+
         if (HUDManager.Instance != null)
         {
             HUDManager.Instance.UpdateAmmo(weaponAnimationID, currentAmmo, totalAmmo);
@@ -93,7 +95,6 @@ public class Weapon : MonoBehaviour
         if (isReloading) CancelReload();
 
         DataManager.OnDataChanged += ApplyUpgrades;
-        SetupStats();
     }
 
     private void OnDisable()

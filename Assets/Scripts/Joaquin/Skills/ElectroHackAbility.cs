@@ -8,6 +8,7 @@ public class ElectroHackAbility : MonoBehaviour
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform projectileSpawnPoint;
     [SerializeField] private ParticleSystem muzzleEffect;
+    [SerializeField] private GameObject electroHackVFX;
 
     [Header("ElectroHack Settings")]
     [SerializeField] private float projectileLifeTime = 2f;
@@ -68,7 +69,20 @@ public class ElectroHackAbility : MonoBehaviour
 
     private void OnEnable()
     {
+        if (electroHackVFX != null)
+        {
+            electroHackVFX.SetActive(true);
+        }
+
         HUDManager.Instance?.UpdateAbilityStatus(abilityInfo.abilityName, currentCooldownTimer, canUse, currentCooldown);
+    }
+
+    private void OnDisable()
+    {
+        if (electroHackVFX != null)
+        {
+            electroHackVFX.SetActive(false);
+        }
     }
 
     private void ApplyUpgrades()
