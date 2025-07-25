@@ -8,6 +8,7 @@ public class MindjackShot : MonoBehaviour
     private float duration;
 
     [SerializeField] private ParticleSystem impactEffect;
+    [SerializeField] private GameObject projectilePrefab;
 
     public void Initialize(float radius, float dps, float duration)
     {
@@ -144,6 +145,15 @@ public class MindjackShot : MonoBehaviour
         else
         {
             Debug.LogWarning("Particle System no está asignado en MindjackShot.");
+        }
+        if (projectilePrefab != null)
+        {
+            GameObject projectileInstance = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+            Destroy(projectileInstance, 3f);
+        }
+        else
+        {
+            Debug.LogWarning("Projectile Prefab no está asignado en MindjackShot.");
         }
     }
 }

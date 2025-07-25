@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -5,11 +6,13 @@ using UnityEngine.AI;
 public class EnemyAbilityReceiver : MonoBehaviour
 {
     public enum EnemyState { Normal, Mindjacked }
-    private EnemyState currentState = EnemyState.Normal;
+    public EnemyState CurrentState { get; private set; } = EnemyState.Normal;
     public Transform CurrentTarget { get; private set; }
 
+    public event Action<EnemyState> OnStateChanged;
+
     [SerializeField] private bool isImmuneToMindControl = false;
-    [SerializeField] private float mindjackFindTargetRadius = 10f;
+    //[SerializeField] private float mindjackFindTargetRadius = 10f;
     [SerializeField] private float baseSpeed = 3f;
     private float currentSpeed;
     public float CurrentSpeed => currentSpeed;
@@ -35,12 +38,7 @@ public class EnemyAbilityReceiver : MonoBehaviour
 
     private void Update()
     {
-        if (currentState == EnemyState.Mindjacked)
-        {
-            if (CurrentTarget == null || CurrentTarget == transform || CurrentTarget == playerTransform)
-                CurrentTarget = FindNearestEnemy();
-        }
-        else
+        if (CurrentState == EnemyState.Normal || CurrentState == EnemyState.Mindjacked)
         {
             CurrentTarget = playerTransform;
         }
@@ -157,7 +155,8 @@ public class EnemyAbilityReceiver : MonoBehaviour
         isMindjacked = true;
         if (!isImmuneToMindControl)
         {
-            currentState = EnemyState.Mindjacked;
+            CurrentState = EnemyState.Mindjacked;
+            OnStateChanged?.Invoke(CurrentState);
         }
 
         float elapsedTime = 0f;
@@ -171,32 +170,32 @@ public class EnemyAbilityReceiver : MonoBehaviour
         isMindjacked = false;
         if (!isImmuneToMindControl)
         {
-            currentState = EnemyState.Normal;
-            CurrentTarget = playerTransform;
+            CurrentState = EnemyState.Normal;
+            OnStateChanged?.Invoke(CurrentState);
         }
         mindjackCoroutine = null;
     }
 
-    private Transform FindNearestEnemy()
-    {
-        Collider[] hits = Physics.OverlapSphere(transform.position, mindjackFindTargetRadius, LayerMask.GetMask("Enemy"));
-        Transform nearestEnemy = null;
-        float minDistance = float.MaxValue;
+    //private Transform FindNearestEnemy()
+    //{
+    //    Collider[] hits = Physics.OverlapSphere(transform.position, mindjackFindTargetRadius, LayerMask.GetMask("Enemy"));
+    //    Transform nearestEnemy = null;
+    //    float minDistance = float.MaxValue;
 
-        foreach (var hit in hits)
-        {
-            var rec = hit.GetComponent<EnemyAbilityReceiver>();
-            if (rec == null || rec.currentState == EnemyState.Mindjacked || rec.isImmuneToMindControl) continue;
+    //    foreach (var hit in hits)
+    //    {
+    //        var rec = hit.GetComponent<EnemyAbilityReceiver>();
+    //        if (rec == null || rec.currentState == EnemyState.Mindjacked || rec.isImmuneToMindControl) continue;
 
-            if (hit.transform == this.transform) continue;
+    //        if (hit.transform == this.transform) continue;
 
-            float distance = Vector3.Distance(transform.position, hit.transform.position);
-            if (distance < minDistance)
-            {
-                minDistance = distance;
-                nearestEnemy = hit.transform;
-            }
-        }
-        return nearestEnemy;
-    }
+    //        float distance = Vector3.Distance(transform.position, hit.transform.position);
+    //        if (distance < minDistance)
+    //        {
+    //            minDistance = distance;
+    //            nearestEnemy = hit.transform;
+    //        }
+    //    }
+    //    return nearestEnemy;
+    //}
 }

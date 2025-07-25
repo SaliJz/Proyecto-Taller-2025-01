@@ -314,6 +314,7 @@ MonoBehaviour:
   hdrColorAmetralladora: {r: 0, g: 0, b: 0.8207547, a: 1}
   hdrColorPistola: {r: 0.754717, g: 0.010679938, b: 0.010679938, a: 1}
   hdrColorEscopeta: {r: 0.0035599943, g: 0.754717, b: 0.0035599943, a: 1}
+  hdrColorMindjacked: {r: 1, g: 0, b: 1, a: 1}
   meshRenderers:
   - {fileID: 7898957240090778964}
   - {fileID: 6158752915077462972}
@@ -407,7 +408,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isImmuneToMindControl: 0
-  mindjackFindTargetRadius: 10
   baseSpeed: 3
 --- !u!114 &7723565866553249891
 MonoBehaviour:
@@ -527,7 +527,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3775705321392681890}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a095fac495bae6f44aa8b55f62c19d44, type: 3}
   m_Name: 
