@@ -47,16 +47,24 @@ public class DeathManager : MonoBehaviour
 
         foreach (var bodyData in bodies)
         {
-            if (bodyData.sceneName == currentSceneName || currentSceneName == gameOverSceneName)
+            if (bodyData.body == null) continue;
+
+            if (currentSceneName == "MenuPrincipal")
             {
+                // Desactiva el cuerpo para que no se vea en el menú principal
+                bodyData.body.SetActive(false);
+                remainingBodies.Enqueue(bodyData);
+            }
+            else if (bodyData.sceneName == currentSceneName || currentSceneName == gameOverSceneName)
+            {
+                // Activa el cuerpo si está en la escena actual o en la escena de Game Over
+                bodyData.body.SetActive(true);
                 remainingBodies.Enqueue(bodyData);
             }
             else
             {
-                if (bodyData.body != null)
-                {
-                    Destroy(bodyData.body);
-                }
+                // Si el cuerpo no pertenece a la escena actual, se destruye
+                Destroy(bodyData.body);
             }
         }
 
