@@ -5,7 +5,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
-using static EnemigoRosa;
 
 public class VidaEnemigoGeneral : MonoBehaviour
 {
