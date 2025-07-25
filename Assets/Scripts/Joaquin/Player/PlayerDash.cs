@@ -38,11 +38,13 @@ public class PlayerDash : MonoBehaviour
     private float targetFov;
 
     private bool isDashing = false;
-    public bool IsDashing => isDashing;
+    private bool isOnCooldown = false;
     private bool canDash = true;
     private float dashTimer = 0f;
 
     private Vector3 currentDashDirection;
+
+    public bool IsDashing => isDashing;
 
     private void Start()
     {
@@ -84,7 +86,7 @@ public class PlayerDash : MonoBehaviour
             virtualCam.m_Lens.FieldOfView = Mathf.Lerp(currentFov, targetFov, Time.deltaTime * fovTransitionSpeed);
         }
 
-        if (Input.GetKeyDown(dashKey) && canDash && !isDashing)
+        if (Input.GetKeyDown(dashKey) && CanStartDash())
         {
             Vector3 dashDirection = GetDashDirection();
             if (IsPathClear(dashDirection, dashCollisionCheckDistance))
@@ -112,6 +114,11 @@ public class PlayerDash : MonoBehaviour
         {
             ResetDashState();
         }
+    }
+
+    private bool CanStartDash()
+    {
+        return canDash && !isDashing && !isOnCooldown;
     }
 
     private bool DetectDashCollision()
@@ -162,15 +169,17 @@ public class PlayerDash : MonoBehaviour
     private void StartDashState(Vector3 dashDirection)
     {
         if (dashDirection == Vector3.zero) return;
+        if (isDashing || isOnCooldown) return;
+
+        isDashing = true;
+        isOnCooldown = true;
+        canDash = false;
+        dashTimer = 0f;
 
         dashEffect?.Play();
         if (sfxSource != null && dashSound != null) sfxSource.PlayOneShot(dashSound);
 
         PlayerAnimatorController.Instance?.PlayDashAnim();
-
-        isDashing = true;
-        canDash = false;
-        dashTimer = 0f;
 
         currentDashDirection = dashDirection;
 
@@ -199,6 +208,7 @@ public class PlayerDash : MonoBehaviour
     private void ResetDashCooldown()
     {
         canDash = true;
+        isOnCooldown = false;
     }
 
     private void ApplyPostDashImpulse()
