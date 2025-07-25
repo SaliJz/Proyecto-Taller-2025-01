@@ -27,6 +27,8 @@ public class EnemyAbilityReceiver : MonoBehaviour
     private Coroutine ignitionCoroutine;
     private Coroutine mindjackCoroutine;
 
+    private GameObject activeGlitchParticle;
+
     private Transform playerTransform;
 
     private void Awake()
@@ -67,7 +69,14 @@ public class EnemyAbilityReceiver : MonoBehaviour
 
         if (effectToDestroy != null)
         {
-            Destroy(effectToDestroy);
+            var particleSystem = effectToDestroy.GetComponent<ParticleSystem>();
+            if (particleSystem != null)
+            {
+                var main = particleSystem.main;
+                main.loop = false;
+                particleSystem.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            }
+            Destroy(effectToDestroy, 1.0f);
         }
 
         isSlowed = false;
@@ -78,13 +87,18 @@ public class EnemyAbilityReceiver : MonoBehaviour
     {
         Debug.Log(gameObject + " applying glitch time with multiplier: " + slowMultiplier + " and duration: " + duration);
 
-        GameObject particleInstance = null;
-        if (particlePrefab != null)
+        if (activeGlitchParticle != null)
         {
-            particleInstance = Instantiate(particlePrefab, transform.position, Quaternion.identity, transform);
+            Destroy(activeGlitchParticle);
+            activeGlitchParticle = null;
         }
 
-        ApplySlow(slowMultiplier, duration, particleInstance);
+        if (particlePrefab != null)
+        {
+            activeGlitchParticle = Instantiate(particlePrefab, transform.position, Quaternion.identity, transform);
+        }
+
+        ApplySlow(slowMultiplier, duration, activeGlitchParticle);
     }
 
     public void ApplyElectroHack(float damagePerSecond, float duration, float slowMultiplier)
@@ -174,6 +188,20 @@ public class EnemyAbilityReceiver : MonoBehaviour
             OnStateChanged?.Invoke(CurrentState);
         }
         mindjackCoroutine = null;
+    }
+
+    public void StopAllAbilityEffects()
+    {
+        // Detiene todas las corrutinas que se estén ejecutando en este script
+        StopAllCoroutines();
+
+        // Resetea los estados para asegurar que no haya efectos residuales
+        isMindjacked = false;
+        isIgnited = false;
+        isElectroHacked = false;
+        isSlowed = false;
+        CurrentState = EnemyState.Normal;
+        currentSpeed = baseSpeed;
     }
 
     //private Transform FindNearestEnemy()

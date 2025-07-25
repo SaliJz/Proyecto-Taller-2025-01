@@ -80,11 +80,14 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
     private TipoEnemigo tipo;
     private Color colorOriginal;
+    private Color baseEmissionColor;
     private bool isDead = false;
     private Animator animator;
     [SerializeField] bool isTracker;
     private List<Material> dissolveMaterials;
     private EnemyAbilityReceiver enemyAbilityReceiver;
+
+    private Coroutine flashRoutine;
 
     void Awake()
     {
@@ -100,6 +103,18 @@ public class VidaEnemigoGeneral : MonoBehaviour
         // 1. Asignar un tipo y color único al nacer.
         tipo = (TipoEnemigo)UnityEngine.Random.Range(0, 3);
         colorOriginal = ObtenerColorPorTipo(tipo);
+
+        foreach (var mr in meshRenderers)
+            foreach (var mat in mr.materials)
+                if (mat.HasProperty("_EmissionColor"))
+                    mat.SetColor("_EmissionColor", colorOriginal);
+
+        foreach (var mr in staticMeshRenderers)
+            foreach (var mat in mr.materials)
+                if (mat.HasProperty("_EmissionColor"))
+                    mat.SetColor("_EmissionColor", colorOriginal);
+
+        baseEmissionColor = colorOriginal;
 
         // 2. Aplicar el color inicial
         AsignarColorYEmissionAMateriales(colorOriginal);
@@ -226,7 +241,8 @@ public class VidaEnemigoGeneral : MonoBehaviour
         if (!isBlinking) StartCoroutine(Parpadeo());
         // Flash de emisión
         StopCoroutine(nameof(FlashEmission));
-        StartCoroutine(FlashEmission());
+        if (flashRoutine != null) StopCoroutine(flashRoutine);
+        flashRoutine = StartCoroutine(FlashEmission());
 
         vida -= damage;
         if (sliderVida != null) sliderVida.value = vida;
@@ -244,7 +260,8 @@ public class VidaEnemigoGeneral : MonoBehaviour
         if (!isBlinking) StartCoroutine(Parpadeo());
         // Flash de emisión
         StopCoroutine(nameof(FlashEmission));
-        StartCoroutine(FlashEmission());
+        if (flashRoutine != null) StopCoroutine(flashRoutine);
+        flashRoutine = StartCoroutine(FlashEmission());
 
         vida -= d;
         if (sliderVida != null) sliderVida.value = vida;
@@ -303,7 +320,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
                     .Concat(staticMeshRenderers.SelectMany(mr => mr.materials))
                     .ToArray();
 
-        Color baseColor = mats.FirstOrDefault()?.GetColor("_EmissionColor") ?? Color.white;
+        Color baseColor = baseEmissionColor;
         float timer = 0f;
 
         while (timer < flashDuration)
@@ -318,7 +335,8 @@ public class VidaEnemigoGeneral : MonoBehaviour
         }
 
         foreach (var mat in mats)
-            mat.SetColor("_EmissionColor", baseColor);
+            if (mat.HasProperty("_EmissionColor"))
+                mat.SetColor("_EmissionColor", baseColor);
     }
 
     private IEnumerator Parpadeo()
@@ -340,9 +358,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
                 : Color.white)
             .ToList();
         var baseHDR = meshRenderers
-            .Select((r, i) => supportsHDR[i]
-                ? r.material.GetColor("_EmissionColor")
-                : Color.black)
+            .Select(_ => baseEmissionColor)
             .ToList();
 
         float half = blinkInterval * 0.5f;
@@ -423,6 +439,12 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
     private void DesactiveScripts()
     {
+        if (enemyAbilityReceiver != null)
+        {
+            enemyAbilityReceiver.StopAllAbilityEffects();
+            enemyAbilityReceiver.enabled = false; // Desactivamos el componente por completo.
+        }
+
         NavMeshAgent agent = GetComponent<NavMeshAgent>();
         if (agent != null)
             agent.enabled = false;
