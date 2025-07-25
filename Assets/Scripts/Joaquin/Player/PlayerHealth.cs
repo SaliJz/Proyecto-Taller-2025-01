@@ -26,6 +26,8 @@ public class PlayerHealth : MonoBehaviour
     private bool isIgnited = false;
     private Coroutine ignitionCoroutine;
 
+    private bool isDead = false;
+
     private void Awake()
     {
         if (isTutorial)
@@ -192,6 +194,9 @@ public class PlayerHealth : MonoBehaviour
 
     public void Die()
     {
+        if (isDead) return;
+        isDead = true;
+
         EnemySpawner enemySpawner = FindObjectOfType<EnemySpawner>();
         if (enemySpawner != null)
         {
