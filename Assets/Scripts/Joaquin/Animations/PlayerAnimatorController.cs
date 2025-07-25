@@ -23,6 +23,8 @@ public class PlayerAnimatorController : MonoBehaviour
     private readonly int hashFireAbility = Animator.StringToHash("FireAbility");
     private readonly int hashAbilityID = Animator.StringToHash("AbilityID");
     private readonly int hashDash = Animator.StringToHash("Dash");
+    private readonly int hashRechargeWeapon = Animator.StringToHash("RechargeWeapon");
+    private readonly int hashRechargeWeaponID= Animator.StringToHash("RechargeWeaponID");
 
     private WeaponManager weaponManager;
 
@@ -69,6 +71,17 @@ public class PlayerAnimatorController : MonoBehaviour
         {
             abilityAnimator.SetFloat(hashAbilityID, (float)abilityIndex);
             abilityAnimator.SetTrigger(hashFireAbility);
+        }
+    }
+
+    public void PlayRechargeWeaponAnim(int weaponIndex) // Acepta un ID
+    {
+        if (weaponAnimator != null)
+        {
+            weaponAnimator.SetFloat(hashRechargeWeaponID, (float)weaponIndex);
+            weaponAnimator.SetTrigger(hashRechargeWeapon);
+            abilityAnimator.SetFloat(hashRechargeWeaponID, (float)weaponIndex);
+            abilityAnimator.SetTrigger(hashRechargeWeapon);
         }
     }
 

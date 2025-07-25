@@ -336,6 +336,10 @@ public class Weapon : MonoBehaviour
             }
             weaponModelTransform.localPosition = downPos;
         }
+        else
+        {
+            PlayerAnimatorController.Instance?.PlayRechargeWeaponAnim(weaponAnimationID);
+        }
 
         // Lógica de Recarga por Bala 
         float timeForBulletLoop = stats.reloadTime - (animDownTime + animUpTime);
