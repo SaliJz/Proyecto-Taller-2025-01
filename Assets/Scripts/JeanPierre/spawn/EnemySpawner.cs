@@ -101,7 +101,7 @@ public class EnemySpawner : MonoBehaviour
         SpawnPoint randomPoint = availablePoints[Random.Range(0, availablePoints.Count)];
 
         Vector2 offset = Random.insideUnitCircle * spawnRadius;
-        Vector3 spawnPosition = randomPoint.transform.position + new Vector3(offset.x, 0, offset.y);
+        Vector3 spawnPosition = randomPoint.transform.position; /*+ new Vector3(offset.x, 0, offset.y);*/
 
         GameObject enemy = Instantiate(randomEnemyPrefab, spawnPosition, randomPoint.transform.rotation);
         activeEnemies.Add(enemy);
