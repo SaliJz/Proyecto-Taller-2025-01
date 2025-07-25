@@ -14,16 +14,12 @@ public class PortalVFXController : MonoBehaviour
     {
         if (portalAnimator != null)
             portalAnimator.SetTrigger("isClose");
-
-        GameObject portal = portalAnimator.gameObject;
-
-        if (portal != null)
-        {
-            if (portal.transform.childCount > 0)
+        
+            if (transform.childCount > 0)
             {
-                Transform child = portal.transform.GetChild(0);
+                Transform child = transform.GetChild(0);
                 Destroy(child.gameObject);
             }
-        }
+        
     }
 }
