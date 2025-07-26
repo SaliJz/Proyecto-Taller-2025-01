@@ -18,7 +18,19 @@ public class Active_ShieldHUD : MonoBehaviour
 
         if (PlayerTransform == null)
         {
-            PlayerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+            // 1. Encuentra el GameObject primero.
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+
+            // 2. Comprueba si se encontró antes de obtener el transform.
+            if (playerObj != null)
+            {
+                PlayerTransform = playerObj.transform;
+            }
+            else
+            {
+                // 3. Muestra un error si no se encuentra para facilitar la depuración.
+                Debug.LogError("Active_ShieldHUD: No se pudo encontrar un objeto con la etiqueta 'Player'.");
+            }
         }
 
         ResetAllAlphas();

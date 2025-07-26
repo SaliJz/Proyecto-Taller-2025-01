@@ -69,8 +69,6 @@ public class HUDManager : MonoBehaviour
     private Coroutine floatingTextCoroutine;
     private Coroutine missionCoroutine;
 
-    private ShopController shopController;
-
     public int tutorialCount=0;
     private static int infoFragments = 2000;
     public int CurrentFragments => infoFragments;
@@ -135,7 +133,6 @@ public class HUDManager : MonoBehaviour
             {
                 missionTextObject.anchoredPosition = missionEndPos;
                 missionTextObject.gameObject.SetActive(true);
-                return;
             }
             else
             {
@@ -144,10 +141,15 @@ public class HUDManager : MonoBehaviour
         }
         else
         {
-            missionTextObject.gameObject.SetActive(false);
+            if (missionTextObject != null)
+            {
+                missionTextObject.gameObject.SetActive(false);
+            }
+            else
+            {
+                Debug.LogError("HUDManager: missionTextObject no está asignado y animateMission es true.");
+            }
         }
-
-        shopController = FindObjectOfType<ShopController>();
     }
 
     private void OnEnable()
