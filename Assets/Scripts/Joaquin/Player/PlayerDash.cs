@@ -125,9 +125,19 @@ public class PlayerDash : MonoBehaviour
     {
         if (!TryGetCapsuleCastPoints(out Vector3 p1, out Vector3 p2, out float radius)) return false;
 
-        float castDistance = currentDashDirection.magnitude * Time.fixedDeltaTime;
-        return Physics.CapsuleCast(p1, p2, radius, currentDashDirection, out RaycastHit hit, castDistance, ~0,
-            QueryTriggerInteraction.Ignore) && IsBlockingTag(hit.collider.tag);
+        float minDistance = 0.5f;
+        float maxDistance = (dashDistance / dashDuration) * Time.fixedDeltaTime;
+        float castDistance = Mathf.Max(minDistance, maxDistance);
+
+        if (Physics.CapsuleCast(p1, p2, radius, currentDashDirection, out RaycastHit hit, castDistance, ~0, QueryTriggerInteraction.Ignore))
+        {
+            float minObstacleDistance = 0.4f;
+            if (hit.distance < minObstacleDistance) return false;
+
+            return IsBlockingTag(hit.collider.tag);
+        }
+
+        return false;
     }
 
     private void StopDashAtCollision()
@@ -241,8 +251,18 @@ public class PlayerDash : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(transform.position, direction, out hit, distance))
         {
-            if (hit.collider.CompareTag("Wall") || hit.collider.CompareTag("Ground") || hit.collider.CompareTag("Roof") || hit.collider.CompareTag("Columns")) return false;
+            if (hit.collider.CompareTag("Wall") || hit.collider.CompareTag("Ground") || hit.collider.CompareTag("Roof") || hit.collider.CompareTag("Columns"))
+            {
+                Debug.LogWarning("Path is blocked by: " + hit.collider.name);
+                return false;
+            }
         }
         return true;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(transform.position, transform.position + GetDashDirection() * dashCollisionCheckDistance);
     }
 }
