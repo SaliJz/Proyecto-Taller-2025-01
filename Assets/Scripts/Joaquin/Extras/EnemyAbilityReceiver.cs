@@ -38,14 +38,6 @@ public class EnemyAbilityReceiver : MonoBehaviour
         currentSpeed = baseSpeed;
     }
 
-    private void Update()
-    {
-        if (CurrentState == EnemyState.Normal || CurrentState == EnemyState.Mindjacked)
-        {
-            CurrentTarget = playerTransform;
-        }
-    }
-
     public void TakeDamage(float dmg)
     {
         SendMessage("ApplyAbilityDamage", dmg);
