@@ -308,7 +308,6 @@ public class TutorialManager0 : MonoBehaviour
     {
         Rigidbody rb = player.GetComponent<Rigidbody>();
         rb.velocity = Vector3.zero;
-        rb.isKinematic = false;
 
         crossHairObject.SetActive(false);
 
@@ -320,9 +319,8 @@ public class TutorialManager0 : MonoBehaviour
 
     void EnablePlayerScriptsAfterCameraTransition()
     {
-        Rigidbody rb = player.GetComponent<Rigidbody>();
         crossHairObject.SetActive(true);
-        rb.isKinematic = true;
+
         foreach (MonoBehaviour script in playerScriptsToDisable)
         {
             if (currentDialogueIndex < 3 && !(script is PlayerDash))
