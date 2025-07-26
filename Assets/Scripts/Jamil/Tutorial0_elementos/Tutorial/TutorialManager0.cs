@@ -38,7 +38,7 @@ public class TutorialManager0 : MonoBehaviour
     [SerializeField] private List<GameObject> rifleAndShotgun;
     [SerializeField] private GameObject secondWaveGlitch;
     [SerializeField] private List<GameObject> blackListShopUI;
-    [SerializeField] private GameObject buyButton;
+    //[SerializeField] private GameObject buyButton;
     public List<SpriteJumpToUI> spriteJumpToUIs;
 
     private int lastIndex = -1;
@@ -414,7 +414,7 @@ public class TutorialManager0 : MonoBehaviour
         if (index == 6)
         {
             hasBlackListBeenClosed = true;
-            buyButton.SetActive(true);
+            //buyButton.SetActive(true);
             lastIndex = index;
             return;
         }
@@ -433,7 +433,7 @@ public class TutorialManager0 : MonoBehaviour
                 blackListShopUI[index].SetActive(true);
         }
 
-        buyButton.SetActive(index != 4 && index != 5);
+        //buyButton.SetActive(index != 4 && index != 5);
         lastIndex = index;
     }
 
