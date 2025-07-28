@@ -1,11 +1,11 @@
 using UnityEngine;
-using static BalaPlayer;
 
 public class MindjackShot : MonoBehaviour
 {
     private float radius;
     private float damagePerSecond;
     private float duration;
+    private bool hasExploded = false;
 
     [SerializeField] private ParticleSystem impactEffect;
     [SerializeField] private GameObject projectilePrefab;
@@ -19,106 +19,53 @@ public class MindjackShot : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (hasExploded) return;
+
         EnemyAbilityReceiver enemy = other.GetComponent<EnemyAbilityReceiver>();
 
-        if (other.CompareTag("Enemy"))
+        string[] onlyExplodesTags = { "Ground", "Wall", "Columns", "Roof" };
+        if (System.Array.Exists(onlyExplodesTags, tag => other.CompareTag(tag)))
         {
-            if (enemy != null)
-            {
-                enemy.ApplyMindjack(damagePerSecond, duration);
-                PlayEffect();
-                Destroy(gameObject);
-            }
-        }
-        
-        if (other.CompareTag("Ground"))
-        {
-            PlayEffect();
-            Destroy(gameObject);
+            Explode();
+            return;
         }
 
-        if (other.CompareTag("Wall"))
+        if (other.CompareTag("Enemy") && enemy != null)
         {
-            PlayEffect();
-            Destroy(gameObject);
+            Explode(enemy);
+            return;
         }
 
-        if (other.CompareTag("Columns"))
+        if (BuscarComponenteEnPadres<Fase1Vida>(other.transform) != null && enemy != null)
         {
-            PlayEffect();
-            Destroy(gameObject);
+            Explode(enemy);
+            return;
+        }
+        if (BuscarComponenteEnPadres<Fase2Vida>(other.transform) != null && enemy != null)
+        {
+            Explode(enemy);
+            return;
+        }
+        if (BuscarComponenteEnPadres<Fase3Vida>(other.transform) != null && enemy != null)
+        {
+            Explode(enemy);
+            return;
         }
 
-        if (other.CompareTag("Roof"))
+        if (other.GetComponent<EnemigoPistolaTutorial>() != null && enemy != null)
         {
-            PlayEffect();
-            Destroy(gameObject);
+            Explode(enemy);
+            return;
         }
-
-        Fase1Vida fase1 = BuscarComponenteEnPadres<Fase1Vida>(other.transform);
-        if (fase1 != null)
+        if (other.GetComponent<VidaEnemigoGeneral>() != null && enemy != null)
         {
-            if (enemy != null)
-            {
-                enemy.ApplyMindjack(damagePerSecond, duration);
-                PlayEffect();
-                Destroy(gameObject);
-            }
+            Explode(enemy);
+            return;
         }
-
-        Fase2Vida fase2 = BuscarComponenteEnPadres<Fase2Vida>(other.transform);
-        if (fase2 != null)
+        if (other.GetComponent<EnemigoRosa>() != null && enemy != null)
         {
-            if (enemy != null)
-            {
-                enemy.ApplyMindjack(damagePerSecond, duration);
-                PlayEffect();
-                Destroy(gameObject);
-            }
-        }
-
-        Fase3Vida fase3 = BuscarComponenteEnPadres<Fase3Vida>(other.transform);
-        if (fase3 != null)
-        {
-            if (enemy != null)
-            {
-                enemy.ApplyMindjack(damagePerSecond, duration);
-                PlayEffect();
-                Destroy(gameObject);
-            }
-        }
-
-        EnemigoPistolaTutorial enemigoPistola = other.GetComponent<EnemigoPistolaTutorial>();
-        if (enemigoPistola != null)
-        {
-            if (enemy != null)
-            {
-                enemy.ApplyMindjack(damagePerSecond, duration);
-                PlayEffect();
-                Destroy(gameObject);
-            }
-        }
-
-        VidaEnemigoGeneral enemigoGeneral = other.GetComponent<VidaEnemigoGeneral>();
-        if (enemigoGeneral != null)
-        {
-            if (enemy != null)
-            {
-                enemy.ApplyMindjack(damagePerSecond, duration);
-                PlayEffect();
-                Destroy(gameObject);
-            }
-        }
-        
-        EnemigoRosa enemigoRosa = other.GetComponent<EnemigoRosa>();
-        if (enemigoRosa != null)
-        {
-            if (enemy != null)
-            {
-                enemy.ApplyMindjack(damagePerSecond, duration);
-                PlayEffect();
-                Destroy(gameObject);
-            }
+            Explode(enemy);
+            return;
         }
     }
 
@@ -135,6 +82,14 @@ public class MindjackShot : MonoBehaviour
         return null;
     }
 
+    private void Explode(EnemyAbilityReceiver enemy = null)
+    {
+        hasExploded = true;
+        if (enemy != null) enemy.ApplyMindjack(damagePerSecond, duration);
+        PlayEffect();
+        Destroy(gameObject);
+    }
+
     private void PlayEffect()
     {
         if (impactEffect != null)
@@ -149,7 +104,14 @@ public class MindjackShot : MonoBehaviour
         if (projectilePrefab != null)
         {
             GameObject projectileInstance = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
-            Destroy(projectileInstance, 3f);
+            MindjackAreaEffect mindjackAreaEffect = projectileInstance.GetComponent<MindjackAreaEffect>();
+
+            if (mindjackAreaEffect != null)
+            {
+                mindjackAreaEffect.Initialize(radius, damagePerSecond, duration);
+            }
+
+            Destroy(projectileInstance, 0.5f);
         }
         else
         {

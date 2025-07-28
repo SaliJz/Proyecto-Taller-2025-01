@@ -4,6 +4,8 @@ using UnityEngine;
 
 public abstract class BaseAreaEffect : MonoBehaviour
 {
+    protected float maxTargets;
+    protected float slowMultiplier;
     protected float radius;
     protected float damagePerSecond;
     protected float duration;
@@ -13,8 +15,10 @@ public abstract class BaseAreaEffect : MonoBehaviour
     private HashSet<PlayerHealth> affectedPlayers = new HashSet<PlayerHealth>();
     private float tickRate = 1.0f;
 
-    public virtual void Initialize(float radius, float damagePerSecond, float duration, LayerMask enemyLayer)
+    public virtual void Initialize(float maxTargets, float slowMultiplier, float radius, float damagePerSecond, float duration, LayerMask enemyLayer)
     {
+        this.maxTargets = maxTargets;
+        this.slowMultiplier = slowMultiplier;
         this.radius = radius;
         this.damagePerSecond = damagePerSecond;
         this.duration = duration;

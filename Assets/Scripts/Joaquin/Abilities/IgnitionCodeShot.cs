@@ -162,7 +162,7 @@ public class IgnitionCodeShot : MonoBehaviour
             IgnitionAreaEffect areaEffect = ignitionEffect.GetComponent<IgnitionAreaEffect>();
             if (areaEffect != null)
             {
-                areaEffect.Initialize(radius, damagePerSecond, duration, targetLayer);
+                areaEffect.Initialize(0, 0, radius, damagePerSecond, duration, targetLayer);
             }
         }
         else

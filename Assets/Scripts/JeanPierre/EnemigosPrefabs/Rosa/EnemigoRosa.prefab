@@ -134,7 +134,6 @@ GameObject:
   - component: {fileID: 9125930810330233677}
   - component: {fileID: 2680167343051568405}
   - component: {fileID: 692248197188037113}
-  - component: {fileID: 7799932918025001399}
   - component: {fileID: 4406187546889015307}
   m_Layer: 6
   m_Name: EnemigoRosa
@@ -317,6 +316,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageAmount: 15
   damageInterval: 1.5
+  animator: {fileID: 0}
 --- !u!114 &7589970798455744045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,6 +329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60b3e15c74cf41e4b9fa53c6573e81bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isImmuneToMindControl: 0
   baseSpeed: 5
 --- !u!114 &8078850162837562030
 MonoBehaviour:
@@ -494,19 +495,6 @@ MonoBehaviour:
   dissolveDuration: 1
   tipo: 0
   isTracker: 0
---- !u!114 &7799932918025001399
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1845618267771254268}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7aa4b39c1f18d5e4aae967f75f76989b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  indexScenes: 
 --- !u!195 &4406187546889015307
 NavMeshAgent:
   m_ObjectHideFlags: 0

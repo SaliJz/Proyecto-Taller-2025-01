@@ -170,7 +170,7 @@ public class ElectroHackShot : MonoBehaviour
             ElectroAreaEffect areaEffect = electroArea.GetComponent<ElectroAreaEffect>();
             if (areaEffect != null)
             {
-                areaEffect.Initialize(radius, damagePerSecond, duration, targetLayer);
+                areaEffect.Initialize(maxTargets, slowMultiplier, radius, damagePerSecond, duration, targetLayer);
             }
         }
         else
