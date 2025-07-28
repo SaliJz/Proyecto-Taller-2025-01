@@ -68,7 +68,7 @@ public class EnemyAbilityReceiver : MonoBehaviour
                 main.loop = false;
                 particleSystem.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             }
-            Destroy(effectToDestroy, 1.0f);
+            Destroy(effectToDestroy, 0.25f);
         }
 
         isSlowed = false;
@@ -91,6 +91,11 @@ public class EnemyAbilityReceiver : MonoBehaviour
         }
 
         ApplySlow(slowMultiplier, duration, activeGlitchParticle);
+    }
+
+    public GameObject GetActiveGlitchParticle()
+    {
+        return activeGlitchParticle;
     }
 
     public void ApplyElectroHack(float damagePerSecond, float duration, float slowMultiplier)

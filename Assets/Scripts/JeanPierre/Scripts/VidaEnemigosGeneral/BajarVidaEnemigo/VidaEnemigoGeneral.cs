@@ -440,8 +440,19 @@ public class VidaEnemigoGeneral : MonoBehaviour
     {
         if (enemyAbilityReceiver != null)
         {
+            GameObject glitchParticle = enemyAbilityReceiver.GetActiveGlitchParticle();
+            if (glitchParticle != null)
+            {
+                Destroy(glitchParticle);
+            }
+
+            if (enemyAbilityReceiver.CurrentState == EnemyAbilityReceiver.EnemyState.Mindjacked)
+            {
+                AsignarColorYEmissionAMateriales(colorOriginal);
+            }
+
             enemyAbilityReceiver.StopAllAbilityEffects();
-            enemyAbilityReceiver.enabled = false; // Desactivamos el componente por completo.
+            enemyAbilityReceiver.enabled = false;
         }
 
         NavMeshAgent agent = GetComponent<NavMeshAgent>();

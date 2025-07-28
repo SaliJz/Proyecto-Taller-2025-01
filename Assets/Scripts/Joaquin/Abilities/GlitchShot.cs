@@ -26,7 +26,6 @@ public class GlitchShot : MonoBehaviour
             if (enemy != null)
             {
                 enemy.ApplyGlitchTime(slowMultiplier, duration, glitchParticlePrefab);
-                ApplyGlitchArea(transform.position);
                 Destroy(gameObject);
             }
         }
