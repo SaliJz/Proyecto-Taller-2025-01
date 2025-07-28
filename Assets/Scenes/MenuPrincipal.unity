@@ -9330,7 +9330,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1618910930}
   - component: {fileID: 1618910932}
-  - component: {fileID: 1618910933}
+  - component: {fileID: 1618910935}
   - component: {fileID: 1618910934}
   m_Layer: 0
   m_Name: 'MainGameManager '
@@ -9376,18 +9376,6 @@ MonoBehaviour:
   mainMenuSceneName: MenuPrincipal
   victorySceneName: Creditos
   defeatSceneName: GameOver
---- !u!114 &1618910933
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1618910928}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f475a5aeb3ea2344984bb28cddfefc3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1618910934
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9398,6 +9386,18 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 080976bc1a94a47408dfb821687c915a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1618910935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1618910928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f475a5aeb3ea2344984bb28cddfefc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1632247125
