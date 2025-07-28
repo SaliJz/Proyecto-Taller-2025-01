@@ -80,6 +80,8 @@ public class VidaEnemigoGeneral : MonoBehaviour
     private TipoEnemigo tipo;
     private Color colorOriginal;
     private Color baseEmissionColor;
+    private Color currentEmissionColor;
+    private bool isTransitioningColor = false;
     private bool isDead = false;
     private Animator animator;
     [SerializeField] bool isTracker;
@@ -114,6 +116,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
                     mat.SetColor("_EmissionColor", colorOriginal);
 
         baseEmissionColor = colorOriginal;
+        currentEmissionColor = colorOriginal; 
 
         // 2. Aplicar el color inicial
         AsignarColorYEmissionAMateriales(colorOriginal);
@@ -161,6 +164,8 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
     private void AsignarColorYEmissionAMateriales(Color color)
     {
+        currentEmissionColor = color;
+
         foreach (var mr in meshRenderers)
             AplicarColorAListaDeMateriales(mr.materials, color, mats => mr.materials = mats);
         foreach (var mr in staticMeshRenderers)
@@ -186,7 +191,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
         }
         asignarMats(materials);
     }
-    
+
     private IEnumerator DetectarYAsignarNuevosMateriales(Color color, float duracion)
     {
         float timer = 0f;
@@ -236,12 +241,15 @@ public class VidaEnemigoGeneral : MonoBehaviour
     public void ApplyAbilityDamage(float damage)
     {
         if (isDead) return;
-        // Parpadeo potente
-        if (!isBlinking) StartCoroutine(Parpadeo());
-        // Flash de emisión
-        StopCoroutine(nameof(FlashEmission));
-        if (flashRoutine != null) StopCoroutine(flashRoutine);
-        flashRoutine = StartCoroutine(FlashEmission());
+
+        if (!isTransitioningColor)
+        {
+            // Parpadeo potente
+            if (!isBlinking) StartCoroutine(Parpadeo());
+            // Flash de emisión
+            if (flashRoutine != null) StopCoroutine(flashRoutine);
+            flashRoutine = StartCoroutine(FlashEmission());
+        }
 
         vida -= damage;
         if (sliderVida != null) sliderVida.value = vida;
@@ -255,12 +263,15 @@ public class VidaEnemigoGeneral : MonoBehaviour
     public void RecibirDanio(float d)
     {
         if (isDead) return;
-        // Parpadeo potente
-        if (!isBlinking) StartCoroutine(Parpadeo());
-        // Flash de emisión
-        StopCoroutine(nameof(FlashEmission));
-        if (flashRoutine != null) StopCoroutine(flashRoutine);
-        flashRoutine = StartCoroutine(FlashEmission());
+
+        if (!isTransitioningColor)
+        {
+            // Parpadeo potente
+            if (!isBlinking) StartCoroutine(Parpadeo());
+            // Flash de emisión
+            if (flashRoutine != null) StopCoroutine(flashRoutine);
+            flashRoutine = StartCoroutine(FlashEmission());
+        }
 
         vida -= d;
         if (sliderVida != null) sliderVida.value = vida;
@@ -301,6 +312,8 @@ public class VidaEnemigoGeneral : MonoBehaviour
     {
         if (isDead) return;
 
+        isTransitioningColor = true;
+
         if (newState == EnemyAbilityReceiver.EnemyState.Mindjacked)
         {
             AsignarColorYEmissionAMateriales(hdrColorMindjacked);
@@ -311,6 +324,14 @@ public class VidaEnemigoGeneral : MonoBehaviour
             AsignarColorYEmissionAMateriales(colorOriginal);
             StartCoroutine(DetectarYAsignarNuevosMateriales(colorOriginal, 0.5f));
         }
+
+        StartCoroutine(FinalizarTransicionColor());
+    }
+
+    private IEnumerator FinalizarTransicionColor()
+    {
+        yield return new WaitForSeconds(0.6f);
+        isTransitioningColor = false;
     }
 
     private IEnumerator FlashEmission()
@@ -319,7 +340,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
                     .Concat(staticMeshRenderers.SelectMany(mr => mr.materials))
                     .ToArray();
 
-        Color baseColor = baseEmissionColor;
+        Color baseColor = GetCurrentStateColor();
         float timer = 0f;
 
         while (timer < flashDuration)
@@ -327,7 +348,8 @@ public class VidaEnemigoGeneral : MonoBehaviour
             float t = flashCurve.Evaluate(timer / flashDuration);
             float intensity = 1 + (flashIntensity - 1) * t;
             foreach (var mat in mats)
-                mat.SetColor("_EmissionColor", baseColor * intensity);
+                if (mat.HasProperty("_EmissionColor"))
+                    mat.SetColor("_EmissionColor", baseColor * intensity);
 
             timer += Time.deltaTime;
             yield return null;
@@ -336,11 +358,26 @@ public class VidaEnemigoGeneral : MonoBehaviour
         foreach (var mat in mats)
             if (mat.HasProperty("_EmissionColor"))
                 mat.SetColor("_EmissionColor", baseColor);
+
+        currentEmissionColor = baseColor;
+    }
+
+    private Color GetCurrentStateColor()
+    {
+        if (enemyAbilityReceiver != null && enemyAbilityReceiver.CurrentState == EnemyAbilityReceiver.EnemyState.Mindjacked)
+        {
+            return hdrColorMindjacked;
+        }
+        return colorOriginal;
     }
 
     private IEnumerator Parpadeo()
     {
+        if (isTransitioningColor) yield break;
+
         isBlinking = true;
+
+        Color currentStateColor = GetCurrentStateColor();
 
         // Detecta soporte para _Color y _EmissionColor
         var supportsColor = meshRenderers
@@ -350,20 +387,25 @@ public class VidaEnemigoGeneral : MonoBehaviour
             .Select(r => r.material.HasProperty("_EmissionColor"))
             .ToList();
 
-        // Guarda valores originales
         var baseColors = meshRenderers
             .Select((r, i) => supportsColor[i]
                 ? r.material.GetColor("_Color")
                 : Color.white)
             .ToList();
         var baseHDR = meshRenderers
-            .Select(_ => baseEmissionColor)
+            .Select(_ => currentStateColor)
             .ToList();
 
         float half = blinkInterval * 0.5f;
 
         for (int i = 0; i < blinkCount; i++)
         {
+            if (isTransitioningColor)
+            {
+                isBlinking = false;
+                yield break;
+            }
+
             // Parpadeo a blanco
             for (int j = 0; j < meshRenderers.Length; j++)
             {
@@ -374,6 +416,12 @@ public class VidaEnemigoGeneral : MonoBehaviour
                     rend.material.SetColor("_EmissionColor", Color.white);
             }
             yield return new WaitForSeconds(half);
+
+            if (isTransitioningColor)
+            {
+                isBlinking = false;
+                yield break;
+            }
 
             // Restaurar valores originales
             for (int j = 0; j < meshRenderers.Length; j++)
@@ -387,6 +435,7 @@ public class VidaEnemigoGeneral : MonoBehaviour
             yield return new WaitForSeconds(half);
         }
 
+        currentEmissionColor = currentStateColor;
         isBlinking = false;
     }
 
