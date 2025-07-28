@@ -173,7 +173,7 @@ public class EnemyAbilityReceiver : MonoBehaviour
         float elapsedTime = 0f;
         while (elapsedTime < duration)
         {
-            SendMessage("ApplyAbilityDamage", damagePerSecond);
+            //SendMessage("ApplyAbilityDamage", damagePerSecond);
             yield return new WaitForSeconds(1.0f);
             elapsedTime += 1.0f;
         }
@@ -189,10 +189,8 @@ public class EnemyAbilityReceiver : MonoBehaviour
 
     public void StopAllAbilityEffects()
     {
-        // Detiene todas las corrutinas que se estén ejecutando en este script
         StopAllCoroutines();
 
-        // Resetea los estados para asegurar que no haya efectos residuales
         isMindjacked = false;
         isIgnited = false;
         isElectroHacked = false;
