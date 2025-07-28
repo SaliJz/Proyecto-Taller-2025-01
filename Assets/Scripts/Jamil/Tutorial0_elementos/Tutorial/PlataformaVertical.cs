@@ -18,6 +18,7 @@ public class PlataformaVertical : MonoBehaviour
     private bool enMovimiento = false;
     private bool playerEnZonaSegura = false;
 
+    private bool dialogue4Said=false;
     public bool EnMovimiento
     {
         get { return enMovimiento; }
@@ -96,30 +97,40 @@ public class PlataformaVertical : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && manager.currentDialogueIndex == 4)
+        if (manager.currentDialogueIndex == 4 && !dialogue4Said)
         {
             manager.ConfirmAdvance();
-            foreach (var collider in GetComponents<Collider>())
+            //foreach (var collider in GetComponents<Collider>())
+            //{
+            //    if (collider.isTrigger)
+            //    {
+            //        Destroy(collider);
+            //    }
+            //}
+            dialogue4Said = true;
+            ActivarPlataforma();
+        }
+
+        else
+        {
+            if (other.CompareTag("Player") && subiendo /*&& manager.currentDialogueIndex > 4*/)
             {
-                if (collider.isTrigger)
-                {
-                    Destroy(collider);
-                }
+                ActivarPlataforma();
             }
         }
     }
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Player") && subiendo /*&& manager.currentDialogueIndex > 4*/)
-        {
-            ActivarPlataforma();
-        }
-    }
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    if (collision.gameObject.CompareTag("Player") && subiendo /*&& manager.currentDialogueIndex > 4*/)
+    //    {
+    //        ActivarPlataforma();
+    //    }
+    //}
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && !enMovimiento)
         {
-                enMovimiento = false;
+                //enMovimiento = false;
                 subiendo = false; // Cambia a modo bajada
                 ActivarPlataforma(); // Inicia el movimiento de regreso
         }
