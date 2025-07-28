@@ -6,9 +6,11 @@ public class GameFinisher : MonoBehaviour
 {
     private void OnApplicationQuit()
     {
-        if (!DataManager.IsTutorial)
-        {
-            SaveLoadManager.SaveGame();
-        }
+        //if (!DataManager.IsTutorial)
+        //{
+        //    SaveLoadManager.SaveGame();
+        //}
+        
+        DataManager.ResetData();
     }
 }
