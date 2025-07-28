@@ -78,7 +78,7 @@ public class SpriteJumpToUI : MonoBehaviour
         imgRect.anchoredPosition = endPos;
         imgRect.sizeDelta = endSize;
 
-        Destroy(movingImage.gameObject,2);
+        Destroy(movingImage.gameObject,1.5f);
     }
 
     Vector2 WorldToCanvasPosition(Camera camera, Canvas canvas, Vector3 worldPosition)
