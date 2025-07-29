@@ -23,15 +23,19 @@ public class PlayerMovement : MonoBehaviour
     [Header("Ground Check")]
     [SerializeField] private float playerHeight = 2f;
     [SerializeField] private float groundCheckRadius = 0.4f;
-    [SerializeField] private float groundCheckDistance = 0.2f;
+    [SerializeField] private float groundCheckDistance = 0.1f;
     private bool isGrounded;
 
     [Header("Debug Options")]
     [SerializeField] private bool showDetailsOptions = false;
 
+    private Vector2 moveInput;
+    private bool jumpInput;
+
     TutorialManager0 manager;
     private PlayerDash playerDash;
-    public bool IsMoving => rb.velocity.magnitude > 0.1f;
+
+    public bool IsMoving => rb.velocity.magnitude > 0f;
     public bool IsGrounded => isGrounded;
     public bool MovementEnabled { get; set; } = true;
 
@@ -43,41 +47,38 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         playerDash = GetComponent<PlayerDash>();
-
         manager = TutorialManager0.Instance;
-
     }
 
     private void Update()
     {
+        moveInput.x = Input.GetAxisRaw("Horizontal");
+        moveInput.y = Input.GetAxisRaw("Vertical");
+
+        if (Input.GetKeyDown(jumpKey))
+        {
+            jumpInput = true;
+        }
+
         if (!MovementEnabled || (playerDash != null && playerDash.IsDashing)) return;
 
         CheckGround();
         HandleJumpInput();
-        HandleDrag();
     }
 
     private void FixedUpdate()
     {
         if (!MovementEnabled || (playerDash != null && playerDash.IsDashing)) return;
 
-        if (isGrounded && Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0)
-        {
-            Vector3 vel = rb.velocity;
-            rb.velocity = new Vector3(0f, vel.y, 0f);
-        }
-
         HandleMovement();
+        HandleDrag();
         HandleGravity();
     }
 
     private void HandleMovement()
     {
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
+        Vector3 moveDirection = (orientation.forward * moveInput.y + orientation.right * moveInput.x).normalized;
 
-        Vector3 moveDirection = (orientation.forward * vertical + orientation.right * horizontal).normalized;
-        
         if (isGrounded)
         {
             rb.velocity = new Vector3(moveDirection.x * speedWalk, rb.velocity.y, moveDirection.z * speedWalk);
@@ -96,14 +97,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleDrag()
     {
-        if (isGrounded)
-        {
-            rb.drag = IsMoving ? 0f : groundDrag;
-        }
-        else
-        {
-            rb.drag = 0;
-        }
+        rb.drag = isGrounded ? groundDrag : 0f;
     }
 
     private void CheckGround()
@@ -118,20 +112,23 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleJumpInput()
     {
-        
-        if (Input.GetKeyDown(jumpKey) && isGrounded)
+        if (jumpInput && isGrounded)
         {
-            if(manager!=null && manager.currentDialogueIndex <2)
-            {
-                return ;
-            }
+            jumpInput = false;
 
+            if (manager != null && manager.currentDialogueIndex < 2)
+            {
+                return;
+            }
             else
             {
                 rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             }
-          
+        }
+        else
+        {
+            jumpInput = false;
         }
     }
 
