@@ -644,8 +644,8 @@ MonoBehaviour:
   maxVelocity: 10
   acceleration: 0.1
   minDistance: 1
-  jumpForce: 15
   jumpDistance: 8
+  longJumpDistance: 15
   jumpHeightThreshold: 2
   waitTimeBeforeJump: 2
   groundLayer:
@@ -654,7 +654,45 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 30721
-  raycastDistance: 20
+  targetCollider: {fileID: 3441400616488566475}
+  lerpDuration: 1
+  lerpHeight: 5
+  jumpCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  edgeDetectionDistance: 2
+  approachEdgeDistance: 0.5
+  gapDetectionDistance: 5
+  edgeRayCount: 5
+  playerMovementThreshold: 2
+  colorJumpDistance: {r: 0.036188126, g: 0, b: 1, a: 0}
+  colorDrawRay: {r: 1, g: 0.9792178, b: 0, a: 0}
+  colorIsWaiting: {r: 1, g: 0.5038273, b: 0, a: 0}
+  colorIsJumping: {r: 0.5126896, g: 0, b: 1, a: 0}
+  colorJumpTarget: {r: 0, g: 0.81883097, b: 1, a: 0}
+  colorEdgeDetection: {r: 0.5245967, g: 1, b: 0.6792453, a: 0}
+  colorApproachingEdge: {r: 1, g: 1, b: 0.73075646, a: 1}
 --- !u!114 &2900301066802915152
 MonoBehaviour:
   m_ObjectHideFlags: 0
