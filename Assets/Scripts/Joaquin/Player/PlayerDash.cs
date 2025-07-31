@@ -44,13 +44,22 @@ public class PlayerDash : MonoBehaviour
 
     private Vector3 currentDashDirection;
 
+    private int playerLayer;
+    private int enemyLayer;
+    private int enemyProyectileLayer;
+
     public bool IsDashing => isDashing;
 
     private void Start()
     {
         Initialize();
-        isDashing = false;
-        dashTimer = 0f;
+
+        playerLayer = gameObject.layer;
+        enemyLayer = LayerMask.NameToLayer("Enemy");
+        enemyProyectileLayer = LayerMask.NameToLayer("ProjectileNoHit");
+
+        if (enemyLayer == -1) Debug.LogError("No se encontró la capa 'enemy'.");
+        if (enemyProyectileLayer == -1) Debug.LogError("No se encontró la capa 'ProjectileNoHit'.");
     }
 
     private void Initialize()
@@ -73,7 +82,9 @@ public class PlayerDash : MonoBehaviour
 
         rb.useGravity = true;
         isDashing = false;
+        isOnCooldown = false;
         canDash = true;
+        dashTimer = 0f;
     }
 
     private void Update()
@@ -166,7 +177,7 @@ public class PlayerDash : MonoBehaviour
 
     private bool IsBlockingTag(string tag)
     {
-        return tag == "Wall" || tag == "Ground" || tag == "Roof" || tag == "Columns" || tag == "Enemy";
+        return tag == "Wall" || tag == "Ground" || tag == "Roof" || tag == "Columns";
     }
 
     private IEnumerator DashFovEffect()
@@ -180,6 +191,9 @@ public class PlayerDash : MonoBehaviour
     {
         if (dashDirection == Vector3.zero) return;
         if (isDashing || isOnCooldown) return;
+
+        if (enemyLayer != -1) Physics.IgnoreLayerCollision(playerLayer, enemyLayer, true);
+        if (enemyProyectileLayer != -1) Physics.IgnoreLayerCollision(playerLayer, enemyProyectileLayer, true);
 
         isDashing = true;
         isOnCooldown = true;
@@ -203,6 +217,35 @@ public class PlayerDash : MonoBehaviour
 
     private void ResetDashState()
     {
+        if (enemyLayer != -1)
+        {
+            // Creamos una máscara de bits solo para la capa del enemigo
+            int enemyLayerMask = 1 << enemyLayer;
+            if (IsOverlappingEnemy(enemyLayerMask))
+            {
+                // Si hay superposición, iniciamos una corrutina que espere a que salgamos
+                StartCoroutine(WaitForClearanceAndReenableCollision());
+            }
+            else
+            {
+                // Si no hay superposición, podemos reactivar las colisiones de forma segura
+                Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+            }
+        }
+
+        if (enemyProyectileLayer != -1)
+        {
+            int enemyProyectileLayerMask = 1 << enemyProyectileLayer;
+            if (IsOverlappingEnemy(enemyProyectileLayerMask))
+            {
+                StartCoroutine(WaitForClearanceAndReenableCollisionForProjectiles());
+            }
+            else
+            {
+                Physics.IgnoreLayerCollision(playerLayer, enemyProyectileLayer, false);
+            }
+        }
+
         dashEffect?.Stop();
 
         isDashing = false;
@@ -212,7 +255,7 @@ public class PlayerDash : MonoBehaviour
 
         if (!playerMovement.MovementEnabled) playerMovement.MovementEnabled = true;
 
-        Invoke(nameof(ResetDashCooldown), dashCooldown);
+        Invoke(nameof(ResetDashCooldown), dashCooldown); 
     }
 
     private void ResetDashCooldown()
@@ -258,6 +301,44 @@ public class PlayerDash : MonoBehaviour
             }
         }
         return true;
+    }
+
+    private bool IsOverlappingEnemy(int layerMask)
+    {
+        if (!TryGetCapsuleCastPoints(out Vector3 p1, out Vector3 p2, out float radius)) return false;
+
+        return Physics.CheckCapsule(p1, p2, radius, layerMask, QueryTriggerInteraction.Ignore);
+    }
+
+    private IEnumerator WaitForClearanceAndReenableCollision()
+    {
+        Debug.LogWarning("El jugador terminó su Dash dentro de un enemigo. Esperando autorización...");
+        int enemyLayerMask = 1 << enemyLayer;
+
+        // Bucle: Se ejecuta mientras el jugador siga dentro de un enemigo
+        while (IsOverlappingEnemy(enemyLayerMask))
+        {
+            // Espera al siguiente frame de físicas antes de volver a comprobar
+            yield return new WaitForFixedUpdate();
+        }
+
+        // Una vez que el bucle termina, significa que el jugador está fuera del enemigo
+        Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+        Debug.LogWarning("El jugador está libre de enemigos. Colisiones reactivadas.");
+    }
+
+    private IEnumerator WaitForClearanceAndReenableCollisionForProjectiles()
+    {
+        Debug.LogWarning("El jugador terminó su Dash dentro de un proyectil enemigo. Esperando autorización...");
+        int enemyProyectileLayerMask = 1 << enemyProyectileLayer;
+
+        while (IsOverlappingEnemy(enemyProyectileLayerMask))
+        {
+            yield return new WaitForFixedUpdate();
+        }
+
+        Physics.IgnoreLayerCollision(playerLayer, enemyProyectileLayer, false);
+        Debug.LogWarning("El jugador está libre de proyectiles enemigos. Colisiones reactivadas.");
     }
 
     private void OnDrawGizmos()
