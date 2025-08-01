@@ -642,16 +642,15 @@ MonoBehaviour:
   playerTransform: {fileID: 0}
   startVelocity: 5
   stopDistance: 1.5
+  farDistanceThreshold: 20
   jumpDistance: 8
   longJumpDistance: 15
-  jumpHeightThreshold: 2
+  requiredHeightDifference: 5
   groundLayer:
     serializedVersion: 2
     m_Bits: 2049
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 30721
   targetCollider: {fileID: 3441400616488566475}
+  rotateDuringJump: 0
   lerpDuration: 1
   minJumpHeight: 3
   maxJumpHeight: 8
@@ -679,12 +678,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  pathEfficiencyThreshold: 1.8
+  jumpPreparationTime: 1
   playerMovementThreshold: 2
-  minPathDistanceForJump: 12
   maxPathRatioForJump: 3
   minDirectDistanceForJump: 5
-  obstacleCheckDistance: 15
   trajectoryPoints: 20
   raycastsCount: 5
   raycastSpacing: 0.5
@@ -696,8 +693,6 @@ MonoBehaviour:
     m_Bits: 128
   minJumpCooldown: 1
   maxJumpCooldown: 3
-  jumpPositionTolerance: 2
-  dynamicJumpThreshold: 10
   colorJumpDistance: {r: 0.036188126, g: 0, b: 1, a: 0}
   colorLongJumpDistance: {r: 0.24875402, g: 0.8113208, b: 0.59858817, a: 0}
   colorIsJumping: {r: 0.5126896, g: 0, b: 1, a: 0}

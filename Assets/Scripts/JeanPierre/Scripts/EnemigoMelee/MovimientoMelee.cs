@@ -10,14 +10,15 @@ public class MovimientoMelee : MonoBehaviour
     [Header("Parámetros de Movimiento")]
     [SerializeField] private float startVelocity = 5f;
     [SerializeField] private float stopDistance = 1.5f;
+    [SerializeField] private float farDistanceThreshold = 20f;
 
     [Header("Parámetros de Salto")]
     [SerializeField] private float jumpDistance = 8f;
     [SerializeField] private float longJumpDistance = 15f;
     [SerializeField] private float requiredHeightDifference = 5f;
-    [SerializeField] private LayerMask groundLayer = -1;
-    [SerializeField] private LayerMask obstacleLayer = -1;
+    [SerializeField] private LayerMask groundLayer = -1; 
     [SerializeField] private CapsuleCollider targetCollider;
+    [SerializeField] private bool rotateDuringJump = true;
 
     [Header("Trayectoria de Salto")]
     [SerializeField] private float lerpDuration = 1.5f;
@@ -27,14 +28,11 @@ public class MovimientoMelee : MonoBehaviour
     [SerializeField] private float jumpPreparationTime = 1f;
 
     [Header("Detección de Rutas")]
-    [SerializeField] private float pathEfficiencyThreshold = 2.5f;
     [SerializeField] private float playerMovementThreshold = 3f;
-    [SerializeField] private float minPathDistanceForJump = 12f;
     [SerializeField] private float maxPathRatioForJump = 3f;
     [SerializeField] private float minDirectDistanceForJump = 5f;
 
     [Header("Detección de Obstáculos")]
-    [SerializeField] private float obstacleCheckDistance = 15f;
     [SerializeField] private int trajectoryPoints = 20;
 
     [Header("Configuración de Raycast")]
@@ -50,8 +48,6 @@ public class MovimientoMelee : MonoBehaviour
     [Header("Comportamiento de Salto")]
     [SerializeField] private float minJumpCooldown = 1f;
     [SerializeField] private float maxJumpCooldown = 3f;
-    [SerializeField] private float jumpPositionTolerance = 2f;
-    [SerializeField] private float dynamicJumpThreshold = 10f;
 
     [Header("Visualización")]
     [SerializeField] private Color colorJumpDistance;
@@ -144,6 +140,9 @@ public class MovimientoMelee : MonoBehaviour
 
     bool ShouldJumpToTarget(Vector3 target)
     {
+        float distance = Vector3.Distance(transform.position, target);
+        if (distance > farDistanceThreshold) return true;
+
         float heightDiff = Mathf.Abs(target.y - transform.position.y);
         bool heightCondition = heightDiff >= requiredHeightDifference;
         bool pathCondition = HasSignificantGapInDirectPath() || !HasDirectPathToTarget(target);
@@ -245,6 +244,12 @@ public class MovimientoMelee : MonoBehaviour
 
         if (!agent.enabled || !agent.isOnNavMesh || analysis.directDistance < minDirectDistanceForJump)
             return analysis;
+
+        if (analysis.directDistance > farDistanceThreshold)
+        {
+            analysis.shouldJump = true;
+            return analysis;
+        }
 
         NavMeshPath path = new NavMeshPath();
         bool hasValidPath = agent.CalculatePath(playerTransform.position, path);
@@ -398,9 +403,12 @@ public class MovimientoMelee : MonoBehaviour
 
         transform.position = CalculateTrajectoryPoint(lerpStartPosition, lerpTargetPosition, calculatedJumpHeight, progress);
 
-        Vector3 lookDirection = (lerpTargetPosition - transform.position).normalized;
-        if (lookDirection != Vector3.zero)
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), Time.deltaTime * 2f);
+        if (rotateDuringJump)
+        {
+            Vector3 lookDirection = (lerpTargetPosition - transform.position).normalized;
+            if (lookDirection != Vector3.zero)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), Time.deltaTime * 2f);
+        }
     }
 
     Vector3 CalculateTrajectoryPoint(Vector3 start, Vector3 end, float maxHeight, float t)
