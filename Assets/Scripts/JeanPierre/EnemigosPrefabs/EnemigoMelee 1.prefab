@@ -641,13 +641,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 0}
   startVelocity: 5
-  maxVelocity: 10
-  acceleration: 0.1
   stopDistance: 1.5
   jumpDistance: 8
   longJumpDistance: 15
   jumpHeightThreshold: 2
-  waitTimeBeforeJump: 2
   groundLayer:
     serializedVersion: 2
     m_Bits: 2049
@@ -658,7 +655,6 @@ MonoBehaviour:
   lerpDuration: 1
   minJumpHeight: 3
   maxJumpHeight: 8
-  gravityMultiplier: 1
   jumpCurve:
     serializedVersion: 2
     m_Curve:
@@ -684,14 +680,26 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   pathEfficiencyThreshold: 1.8
-  gapDetectionDistance: 5
-  maxPathCalculationDistance: 30
   playerMovementThreshold: 2
+  minPathDistanceForJump: 12
+  maxPathRatioForJump: 3
+  minDirectDistanceForJump: 5
   obstacleCheckDistance: 15
   trajectoryPoints: 20
+  raycastsCount: 5
+  raycastSpacing: 0.5
+  raycastLength: 10
+  showDebugRaycasts: 1
+  detectionRadiusDuringJump: 20
+  playerDetectionMask:
+    serializedVersion: 2
+    m_Bits: 128
+  minJumpCooldown: 1
+  maxJumpCooldown: 3
+  jumpPositionTolerance: 2
+  dynamicJumpThreshold: 10
   colorJumpDistance: {r: 0.036188126, g: 0, b: 1, a: 0}
   colorLongJumpDistance: {r: 0.24875402, g: 0.8113208, b: 0.59858817, a: 0}
-  colorIsWaiting: {r: 1, g: 0.5038273, b: 0, a: 0}
   colorIsJumping: {r: 0.5126896, g: 0, b: 1, a: 0}
   colorPathLine: {r: 0.79728746, g: 1, b: 0, a: 0}
   colorJumpTrajectory: {r: 0, g: 0.78307223, b: 1, a: 0}
