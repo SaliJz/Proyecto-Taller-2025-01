@@ -16,7 +16,8 @@ public class MovimientoMelee : MonoBehaviour
     [SerializeField] private float jumpDistance = 8f;
     [SerializeField] private float longJumpDistance = 15f;
     [SerializeField] private float requiredHeightDifference = 5f;
-    [SerializeField] private LayerMask groundLayer = -1; 
+    [SerializeField] private LayerMask groundLayer = -1;
+    [SerializeField] private LayerMask obstacleLayer = -1;
     [SerializeField] private CapsuleCollider targetCollider;
     [SerializeField] private bool rotateDuringJump = true;
 
@@ -331,6 +332,11 @@ public class MovimientoMelee : MonoBehaviour
 
     void PrepareJump(Vector3 targetPosition)
     {
+        if (CheckObstaclesInPath(transform.position, targetPosition))
+        {
+            targetPosition = FindAdjustedJumpPosition(targetPosition);
+        }
+
         isJumping = true;
         canJump = false;
         jumpCooldownTimer = Random.Range(minJumpCooldown, maxJumpCooldown);
@@ -346,6 +352,44 @@ public class MovimientoMelee : MonoBehaviour
 
         agent.enabled = false;
         lerpDuration = Mathf.Clamp(distance / 12f, 0.8f, 2f);
+    }
+
+    bool CheckObstaclesInPath(Vector3 start, Vector3 end)
+    {
+        Vector3 direction = (end - start).normalized;
+        float distance = Vector3.Distance(start, end);
+
+        if (Physics.Raycast(start, direction, distance, obstacleLayer))
+        {
+            return true; 
+        }
+
+        if (Physics.SphereCast(start, 0.5f, direction, out RaycastHit hit, distance, obstacleLayer))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    Vector3 FindAdjustedJumpPosition(Vector3 desiredPosition)
+    {
+        Vector3 direction = (desiredPosition - transform.position).normalized;
+        float maxDistance = Vector3.Distance(transform.position, desiredPosition);
+
+        for (float dist = maxDistance; dist > 2f; dist -= 1f)
+        {
+            Vector3 testPos = transform.position + (direction * dist);
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(testPos, out hit, 2f, NavMesh.AllAreas) &&
+                !CheckObstaclesInPath(transform.position, hit.position))
+            {
+                return hit.position;
+            }
+        }
+
+        NavMesh.SamplePosition(desiredPosition, out NavMeshHit finalHit, 5f, NavMesh.AllAreas);
+        return finalHit.position;
     }
 
     Vector3 FindValidLandingPosition(Vector3 desiredPosition)
