@@ -25,20 +25,14 @@ public class PlayerKnockback : MonoBehaviour
         playerHealth.OnPlayerDamaged -= ApplyKnockback;
     }
 
-    /// <summary>
-    /// Aplica una fuerza de empuje al Rigidbody del jugador.
-    /// </summary>
     private void ApplyKnockback(Vector3 damageDirection, int damageAmount)
     {
         if (rb == null) return;
 
-        // Escala la fuerza basada en el daño (opcional)
-        float damageMultiplier = Mathf.Clamp01(damageAmount / 25f); // 25 de daño = fuerza base
+        float damageMultiplier = Mathf.Clamp01(damageAmount / 25f);
 
-        // La fuerza es en la misma dirección del daño, empujando al jugador
         Vector3 forceDirection = (damageDirection + Vector3.up * knockbackUpwardForce).normalized;
 
-        // Aplicamos la fuerza. Usamos Impulse para una explosión instantánea.
         rb.AddForce(forceDirection * knockbackForce * damageMultiplier, ForceMode.Impulse);
     }
 }
