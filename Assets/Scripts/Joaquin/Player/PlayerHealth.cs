@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
+    public event Action<Vector3, int> OnPlayerDamaged;
+
     [Header("Salud")]
     [SerializeField] private int baseMaxHealth = 100;
     private int currentHealth;
@@ -107,8 +109,10 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int damage, Vector3 attackerPosition)
     {
-        Vector3 damageDirection = (attackerPosition - transform.position).normalized;
+        if (isDead) return;
 
+        Vector3 damageDirection = (attackerPosition - transform.position).normalized;
+        int originalDamage = damage;
         int damageLeft = damage;
 
         if (directionalDamageHUD != null)
@@ -137,13 +141,15 @@ public class PlayerHealth : MonoBehaviour
         {
             currentHealth -= damageLeft;
             HUDManager.Instance.UpdateHealth(currentHealth, GetMaxHealth());
+        }
 
-            if (currentHealth <= 0)
-            {
-                currentHealth = 0;
-                HUDManager.Instance.UpdateHealth(currentHealth, GetMaxHealth());
-                Die();
-            }
+        OnPlayerDamaged?.Invoke(damageDirection, originalDamage);
+
+        if (currentHealth <= 0 && !isDead)
+        {
+            currentHealth = 0;
+            HUDManager.Instance.UpdateHealth(currentHealth, GetMaxHealth());
+            Die();
         }
     }
 
@@ -156,6 +162,8 @@ public class PlayerHealth : MonoBehaviour
     private IEnumerator RegenShield()
     {
         isRegenShield = true;
+
+        yield return new WaitForSeconds(2.5f);
 
         while (currentShield < baseMaxShield)
         {
@@ -173,23 +181,21 @@ public class PlayerHealth : MonoBehaviour
         if (isIgnited) return;
         isIgnited = true;
 
-        // Detener la coroutine anterior si está activa
-        if (ignitionCoroutine != null)
-        {
-            StopCoroutine(ignitionCoroutine);
-        }
-
-        StartCoroutine(IgnitionRoutine(damagePerSecond, duration));
+        if (ignitionCoroutine != null) StopCoroutine(ignitionCoroutine);
+        ignitionCoroutine = StartCoroutine(IgnitionRoutine(damagePerSecond, duration));
     }
 
     private IEnumerator IgnitionRoutine(float damagePerSecond, float duration)
     {
-        int ticks = Mathf.FloorToInt(duration);
-        for (int i = 0; i < ticks; i++)
+        float timer = 0f;
+        while (timer < duration)
         {
             TakeDamage((int)damagePerSecond, transform.position);
             yield return new WaitForSeconds(1f);
+            timer += 1f;
         }
+
+        isIgnited = false;
     }
 
     public void Die()
@@ -198,15 +204,9 @@ public class PlayerHealth : MonoBehaviour
         isDead = true;
 
         EnemySpawner enemySpawner = FindObjectOfType<EnemySpawner>();
-        if (enemySpawner != null)
-        {
-            enemySpawner.ResetSpawner();
-        }
+        if (enemySpawner != null) enemySpawner.ResetSpawner();
 
-        if (deathPrefab != null)
-        {
-            DeathManager.Instance.RegisterDeath(deathPrefab, transform.position);
-        }
+        if (deathPrefab != null) DeathManager.Instance.RegisterDeath(deathPrefab, transform.position);
 
         GameManager.Instance?.PlayerDied();
     }
