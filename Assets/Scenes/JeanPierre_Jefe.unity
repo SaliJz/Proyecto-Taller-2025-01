@@ -1457,7 +1457,6 @@ GameObject:
   m_Component:
   - component: {fileID: 358285462}
   - component: {fileID: 358285461}
-  - component: {fileID: 358285463}
   - component: {fileID: 358285464}
   m_Layer: 0
   m_Name: 'GameManager '
@@ -1480,6 +1479,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxBodies: 5
   gameOverSceneName: GameOver
+  mainMenuSceneName: MenuPrincipal
 --- !u!4 &358285462
 Transform:
   m_ObjectHideFlags: 0
@@ -1495,18 +1495,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &358285463
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 358285460}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63573bcaa788498488b602764647060f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &358285464
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -44,6 +44,7 @@ public class DeathManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         string currentSceneName = scene.name;
+        var remainingBodies = new Queue<BodyData>();
 
         foreach (var bodyData in bodies)
         {
@@ -51,15 +52,24 @@ public class DeathManager : MonoBehaviour
 
             bool isSpecialScene = (currentSceneName == mainMenuSceneName || currentSceneName == gameOverSceneName);
 
-            if (isSpecialScene || bodyData.sceneName != currentSceneName)
+            if (isSpecialScene)
             {
-                bodyData.body.SetActive(false); // Oculta el cuerpo
+                bodyData.body.SetActive(false); // Oculta el cuerpo si es una escena especial
+                remainingBodies.Enqueue(bodyData);
+            }
+            else if (bodyData.sceneName != currentSceneName)
+            {
+                bodyData.body.SetActive(false); // Oculta el cuerpo si no es de la escena actual
+                remainingBodies.Enqueue(bodyData);
             }
             else
             {
-                bodyData.body.SetActive(true); // Muestra el cuerpo
+                bodyData.body.SetActive(true); // Activa el cuerpo si es de la escena actual
+                remainingBodies.Enqueue(bodyData);
             }
         }
+
+        bodies = remainingBodies;
     }
 
     public void RegisterDeath(GameObject prefab, Vector3 position)
