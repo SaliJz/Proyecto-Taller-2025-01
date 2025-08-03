@@ -64150,6 +64150,10 @@ MonoBehaviour:
   sensitivity: 200
   verticalClamp: 80
   orientation: {fileID: 4779443925525030774}
+  playerHealth: {fileID: 8320422445359306761}
+  impactDuration: 0.25
+  impactIntensity: 10
+  shakeIntensity: 1
 --- !u!1 &6258046512960990295
 GameObject:
   m_ObjectHideFlags: 0
@@ -104564,6 +104568,7 @@ GameObject:
   - component: {fileID: 6091034805891764582}
   - component: {fileID: 6312401153632615457}
   - component: {fileID: 8320422445359306761}
+  - component: {fileID: 2061478378774835206}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -104716,6 +104721,20 @@ MonoBehaviour:
     type: 3}
   isTutorial: 0
   directionalDamageHUD: {fileID: 0}
+--- !u!114 &2061478378774835206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8701885726700468880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c90bb08ea11af034fb733ea42d47dd97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  knockbackForce: 5
+  knockbackUpwardForce: 1
 --- !u!1 &8731509473664418809
 GameObject:
   m_ObjectHideFlags: 0

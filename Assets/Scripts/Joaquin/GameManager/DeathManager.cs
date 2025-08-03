@@ -8,6 +8,7 @@ public class DeathManager : MonoBehaviour
 
     [SerializeField] private int maxBodies = 5;
     [SerializeField] private string gameOverSceneName = "GameOver";
+    [SerializeField] private string mainMenuSceneName = "MenuPrincipal";
 
     private class BodyData
     {
@@ -43,32 +44,22 @@ public class DeathManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         string currentSceneName = scene.name;
-        var remainingBodies = new Queue<BodyData>();
 
         foreach (var bodyData in bodies)
         {
             if (bodyData.body == null) continue;
 
-            if (currentSceneName == "MenuPrincipal")
+            bool isSpecialScene = (currentSceneName == mainMenuSceneName || currentSceneName == gameOverSceneName);
+
+            if (isSpecialScene || bodyData.sceneName != currentSceneName)
             {
-                // Desactiva el cuerpo para que no se vea en el menú principal
-                bodyData.body.SetActive(false);
-                remainingBodies.Enqueue(bodyData);
-            }
-            else if (bodyData.sceneName == currentSceneName || currentSceneName == gameOverSceneName)
-            {
-                // Activa el cuerpo si está en la escena actual o en la escena de Game Over
-                bodyData.body.SetActive(true);
-                remainingBodies.Enqueue(bodyData);
+                bodyData.body.SetActive(false); // Oculta el cuerpo
             }
             else
             {
-                // Si el cuerpo no pertenece a la escena actual, se destruye
-                Destroy(bodyData.body);
+                bodyData.body.SetActive(true); // Muestra el cuerpo
             }
         }
-
-        bodies = remainingBodies;
     }
 
     public void RegisterDeath(GameObject prefab, Vector3 position)
@@ -98,7 +89,7 @@ public class DeathManager : MonoBehaviour
 
             if (bodies.Count > maxBodies)
             {
-                BodyData oldest = bodies.Dequeue();
+                BodyData oldest = bodies.Dequeue(); 
                 if (oldest.body != null)
                 {
                     Destroy(oldest.body);
