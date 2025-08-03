@@ -197,15 +197,14 @@ public class EnemyFinalSequence : MonoBehaviour
 
     void OnDisable()
     {
-        if (!isQuitting && !finalSequenceTriggered)
-            SpawnBulletInstantly();
+        if (!isQuitting && !finalSequenceTriggered) SpawnBulletInstantly();
     }
 
     void OnDestroy()
     {
-        if (!isQuitting)
+        if (!isQuitting && newPrefab != null && gameObject.scene.isLoaded)
         {
-            // Instancia el prefab adicional al destruirse este objeto
+            //Instancia el prefab adicional al destruirse este objeto
             Instantiate(newPrefab, transform.position, Quaternion.identity);
             MissionManager.Instance?.RegisterKill(gameObject.tag, name, null);
         }
@@ -213,6 +212,8 @@ public class EnemyFinalSequence : MonoBehaviour
 
     private void SpawnBulletInstantly()
     {
+        if (this == null || !gameObject.scene.isLoaded) return;
+
         var bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
         StartCoroutine(ScaleBullet(bullet));
         Destroy(bullet, scaleDuration + finalDelay + 0.1f);
