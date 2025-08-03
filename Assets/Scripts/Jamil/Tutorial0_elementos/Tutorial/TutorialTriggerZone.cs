@@ -92,8 +92,8 @@ public class TutorialTriggerZone : MonoBehaviour
                     else if (currentDialogue == 5)//Pronto entenderas
                     {
                         manager.DisablePlayerScriptsForCameraTransition();
-                        manager.StartCoroutine(manager.ActivateTransitionBetweenTwoCameras(1, 3, 0, 0)); //Ejecutamos cinematica del glitch
-                        StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 5.22f)); // Espéramos que termine y activamos la gun
+                        manager.StartCoroutine(manager.ActivateTransitionBetweenTwoCameras(1, 4, 0, 0)); //Ejecutamos cinematica del glitch
+                        StartCoroutine(StartDelayConfirmAdvance(manager.ConfirmAdvance, 6.22f)); // Espéramos que termine y activamos la gun
                         activated = true;
                     }
                     // Se queda en dialogo 5 hasta el fade in termine y avanza por este al dialogo 6 (Esta es una de las amaenazas)
