@@ -752,6 +752,11 @@ MonoBehaviour:
   maxBodies: 5
   gameOverSceneName: GameOver
   mainMenuSceneName: MenuPrincipal
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  placementSphereRadius: 0.5
+  maxGroundingDistance: 100
 --- !u!4 &358285462
 Transform:
   m_ObjectHideFlags: 0
@@ -2941,6 +2946,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 4694652273314268621, guid: 5a892b47efeee6041a854456a9c29582,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 5416483879915693880, guid: 5a892b47efeee6041a854456a9c29582,
         type: 3}

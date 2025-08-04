@@ -140,6 +140,11 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1434881660524564026, guid: c6bad594ba909a64e8e0ce6a78d37953,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2774217487899229336, guid: c6bad594ba909a64e8e0ce6a78d37953,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -723,6 +728,11 @@ MonoBehaviour:
   maxBodies: 5
   gameOverSceneName: GameOver
   mainMenuSceneName: MenuPrincipal
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  placementSphereRadius: 0.5
+  maxGroundingDistance: 100
 --- !u!4 &358285462
 Transform:
   m_ObjectHideFlags: 0
@@ -919,6 +929,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7366554142290436985, guid: e42452ae958d0de429c06723f5fc3648,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 8364275990185323834, guid: e42452ae958d0de429c06723f5fc3648,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -7134,6 +7149,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: LoadScene
+      objectReference: {fileID: 0}
+    - target: {fileID: 4724230420306291819, guid: 6e69aeb3d45ad904ebf20cab082138f9,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5658164972992655062, guid: 6e69aeb3d45ad904ebf20cab082138f9,
         type: 3}

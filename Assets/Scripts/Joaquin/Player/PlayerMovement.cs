@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float speedWalk = 10f;
     [SerializeField] private float groundDrag = 5f;
     [SerializeField] private float airControl = 0.2f;
+    [SerializeField] private float groundStickForce = 10f;
 
     [Header("Jump")]
     [SerializeField] private float jumpForce = 8f;
@@ -82,6 +83,7 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded)
         {
             rb.velocity = new Vector3(moveDirection.x * speedWalk, rb.velocity.y, moveDirection.z * speedWalk);
+            rb.AddForce(Vector3.down * groundStickForce, ForceMode.Force);
         }
         else
         {
@@ -91,7 +93,7 @@ public class PlayerMovement : MonoBehaviour
         if (moveDirection != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * 10f);
         }
     }
 
@@ -103,7 +105,7 @@ public class PlayerMovement : MonoBehaviour
     private void CheckGround()
     {
         Vector3 startPoint = transform.position + Vector3.up * groundCheckRadius;
-        float castDistance = playerHeight / 2 - groundCheckRadius + groundCheckDistance;
+        float castDistance = (playerHeight / 2) + groundCheckDistance - groundCheckRadius;
 
         Debug.DrawRay(startPoint, Vector3.down * castDistance, Color.green);
 

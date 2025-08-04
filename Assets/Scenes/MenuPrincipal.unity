@@ -2929,6 +2929,11 @@ MonoBehaviour:
   maxBodies: 5
   gameOverSceneName: GameOver
   mainMenuSceneName: MenuPrincipal
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  placementSphereRadius: 0.1
+  maxGroundingDistance: 100
 --- !u!4 &451308502
 Transform:
   m_ObjectHideFlags: 0

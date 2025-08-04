@@ -1480,6 +1480,11 @@ MonoBehaviour:
   maxBodies: 5
   gameOverSceneName: GameOver
   mainMenuSceneName: MenuPrincipal
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  placementSphereRadius: 0.5
+  maxGroundingDistance: 100
 --- !u!4 &358285462
 Transform:
   m_ObjectHideFlags: 0
@@ -3823,7 +3828,7 @@ PrefabInstance:
     - target: {fileID: 1386837949540336407, guid: 074c8b643b40104408fb31dfef645405,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 1386837949540336407, guid: 074c8b643b40104408fb31dfef645405,
         type: 3}
@@ -3908,7 +3913,7 @@ PrefabInstance:
     - target: {fileID: 3516546528719947702, guid: 074c8b643b40104408fb31dfef645405,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 3516546528719947702, guid: 074c8b643b40104408fb31dfef645405,
         type: 3}
@@ -4093,7 +4098,7 @@ PrefabInstance:
     - target: {fileID: 6706903255823320866, guid: 074c8b643b40104408fb31dfef645405,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 6706903255823320866, guid: 074c8b643b40104408fb31dfef645405,
         type: 3}
@@ -4208,7 +4213,7 @@ PrefabInstance:
     - target: {fileID: 9091784640210846293, guid: 074c8b643b40104408fb31dfef645405,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 9091784640210846293, guid: 074c8b643b40104408fb31dfef645405,
         type: 3}
