@@ -11,8 +11,8 @@ public class PlayerKnockback : MonoBehaviour
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        playerHealth = GetComponent<PlayerHealth>();
+        TryGetComponent(out rb);
+        TryGetComponent(out playerHealth);
     }
 
     private void OnEnable()
@@ -28,11 +28,13 @@ public class PlayerKnockback : MonoBehaviour
     private void ApplyKnockback(Vector3 damageDirection, int damageAmount)
     {
         if (rb == null) return;
+        if (damageDirection == Vector3.zero) return;
 
         float damageMultiplier = Mathf.Clamp01(damageAmount / 25f);
 
-        Vector3 forceDirection = (damageDirection + Vector3.up * knockbackUpwardForce).normalized;
-
-        rb.AddForce(forceDirection * knockbackForce * damageMultiplier, ForceMode.Impulse);
+        Vector3 horizontalDirection = -damageDirection.normalized;
+        Vector3 force = horizontalDirection * knockbackForce * damageMultiplier;
+        force += Vector3.up * knockbackUpwardForce;
+        rb.AddForce(force, ForceMode.Impulse);
     }
 }

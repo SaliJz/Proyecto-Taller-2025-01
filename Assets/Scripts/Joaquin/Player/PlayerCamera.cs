@@ -4,27 +4,28 @@ using System.Collections;
 public class PlayerCamera : MonoBehaviour
 {
     [Header("Configuración General")]
-    [SerializeField] private float sensitivity = 2f;
+    [SerializeField] private float baseSensitivity = 2f;
     [SerializeField] private float verticalClamp = 90f;
     [SerializeField] private Transform orientation;
     [SerializeField] private PlayerHealth playerHealth;
 
     [Header("Efectos de Daño")]
-    [SerializeField] private float impactDuration = 0.25f;
-    [SerializeField] private float impactIntensity = 5f;
-    [SerializeField] private float shakeIntensity = 0.5f;
+    [SerializeField] private float effectDuration = 0.5f;
+    [SerializeField] private float tiltIntensity = 10f;
+    [SerializeField] private float shakeIntensity = 1.5f;
+    [SerializeField] private AnimationCurve recoveryCurve = AnimationCurve.EaseInOut(0, 1, 1, 0);
 
     private float rotationX;
     private float rotationY;
 
-    private Vector3 currentDamageOffset;
+    private Quaternion damageRotationOffset = Quaternion.identity;
     private Coroutine damageEffectCoroutine;
+    private float currentSensitivity;
 
     private void Awake()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
         playerHealth= FindAnyObjectByType<PlayerHealth>();
     }
 
@@ -34,6 +35,8 @@ public class PlayerCamera : MonoBehaviour
         Vector3 eulerAngles = transform.rotation.eulerAngles;
         rotationX = eulerAngles.x;
         rotationY = eulerAngles.y;
+
+        currentSensitivity = baseSensitivity;
     }
 
     private void OnEnable()
@@ -50,18 +53,18 @@ public class PlayerCamera : MonoBehaviour
     {
         if (Time.timeScale == 0f) return; // Evita actualizaciones cuando el tiempo está pausado
 
-        float currentSensitivity = SettingsService.Sensitivity * 100f;
-        sensitivity = currentSensitivity;
+        float newSens = SettingsService.Sensitivity * 100;
+        if (!Mathf.Approximately(newSens, currentSensitivity)) currentSensitivity = newSens;
 
-        float mouseX = Input.GetAxis("Mouse X") * Time.fixedDeltaTime * sensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * Time.fixedDeltaTime * sensitivity;
+        float mouseX = Input.GetAxis("Mouse X") * Time.deltaTime * currentSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * Time.deltaTime * currentSensitivity;
 
         rotationX -= mouseY;
         rotationY += mouseX;
         rotationX = Mathf.Clamp(rotationX, -verticalClamp, verticalClamp);
 
         Quaternion targetRotation = Quaternion.Euler(rotationX, rotationY, 0f);
-        transform.rotation = targetRotation * Quaternion.Euler(currentDamageOffset);
+        transform.rotation = targetRotation * damageRotationOffset;
         orientation.rotation = Quaternion.Euler(0f, rotationY, 0f);
     }
 
@@ -76,31 +79,35 @@ public class PlayerCamera : MonoBehaviour
 
     private IEnumerator DamageEffectCoroutine(Vector3 damageDirection, int damageAmount)
     {
-        float timer = 0f;
+        float elapsed = 0f;
 
-        Vector3 localDirection = transform.InverseTransformDirection(damageDirection);
-        Vector3 impactOffset = new Vector3(-localDirection.y, -localDirection.x, 0) * impactIntensity;
+        Vector3 localDirection = orientation.InverseTransformDirection(damageDirection);
 
-        float damageMultiplier = Mathf.Clamp01(damageAmount / 50f);
+        float damageMultiplier = Mathf.Clamp01(damageAmount / 50f) + 0.5f;
 
-        while (timer < impactDuration)
+        while (elapsed < effectDuration)
         {
-            float progress = 1 - (timer / impactDuration);
-            Vector3 currentImpact = Vector3.Lerp(Vector3.zero, impactOffset, progress) * damageMultiplier;
+            float t = elapsed / effectDuration;
+            float intensity = recoveryCurve.Evaluate(t / effectDuration) * damageMultiplier;
 
-            float currentShake = shakeIntensity * progress * damageMultiplier;
-            Vector3 shakeOffset = new Vector3(
-                Random.Range(-currentShake, currentShake),
-                Random.Range(-currentShake, currentShake),
-                Random.Range(-currentShake, currentShake)
-            );
+            float pitch = -localDirection.z * tiltIntensity * intensity;
+            float roll = localDirection.x * tiltIntensity * intensity;
 
-            currentDamageOffset = currentImpact + shakeOffset;
+            Quaternion tiltRotation = Quaternion.Euler(pitch, 0, roll);
 
-            timer += Time.deltaTime;
+            float currentShake = shakeIntensity * intensity;
+            float shakeX = Random.Range(-currentShake, currentShake);
+            float shakeY = Random.Range(-currentShake, currentShake);
+            float shakeZ = Random.Range(-currentShake, currentShake);
+
+            Quaternion shakeRotation = Quaternion.Euler(shakeX, shakeY, shakeZ);
+
+            damageRotationOffset = tiltRotation * shakeRotation;
+
+            elapsed += Time.deltaTime;
             yield return null;
         }
 
-        currentDamageOffset = Vector3.zero;
+        damageRotationOffset = Quaternion.identity;
     }
 }
