@@ -483,6 +483,9 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
         Destroy(sliderVida.gameObject);
         StartCoroutine(TimeToDead());
+
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        if (agent == null) Destroy(gameObject); 
     }
 
     private void DesactiveScripts()
