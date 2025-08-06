@@ -482,10 +482,10 @@ public class VidaEnemigoGeneral : MonoBehaviour
         }
 
         Destroy(sliderVida.gameObject);
-        StartCoroutine(TimeToDead());
 
-        NavMeshAgent agent = GetComponent<NavMeshAgent>();
-        if (agent == null) Destroy(gameObject); 
+        Turret turret = GetComponent<Turret>();
+        if (turret != null) Destroy(gameObject);
+        StartCoroutine(TimeToDead());
     }
 
     private void DesactiveScripts()
