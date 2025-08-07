@@ -16,6 +16,16 @@ public class Laser : MonoBehaviour
     [SerializeField] private Transform originPoint;
     [SerializeField] private Vector3 localDirection = Vector3.forward;
 
+    [Header("Movement Settings")]
+    [SerializeField] private Transform objectToMove;
+    [SerializeField] private Transform[] waypoints;
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float arrivalThreshold = 0.1f;
+
+    [Header("Damage Settings")]
+    [SerializeField] private int damage = 10;
+    [SerializeField] private float damageInterval = 0.5f;
+
     [Header("Debug Visual")]
     [SerializeField] private bool showRaycast = true;
     [SerializeField] private Color noCollisionColor = Color.green;
@@ -25,27 +35,79 @@ public class Laser : MonoBehaviour
     private RaycastHit hitInfo;
     private float currentDistance;
 
+    private int currentWaypointIndex = 0;
+    private bool isMoving = false;
+
+    private float lastDamageTime = 0f;
+
     void Start()
     {
         if (scalableObject == null)
-        {
             scalableObject = this.gameObject;
-        }
 
         if (originPoint == null)
-        {
             originPoint = this.transform;
-        }
+
+        if (objectToMove == null)
+            objectToMove = this.transform;
 
         targetScale = baseScale;
         scalableObject.transform.localScale = baseScale;
+
+        InitializeMovement();
     }
 
     void Update()
     {
+        HandleMovement();
         ShootRaycast();
         ScaleObject();
         ShowDebugVisual();
+    }
+
+    void InitializeMovement()
+    {
+        if (waypoints == null || waypoints.Length == 0 || objectToMove == null)
+        {
+            return;
+        }
+
+        if (waypoints.Length == 1)
+        {
+            isMoving = true;
+        }
+        else if (waypoints.Length >= 2)
+        {
+            isMoving = true;
+            currentWaypointIndex = 0;
+        }
+    }
+
+    void HandleMovement()
+    {
+        if (waypoints == null || waypoints.Length == 0 || !isMoving || objectToMove == null)
+            return;
+
+        Transform targetWaypoint = waypoints[currentWaypointIndex];
+        if (targetWaypoint == null)
+            return;
+
+        Vector3 targetPosition = targetWaypoint.position;
+        objectToMove.position = Vector3.MoveTowards(objectToMove.position, targetPosition, moveSpeed * Time.deltaTime);
+
+        float distanceToTarget = Vector3.Distance(objectToMove.position, targetPosition);
+
+        if (distanceToTarget <= arrivalThreshold)
+        {
+            if (waypoints.Length == 1)
+            {
+                isMoving = false;
+            }
+            else if (waypoints.Length >= 2)
+            {
+                currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
+            }
+        }
     }
 
     void ShootRaycast()
@@ -106,15 +168,8 @@ public class Laser : MonoBehaviour
         //Debug.Log($"Láser libre - Distancia máxima: {currentDistance:F2} - Escala X: {targetScale.x:F2}");
     }
 
-    public void SetScaleMultiplier(float multiplier)
-    {
-        scaleMultiplier = multiplier;
-    }
-
-    public void SetLocalDirection(Vector3 newDirection)
-    {
-        localDirection = newDirection.normalized;
-    }
+    public void SetScaleMultiplier(float multiplier) => scaleMultiplier = multiplier;
+    public void SetLocalDirection(Vector3 newDirection) => localDirection = newDirection.normalized;
 
     public float GetCurrentDistance()
     {
@@ -134,4 +189,58 @@ public class Laser : MonoBehaviour
         return Physics.Raycast(originPoint.position, worldDirection, out RaycastHit hit, maxDistance, collisionLayers)
                ? hit.point : originPoint.position + worldDirection * maxDistance;
     }
+
+    public void SetWaypoints(Transform[] newWaypoints)
+    {
+        waypoints = newWaypoints;
+        currentWaypointIndex = 0;
+        InitializeMovement();
+    }
+
+    public void StartMovement()
+    {
+        if (waypoints != null && waypoints.Length > 0 && objectToMove != null)
+        {
+            isMoving = true;
+        }
+    }
+
+    public void StopMovement() => isMoving = false;
+
+    public bool IsMoving()
+    {
+        return isMoving;
+    }
+
+    public int GetCurrentWaypointIndex()
+    {
+        return currentWaypointIndex;
+    }
+
+    public void SetObjectToMove(Transform newObjectToMove) => objectToMove = newObjectToMove;
+
+    public Transform GetObjectToMove()
+    {
+        return objectToMove;
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
+
+        if (Time.time >= lastDamageTime + damageInterval)
+        {
+            var playerHealth = other.GetComponent<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(damage, transform.position);
+                lastDamageTime = Time.time;
+            }
+        }
+    }
+
+    public void SetDamage(int newDamage) => damage = newDamage;
+    public void SetDamageInterval(float newInterval) => damageInterval = newInterval;
+    public float GetDamage() => damage;
+    public float GetDamageInterval() => damageInterval;
 }
