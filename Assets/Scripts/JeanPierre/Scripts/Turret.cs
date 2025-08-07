@@ -43,7 +43,6 @@ public class Turret : MonoBehaviour
     private float nextFireTime;
     private TurretStats currentStats;
     private int currentFirePointIndex = 0;
-    private float currentTurretHeadAngle = 0f;
     private GameObject muzzleEffectInstance;
     private bool isShooting = false;
 
