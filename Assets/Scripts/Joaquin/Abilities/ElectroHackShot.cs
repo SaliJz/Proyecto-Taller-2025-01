@@ -9,9 +9,15 @@ public class ElectroHackShot : MonoBehaviour
     private float slowMultiplier;
     private bool hasExploded = false;
     private LayerMask targetLayer;
+    private Rigidbody rb;
 
     [SerializeField] private GameObject electroAreaEffectPrefab;
     [SerializeField] private ParticleSystem impactEffect;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
 
     public void Initialize(float radius, float maxTargets, float damagePerSecond, float duration, float slowMultiplier, LayerMask targetLayer)
     {
@@ -26,6 +32,29 @@ public class ElectroHackShot : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (hasExploded) return;
+
+        Vector3 reverseDirection = (rb.velocity.normalized == Vector3.zero) ? -transform.forward : -rb.velocity.normalized;
+        Vector3 impactPoint;
+        Vector3 impactNormal;
+
+        if (Physics.Raycast(transform.position, reverseDirection, out RaycastHit hitInfo, 1.0f))
+        {
+            impactPoint = hitInfo.point;
+            impactNormal = hitInfo.normal;
+        }
+        else
+        {
+            impactPoint = other.ClosestPoint(transform.position);
+            impactNormal = (transform.position - impactPoint).normalized;
+        }
+
+        IHackable hackable = other.GetComponent<IHackable>();
+        if (hackable != null)
+        {
+            PlayHackableEffect(impactPoint, impactNormal);
+            hackable.ApplyHack(duration, impactPoint, impactNormal);
+            Destroy(gameObject);
+        }
 
         if (other.CompareTag("Enemy"))
         {
@@ -176,6 +205,19 @@ public class ElectroHackShot : MonoBehaviour
         else
         {
             Debug.LogError("Electro Area Effect Prefab no está asignado en ElectroHackShot.");
+        }
+    }
+
+    private void PlayHackableEffect(Vector3 position, Vector3 normal)
+    {
+        if (impactEffect != null)
+        {
+            ParticleSystem impactInstance = Instantiate(impactEffect, position, Quaternion.LookRotation(normal));
+            Destroy(impactInstance.gameObject, 3f);
+        }
+        else
+        {
+            Debug.LogWarning("Particle System no está asignado en MindjackShot.");
         }
     }
 

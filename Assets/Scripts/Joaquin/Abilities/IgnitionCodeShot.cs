@@ -23,6 +23,16 @@ public class IgnitionCodeShot : MonoBehaviour
     {
         if (hasExploded) return;
 
+        IBurnable burnable = other.GetComponent<IBurnable>();
+        if (burnable != null)
+        {
+            burnable.ApplyBurn(duration);
+            hasExploded = true;
+            PlayEffect();
+            Destroy(gameObject);
+            return;
+        }
+
         if (other.CompareTag("Enemy"))
         {
             hasExploded = true;

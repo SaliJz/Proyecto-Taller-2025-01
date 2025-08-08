@@ -1,6 +1,7 @@
 using UnityEngine;
+using System.Collections;
 
-public class Laser : MonoBehaviour
+public class Laser : MonoBehaviour, IHackable, ISlowable
 {
     [Header("References")]
     [SerializeField] private GameObject scalableObject;
@@ -40,8 +41,13 @@ public class Laser : MonoBehaviour
 
     private float lastDamageTime = 0f;
 
+    private float originalSpeed;
+    private bool isHacked = false;
+
     void Start()
     {
+        originalSpeed = moveSpeed;
+
         if (scalableObject == null)
             scalableObject = this.gameObject;
 
@@ -243,4 +249,24 @@ public class Laser : MonoBehaviour
     public void SetDamageInterval(float newInterval) => damageInterval = newInterval;
     public float GetDamage() => damage;
     public float GetDamageInterval() => damageInterval;
+
+    public void ApplyHack(float duration, Vector3 impactPoint, Vector3 impactNormal)
+    {
+        isHacked = !isHacked;
+        moveSpeed = isHacked ? 0 : originalSpeed;
+        Debug.Log("El estado de la plataforma ha cambiado. Hackeada: " + isHacked);
+    }
+
+    public void ApplySlow(float slowMultiplier, float duration)
+    {
+        if (isHacked) return;
+        StartCoroutine(SlowRoutine(slowMultiplier, duration));
+    }
+
+    private IEnumerator SlowRoutine(float multiplier, float duration)
+    {
+        moveSpeed = originalSpeed * multiplier;
+        yield return new WaitForSeconds(duration);
+        moveSpeed = originalSpeed;
+    }
 }

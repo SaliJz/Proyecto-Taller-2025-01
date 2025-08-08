@@ -38,9 +38,9 @@ public class EnemyAbilityReceiver : MonoBehaviour
         currentSpeed = baseSpeed;
     }
 
-    public void TakeDamage(float dmg)
+    public void TakeDamage(float damagePerSecond)
     {
-        SendMessage("ApplyAbilityDamage", dmg);
+        SendMessage("ApplyAbilityDamage", damagePerSecond);
     }
 
     public void ApplySlow(float multiplier, float duration, GameObject effectToDestroy)

@@ -234,4 +234,14 @@ public class Turret : MonoBehaviour
             Gizmos.DrawLine(transform.position, player.position);
         }
     }
+
+    public float GetRotarionSpeed()
+    {
+        return currentStats.rotationSpeed;
+    }
+
+    public void SetRotationSpeed(float newSpeed)
+    {
+        currentStats.rotationSpeed = newSpeed;
+    }
 }

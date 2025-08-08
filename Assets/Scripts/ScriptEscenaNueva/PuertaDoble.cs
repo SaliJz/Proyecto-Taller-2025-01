@@ -112,5 +112,13 @@ public class PuertaDoble : MonoBehaviour
         }
     }
 
+    public float GetOpenVelocity()
+    {
+        return openVel;
+    }
 
+    public void SetOpenVelocity(float newOpenVel)
+    {
+        openVel = newOpenVel;
+    }
 }

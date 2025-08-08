@@ -321,6 +321,7 @@ GameObject:
   - component: {fileID: 1696316287400804292}
   - component: {fileID: 3846336101762595921}
   - component: {fileID: 805480332919746406}
+  - component: {fileID: 1245468305791631660}
   m_Layer: 6
   m_Name: TurretFast
   m_TagString: Enemy
@@ -523,6 +524,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1245468305791631660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2994818672303018990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b101675cd5fb44f4f8d311ea7d1bba0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turret: {fileID: 8167743954583486699}
 --- !u!1 &3053826028398782137
 GameObject:
   m_ObjectHideFlags: 0

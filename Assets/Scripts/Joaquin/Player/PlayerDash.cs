@@ -77,7 +77,7 @@ public class PlayerDash : MonoBehaviour
         if (sfxSource == null)
         {
             sfxSource = GameObject.Find("SFXSource")?.GetComponent<AudioSource>();
-            if (sfxSource == null) Debug.LogError("No se encontró el AudioSource para efectos de sonido.");
+            if (sfxSource == null) Debug.LogWarning("No se encontró el AudioSource para efectos de sonido.");
         }
 
         rb.useGravity = true;
