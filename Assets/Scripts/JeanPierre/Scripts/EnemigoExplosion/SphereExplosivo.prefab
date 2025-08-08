@@ -124,6 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageAmount: 40
   damageInterval: 0.5
+  animator: {fileID: 0}
 --- !u!54 &5912694656358705130
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -285,6 +286,11 @@ PrefabInstance:
     - target: {fileID: 7760791718636101802, guid: 6bb7be09e3de94944a0cc5f3433c1d02,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9137642882832743637, guid: 6bb7be09e3de94944a0cc5f3433c1d02,
+        type: 3}
+      propertyPath: m_InitialEventNameOverriden
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9137642882832743637, guid: 6bb7be09e3de94944a0cc5f3433c1d02,

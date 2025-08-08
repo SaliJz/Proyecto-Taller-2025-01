@@ -56,6 +56,14 @@ public class BalaPlayer : MonoBehaviour
             return;
         }
 
+        Barrel barrel = other.GetComponent<Barrel>();
+        if (barrel != null)
+        {
+            barrel.RecibirDanioPorBala(tipoBala);
+            Destroy(gameObject); 
+            return;
+        }
+
         // Nuevo: EnemigoRosa
         EnemigoRosa enemigoRosa = other.GetComponent<EnemigoRosa>();
         if (enemigoRosa != null)
