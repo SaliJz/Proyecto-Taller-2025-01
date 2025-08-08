@@ -640,6 +640,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 0}
+  detectionRange: 50
   startVelocity: 5
   stopDistance: 1.5
   farDistanceThreshold: 20
@@ -701,6 +702,7 @@ MonoBehaviour:
   colorIsJumping: {r: 0.5126896, g: 0, b: 1, a: 0}
   colorPathLine: {r: 0.79728746, g: 1, b: 0, a: 0}
   colorJumpTrajectory: {r: 0, g: 0.78307223, b: 1, a: 0}
+  colorDetectionRange: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &2900301066802915152
 MonoBehaviour:
   m_ObjectHideFlags: 0

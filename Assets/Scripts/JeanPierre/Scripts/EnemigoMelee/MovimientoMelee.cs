@@ -7,6 +7,9 @@ public class MovimientoMelee : MonoBehaviour
     [Header("Referencia al Jugador")]
     [SerializeField] private Transform playerTransform;
 
+    [Header("Detección del Jugador")]
+    [SerializeField] private float detectionRange = 15f;
+
     [Header("Parámetros de Movimiento")]
     [SerializeField] private float startVelocity = 5f;
     [SerializeField] private float stopDistance = 1.5f;
@@ -56,9 +59,13 @@ public class MovimientoMelee : MonoBehaviour
     [SerializeField] private Color colorIsJumping;
     [SerializeField] private Color colorPathLine;
     [SerializeField] private Color colorJumpTrajectory;
+    [SerializeField] private Color colorDetectionRange = Color.red;
 
     private NavMeshAgent agent;
     private EnemyAbilityReceiver abilityReceiver;
+    private bool hasBeenDamaged = false;
+    private float damageDetectionDuration = 10f; 
+    private float damageTimer = 0f;
     private float currentVelocity;
     private bool isJumping = false;
     private bool canJump = true;
@@ -73,6 +80,7 @@ public class MovimientoMelee : MonoBehaviour
     private Vector3 lastKnownPlayerPosition;
     private Vector3 jumpTargetPosition;
     private Vector3[] debugRaycastPoints;
+    private bool playerInRange = true;
 
     void Start()
     {
@@ -91,9 +99,7 @@ public class MovimientoMelee : MonoBehaviour
         }
 
         if (playerTransform == null)
-        {
             playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
-        }
 
         lastKnownPlayerPosition = playerTransform.position;
         debugRaycastPoints = new Vector3[raycastsCount];
@@ -102,6 +108,8 @@ public class MovimientoMelee : MonoBehaviour
     void Update()
     {
         if (abilityReceiver == null || abilityReceiver.CurrentTarget == null) return;
+
+        CheckPlayerInRange();
 
         UpdatePlayerPositionTracking();
         currentVelocity = abilityReceiver.CurrentSpeed;
@@ -119,13 +127,9 @@ public class MovimientoMelee : MonoBehaviour
             {
                 preparingToJump = false;
                 if (jumpPreparationTimer <= 0f && ShouldJumpToTarget(jumpTargetPosition))
-                {
                     PrepareJump(jumpTargetPosition);
-                }
                 else
-                {
                     ResumeNavigation();
-                }
             }
             return;
         }
@@ -139,8 +143,38 @@ public class MovimientoMelee : MonoBehaviour
         HandleMainMovement();
     }
 
+    public void OnDamageReceived()
+    {
+        hasBeenDamaged = true;
+        damageTimer = damageDetectionDuration;
+    }
+
+    void CheckPlayerInRange()
+    {
+        float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+
+        if (hasBeenDamaged)
+        {
+            damageTimer -= Time.deltaTime;
+            if (damageTimer <= 0f)
+                hasBeenDamaged = false;
+        }
+
+        playerInRange = (distanceToPlayer <= detectionRange) || hasBeenDamaged;
+
+        if (!playerInRange && !isLerpMoving)
+        {
+            if (agent.enabled)
+            {
+                agent.ResetPath();
+            }
+        }
+    }
+
     bool ShouldJumpToTarget(Vector3 target)
     {
+        if (!playerInRange) return false;
+
         float distance = Vector3.Distance(transform.position, target);
         if (distance > farDistanceThreshold) return true;
 
@@ -164,7 +198,8 @@ public class MovimientoMelee : MonoBehaviour
     {
         canJump = true;
         agent.enabled = true;
-        agent.SetDestination(abilityReceiver.CurrentTarget.position);
+        if (playerInRange)
+            agent.SetDestination(abilityReceiver.CurrentTarget.position);
     }
 
     void UpdatePlayerPositionTracking()
@@ -188,9 +223,7 @@ public class MovimientoMelee : MonoBehaviour
             {
                 NavMeshHit hit;
                 if (NavMesh.SamplePosition(playerTransform.position, out hit, 5f, NavMesh.AllAreas))
-                {
                     lastKnownPlayerPosition = hit.position;
-                }
             }
         }
     }
@@ -198,6 +231,8 @@ public class MovimientoMelee : MonoBehaviour
     void HandleMainMovement()
     {
         if (!agent.enabled || !agent.isOnNavMesh) return;
+
+        if (!playerInRange) return;
 
         float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
 
@@ -211,13 +246,13 @@ public class MovimientoMelee : MonoBehaviour
         agent.SetDestination(abilityReceiver.CurrentTarget.position);
 
         if (canJump && distanceToPlayer > jumpDistance)
-        {
             EvaluateJumpConditions();
-        }
     }
 
     void EvaluateJumpConditions()
     {
+        if (!playerInRange) return;
+
         JumpAnalysis analysis = AnalyzeJumpFeasibility();
 
         if (analysis.shouldJump)
@@ -243,7 +278,7 @@ public class MovimientoMelee : MonoBehaviour
         analysis.shouldJump = false;
         analysis.directDistance = Vector3.Distance(transform.position, playerTransform.position);
 
-        if (!agent.enabled || !agent.isOnNavMesh || analysis.directDistance < minDirectDistanceForJump)
+        if (!agent.enabled || !agent.isOnNavMesh || analysis.directDistance < minDirectDistanceForJump || !playerInRange)
             return analysis;
 
         if (analysis.directDistance > farDistanceThreshold)
@@ -290,9 +325,7 @@ public class MovimientoMelee : MonoBehaviour
             Vector3 testPos = transform.position + direction * dist;
             NavMeshHit hit;
             if (NavMesh.SamplePosition(testPos, out hit, 2f, NavMesh.AllAreas))
-            {
                 return hit.position;
-            }
         }
 
         return lastKnownPlayerPosition;
@@ -311,9 +344,7 @@ public class MovimientoMelee : MonoBehaviour
             debugRaycastPoints[i] = rayOrigin;
 
             if (!Physics.Raycast(rayOrigin, Vector3.down, raycastLength, groundLayer))
-            {
                 gapsDetected++;
-            }
         }
 
         return gapsDetected >= (raycastsCount / 2) + 1;
@@ -332,10 +363,12 @@ public class MovimientoMelee : MonoBehaviour
 
     void PrepareJump(Vector3 targetPosition)
     {
+        Vector3 jumpDirection = (targetPosition - transform.position).normalized;
+        if (jumpDirection != Vector3.zero)
+            transform.rotation = Quaternion.LookRotation(jumpDirection);
+
         if (CheckObstaclesInPath(transform.position, targetPosition))
-        {
             targetPosition = FindAdjustedJumpPosition(targetPosition);
-        }
 
         isJumping = true;
         canJump = false;
@@ -360,14 +393,10 @@ public class MovimientoMelee : MonoBehaviour
         float distance = Vector3.Distance(start, end);
 
         if (Physics.Raycast(start, direction, distance, obstacleLayer))
-        {
-            return true; 
-        }
+            return true;
 
         if (Physics.SphereCast(start, 0.5f, direction, out RaycastHit hit, distance, obstacleLayer))
-        {
             return true;
-        }
 
         return false;
     }
@@ -396,9 +425,7 @@ public class MovimientoMelee : MonoBehaviour
     {
         NavMeshHit hit;
         if (NavMesh.SamplePosition(desiredPosition, out hit, 3f, NavMesh.AllAreas))
-        {
             return hit.position;
-        }
 
         for (float radius = 0.5f; radius <= 5f; radius += 0.5f)
         {
@@ -411,9 +438,7 @@ public class MovimientoMelee : MonoBehaviour
                 );
 
                 if (NavMesh.SamplePosition(desiredPosition + offset, out hit, 1f, NavMesh.AllAreas))
-                {
                     return hit.position;
-                }
             }
         }
 
@@ -439,7 +464,7 @@ public class MovimientoMelee : MonoBehaviour
                     agent.Warp(hit.position);
             }
 
-            if (agent.enabled && agent.isOnNavMesh)
+            if (agent.enabled && agent.isOnNavMesh && playerInRange)
                 agent.SetDestination(abilityReceiver.CurrentTarget.position);
 
             return;
@@ -465,6 +490,9 @@ public class MovimientoMelee : MonoBehaviour
     void OnDrawGizmos()
     {
         if (playerTransform == null) return;
+
+        Gizmos.color = colorDetectionRange;
+        Gizmos.DrawWireSphere(transform.position, detectionRange);
 
         Gizmos.color = colorJumpDistance;
         Gizmos.DrawWireSphere(transform.position, jumpDistance);
@@ -501,9 +529,7 @@ public class MovimientoMelee : MonoBehaviour
             foreach (Vector3 point in debugRaycastPoints)
             {
                 if (point != Vector3.zero)
-                {
                     Gizmos.DrawLine(point, point + Vector3.down * raycastLength);
-                }
             }
         }
     }

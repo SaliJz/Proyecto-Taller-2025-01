@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class VidaEnemigoGeneral : MonoBehaviour
 {
@@ -284,6 +285,9 @@ public class VidaEnemigoGeneral : MonoBehaviour
 
     public void RecibirDanioPorBala(BalaPlayer.TipoBala tb, Collider hitCollider)
     {
+        MovimientoMelee movimiento = GetComponent<MovimientoMelee>();
+        if (movimiento != null) movimiento.OnDamageReceived();
+
         if (enemyAbilityReceiver.CurrentState != EnemyAbilityReceiver.EnemyState.Mindjacked)
         {
             if ((tb == BalaPlayer.TipoBala.Ametralladora && tipo == TipoEnemigo.Ametralladora) ||
