@@ -53,6 +53,10 @@ public class MovimientoMelee : MonoBehaviour
     [SerializeField] private float minJumpCooldown = 1f;
     [SerializeField] private float maxJumpCooldown = 3f;
 
+    [Header("Salto por Distancia")]
+    [SerializeField] private float directRaycastRadius = 0.8f;
+    [SerializeField] private bool showDistanceJumpRaycast = true;
+
     [Header("Visualización")]
     [SerializeField] private Color colorJumpDistance;
     [SerializeField] private Color colorLongJumpDistance;
@@ -60,11 +64,12 @@ public class MovimientoMelee : MonoBehaviour
     [SerializeField] private Color colorPathLine;
     [SerializeField] private Color colorJumpTrajectory;
     [SerializeField] private Color colorDetectionRange = Color.red;
+    [SerializeField] private Color colorDistanceJumpRaycast = Color.yellow;
 
     private NavMeshAgent agent;
     private EnemyAbilityReceiver abilityReceiver;
     private bool hasBeenDamaged = false;
-    private float damageDetectionDuration = 10f; 
+    private float damageDetectionDuration = 10f;
     private float damageTimer = 0f;
     private float currentVelocity;
     private bool isJumping = false;
@@ -194,6 +199,16 @@ public class MovimientoMelee : MonoBehaviour
         return false;
     }
 
+    bool HasDirectObstacleToPlayer()
+    {
+        Vector3 direction = (playerTransform.position - transform.position).normalized;
+        float distance = Vector3.Distance(transform.position, playerTransform.position);
+
+        Vector3 rayStart = transform.position + Vector3.up * 1f; 
+
+        return Physics.SphereCast(rayStart, directRaycastRadius, direction, out RaycastHit hit, distance - 2f, obstacleLayer);
+    }
+
     void ResumeNavigation()
     {
         canJump = true;
@@ -283,7 +298,7 @@ public class MovimientoMelee : MonoBehaviour
 
         if (analysis.directDistance > farDistanceThreshold)
         {
-            analysis.shouldJump = true;
+            analysis.shouldJump = !HasDirectObstacleToPlayer();
             return analysis;
         }
 
@@ -508,6 +523,21 @@ public class MovimientoMelee : MonoBehaviour
 
         Gizmos.color = colorPathLine;
         Gizmos.DrawLine(transform.position, playerTransform.position);
+
+        if (showDistanceJumpRaycast)
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+            if (distanceToPlayer > farDistanceThreshold)
+            {
+                Vector3 rayStart = transform.position + Vector3.up * 1f;
+                Vector3 rayEnd = playerTransform.position + Vector3.up * 1f;
+
+                Gizmos.color = HasDirectObstacleToPlayer() ? Color.red : colorDistanceJumpRaycast;
+                Gizmos.DrawLine(rayStart, rayEnd);
+
+                Gizmos.DrawWireSphere(rayStart, directRaycastRadius);
+            }
+        }
 
         if (isLerpMoving)
         {
