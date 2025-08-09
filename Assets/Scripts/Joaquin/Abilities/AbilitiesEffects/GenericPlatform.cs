@@ -4,13 +4,9 @@ using UnityEngine;
 
 public class GenericPlatform : MonoBehaviour, ISlowable, IHackable
 {
-    private enum PlatformState
-    {
-        Idle,
-        Moving,
-        Paused,
-        Disabled
-    }
+    private enum PlatformState { Idle, Moving, Paused, Disabled }
+    public enum SafeSide { None, Top, Bottom, Front, Back, Left, Right }
+
 
     [Header("Movement")]
     [SerializeField] private Transform startPoint;
@@ -26,6 +22,8 @@ public class GenericPlatform : MonoBehaviour, ISlowable, IHackable
     [SerializeField] private float waitTimeAtPoints = 2f;
 
     [Header("Safety & Collision")]
+    [Tooltip("El lado donde el jugador puede estar sin que la plataforma se detenga.")]
+    [SerializeField] private SafeSide safeSide = SafeSide.Top;
     [Tooltip("Distancia adelante de la plataforma para detectar obstáculos.")]
     [SerializeField] private float safetyStopDistance = 0.5f;
     [SerializeField] private LayerMask obstacleLayers;
@@ -39,9 +37,12 @@ public class GenericPlatform : MonoBehaviour, ISlowable, IHackable
     [ColorUsage(true, true)][SerializeField] private Color colorLocked = Color.gray;
 
     private PlatformState currentState = PlatformState.Idle;
+    private PlatformState previousState = PlatformState.Idle;
     private Transform currentTarget;
     private float originalSpeed;
+    private float waitTimer = 0f;
     private Coroutine movementCoroutine;
+    private Coroutine resumeCoroutine;
     private List<Material> dynamicEmissiveMaterials = new List<Material>();
 
     private void Awake()
@@ -72,17 +73,44 @@ public class GenericPlatform : MonoBehaviour, ISlowable, IHackable
         }
     }
 
-    private void StartMovement()
+    private void Update()
     {
-        if (movementCoroutine != null) StopCoroutine(movementCoroutine);
+        if (currentState == PlatformState.Moving)
+        {
+            if (CheckForObstacles())
+            {
+                UpdateState(PlatformState.Paused);
+            }
+        }
+        else if (currentState == PlatformState.Paused)
+        {
+            if (!CheckForObstacles())
+            {
+                UpdateState(PlatformState.Moving);
+            }
+        }
+        else if (currentState == PlatformState.Idle)
+        {
+            waitTimer += Time.deltaTime;
+            if (isAutomatic && waitTimer >= waitTimeAtPoints)
+            {
+                UpdateState(PlatformState.Moving);
+            }
+        }
+    }
+
+    private void HandleMovement()
+    {
+        if (movementCoroutine != null) return;
+        if (currentState != PlatformState.Moving) return;
 
         if (useManhattanMovement)
         {
-            movementCoroutine = StartCoroutine(ManhattanMoveRoutine());
+            if (movementCoroutine == null) movementCoroutine = StartCoroutine(ManhattanMoveRoutine());
         }
         else
         {
-            movementCoroutine = StartCoroutine(DirectMoveRoutine());
+            if (movementCoroutine == null) movementCoroutine = StartCoroutine(DirectMoveRoutine());
         }
     }
 
@@ -90,11 +118,15 @@ public class GenericPlatform : MonoBehaviour, ISlowable, IHackable
     {
         while (Vector3.Distance(transform.position, currentTarget.position) > 0.01f)
         {
-            if (CheckForObstacles())
+            while (currentState == PlatformState.Paused)
             {
-                UpdateState(PlatformState.Paused);
-                yield return new WaitUntil(() => !CheckForObstacles()); // Espera a que el camino esté libre.
-                UpdateState(PlatformState.Moving);
+                yield return null;
+            }
+
+            if (currentState != PlatformState.Moving)
+            {
+                movementCoroutine = null;
+                yield break;
             }
 
             transform.position = Vector3.MoveTowards(transform.position, currentTarget.position, moveSpeed * Time.deltaTime);
@@ -112,7 +144,17 @@ public class GenericPlatform : MonoBehaviour, ISlowable, IHackable
         // Mover en X
         while (Mathf.Abs(transform.position.x - targetPos.x) > 0.01f)
         {
-            if (CheckForObstacles()) { UpdateState(PlatformState.Paused); yield return new WaitUntil(() => !CheckForObstacles()); UpdateState(PlatformState.Moving); }
+            while (currentState == PlatformState.Paused)
+            {
+                yield return null;
+            }
+
+            if (currentState != PlatformState.Moving)
+            {
+                movementCoroutine = null;
+                yield break;
+            }
+
             Vector3 stepTarget = new Vector3(targetPos.x, transform.position.y, transform.position.z);
             transform.position = Vector3.MoveTowards(transform.position, stepTarget, moveSpeed * Time.deltaTime);
             yield return null;
@@ -120,7 +162,17 @@ public class GenericPlatform : MonoBehaviour, ISlowable, IHackable
         // Mover en Y
         while (Mathf.Abs(transform.position.y - targetPos.y) > 0.01f)
         {
-            if (CheckForObstacles()) { UpdateState(PlatformState.Paused); yield return new WaitUntil(() => !CheckForObstacles()); UpdateState(PlatformState.Moving); }
+            while (currentState == PlatformState.Paused)
+            {
+                yield return null;
+            }
+
+            if (currentState != PlatformState.Moving)
+            {
+                movementCoroutine = null;
+                yield break;
+            }
+
             Vector3 stepTarget = new Vector3(transform.position.x, targetPos.y, transform.position.z);
             transform.position = Vector3.MoveTowards(transform.position, stepTarget, moveSpeed * Time.deltaTime);
             yield return null;
@@ -128,7 +180,17 @@ public class GenericPlatform : MonoBehaviour, ISlowable, IHackable
         // Mover en Z
         while (Mathf.Abs(transform.position.z - targetPos.z) > 0.01f)
         {
-            if (CheckForObstacles()) { UpdateState(PlatformState.Paused); yield return new WaitUntil(() => !CheckForObstacles()); UpdateState(PlatformState.Moving); }
+            while (currentState == PlatformState.Paused)
+            {
+                yield return null;
+            }
+
+            if (currentState != PlatformState.Moving)
+            {
+                movementCoroutine = null;
+                yield break;
+            }
+
             Vector3 stepTarget = new Vector3(transform.position.x, transform.position.y, targetPos.z);
             transform.position = Vector3.MoveTowards(transform.position, stepTarget, moveSpeed * Time.deltaTime);
             yield return null;
@@ -141,27 +203,37 @@ public class GenericPlatform : MonoBehaviour, ISlowable, IHackable
     {
         transform.position = currentTarget.position;
         currentTarget = (currentTarget == startPoint) ? endPoint : startPoint;
-
-        if (isAutomatic)
-        {
-            UpdateState(PlatformState.Idle);
-            Invoke(nameof(StartMovement), waitTimeAtPoints);
-        }
-        else
-        {
-            UpdateState(PlatformState.Idle);
-        }
+        movementCoroutine = null;
+        UpdateState(PlatformState.Idle);
     }
 
     private bool CheckForObstacles()
     {
-        Vector3 direction = (currentTarget.position - transform.position).normalized;
-        if (direction == Vector3.zero) return false;
+        if (platformCollider == null) return false;
+        Vector3 moveDirection = (currentTarget.position - transform.position).normalized;
+        if (moveDirection == Vector3.zero) return false;
 
-        // Lanza una caja (BoxCast) del tamaño de la plataforma para detectar colisiones.
+        if (CheckDirection(transform.forward, SafeSide.Front, moveDirection)) return true;
+        if (CheckDirection(-transform.forward, SafeSide.Back, moveDirection)) return true;
+        if (CheckDirection(transform.up, SafeSide.Top, moveDirection)) return true;
+        if (CheckDirection(-transform.up, SafeSide.Bottom, moveDirection)) return true;
+        if (CheckDirection(transform.right, SafeSide.Right, moveDirection)) return true;
+        if (CheckDirection(-transform.right, SafeSide.Left, moveDirection)) return true;
+
+        return false;
+    }
+
+    private bool CheckDirection(Vector3 direction, SafeSide side, Vector3 globalMoveDirection)
+    {
+        if (side == this.safeSide) return false;
+        if (Vector3.Dot(globalMoveDirection, direction) < 0.1f) return false;
+
+        Vector3 boxCenter = platformCollider.bounds.center;
+        Vector3 boxHalfExtents = platformCollider.bounds.extents;
+
         return Physics.BoxCast(
-            transform.position,
-            platformCollider.size / 2,
+            boxCenter,
+            boxHalfExtents,
             direction,
             Quaternion.identity,
             safetyStopDistance,
@@ -177,12 +249,11 @@ public class GenericPlatform : MonoBehaviour, ISlowable, IHackable
 
         if (currentState == PlatformState.Moving)
         {
-            StartMovement();
+            HandleMovement();
         }
-        else if (movementCoroutine != null)
+        else if (currentState == PlatformState.Idle)
         {
-            StopCoroutine(movementCoroutine);
-            movementCoroutine = null;
+            waitTimer = 0f;
         }
     }
 
@@ -241,14 +312,57 @@ public class GenericPlatform : MonoBehaviour, ISlowable, IHackable
         }
     }
 
-    // Para visualizar el BoxCast de seguridad en el editor.
     private void OnDrawGizmos()
     {
-        if (platformCollider != null)
+        if (platformCollider == null) return;
+
+        Vector3 moveDirection = (endPoint != null && startPoint != null)
+            ? ((currentTarget ?? endPoint).position - transform.position).normalized
+            : transform.forward;
+
+        Vector3 boxCenter = platformCollider.bounds.center;
+        Vector3 boxHalfExtents = platformCollider.bounds.extents;
+
+        // Direcciones y colores para cada lado
+        var directions = new (Vector3 dir, SafeSide side, Color color)[]
         {
-            Gizmos.color = Color.red;
-            Vector3 direction = (currentTarget != null) ? (currentTarget.position - transform.position).normalized : transform.forward;
-            Gizmos.DrawWireCube(transform.position + direction * safetyStopDistance, platformCollider.size);
+        (transform.forward, SafeSide.Front, Color.red),
+        (-transform.forward, SafeSide.Back, Color.blue),
+        (transform.up, SafeSide.Top, Color.green),
+        (-transform.up, SafeSide.Bottom, Color.yellow),
+        (transform.right, SafeSide.Right, Color.magenta),
+        (-transform.right, SafeSide.Left, Color.cyan)
+        };
+
+        foreach (var (dir, side, color) in directions)
+        {
+            if (side == safeSide) continue;
+            if (Vector3.Dot(moveDirection, dir) < 0.1f) continue;
+
+            // Visualiza el BoxCast en la dirección
+            bool detected = Physics.BoxCast(
+                boxCenter,
+                boxHalfExtents,
+                dir,
+                Quaternion.identity,
+                safetyStopDistance,
+                obstacleLayers
+            );
+
+            Gizmos.color = detected ? color : new Color(color.r, color.g, color.b, 0.2f);
+
+            Vector3 castEnd = boxCenter + dir.normalized * safetyStopDistance;
+            Gizmos.DrawCube(castEnd, boxHalfExtents * 2);
+            Gizmos.DrawLine(boxCenter, castEnd);
+
+            // Opcional: muestra el nombre del lado
+#if UNITY_EDITOR
+            UnityEditor.Handles.Label(castEnd, side.ToString());
+#endif
         }
+
+        // Dibuja la plataforma en su posición actual
+        Gizmos.color = Color.white;
+        Gizmos.DrawCube(boxCenter, boxHalfExtents * 2);
     }
 }

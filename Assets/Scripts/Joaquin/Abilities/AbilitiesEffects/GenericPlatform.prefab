@@ -58,7 +58,7 @@ Transform:
   m_GameObject: {fileID: 3669902907881426270}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -400, z: 0}
+  m_LocalPosition: {x: 0, y: -250, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -88,7 +88,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3967445985903590338}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 30.970901, y: 5.85, z: 47.1}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
@@ -205,7 +205,7 @@ Transform:
   m_GameObject: {fileID: 6979244128909633590}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 800, y: 400, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -222,7 +222,7 @@ GameObject:
   - component: {fileID: 4726384393849332584}
   - component: {fileID: 4958999604713780931}
   - component: {fileID: 2469639071130718501}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Platform
   m_TagString: Plataforma
   m_Icon: {fileID: 0}
@@ -280,11 +280,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startPoint: {fileID: 9032991706460281984}
   endPoint: {fileID: 6955969370014726276}
-  moveSpeed: 3
+  moveSpeed: 6
   useManhattanMovement: 0
   isAutomatic: 1
   waitTimeAtPoints: 2
-  safetyStopDistance: 0.5
+  safeSide: 1
+  safetyStopDistance: 1
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 192

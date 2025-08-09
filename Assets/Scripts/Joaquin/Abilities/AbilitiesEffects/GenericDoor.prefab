@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 41337839740916289}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 188, z: -8}
+  m_LocalPosition: {x: 0, y: 188, z: 50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -199,7 +199,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: dffa6a5708f70ef4799828abc798ce12,
         type: 3}
       propertyPath: m_Name
-      value: Double Door
+      value: GenericDoor
       objectReference: {fileID: 0}
     - target: {fileID: 2620405662339935475, guid: dffa6a5708f70ef4799828abc798ce12,
         type: 3}
@@ -401,7 +401,8 @@ MonoBehaviour:
   leftDoorOpenTarget: {fileID: 7145797225975342583}
   rightDoorOpenTarget: {fileID: 9207747212917652381}
   openCloseSpeed: 2.5
-  isAutomatic: 1
+  startOpen: 0
+  isAutomatic: 0
   detectionRadius: 8
   oneWayPassTrigger: {fileID: 3850260135963515847}
   isHackable: 1
@@ -412,6 +413,7 @@ MonoBehaviour:
   colorActive: {r: 0, g: 1, b: 0, a: 1}
   colorHackable: {r: 1, g: 0, b: 0, a: 1}
   colorLocked: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  isPermanentlyLocked: 0
 --- !u!4 &9194207114383959602 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: dffa6a5708f70ef4799828abc798ce12,
