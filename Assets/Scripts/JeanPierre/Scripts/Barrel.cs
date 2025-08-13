@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Barrel : MonoBehaviour
 {
-    [Header("Daño ALTO (no coincide) por tipo de bala")]
+    [Header("Daño ALTO")]
     [SerializeField] private int danioAltoAmetralladora = 20;
     [SerializeField] private int danioAltoPistola = 20;
     [SerializeField] private int danioAltoEscopeta = 20;
@@ -10,6 +10,8 @@ public class Barrel : MonoBehaviour
     [SerializeField] private int health = 100;
 
     [SerializeField] private GameObject explosionPrefab;
+
+    private bool isDead = false;
 
     public void RecibirDanioPorBala(BalaPlayer.TipoBala tb)
     {
@@ -28,8 +30,9 @@ public class Barrel : MonoBehaviour
     {
         health -= damageAmount;
 
-        if (health <= 0)
+        if (health <= 0 && !isDead)
         {
+            isDead = true;
             Die();
         }
     }

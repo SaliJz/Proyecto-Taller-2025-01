@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: -7048947099269417133}
   - component: {fileID: 1109452761944806096}
   - component: {fileID: -8338911698287233135}
+  - component: {fileID: 3505257335380538765}
   m_Layer: 15
   m_Name: SphereExplosivo
   m_TagString: Untagged
@@ -34,7 +35,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 16.470427, y: -2.702733, z: 102.075836}
-  m_LocalScale: {x: 15, y: 15, z: 15}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8696531686192747747}
@@ -193,7 +194,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7279a6356636f74cb78a5270c684fc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tiempoDeDestruccion: 0.3
+  tiempoDeDestruccion: 1
+--- !u!114 &3505257335380538765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7127249950028823837}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9661aed0c5c9dfe4789b43d208f12ae5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  expansionTime: 1
+  targetScale: {x: 15, y: 15, z: 15}
+  showGizmos: 1
+  gizmoColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1001 &1370105343772439625
 PrefabInstance:
   m_ObjectHideFlags: 0
