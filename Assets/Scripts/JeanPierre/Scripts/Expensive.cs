@@ -41,7 +41,7 @@ public class Expensive : MonoBehaviour
             Gizmos.DrawSphere(transform.position, transform.localScale.x * 0.5f);
 
             Gizmos.color = new Color(gizmoColor.r, gizmoColor.g, gizmoColor.b, 0.3f);
-            Gizmos.DrawSphere(transform.position, targetScale.x * 0.5f);
+            Gizmos.DrawSphere(transform.position, targetScale.x * 0.3f);
         }
     }
 }
