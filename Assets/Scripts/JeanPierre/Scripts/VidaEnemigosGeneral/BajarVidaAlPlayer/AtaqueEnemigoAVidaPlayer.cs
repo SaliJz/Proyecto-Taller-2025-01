@@ -1,14 +1,68 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AtaqueEnemigoAVidaPlayer : MonoBehaviour
 {
-    [SerializeField] private int damageAmount = 15;        // Cantidad de daño que se aplicará al jugador.
-    [SerializeField] private float damageInterval = 1.5f; // Intervalo en segundos entre cada daño.
-    [SerializeField] private Animator animator;
+    [SerializeField] private int damageAmount = 15;
+    [SerializeField] private float damageInterval = 1.5f;
 
+    [Header("Variantes de Ataque")]
+    [SerializeField] private GameObject baseAttackObject;
+    [SerializeField] private bool useAttackVariants = false;
+    [SerializeField] private List<GameObject> attackVariants;
+
+    private Animator animator;
     private Coroutine damageCoroutine;
     private float lastStayTime;
+
+    private void Awake()
+    {
+        GameObject activeAttackObject;
+        if (useAttackVariants && attackVariants.Count > 0)
+        {
+            if (baseAttackObject != null)
+            {
+                baseAttackObject.SetActive(false);
+            }
+
+            foreach (var variant in attackVariants)
+            {
+                if (variant != null)
+                {
+                    variant.SetActive(false);
+                }
+            }
+
+            int randomIndex = Random.Range(0, attackVariants.Count);
+            activeAttackObject = attackVariants[randomIndex];
+            if (activeAttackObject != null)
+            {
+                activeAttackObject.SetActive(true);
+            }
+        }
+        else
+        {
+            activeAttackObject = baseAttackObject;
+            if (activeAttackObject != null)
+            {
+                activeAttackObject.SetActive(true);
+            }
+
+            foreach (var variant in attackVariants)
+            {
+                if (variant != null)
+                {
+                    variant.SetActive(false);
+                }
+            }
+        }
+
+        if (activeAttackObject != null)
+        {
+            animator = activeAttackObject.GetComponent<Animator>();
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -17,8 +71,7 @@ public class AtaqueEnemigoAVidaPlayer : MonoBehaviour
             PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
             if (playerHealth != null && damageCoroutine == null)
             {
-                // Inicializamos el timestamp y arrancamos la corrutina
-                lastStayTime = Time.time;           
+                lastStayTime = Time.time;
                 damageCoroutine = StartCoroutine(DamagePlayerRoutine(playerHealth));
             }
         }
@@ -28,47 +81,40 @@ public class AtaqueEnemigoAVidaPlayer : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            // Cada vez que Unity nos diga que el Player sigue dentro,
-            // actualizamos el último “ping” de permanencia.
             lastStayTime = Time.time;
         }
     }
 
-    // (Opcional) Si OnTriggerExit funciona correctamente, sigue estando aquí como refuerzo
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player") && damageCoroutine != null)
         {
             StopCoroutine(damageCoroutine);
             damageCoroutine = null;
+            if (animator != null)
+            {
+                animator.SetBool("Ataque", false);
+            }
         }
     }
 
     private IEnumerator DamagePlayerRoutine(PlayerHealth playerHealth)
     {
-        // Primer golpe inmediato
-        playerHealth.TakeDamage(damageAmount, transform.position);
-
         while (true)
         {
             if (animator != null)
-                animator.SetBool("Ataque", true);
-
-            yield return new WaitForSeconds(0.3f);
-
-            if (Time.time - lastStayTime > 0.3f)
             {
-                if (animator != null)
-                    animator.SetBool("Ataque", false);
-                break;
+                animator.SetBool("Ataque", true);
             }
 
             playerHealth.TakeDamage(damageAmount, transform.position);
 
-            if (animator != null)
-                animator.SetBool("Ataque", false);
+            yield return new WaitForSeconds(damageInterval);
 
-            yield return new WaitForSeconds(damageInterval - 0.3f);
+            if (animator != null)
+            {
+                animator.SetBool("Ataque", false);
+            }
 
             if (Time.time - lastStayTime > damageInterval)
             {
@@ -79,4 +125,3 @@ public class AtaqueEnemigoAVidaPlayer : MonoBehaviour
         damageCoroutine = null;
     }
 }
-
