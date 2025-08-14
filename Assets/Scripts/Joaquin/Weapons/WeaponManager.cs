@@ -77,9 +77,9 @@ public class WeaponManager : MonoBehaviour
 
         PlayerPrefs.SetInt("LastWeaponIndex", index);
 
-        if (weapons[currentIndex].IsReloading)
+        if (weapons[currentIndex].IsOverheated)
         {
-            weapons[currentIndex].CancelReload();
+            weapons[currentIndex].CancelOverheat();
         }
 
         if (useProceduralAnimations)
@@ -100,9 +100,9 @@ public class WeaponManager : MonoBehaviour
     {
         canChangeWeapon = false;
 
-        PlayerAnimatorController.Instance?.PlaySwitchWeaponAnim(newIndex); // establece ID y bool
+        PlayerAnimatorController.Instance?.PlaySwitchWeaponAnim(newIndex);
 
-        yield return new WaitForSeconds(0.1f); // da tiempo a que el Animator evalúe el blend
+        yield return new WaitForSeconds(0.1f);
 
         weapons[currentIndex].gameObject.SetActive(false);
         weaponModels[currentIndex].SetActive(false);
@@ -113,8 +113,6 @@ public class WeaponManager : MonoBehaviour
         weaponModels[currentIndex].SetActive(true);
 
         yield return new WaitForSeconds(0.1f);
-
-        //PlayerAnimatorController.Instance?.StopSwitchWeaponAnim(); // método que desactiva el bool
 
         Weapon newWeapon = weapons[currentIndex];
         UpdateHUD(newWeapon);
@@ -193,7 +191,7 @@ public class WeaponManager : MonoBehaviour
     {
         if (HUDManager.Instance != null)
         {
-            HUDManager.Instance.UpdateAmmo(currentIndex, newWeapon.CurrentAmmo, newWeapon.TotalAmmo);
+            HUDManager.Instance.UpdateHeat(currentIndex, newWeapon.CurrentHeat, newWeapon.MaxHeat);
             HUDManager.Instance.UpdateWeaponIcon(newWeapon.Stats.weaponIcon);
             HUDManager.Instance.UpdateWeaponName(newWeapon.Stats.weaponName);
         }
@@ -201,37 +199,12 @@ public class WeaponManager : MonoBehaviour
 
     public bool NeedsAmmo(Weapon.ShootingMode mode)
     {
-        foreach (Weapon weapon in weapons)
-        {
-            if (weapon != null && weapon.BaseMode == mode)
-            {
-                return weapon.TotalAmmo < (weapon.Stats.totalAmmo + UpgradeDataStore.Instance.weaponAmmoBonus);
-            }
-        }
         return false;
     }
 
     public bool TryAddAmmoToWeapon(Weapon.ShootingMode mode, int amountToAdd, out int amountActuallyAdded)
     {
         amountActuallyAdded = 0;
-
-        foreach (Weapon weapon in weapons)
-        {
-            if (weapon != null && weapon.BaseMode == mode)
-            {
-                if (weapon.TryAddAmmo(amountToAdd, out int added))
-                {
-                    amountActuallyAdded = added;
-
-                    if (weapon == weapons[currentIndex])
-                    {
-                        HUDManager.Instance.UpdateAmmo(currentIndex, weapon.CurrentAmmo, weapon.TotalAmmo);
-                    }
-                    return true;
-                }
-            }
-        }
-
         return false;
     }
 }

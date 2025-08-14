@@ -1,6 +1,4 @@
-
 using UnityEngine;
-
 
 public class TutorialSceneController : MonoBehaviour
 {
@@ -28,7 +26,7 @@ public class TutorialSceneController : MonoBehaviour
 
     [SerializeField] private GameObject infoFragments;
 
-    private Weapon gunWeapon; // Referencia al componente Weapon del objeto gun
+    // private Weapon gunWeapon; // Referencia al componente Weapon del objeto gun
 
     private void Awake()
     {
@@ -68,16 +66,8 @@ public class TutorialSceneController : MonoBehaviour
         if (weaponIcon != null) weaponIcon.SetActive(true);
 
 
-        if (gunWeapon != null)
-        {
-            HUDManager.Instance.UpdateAmmo(0, gunWeapon.CurrentAmmo, gunWeapon.TotalAmmo);
-            HUDManager.Instance.UpdateWeaponIcon(gunWeapon.Stats.weaponIcon);
-            HUDManager.Instance.UpdateWeaponName(gunWeapon.Stats.weaponName);
-        }
-        else
-        {
-            Debug.LogWarning("[tutorialSceneController] El componente Weapon no está asignado al objeto gun.");
-        }
+        // Se ha eliminado el código que actualizaba la munición en el HUD
+        // Ya no es necesario
     }
 
     public void ActiveRifleAndShotgun()

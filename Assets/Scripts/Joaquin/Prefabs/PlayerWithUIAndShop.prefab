@@ -19340,7 +19340,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 30/30
+  m_text: "\u221E/\u221E"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b2e0000e28e65ac4eb8607f35592b3fc, type: 2}
   m_sharedMaterial: {fileID: -7545645835671294916, guid: b2e0000e28e65ac4eb8607f35592b3fc,
@@ -47171,19 +47171,26 @@ MonoBehaviour:
     type: 3}
   stats: {fileID: 11400000, guid: b98f2fed250d9c54e8d14bef92cc258e, type: 2}
   muzzleEffect: {fileID: 1176111377571675082}
-  baseMode: 2
   weaponModelTransform: {fileID: 5393806560950978265}
+  weaponRenderers: []
+  baseMode: 2
   bulletSpeed: 200
   bulletLifetime: 3
   spreadIntensity: 0
   spreadAngle: 1
   shotgunPellets: 3
-  minAmmoToInterruptReload: 3
   sfxSource: {fileID: 0}
   shootClip: {fileID: 8300000, guid: 32f30094c759e754f996c3385e3a7b0f, type: 3}
   reloadClip: {fileID: 8300000, guid: 4a57e6306c15b284db65b976b4b59f6b, type: 3}
+  overheatClip: {fileID: 0}
   useProceduralAnimations: 0
   weaponAnimationID: 1
+  heatPerShot: 5
+  cooldownRate: 10
+  maxHeat: 100
+  overheatDuration: 2
+  maxEmissionIntensity: 20
+  emissionCooldownTime: 0.5
 --- !u!1 &3310767464231137826
 GameObject:
   m_ObjectHideFlags: 0
@@ -62842,10 +62849,8 @@ MonoBehaviour:
   healthBarText: {fileID: 7775722344225136758}
   shieldBar: {fileID: 7242168370315114207}
   shieldText: {fileID: 7768205324184714508}
-  ammoTexts:
-  - {fileID: 7239045565166282475}
-  - {fileID: 697448735945666321}
-  - {fileID: 7654689378968749972}
+  heatBars: []
+  heatTexts: []
   weaponNameText: {fileID: 6835849591526871533}
   weaponIcon: {fileID: 2913657675310305456}
   abilityNameText: {fileID: 1990566609102224598}
@@ -63445,19 +63450,26 @@ MonoBehaviour:
     type: 3}
   stats: {fileID: 11400000, guid: fd6132aebfaca9a4282ced406f929a09, type: 2}
   muzzleEffect: {fileID: 6385053411169828121}
-  baseMode: 1
   weaponModelTransform: {fileID: 6406969048440582658}
+  weaponRenderers: []
+  baseMode: 1
   bulletSpeed: 50
   bulletLifetime: 0.4
   spreadIntensity: 1
   spreadAngle: 1
   shotgunPellets: 3
-  minAmmoToInterruptReload: 3
   sfxSource: {fileID: 0}
   shootClip: {fileID: 8300000, guid: 6de53c32e48391443a6fce2068008612, type: 3}
   reloadClip: {fileID: 8300000, guid: 4a57e6306c15b284db65b976b4b59f6b, type: 3}
+  overheatClip: {fileID: 0}
   useProceduralAnimations: 0
   weaponAnimationID: 2
+  heatPerShot: 30
+  cooldownRate: 5
+  maxHeat: 100
+  overheatDuration: 2
+  maxEmissionIntensity: 20
+  emissionCooldownTime: 0.5
 --- !u!1 &6023111400807018459
 GameObject:
   m_ObjectHideFlags: 0
@@ -63609,7 +63621,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 30/30
+  m_text: "\u221E/\u221E"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b2e0000e28e65ac4eb8607f35592b3fc, type: 2}
   m_sharedMaterial: {fileID: -7545645835671294916, guid: b2e0000e28e65ac4eb8607f35592b3fc,
@@ -64338,7 +64350,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 30/30
+  m_text: "\u221E/\u221E"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b2e0000e28e65ac4eb8607f35592b3fc, type: 2}
   m_sharedMaterial: {fileID: -7545645835671294916, guid: b2e0000e28e65ac4eb8607f35592b3fc,
@@ -75693,19 +75705,26 @@ MonoBehaviour:
     type: 3}
   stats: {fileID: 11400000, guid: fff0d78dec47c3748b957fa36ff8ffbe, type: 2}
   muzzleEffect: {fileID: 4552982447104015123}
-  baseMode: 0
   weaponModelTransform: {fileID: 1157968827664929733}
+  weaponRenderers: []
+  baseMode: 0
   bulletSpeed: 75
   bulletLifetime: 3
   spreadIntensity: 0
   spreadAngle: 1
   shotgunPellets: 3
-  minAmmoToInterruptReload: 3
   sfxSource: {fileID: 0}
   shootClip: {fileID: 8300000, guid: f74673063bd7ad84e9fdb997795a93b8, type: 3}
   reloadClip: {fileID: 8300000, guid: 4a57e6306c15b284db65b976b4b59f6b, type: 3}
+  overheatClip: {fileID: 0}
   useProceduralAnimations: 0
   weaponAnimationID: 0
+  heatPerShot: 15
+  cooldownRate: 10
+  maxHeat: 100
+  overheatDuration: 2
+  maxEmissionIntensity: 20
+  emissionCooldownTime: 0.5
 --- !u!1 &7069739168769146177
 GameObject:
   m_ObjectHideFlags: 0
@@ -104749,6 +104768,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseMaxHealth: 100
+  currentHealth: 0
   baseMaxShield: 20
   shieldRegenRate: 4
   deathPrefab: {fileID: 7498592250925711304, guid: fe1c6d946147de64f9736581d624fd19,

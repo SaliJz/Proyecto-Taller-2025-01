@@ -17,7 +17,7 @@ public class TutorialManager0 : MonoBehaviour
         public UnityEvent onSceneStart;
     }
 
-    [SerializeField] private TutorialSceneRuntime tutorialSceneRuntime=new TutorialSceneRuntime();
+    [SerializeField] private TutorialSceneRuntime tutorialSceneRuntime = new TutorialSceneRuntime();
 
     public int currentDialogueIndex = 0;
 
@@ -62,12 +62,12 @@ public class TutorialManager0 : MonoBehaviour
     private bool hasActivatedRifleAndShotgun = false;
     private bool hasBlackListBeenClosed = false;
 
-    private Weapon gunWeapon;
+    // private Weapon gunWeapon; // Referencia al componente Weapon del objeto gun, ya no necesaria
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
-        else Destroy(gameObject); 
+        else Destroy(gameObject);
 
         player = GameObject.FindWithTag("Player");
     }
@@ -100,7 +100,7 @@ public class TutorialManager0 : MonoBehaviour
     {
         if (currentDialogueIndex == 1)
         {
-            IsWASDPressed(); 
+            IsWASDPressed();
         }
 
         if (currentDialogueIndex == 9)
@@ -130,14 +130,14 @@ public class TutorialManager0 : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha2) ||
             Input.GetKeyDown(KeyCode.Alpha3) ||
-            Input.GetAxis("Mouse ScrollWheel") > 0f || 
-            Input.GetAxis("Mouse ScrollWheel") < 0f)   
+            Input.GetAxis("Mouse ScrollWheel") > 0f ||
+            Input.GetAxis("Mouse ScrollWheel") < 0f)
         {
             spriteJumpToUIs[4].gameObject.GetComponent<SpriteRenderer>().enabled = false;
             spriteJumpToUIs[4].ejecutarAnimacion = true;
             Destroy(spriteJumpToUIs[4].gameObject, 5f);
             ActivateSecondWaveGlitch();
-            ConfirmAdvance();      
+            ConfirmAdvance();
             //StartCoroutine(WaitNextDialogue(5));
         }
     }
@@ -203,7 +203,7 @@ public class TutorialManager0 : MonoBehaviour
         {
             dialogueTextUI.transform.parent.gameObject.SetActive(false);
         }
-        
+
 
         yield return new WaitUntil(() => hasConfirmedDialogueAdvance);
         onConfirmAdvance -= Confirmed;
@@ -249,7 +249,7 @@ public class TutorialManager0 : MonoBehaviour
         if (listDialogueData[0].isActive)
         {
             spriteJumpToUIs[0].gameObject.SetActive(true);
-            onConfirmAdvance?.Invoke();                 
+            onConfirmAdvance?.Invoke();
         }
     }
 
@@ -261,12 +261,12 @@ public class TutorialManager0 : MonoBehaviour
             spriteJumpToUIs[1].gameObject.SetActive(true);
             onConfirmAdvance?.Invoke();
             spriteJumpToUIs[0].ejecutarAnimacion = true;
-            spriteJumpToUIs[0].GetComponent<SpriteRenderer>().enabled = false;            
+            spriteJumpToUIs[0].GetComponent<SpriteRenderer>().enabled = false;
         }
     }
     public IEnumerator ActivateTransitionBetweenTwoCameras(int camera1, float time1, int camera2, float time2)
     {
-        isInTransition=true;
+        isInTransition = true;
         if (cinemachineBrain != null)
         {
             cinemachineBrain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0f);
@@ -282,7 +282,7 @@ public class TutorialManager0 : MonoBehaviour
         yield return new WaitForSecondsRealtime(time2);
         ReturnCamerasToDefault();
 
-       
+
 
         Debug.Log("Valor de currentDialogueIndex en ActivateTransitionBetweenTwoCameras: " + currentDialogueIndex);
 
@@ -364,16 +364,16 @@ public class TutorialManager0 : MonoBehaviour
         if (weaponIcon != null) weaponIcon.SetActive(true);
 
 
-        if (gunWeapon != null)
-        {
-            HUDManager.Instance.UpdateAmmo(0, gunWeapon.CurrentAmmo, gunWeapon.TotalAmmo);
-            HUDManager.Instance.UpdateWeaponIcon(gunWeapon.Stats.weaponIcon);
-            HUDManager.Instance.UpdateWeaponName(gunWeapon.Stats.weaponName);
-        }
-        else
-        {
-            Debug.LogWarning("[tutorialSceneController] El componente Weapon no está asignado al objeto gun.");
-        }
+        // if (gunWeapon != null)
+        // {
+        //     HUDManager.Instance.UpdateAmmo(0, gunWeapon.CurrentAmmo, gunWeapon.TotalAmmo);
+        //     HUDManager.Instance.UpdateWeaponIcon(gunWeapon.Stats.weaponIcon);
+        //     HUDManager.Instance.UpdateWeaponName(gunWeapon.Stats.weaponName);
+        // }
+        // else
+        // {
+        //     Debug.LogWarning("[tutorialSceneController] El componente Weapon no está asignado al objeto gun.");
+        // }
     }
 
     public IEnumerator WaitNextDialogue(float time)
@@ -384,13 +384,13 @@ public class TutorialManager0 : MonoBehaviour
 
     public void ActivateSecondWaveGlitch()
     {
-        if(secondWaveGlitch.activeSelf) return;
+        if (secondWaveGlitch.activeSelf) return;
         secondWaveGlitch.SetActive(true);
     }
 
     public void ActiveRifleAndShotgun()
     {
-        weaponManager.canChangeWeapon=true;
+        weaponManager.canChangeWeapon = true;
     }
 
     public void ActiveBlackList(int index)
@@ -425,7 +425,7 @@ public class TutorialManager0 : MonoBehaviour
                 blackListShopUI[index].SetActive(true);
 
             if (6 < blackListShopUI.Count)
-                blackListShopUI[6].SetActive(true); 
+                blackListShopUI[6].SetActive(true);
         }
         else
         {

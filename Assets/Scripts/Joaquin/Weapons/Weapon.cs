@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Weapon : MonoBehaviour
@@ -11,8 +12,9 @@ public class Weapon : MonoBehaviour
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private WeaponStats stats;
     [SerializeField] private ParticleSystem muzzleEffect;
-    [SerializeField] private ShootingMode baseMode;
     [SerializeField] private Transform weaponModelTransform;
+    [SerializeField] private Renderer[] weaponRenderers;
+    [SerializeField] private ShootingMode baseMode;
 
     [Header("Balas")]
     [SerializeField] private float bulletSpeed = 20f;
@@ -22,18 +24,26 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float spreadIntensity = 1f;
     [SerializeField] private float spreadAngle = 1f;
     [SerializeField] private int shotgunPellets = 3;
-    [SerializeField] private int minAmmoToInterruptReload = 3;
 
     [Header("SFX")]
     [SerializeField] private AudioSource sfxSource;
     [SerializeField] private AudioClip shootClip;
     [SerializeField] private AudioClip reloadClip;
+    [SerializeField] private AudioClip overheatClip;
 
     [Header("Configuración de Animación por codigo")]
     [SerializeField] private bool useProceduralAnimations = true;
 
     [Header("Animation")]
     [SerializeField] private int weaponAnimationID = 0;
+
+    [Header("Sobrecalentamiento")]
+    [SerializeField] private float heatPerShot = 10f;
+    [SerializeField] private float cooldownRate = 5f;
+    [SerializeField] private float maxHeat = 100f;
+    [SerializeField] private float overheatDuration = 2f;
+    [SerializeField] private float maxEmissionIntensity = 20f;
+    [SerializeField] private float emissionCooldownTime = 0.5f;
 
     #endregion
 
@@ -44,26 +54,30 @@ public class Weapon : MonoBehaviour
     public ShootingMode CurrentMode { get; private set; }
     public ShootingMode BaseMode => baseMode;
     public WeaponStats Stats => stats;
-    public int CurrentAmmo => currentAmmo;
-    public int TotalAmmo => totalAmmo;
-    public bool IsReloading => isReloading;
 
-    private int maxAmmoPerClip;
-    private int currentAmmo;
-    private int totalAmmo;
+    private float currentHeat = 0f;
+    public float CurrentHeat => currentHeat;
+    public float MaxHeat => maxHeat;
+    public bool IsOverheated => isOverheated;
+
     private float fireRate;
-    private float reloadTime;
     private float bulletDamage;
     private float timeBetweenShots;
 
-    private bool isReloading;
+    private bool isOverheated = false;
     private bool isHoldingTrigger = false;
-    private Coroutine reloadCoroutine;
+    private Coroutine overheatCoroutine;
     private Coroutine autoFireCoroutine;
     private float nextAllowedShotTime = 0f;
     private Vector3 originalModelPosition;
-    private int ammoReloadedThisCycle = 0;
     private WeaponManager weaponManager;
+    private Dictionary<Material, Color> originalEmissionColors = new Dictionary<Material, Color>();
+    private Dictionary<Material, bool> originalEmissionEnabled = new Dictionary<Material, bool>();
+
+    private float finalHeatPerShot;
+    private float finalCooldownRate;
+
+    private float lastShotTime = 0f;
 
     #endregion
 
@@ -77,23 +91,27 @@ public class Weapon : MonoBehaviour
         if (weaponModelTransform != null)
         {
             originalModelPosition = weaponModelTransform.localPosition;
+            if (weaponRenderers == null || weaponRenderers.Length == 0)
+            {
+                weaponRenderers = weaponModelTransform.GetComponentsInChildren<Renderer>();
+            }
         }
     }
 
     private void Start()
     {
         SetupStats();
+        StoreOriginalEmissionData();
 
         if (HUDManager.Instance != null)
         {
-            HUDManager.Instance.UpdateAmmo(weaponAnimationID, currentAmmo, totalAmmo);
+            HUDManager.Instance.UpdateHeat(weaponAnimationID, currentHeat, maxHeat);
         }
     }
 
     private void OnEnable()
     {
-        if (isReloading) CancelReload();
-
+        if (isOverheated) CancelOverheat();
         DataManager.OnDataChanged += ApplyUpgrades;
     }
 
@@ -104,16 +122,15 @@ public class Weapon : MonoBehaviour
             StopCoroutine(autoFireCoroutine);
             autoFireCoroutine = null;
         }
-
+        ResetToOriginalEmission();
         DataManager.OnDataChanged -= ApplyUpgrades;
     }
 
     private void Update()
     {
         if (Time.timeScale == 0f) return;
-
         HandleShootingInput();
-        HandleReloadInput();
+        HandleHeat();
     }
 
     #endregion
@@ -124,39 +141,47 @@ public class Weapon : MonoBehaviour
     {
         bulletDamage = stats.bulletDamage;
         fireRate = stats.fireRate;
-        reloadTime = stats.reloadTime;
-        maxAmmoPerClip = stats.maxAmmoPerClip;
-        totalAmmo = stats.totalAmmo;
-        currentAmmo = maxAmmoPerClip;
         CurrentMode = stats.shootingMode;
         timeBetweenShots = 1f / fireRate;
-
         ApplyUpgrades();
     }
 
     private void ApplyUpgrades()
     {
-        // Constantes de mejora
-        const float DAMAGE_INCREASE = 0.1f;  // +10% por nivel
-        const float FIRERATE_INCREASE = 0.05f; // +5% por nivel
-        const float RELOAD_SPEED_REDUCTION = 0.05f; // -5% por nivel
-        const int AMMO_BONUS = 5;     // +5 balas por nivel
+        const float DAMAGE_INCREASE = 0.1f;
+        const float FIRERATE_INCREASE = 0.05f;
+        const float COOLDOWN_INCREASE = 0.05f;
 
-        // Clave según el enum
         string key = CurrentMode.ToString();
 
-        // Obtén solo los stats de esta arma
         WeaponStatsData upgradeData = DataManager.GetWeaponStats(key);
         int lvl = upgradeData?.Level ?? 0;
 
         bulletDamage = stats.bulletDamage * (1 + (upgradeData.Level * DAMAGE_INCREASE));
         fireRate = stats.fireRate * (1 + (upgradeData.Level * FIRERATE_INCREASE));
-        reloadTime = stats.reloadTime * (1 - (upgradeData.Level * RELOAD_SPEED_REDUCTION));
-        totalAmmo = stats.totalAmmo + (upgradeData.Level * AMMO_BONUS);
+
+        finalCooldownRate = cooldownRate * (1 + (upgradeData.Level * COOLDOWN_INCREASE));
+        finalHeatPerShot = heatPerShot;
 
         timeBetweenShots = 1f / fireRate;
 
-        Debug.Log($"Weapon {stats.weaponName} upgraded: Damage={bulletDamage}, FireRate={fireRate}, ReloadTime={reloadTime}, TotalAmmo={totalAmmo}");
+        Debug.Log($"Weapon {CurrentMode}: Cooldown Rate = {finalCooldownRate}, Heat per Shot = {finalHeatPerShot}");
+    }
+
+    private void StoreOriginalEmissionData()
+    {
+        if (weaponRenderers != null && weaponRenderers.Length > 0)
+        {
+            foreach (Renderer renderer in weaponRenderers)
+            {
+                Material material = renderer.material;
+                if (material.HasProperty("_EmissionColor"))
+                {
+                    originalEmissionColors[material] = material.GetColor("_EmissionColor");
+                    originalEmissionEnabled[material] = material.IsKeywordEnabled("_EMISSION");
+                }
+            }
+        }
     }
 
     #endregion
@@ -165,11 +190,8 @@ public class Weapon : MonoBehaviour
 
     private void HandleShootingInput()
     {
-        bool triggerHeld = Input.GetKey(KeyCode.Mouse0);
         bool triggerPressed = Input.GetKeyDown(KeyCode.Mouse0);
         bool triggerReleased = Input.GetKeyUp(KeyCode.Mouse0);
-
-        bool triggerPulled = (CurrentMode == ShootingMode.Auto) ? Input.GetKey(KeyCode.Mouse0) : Input.GetKeyDown(KeyCode.Mouse0);
 
         if (CurrentMode == ShootingMode.Auto)
         {
@@ -192,32 +214,106 @@ public class Weapon : MonoBehaviour
 
     private void TryShoot()
     {
-        if (isReloading)
-        {
-            if (ammoReloadedThisCycle >= minAmmoToInterruptReload)
-            {
-                CancelReload();
-            }
-            return;
-        }
-
         if (CanShoot())
         {
             Shoot();
             nextAllowedShotTime = Time.time + timeBetweenShots;
-        }
-        else if (currentAmmo <= 0 && totalAmmo > 0 && !isReloading)
-        {
-            StartReload();
+            lastShotTime = Time.time;
         }
     }
 
-    private void HandleReloadInput()
+    #endregion
+
+    #region Heat Management
+
+    private void HandleHeat()
     {
-        if (Input.GetKeyDown(KeyCode.R) && !isReloading && currentAmmo < maxAmmoPerClip && totalAmmo > 0)
+        if (Time.timeScale == 0f) return;
+
+        if (!isOverheated && currentHeat > 0f)
         {
-            StartReload();
+            currentHeat -= finalCooldownRate * Time.deltaTime;
+            currentHeat = Mathf.Max(currentHeat, 0f);
         }
+
+        UpdateEmission();
+
+        if (currentHeat >= maxHeat && !isOverheated)
+        {
+            StartOverheat();
+        }
+
+        if (HUDManager.Instance != null)
+        {
+            HUDManager.Instance.UpdateHeat(weaponAnimationID, currentHeat, maxHeat);
+        }
+    }
+
+    public void StartOverheat()
+    {
+        if (isOverheated) return;
+        isOverheated = true;
+        PlayClip(overheatClip);
+        overheatCoroutine = StartCoroutine(OverheatRoutine());
+    }
+
+    private IEnumerator OverheatRoutine()
+    {
+        if (weaponModelTransform != null)
+        {
+            PlayerAnimatorController.Instance?.PlayRechargeWeaponAnim(weaponAnimationID);
+
+            float t = 0;
+            Vector3 downPos = originalModelPosition + new Vector3(0, -0.2f, 0);
+
+            while (t < 1)
+            {
+                weaponModelTransform.localPosition = Vector3.Lerp(originalModelPosition, downPos, t);
+                t += Time.deltaTime / (overheatDuration / 2);
+                yield return null;
+            }
+
+            float heatStart = currentHeat;
+            t = 0;
+            while (t < 1)
+            {
+                currentHeat = Mathf.Lerp(heatStart, 0, t);
+                UpdateEmission();
+                t += Time.deltaTime / (overheatDuration / 2);
+                yield return null;
+            }
+            currentHeat = 0;
+            UpdateEmission();
+
+            t = 0;
+            while (t < 1)
+            {
+                weaponModelTransform.localPosition = Vector3.Lerp(downPos, originalModelPosition, t);
+                t += Time.deltaTime / (overheatDuration / 2);
+                yield return null;
+            }
+            weaponModelTransform.localPosition = originalModelPosition;
+        }
+        else
+        {
+            yield return new WaitForSeconds(overheatDuration);
+            currentHeat = 0;
+        }
+
+        isOverheated = false;
+    }
+
+    public void CancelOverheat()
+    {
+        if (!isOverheated) return;
+        if (overheatCoroutine != null) StopCoroutine(overheatCoroutine);
+        if (weaponModelTransform != null)
+        {
+            weaponModelTransform.localPosition = originalModelPosition;
+        }
+        ResetToOriginalEmission();
+        isOverheated = false;
+        currentHeat = 0;
     }
 
     #endregion
@@ -226,21 +322,20 @@ public class Weapon : MonoBehaviour
 
     private bool CanShoot()
     {
-        if (isReloading) return false;
+        if (isOverheated) return false;
         if (Time.time < nextAllowedShotTime) return false;
-
-        int ammoCost = GetAmmoCostPerShot();
-        return currentAmmo >= ammoCost;
+        return currentHeat < maxHeat;
     }
-
-    private int GetAmmoCostPerShot() => 1;
 
     private void Shoot()
     {
         PlayerAnimatorController.Instance?.PlayFireWeaponAnim(weaponAnimationID);
 
-        currentAmmo--;
-        HUDManager.Instance?.UpdateAmmo(weaponAnimationID, currentAmmo, totalAmmo);
+        currentHeat += finalHeatPerShot;
+        if (HUDManager.Instance != null)
+        {
+            HUDManager.Instance.UpdateHeat(weaponAnimationID, currentHeat, maxHeat);
+        }
 
         if (CurrentMode == ShootingMode.SemiAuto)
         {
@@ -280,7 +375,6 @@ public class Weapon : MonoBehaviour
         float angleX = Random.Range(-spreadIntensity, spreadIntensity);
         float angleY = Random.Range(-spreadIntensity, spreadIntensity);
         Quaternion spread = Quaternion.Euler(angleY, angleX, 0);
-
         return (spread * direction).normalized;
     }
 
@@ -295,131 +389,67 @@ public class Weapon : MonoBehaviour
         if (muzzleEffect != null) muzzleEffect.Play();
     }
 
-    #endregion
-
-    #region Reloading
-
-    public void StartReload()
+    private void UpdateEmission()
     {
-        if (isReloading || totalAmmo <= 0 || weaponModelTransform == null) return;
-        reloadCoroutine = StartCoroutine(Reload());
+        if (weaponRenderers == null || weaponRenderers.Length == 0) return;
+
+        float heatNormalized = currentHeat / maxHeat;
+        ApplyEmissionIntensity(heatNormalized * maxEmissionIntensity);
     }
 
-    private IEnumerator Reload()
+    private void ApplyEmissionIntensity(float intensity)
     {
-        isReloading = true;
-        ammoReloadedThisCycle = 0;
-        PlayReloadAudio();
-
-        int ammoNeeded = maxAmmoPerClip - currentAmmo;
-        int ammoToReload = Mathf.Min(ammoNeeded, totalAmmo);
-
-        if (ammoToReload <= 0)
+        foreach (Renderer renderer in weaponRenderers)
         {
-            isReloading = false;
-            yield break;
-        }
+            Material material = renderer.material;
+            if (!material.HasProperty("_EmissionColor")) continue;
 
-        float animDownTime = useProceduralAnimations ? 0.2f : 0f;
-        float animUpTime = useProceduralAnimations ? 0.2f : 0f;
+            Color originalColor;
+            bool wasOriginallyEmissive;
 
-        // Animación Hacia Abajo 
-        if (useProceduralAnimations && weaponModelTransform != null)
-        {
-            Vector3 downPos = originalModelPosition + new Vector3(0, -0.2f, 0);
-            float t = 0;
-            while (t < animDownTime)
+            if (originalEmissionColors.TryGetValue(material, out originalColor) &&
+                originalEmissionEnabled.TryGetValue(material, out wasOriginallyEmissive))
             {
-                weaponModelTransform.localPosition = Vector3.Lerp(originalModelPosition, downPos, t / animDownTime);
-                t += Time.deltaTime;
-                yield return null;
-            }
-            weaponModelTransform.localPosition = downPos;
-        }
-        else
-        {
-            PlayerAnimatorController.Instance?.PlayRechargeWeaponAnim(weaponAnimationID);
-        }
-
-        // Lógica de Recarga por Bala 
-        float timeForBulletLoop = stats.reloadTime - (animDownTime + animUpTime);
-        if (timeForBulletLoop < 0) timeForBulletLoop = 0;
-        float delayPerBullet = timeForBulletLoop / ammoToReload;
-
-        for (int i = 0; i < ammoToReload; i++)
-        {
-            if (delayPerBullet > 0.01f)
-            {
-                yield return new WaitForSeconds(delayPerBullet);
-            }
-
-            if (!isReloading) yield break;
-
-            currentAmmo++;
-            totalAmmo--;
-            ammoReloadedThisCycle++;
-            if (HUDManager.Instance != null)
-            {
-                HUDManager.Instance.UpdateAmmo(weaponAnimationID, currentAmmo, totalAmmo);
+                if (intensity > 0 || wasOriginallyEmissive)
+                {
+                    material.EnableKeyword("_EMISSION");
+                    Color finalColor = originalColor * (1 + intensity);
+                    material.SetColor("_EmissionColor", finalColor);
+                }
+                else
+                {
+                    if (!wasOriginallyEmissive)
+                    {
+                        material.DisableKeyword("_EMISSION");
+                    }
+                    material.SetColor("_EmissionColor", originalColor);
+                }
             }
         }
-
-        // Si el delay era muy corto, esperar el tiempo restante de golpe
-        if (delayPerBullet <= 0.01f && timeForBulletLoop > 0)
-        {
-            yield return new WaitForSeconds(timeForBulletLoop);
-        }
-
-        // Animación Hacia Arriba 
-        if (useProceduralAnimations && weaponModelTransform != null)
-        {
-            Vector3 downPos = originalModelPosition + new Vector3(0, -0.2f, 0);
-            float t = 0;
-            while (t < animUpTime)
-            {
-                weaponModelTransform.localPosition = Vector3.Lerp(downPos, originalModelPosition, t / animUpTime);
-                t += Time.deltaTime;
-                yield return null;
-            }
-            weaponModelTransform.localPosition = originalModelPosition;
-        }
-
-        isReloading = false;
     }
 
-    public void CancelReload()
+    private void ResetToOriginalEmission()
     {
-        if (!isReloading) return;
-        if (reloadCoroutine != null) StopCoroutine(reloadCoroutine);
+        if (weaponRenderers == null || weaponRenderers.Length == 0) return;
 
-        if (weaponModelTransform != null)
+        foreach (Renderer renderer in weaponRenderers)
         {
-            weaponModelTransform.localPosition = originalModelPosition;
+            Material material = renderer.material;
+            if (!material.HasProperty("_EmissionColor")) continue;
+
+            if (originalEmissionColors.ContainsKey(material) && originalEmissionEnabled.ContainsKey(material))
+            {
+                if (originalEmissionEnabled[material])
+                {
+                    material.EnableKeyword("_EMISSION");
+                }
+                else
+                {
+                    material.DisableKeyword("_EMISSION");
+                }
+                material.SetColor("_EmissionColor", originalEmissionColors[material]);
+            }
         }
-
-        isReloading = false;
-    }
-
-    public void PlayReloadAudio() => PlayClip(reloadClip);
-
-    #endregion
-
-    #region Munición
-
-    public bool TryAddAmmo(int amount, out int added)
-    {
-        int maxReserve = stats.totalAmmo + UpgradeDataStore.Instance.weaponAmmoBonus;
-        int spaceLeft = maxReserve - totalAmmo;
-
-        if (spaceLeft <= 0)
-        {
-            added = 0;
-            return false;
-        }
-
-        added = Mathf.Min(spaceLeft, amount);
-        totalAmmo += added;
-        return true;
     }
 
     #endregion

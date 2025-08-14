@@ -5,11 +5,12 @@ public class WeaponStats : ScriptableObject
 {
     public string weaponName;
     public Sprite weaponIcon;
-    public int maxAmmoPerClip;
-    public int totalAmmo;
-    public float reloadTime;
-    public Weapon.ShootingMode shootingMode;
-    public float weaponSwapTime;
     public float fireRate;
     public float bulletDamage;
+    public float cooldownRate;
+    public Weapon.ShootingMode shootingMode;
+    public float weaponSwapTime;
+    public float heatPerShot;
+    public float maxHeat;
+    public float overheatDuration;
 }
