@@ -8,7 +8,7 @@ public class PlayerHealth : MonoBehaviour
 
     [Header("Salud")]
     [SerializeField] private int baseMaxHealth = 100;
-    private int currentHealth;
+    public int currentHealth;
 
     [Header("Escudo")]
     [SerializeField] private int baseMaxShield = 20;
@@ -90,7 +90,7 @@ public class PlayerHealth : MonoBehaviour
         HUDManager.Instance?.UpdateShield(currentShield, upgradedMaxShield);
     }
 
-    private int GetMaxHealth() => baseMaxHealth;
+    public int GetMaxHealth() => baseMaxHealth;
     private int GetMaxShield() => baseMaxShield;
 
     private void ResetToBaseStats()
@@ -157,6 +157,16 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth = Mathf.Min(currentHealth + amount, GetMaxHealth());
         HUDManager.Instance.UpdateHealth(currentHealth, GetMaxHealth());
+    }
+
+    public void RecoverShield(int amount)
+    {
+        if (currentShield < GetMaxShield())
+        {
+            currentShield += amount;
+            currentShield = Mathf.Clamp(currentShield, 0, GetMaxShield());
+            HUDManager.Instance.UpdateShield(currentShield, GetMaxShield());
+        }
     }
 
     private IEnumerator RegenShield()

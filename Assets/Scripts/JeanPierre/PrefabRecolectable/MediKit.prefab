@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1477856477335368320}
   - component: {fileID: 3084105754383291019}
   m_Layer: 0
-  m_Name: CodeFragmentPickUpTest
+  m_Name: MediKit
   m_TagString: Fragment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67,12 +67,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd34a768954373a40889356067124df9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupType: 0
+  pickupType: 4
   amountRange: {x: 0, y: 0}
   pickUpRange: 10
   flySpeed: 15
   rotationSpeed: 10
-  positionOffset: 1
+  positionOffset: -0.8
   lifetime: 60
   playerInRange: 0
 --- !u!1 &6387777877836959050
@@ -559,6 +559,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8138857497529922004, guid: 6641e7d3d77695740a2a1ce9dc4d9438,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 0d426b8475a0e434693e98f14dd6e83a, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

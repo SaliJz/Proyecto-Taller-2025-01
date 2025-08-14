@@ -8,7 +8,8 @@ public class PickupItem : MonoBehaviour
         CodeFragment,
         AmmoSingle,
         AmmoSemiAuto,
-        AmmoAuto
+        AmmoAuto,
+        Medkit
     }
 
     [SerializeField] private PickupType pickupType;
@@ -45,6 +46,7 @@ public class PickupItem : MonoBehaviour
             PickupType.AmmoSingle => new Vector2(15, 20),
             PickupType.AmmoSemiAuto => new Vector2(3, 8),
             PickupType.AmmoAuto => new Vector2(10, 20),
+            PickupType.Medkit => new Vector2(20, 20),
             _ => new Vector2(0, 0)
         };
 
@@ -113,6 +115,27 @@ public class PickupItem : MonoBehaviour
 
             FollowAtPlayer(); // llamado constante desde Update
         }
+        else if (pickupType == PickupType.Medkit)
+        {
+            if (playerTarget != null && !isFlyingToPlayer)
+            {
+                float distance = Vector3.Distance(transform.position, playerTarget.position);
+                if (distance <= pickUpRange)
+                {
+                    PlayerHealth playerHealth = playerTarget.GetComponent<PlayerHealth>();
+                    if (playerHealth != null && playerHealth.currentHealth < playerHealth.GetMaxHealth())
+                    {
+                        isFlyingToPlayer = true;
+                        if (rb != null) rb.isKinematic = true;
+                    }
+                }
+            }
+
+            if (isFlyingToPlayer)
+            {
+                FollowAndPickupMedkit();
+            }
+        }
         else // Lógica para munición
         {
             if (playerTarget != null && !isFlyingToPlayer)
@@ -134,6 +157,35 @@ public class PickupItem : MonoBehaviour
                 FollowAndPickupAmmo();
             }
         }
+    }
+
+    private void FollowAndPickupMedkit()
+    {
+        if (playerTarget == null) return;
+
+        Vector3 targetPosition = playerTarget.position + Vector3.up * positionOffset;
+        transform.position = Vector3.MoveTowards(transform.position, targetPosition, flySpeed * Time.deltaTime);
+
+        if (Vector3.Distance(transform.position, targetPosition) < 0.2f)
+        {
+            PlayerHealth playerHealth = playerTarget.GetComponent<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                if (playerHealth.currentHealth < playerHealth.GetMaxHealth())
+                {
+                    Debug.Log($"Medkit picked up, healing player for {actualAmount} health.");
+                    playerHealth.Heal(actualAmount);
+                    Destroy(gameObject);
+                }
+                else
+                {
+                    Debug.Log("Player already has max health. Medkit not consumed.");
+                    isFlyingToPlayer = false;
+                    if (rb != null) rb.isKinematic = false;
+                }
+            }
+        }
+
     }
 
     private void FollowAtPlayer()
@@ -226,9 +278,10 @@ public class PickupItem : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<PlayerHealth>() != null)
+        PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
+        if (playerHealth != null)
         {
-            if (pickupType != PickupType.CodeFragment)
+            if (pickupType == PickupType.Medkit || pickupType == PickupType.CodeFragment || pickupType == PickupType.AmmoSingle || pickupType == PickupType.AmmoSemiAuto || pickupType == PickupType.AmmoAuto)
             {
                 playerInRange = true;
                 playerTarget = other.transform;

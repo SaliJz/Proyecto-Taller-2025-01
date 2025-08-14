@@ -78,6 +78,8 @@ public class VidaEnemigoGeneral : MonoBehaviour
     public bool enableDissolve = true;
     public float dissolveDuration = 1f;
 
+    [SerializeField] private PlayerHealth playerHealth;
+
     private TipoEnemigo tipo;
     private Color colorOriginal;
     private Color baseEmissionColor;
@@ -126,6 +128,11 @@ public class VidaEnemigoGeneral : MonoBehaviour
         {
             sliderVida.maxValue = vida;
             sliderVida.value = vida;
+        }
+
+        if (playerHealth == null)
+        {
+            playerHealth = FindObjectOfType<PlayerHealth>();
         }
 
         StartCoroutine(DetectarYAsignarNuevosMateriales(colorOriginal, 0.5f));
@@ -483,6 +490,11 @@ public class VidaEnemigoGeneral : MonoBehaviour
                 dissolveMaterials.AddRange(mr.materials.Where(m => m.HasProperty("_DissolveAmount")));
 
             StartCoroutine(DissolveEffect());
+        }
+
+        if (playerHealth != null)
+        {
+            playerHealth.RecoverShield(10);
         }
 
         Destroy(sliderVida.gameObject);
