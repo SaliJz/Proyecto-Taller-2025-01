@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class MovimientoMelee : MonoBehaviour
@@ -9,11 +10,15 @@ public class MovimientoMelee : MonoBehaviour
         Chasing,
         Idle,
         Jumping,
-        Landing
+        Landing,
+        OffMeshLinking
     }
 
     [Header("Referencia al Jugador")]
     [SerializeField] private Transform playerTransform;
+
+    [Header("Referencias del Modelo")]
+    [SerializeField] private Transform modelTransform;
 
     [Header("Detección del Jugador")]
     [SerializeField] private float detectionRange = 15f;
@@ -32,44 +37,62 @@ public class MovimientoMelee : MonoBehaviour
     [SerializeField] private float groundCheckDistance = 2f;
     [SerializeField] private AnimationCurve jumpCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
+    [Header("Parámetros de OffMeshLink")]
+    [SerializeField] private float offMeshJumpHeight = 2f;
+    [SerializeField] private float offMeshLerpSpeed = 2f;
+    [SerializeField] private AnimationCurve offMeshJumpCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+
     [Header("Visualización")]
     [SerializeField] private Color colorDetectionRange = Color.red;
     [SerializeField] private Color colorJumpTrajectory = Color.cyan;
 
     private NavMeshAgent agent;
     private EnemyAbilityReceiver abilityReceiver;
-
     private bool hasBeenDamaged = false;
     private float damageDetectionDuration = 10f;
     private float damageTimer = 0f;
     private bool playerInRange = false;
     private bool isGrounded = true;
     private bool canJump = false;
-
     private EnemyState currentState = EnemyState.Idle;
     private Vector3 jumpStartPosition;
     private Vector3 jumpTargetPosition;
     private float jumpProgress = 0f;
     private bool isLerpMoving = false;
+    private Vector3 modelOriginalLocalPosition;
+    private bool isTraversingOffMeshLink = false;
+    private Vector3 offMeshStart;
+    private Vector3 offMeshEnd;
+    private float offMeshProgress = 0f;
 
     void Start()
     {
         abilityReceiver = GetComponent<EnemyAbilityReceiver>();
         agent = GetComponent<NavMeshAgent>();
-
         agent.updatePosition = true;
         agent.updateRotation = true;
         agent.stoppingDistance = stopDistance;
-        agent.autoTraverseOffMeshLink = true;
+        agent.autoTraverseOffMeshLink = false;
 
-        if (!agent.isOnNavMesh)
+        if (modelTransform != null)
         {
-            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 5f, NavMesh.AllAreas))
-                agent.Warp(hit.position);
+            modelOriginalLocalPosition = modelTransform.localPosition;
+        }
+        else if (transform.childCount > 0)
+        {
+            modelTransform = transform.GetChild(0);
+            modelOriginalLocalPosition = modelTransform.localPosition;
+        }
+
+        if (!agent.isOnNavMesh && NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 5f, NavMesh.AllAreas))
+        {
+            agent.Warp(hit.position);
         }
 
         if (playerTransform == null)
+        {
             playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
+        }
     }
 
     void Update()
@@ -80,6 +103,7 @@ public class MovimientoMelee : MonoBehaviour
             return;
         }
 
+        CheckOffMeshLink();
         CheckGrounded();
         CheckPlayerInRange();
         CheckJumpViability();
@@ -114,43 +138,90 @@ public class MovimientoMelee : MonoBehaviour
                 currentState = EnemyState.Chasing;
                 StartChasing();
                 break;
+
+            case EnemyState.OffMeshLinking:
+                HandleOffMeshLinking();
+                break;
         }
     }
+
+    void CheckOffMeshLink()
+    {
+        if (agent.isOnOffMeshLink && !isTraversingOffMeshLink)
+        {
+            StartOffMeshLinking();
+        }
+    }
+
+    void StartOffMeshLinking()
+    {
+        isTraversingOffMeshLink = true;
+        currentState = EnemyState.OffMeshLinking;
+        OffMeshLinkData linkData = agent.currentOffMeshLinkData;
+        offMeshStart = linkData.startPos;
+        offMeshEnd = linkData.endPos;
+        offMeshProgress = 0f;
+        agent.updatePosition = false;
+        StartCoroutine(TraverseOffMeshLink());
+    }
+
+    IEnumerator TraverseOffMeshLink()
+    {
+        while (offMeshProgress < 1f)
+        {
+            offMeshProgress += Time.deltaTime * offMeshLerpSpeed;
+            offMeshProgress = Mathf.Clamp01(offMeshProgress);
+            Vector3 currentAgentPos = Vector3.Lerp(offMeshStart, offMeshEnd, offMeshProgress);
+            transform.position = currentAgentPos;
+
+            if (modelTransform != null)
+            {
+                float jumpOffset = offMeshJumpHeight * offMeshJumpCurve.Evaluate(offMeshProgress) * 4f * offMeshProgress * (1f - offMeshProgress);
+                Vector3 newModelPos = modelOriginalLocalPosition;
+                newModelPos.y += jumpOffset;
+                modelTransform.localPosition = newModelPos;
+            }
+
+            yield return null;
+        }
+
+        FinishOffMeshLinking();
+    }
+
+    void FinishOffMeshLinking()
+    {
+        agent.updatePosition = true;
+        agent.CompleteOffMeshLink();
+
+        if (modelTransform != null)
+        {
+            modelTransform.localPosition = modelOriginalLocalPosition;
+        }
+
+        isTraversingOffMeshLink = false;
+        currentState = EnemyState.Chasing;
+    }
+
+    void HandleOffMeshLinking() { }
 
     void CheckJumpViability()
     {
         canJump = false;
+        if (!isGrounded || playerTransform == null || !playerInRange) return;
 
-        if (!isGrounded || playerTransform == null || !playerInRange)
-        {
-            return;
-        }
-
-        float horizontalDistance = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
-                                                     new Vector3(playerTransform.position.x, 0, playerTransform.position.z));
+        float horizontalDistance = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z), new Vector3(playerTransform.position.x, 0, playerTransform.position.z));
         float verticalDistance = Mathf.Abs(playerTransform.position.y - transform.position.y);
-
         bool distanceCondition = horizontalDistance >= minJumpDistance;
         bool heightCondition = verticalDistance <= maxJumpHeight;
         bool obstacleCondition = CheckJumpRaycast();
-
         canJump = distanceCondition && heightCondition && obstacleCondition;
     }
 
     bool CheckJumpRaycast()
     {
-        Vector3 directionToPlayer = (playerTransform.position - transform.position);
-        directionToPlayer.y = 0;
-        directionToPlayer = directionToPlayer.normalized;
-
-        float distance = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
-                                             new Vector3(playerTransform.position.x, 0, playerTransform.position.z));
-
-        Vector3 rayStart = transform.position + Vector3.up * 1f;
-
-        bool hasObstacle = Physics.SphereCast(rayStart, obstacleCheckRadius, directionToPlayer, out RaycastHit hit, distance - 1f, obstacleLayer);
-
-        return !hasObstacle;
+        Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
+        float distance = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z), new Vector3(playerTransform.position.x, 0, playerTransform.position.z));
+        return !Physics.SphereCast(transform.position + Vector3.up * 1f, obstacleCheckRadius, directionToPlayer, out RaycastHit hit, distance - 1f, obstacleLayer);
     }
 
     public void OnDamageReceived()
@@ -171,10 +242,7 @@ public class MovimientoMelee : MonoBehaviour
         if (hasBeenDamaged)
         {
             damageTimer -= Time.deltaTime;
-            if (damageTimer <= 0f)
-            {
-                hasBeenDamaged = false;
-            }
+            if (damageTimer <= 0f) hasBeenDamaged = false;
         }
 
         playerInRange = (distanceToPlayer <= detectionRange) || hasBeenDamaged;
@@ -187,7 +255,7 @@ public class MovimientoMelee : MonoBehaviour
 
     void StartChasing()
     {
-        if (agent.enabled && agent.isOnNavMesh)
+        if (agent.enabled && agent.isOnNavMesh && !isTraversingOffMeshLink)
         {
             agent.SetDestination(playerTransform.position);
         }
@@ -203,8 +271,7 @@ public class MovimientoMelee : MonoBehaviour
 
     void HandleChasingMovement()
     {
-        if (isLerpMoving) return;
-
+        if (isLerpMoving || isTraversingOffMeshLink) return;
         if (!agent.enabled || !agent.isOnNavMesh) return;
 
         agent.speed = abilityReceiver.CurrentSpeed;
@@ -220,22 +287,16 @@ public class MovimientoMelee : MonoBehaviour
 
     void PerformJump()
     {
-        if (agent.enabled)
-        {
-            agent.ResetPath();
-        }
+        if (agent.enabled) agent.ResetPath();
 
         jumpStartPosition = transform.position;
         jumpTargetPosition = FindValidLandingPosition(playerTransform.position);
         jumpProgress = 0f;
 
         Vector3 directionToTarget = (jumpTargetPosition - transform.position);
-        directionToTarget.y = 0;
-
         if (directionToTarget != Vector3.zero)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
-            transform.rotation = Quaternion.Euler(0, targetRotation.eulerAngles.y, 0);
+            transform.rotation = Quaternion.Euler(0, Quaternion.LookRotation(directionToTarget).eulerAngles.y, 0);
         }
 
         agent.enabled = false;
@@ -252,12 +313,7 @@ public class MovimientoMelee : MonoBehaviour
         {
             for (int angle = 0; angle < 360; angle += 45)
             {
-                Vector3 offset = new Vector3(
-                    Mathf.Sin(angle * Mathf.Deg2Rad) * radius,
-                    0,
-                    Mathf.Cos(angle * Mathf.Deg2Rad) * radius
-                );
-
+                Vector3 offset = new Vector3(Mathf.Sin(angle * Mathf.Deg2Rad) * radius, 0, Mathf.Cos(angle * Mathf.Deg2Rad) * radius);
                 if (NavMesh.SamplePosition(desiredPosition + offset, out hit, 1f, NavMesh.AllAreas))
                     return hit.position;
             }
@@ -274,7 +330,6 @@ public class MovimientoMelee : MonoBehaviour
         {
             jumpProgress = 1f;
             transform.position = jumpTargetPosition;
-
             currentState = EnemyState.Landing;
             isLerpMoving = false;
             OnLanding();
@@ -282,19 +337,10 @@ public class MovimientoMelee : MonoBehaviour
         else
         {
             Vector3 currentPos = Vector3.Lerp(jumpStartPosition, jumpTargetPosition, jumpProgress);
-
             float height = jumpHeight * jumpCurve.Evaluate(jumpProgress) * 4f * jumpProgress * (1f - jumpProgress);
             currentPos.y = Mathf.Lerp(jumpStartPosition.y, jumpTargetPosition.y, jumpProgress) + height;
-
             transform.position = currentPos;
         }
-    }
-
-    Vector3 CalculateTrajectoryPoint(Vector3 start, Vector3 end, float maxHeight, float t)
-    {
-        Vector3 horizontalPos = Vector3.Lerp(start, end, t);
-        float height = Mathf.Lerp(start.y, end.y, t) + (maxHeight * jumpCurve.Evaluate(t) * 4f * t * (1f - t));
-        return new Vector3(horizontalPos.x, height, horizontalPos.z);
     }
 
     void OnLanding()
@@ -310,8 +356,8 @@ public class MovimientoMelee : MonoBehaviour
         }
 
         agent.enabled = true;
-
         currentState = EnemyState.Chasing;
+
         if (playerTransform != null)
         {
             agent.SetDestination(playerTransform.position);
@@ -329,32 +375,44 @@ public class MovimientoMelee : MonoBehaviour
         Gizmos.DrawRay(transform.position, Vector3.down * groundCheckDistance);
 
         Vector3 directionToPlayer = (playerTransform.position - transform.position);
-        directionToPlayer.y = 0;
-
         if (directionToPlayer != Vector3.zero)
         {
-            float distance = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
-                                                 new Vector3(playerTransform.position.x, 0, playerTransform.position.z));
-
+            float distance = Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z), new Vector3(playerTransform.position.x, 0, playerTransform.position.z));
             Gizmos.color = canJump ? Color.green : Color.red;
             Gizmos.DrawRay(transform.position + Vector3.up * 1f, directionToPlayer.normalized * (distance - 1f));
-
-            Vector3 rayStart = transform.position + Vector3.up * 1f;
-            Gizmos.DrawWireSphere(rayStart, obstacleCheckRadius);
+            Gizmos.DrawWireSphere(transform.position + Vector3.up * 1f, obstacleCheckRadius);
         }
 
         if (isLerpMoving && currentState == EnemyState.Jumping)
         {
             Gizmos.color = colorJumpTrajectory;
-
             for (int i = 0; i <= 20; i++)
             {
                 float t = i / 20f;
-                Vector3 pos = CalculateTrajectoryPoint(jumpStartPosition, jumpTargetPosition, jumpHeight, t);
+                Vector3 pos = Vector3.Lerp(jumpStartPosition, jumpTargetPosition, t);
+                pos.y += jumpHeight * jumpCurve.Evaluate(t) * 4f * t * (1f - t);
                 Gizmos.DrawWireSphere(pos, 0.1f);
             }
-
             Gizmos.DrawWireSphere(jumpTargetPosition, 0.5f);
+        }
+
+        if (isTraversingOffMeshLink)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(offMeshStart, offMeshEnd);
+
+            if (modelTransform != null)
+            {
+                Gizmos.color = Color.magenta;
+                for (int i = 0; i <= 20; i++)
+                {
+                    float t = i / 20f;
+                    Vector3 pos = Vector3.Lerp(offMeshStart, offMeshEnd, t);
+                    float jumpOffset = offMeshJumpHeight * offMeshJumpCurve.Evaluate(t) * 4f * t * (1f - t);
+                    pos.y += jumpOffset;
+                    Gizmos.DrawWireSphere(pos, 0.05f);
+                }
+            }
         }
     }
 }
