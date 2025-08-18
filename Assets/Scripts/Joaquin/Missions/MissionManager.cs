@@ -87,10 +87,7 @@ public class MissionManager : MonoBehaviour
         currentMissionSO.killConditions[0].requiredAmount = purgadorKills;
         currentMissionSO.ResetProgress();
 
-        float elUnicoSurvivalTime = 120f + (difficultyStep * 30f);
-        float elUnicoInitialTime = 30f;
-
-        int jssSimultaneousEnemies = 5 + (difficultyStep * 5);
+        float jssSimultaneousEnemies = 5 + (difficultyStep * 5);
         float jssDuration = 30f + (difficultyStep * 20f);
 
         float delay = missionStartDelay;
@@ -102,8 +99,8 @@ public class MissionManager : MonoBehaviour
         }
 
         activeMission = true;
-       
-        if(PortalVFXManager.Instance != null)
+
+        if (PortalVFXManager.Instance != null)
         {
             PortalVFXManager.Instance.ActiveAllPortals();
         }
@@ -123,13 +120,13 @@ public class MissionManager : MonoBehaviour
 
             case MissionMode.JSS:
                 HUDManager.Instance?.ShowMission($"Objetivo: Sobrevive\nTiempo restante: {Mathf.Ceil(jssDuration)}s", true);
-                spawner?.StartContinuousSpawning(jssSimultaneousEnemies, 1f, jssDuration);
+                spawner?.StartContinuousSpawning((int)jssSimultaneousEnemies, 1f, jssDuration);
                 StartCoroutine(TimerCoroutine(jssDuration));
                 break;
 
             case MissionMode.ElUnico:
                 HUDManager.Instance?.ShowMission("Objetivo: Captura la zona segura\nPermanece solo para aumentar el tiempo");
-                currentCaptureTime = elUnicoInitialTime;
+                currentCaptureTime = 30f;
                 SelectSafeZone();
                 spawner?.StartContinuousSpawning(10, 3f);
                 break;
@@ -140,7 +137,7 @@ public class MissionManager : MonoBehaviour
     {
         if (!activeMission || currentMode != MissionMode.Purgador) return;
 
-        var currentMissionSO = baseMissions[(int)currentMode];
+        var currentMissionSO = baseMissions[0];
         currentMissionSO.RegisterKill(tag, name, tipo);
 
         if (currentMissionSO.IsCompleted)
@@ -200,6 +197,10 @@ public class MissionManager : MonoBehaviour
         float countdown = 5f;
         while (countdown > 0)
         {
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                break;
+            }
             HUDManager.Instance?.ShowMission($"La tienda se abrirá en {Mathf.Ceil(countdown)}...");
             countdown -= Time.deltaTime;
             yield return null;
@@ -226,7 +227,6 @@ public class MissionManager : MonoBehaviour
         {
             remaining -= Time.deltaTime;
             HUDManager.Instance?.ShowMission($"Objetivo: Sobrevive\nTiempo restante: <b><color=\"red\">{Mathf.Ceil(remaining)} s </b></color=\"red\">", true);
-            //HUDManager.Instance.UpdateTimer(remaining);
             yield return null;
         }
 

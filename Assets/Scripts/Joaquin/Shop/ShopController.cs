@@ -74,7 +74,7 @@ public class ShopController : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        Time.timeScale = 0f;
+        //Time.timeScale = 0f;
         mainShopMenu.SetActive(true);
         currentInfoFragments.gameObject.SetActive(true);
         shopPauseGame = true;
