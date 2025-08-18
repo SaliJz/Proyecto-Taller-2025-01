@@ -3,6 +3,13 @@ using UnityEngine;
 using System.Linq;
 using TMPro;
 
+public enum ItemDestroyBehavior
+{
+    KeepAll,
+    DestroyPurchasedOnly,
+    DestroyAllOnPurchase
+}
+
 public class ShopManager : MonoBehaviour
 {
     [Header("Referencias de la Tienda")]
@@ -16,7 +23,7 @@ public class ShopManager : MonoBehaviour
 
     [Header("Configuración de Nivel")]
     [SerializeField] private bool isTutorial = false;
-    [SerializeField] private bool buyOneAndDestroyOthers = true;
+    [SerializeField] private ItemDestroyBehavior destroyBehavior = ItemDestroyBehavior.DestroyPurchasedOnly;
 
     private List<GameObject> spawnedItems = new List<GameObject>();
 
@@ -121,21 +128,49 @@ public class ShopManager : MonoBehaviour
             }
         }
 
-        if (buyOneAndDestroyOthers)
+        HandleItemDestruction(itemData);
+    }
+
+    private void HandleItemDestruction(ShopItemData purchasedItemData)
+    {
+        switch (destroyBehavior)
         {
-            DestroySpawnedItems();
+            case ItemDestroyBehavior.KeepAll:
+                RemoveMaxLevelItems();
+                break;
+
+            case ItemDestroyBehavior.DestroyPurchasedOnly:
+                DestroySpecificItem(purchasedItemData);
+                break;
+
+            case ItemDestroyBehavior.DestroyAllOnPurchase:
+                DestroySpawnedItems();
+                break;
         }
-        else
+    }
+
+    private void RemoveMaxLevelItems()
+    {
+        for (int i = spawnedItems.Count - 1; i >= 0; i--)
         {
-            if (itemData.IsMaxLevel(itemData.itemName))
+            var itemInstance = spawnedItems[i].GetComponent<ShopItemInstance>();
+            if (itemInstance != null && itemInstance.GetItemData().IsMaxLevel(itemInstance.GetItemData().itemName))
             {
-                GameObject itemToDestroy = spawnedItems.FirstOrDefault(item => item.GetComponent<ShopItemInstance>().GetItemData() == itemData);
-                if (itemToDestroy != null)
-                {
-                    spawnedItems.Remove(itemToDestroy);
-                    Destroy(itemToDestroy);
-                }
+                Destroy(spawnedItems[i]);
+                spawnedItems.RemoveAt(i);
             }
+        }
+    }
+
+    private void DestroySpecificItem(ShopItemData itemData)
+    {
+        GameObject itemToDestroy = spawnedItems.FirstOrDefault(item =>
+            item.GetComponent<ShopItemInstance>().GetItemData() == itemData);
+
+        if (itemToDestroy != null)
+        {
+            spawnedItems.Remove(itemToDestroy);
+            Destroy(itemToDestroy);
         }
     }
 
